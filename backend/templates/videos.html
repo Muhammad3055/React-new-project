@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Islamic Videos & Lectures - Quran Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header" style="margin-top: 1rem;">
+    <div>
+      <h1 class="section-title"><i class="fas fa-play-circle"></i> Video Lectures & Recitations</h1>
+      <p style="color: var(--text-muted); margin-top: 0.25rem;">Watch Islamic lectures, Quran explanations, and video recitations.</p>
+    </div>
+    {% if user.is_staff %}
+      <a href="{% url 'upload' %}?tab=video" class="btn-link" style="background: var(--primary-emerald); color: var(--accent-gold); padding: 0.6rem 1.2rem; border-radius: 8px;">
+        <i class="fas fa-plus-circle"></i> Add Video
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{% url 'videos' %}" class="filter-bar">
+    <div class="filter-group">
+      <label class="filter-label">Search:</label>
+      <input type="text" name="q" value="{{ query }}" placeholder="Video title or speaker..." class="filter-input" style="min-width: 240px;">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Category:</label>
+      <select name="category" class="filter-select" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:'s' %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-play" style="padding: 0.5rem 1.2rem;">
+      <i class="fas fa-filter"></i> Filter
+    </button>
+    {% if query or selected_category %}
+      <a href="{% url 'videos' %}" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Reset Filters</a>
+    {% endif %}
+  </form>
+
+  <!-- Video Grid -->
+  <div class="grid-3">
+    {% for vid in videos %}
+      <div class="card">
+        <div class="media-cover-wrapper">
+          {% if vid.thumbnail or vid.thumbnail_url %}
+            <img src="{% if vid.thumbnail %}{{ vid.thumbnail.url }}{% else %}{{ vid.thumbnail_url }}{% endif %}" alt="{{ vid.title }}" class="media-cover-img">
+          {% else %}
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #064e3b, #022c22); color:var(--accent-gold); font-size:3rem;">
+              <i class="fas fa-video"></i>
+            </div>
+          {% endif %}
+          <div class="media-play-overlay">
+            <button class="play-icon-lg" onclick="openVideoModal('{% if vid.video_file %}{{ vid.video_file.url }}{% else %}{{ vid.video_url }}{% endif %}', '{{ vid.title|escapejs }}')">
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ vid.title }}</h3>
+          <div class="card-subtitle"><i class="fas fa-chalkboard-teacher"></i> {{ vid.speaker }}</div>
+          {% if vid.description %}
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">{{ vid.description|truncatewords:20 }}</p>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button class="btn-play" onclick="openVideoModal('{% if vid.video_file %}{{ vid.video_file.url }}{% else %}{{ vid.video_url }}{% endif %}', '{{ vid.title|escapejs }}')">
+            <i class="fas fa-play"></i> Watch Video
+          </button>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 16px; border: 1px solid var(--border-color);">
+        <i class="fas fa-video-slash" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--primary-dark);">No Videos Found</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try adjusting your filters.</p>
+        {% if user.is_staff %}
+          <a href="{% url 'upload' %}?tab=video" class="btn-play" style="display: inline-flex; width: auto;">Upload Video</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

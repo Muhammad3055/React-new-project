@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quran Tafseer & Exegesis - Quran Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header" style="margin-top: 1rem;">
+    <div>
+      <h1 class="section-title"><i class="fas fa-bookmark"></i> Quran Tafseer & Exegesis</h1>
+      <p style="color: var(--text-muted); margin-top: 0.25rem;">Detailed commentary and scholarly explanations of Surahs and Ayahs.</p>
+    </div>
+    {% if user.is_staff %}
+      <a href="{% url 'upload' %}?tab=tafseer" class="btn-link" style="background: var(--primary-emerald); color: var(--accent-gold); padding: 0.6rem 1.2rem; border-radius: 8px;">
+        <i class="fas fa-plus-circle"></i> Add Tafseer Entry
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{% url 'tafseer' %}" class="filter-bar">
+    <div class="filter-group">
+      <label class="filter-label">Search:</label>
+      <input type="text" name="q" value="{{ query }}" placeholder="Search text, translation, or scholar..." class="filter-input" style="min-width: 240px;">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Surah Number:</label>
+      <select name="surah" class="filter-select" onchange="this.form.submit()">
+        <option value="">All Surahs</option>
+        {% for item in surah_list %}
+          <option value="{{ item.surah_number }}" {% if selected_surah == item.surah_number|stringformat:'s' %}selected{% endif %}>
+            {{ item.surah_number }}. Surah {{ item.surah_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-play" style="padding: 0.5rem 1.2rem;">
+      <i class="fas fa-filter"></i> Filter
+    </button>
+    {% if query or selected_surah %}
+      <a href="{% url 'tafseer' %}" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Reset Filters</a>
+    {% endif %}
+  </form>
+
+  <!-- Tafseer Cards List -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for taf in tafseers %}
+      <div class="card" style="padding: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <div>
+            <h2 style="font-size: 1.3rem; color: var(--primary-dark); font-weight: 700;">
+              Surah {{ taf.surah_name }} <span style="color: var(--accent-gold-dark); font-size: 1.1rem;">({{ taf.surah_number }}:{{ taf.ayah_number }})</span>
+            </h2>
+          </div>
+          <span style="font-size: 0.85rem; font-weight: 700; background: var(--accent-gold-light); color: var(--accent-gold-dark); padding: 4px 12px; border-radius: 16px;">
+            {{ taf.scholar_name }}
+          </span>
+        </div>
+
+        <div class="arabic-font" style="font-size: 1.8rem; line-height: 2.2; color: var(--primary-emerald); margin-bottom: 1rem; text-align: right; background: #fdfbf7; padding: 1.25rem; border-radius: 12px; border-right: 4px solid var(--accent-gold);">
+          {{ taf.arabic_text }}
+        </div>
+
+        <div style="font-size: 1.05rem; font-weight: 500; color: #1f2937; margin-bottom: 1rem; font-style: italic;">
+          "{{ taf.translation }}"
+        </div>
+
+        <div style="background: #f8fafc; padding: 1.25rem; border-radius: 10px; border: 1px solid #e2e8f0;">
+          <h4 style="font-size: 0.9rem; text-transform: uppercase; color: var(--primary-dark); letter-spacing: 0.5px; margin-bottom: 0.5rem; font-weight: 700;">
+            <i class="fas fa-book-open"></i> Scholarly Commentary
+          </h4>
+          <p style="font-size: 0.95rem; color: #475569; line-height: 1.7; white-space: pre-line;">{{ taf.tafseer_text }}</p>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align: center; padding: 3rem; background: white; border-radius: 16px; border: 1px solid var(--border-color);">
+        <i class="fas fa-bookmark" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--primary-dark);">No Tafseer Entries Found</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try adjusting your filters.</p>
+        {% if user.is_staff %}
+          <a href="{% url 'upload' %}?tab=tafseer" class="btn-play" style="display: inline-flex; width: auto;">Add Tafseer</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

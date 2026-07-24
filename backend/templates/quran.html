@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quran MP3 Recitations - Quran Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header" style="margin-top: 1rem;">
+    <div>
+      <h1 class="section-title"><i class="fas fa-headphones"></i> Holy Quran Audio Recitations</h1>
+      <p style="color: var(--text-muted); margin-top: 0.25rem;">Listen to beautiful recitations of Surahs by renowned Qaris.</p>
+    </div>
+    {% if user.is_staff %}
+      <a href="{% url 'upload' %}?tab=audio" class="btn-link" style="background: var(--primary-emerald); color: var(--accent-gold); padding: 0.6rem 1.2rem; border-radius: 8px;">
+        <i class="fas fa-plus-circle"></i> Add Recitation
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{% url 'quran' %}" class="filter-bar">
+    <div class="filter-group">
+      <label class="filter-label">Search:</label>
+      <input type="text" name="q" value="{{ query }}" placeholder="Surah name, number, or reciter..." class="filter-input" style="min-width: 240px;">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Reciter:</label>
+      <select name="reciter" class="filter-select" onchange="this.form.submit()">
+        <option value="">All Reciters</option>
+        {% for rec in reciters %}
+          <option value="{{ rec }}" {% if selected_reciter == rec %}selected{% endif %}>{{ rec }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-play" style="padding: 0.5rem 1.2rem;">
+      <i class="fas fa-filter"></i> Filter
+    </button>
+    {% if query or selected_reciter %}
+      <a href="{% url 'quran' %}" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Reset Filters</a>
+    {% endif %}
+  </form>
+
+  <!-- Surah Audio Cards Grid -->
+  <div class="grid-3">
+    {% for audio in audios %}
+      <div class="card">
+        <div class="card-header-badge">
+          <div class="surah-number-badge">{{ audio.surah_number }}</div>
+          <span style="font-size: 0.8rem; font-weight: 700; background: var(--accent-gold-light); color: var(--accent-gold-dark); padding: 2px 8px; border-radius: 12px;">{{ audio.revelation_place }}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ audio.surah_name_english }}</h3>
+          <div class="card-arabic arabic-font">{{ audio.surah_name_arabic }}</div>
+          <div class="card-subtitle"><i class="fas fa-user-circle"></i> {{ audio.reciter }}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">
+            Total Ayahs: {{ audio.total_ayahs }} • Duration: {{ audio.duration }}
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-play" onclick="playAudioTrack('{{ audio.get_playable_url }}', 'Surah {{ audio.surah_name_english }}', '{{ audio.reciter }}')">
+            <i class="fas fa-play"></i> Play Audio
+          </button>
+          <a href="{{ audio.get_playable_url }}" download class="btn-link" style="font-size: 0.85rem;" title="Download MP3">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 16px; border: 1px solid var(--border-color);">
+        <i class="fas fa-music" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--primary-dark);">No Quran Audios Found</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try adjusting your search query.</p>
+        {% if user.is_staff %}
+          <a href="{% url 'upload' %}?tab=audio" class="btn-play" style="display: inline-flex; width: auto;">Upload Audio File</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

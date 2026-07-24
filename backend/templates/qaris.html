@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Renowned Quran Reciters (Qaris) - Quran Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header" style="margin-top: 1rem; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+    <h1 class="section-title"><i class="fas fa-microphone"></i> Renowned Quran Reciters (Qaris)</h1>
+    <p style="color: var(--text-muted);">Explore recitations from 20 of the world's most famous Qaris. Click on any Qari to listen to their complete audio catalog.</p>
+  </div>
+
+  <div class="grid-4" style="margin-top: 2rem;">
+    {% for qari in qaris %}
+      <div class="card qari-card" style="text-align: center; padding: 2rem 1.5rem; justify-content: space-between; height: 100%;">
+        <div class="qari-avatar-container" style="position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem auto;">
+          <div class="qari-avatar-ring"></div>
+          <div class="qari-avatar" style="background: linear-gradient(135deg, var(--primary-emerald), var(--primary-dark)); width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-gold); font-size: 2.2rem; font-weight: 700; border: 3px solid rgba(245, 158, 11, 0.4); box-shadow: var(--shadow-md);">
+            {{ qari.name|slice:":1" }}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 0.25rem;">{{ qari.name }}</h3>
+          <div class="arabic-font" style="font-size: 1.3rem; color: var(--primary-light); margin-bottom: 0.75rem;">{{ qari.arabic_name }}</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; min-height: 4.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+            {{ qari.bio }}
+          </p>
+        </div>
+
+        <div style="margin-top: auto;">
+          <a href="{% url 'quran' %}?reciter={{ qari.name|urlencode }}" class="btn-play" style="width: 100%; justify-content: center; border-radius: 24px; padding: 0.6rem 1.2rem;">
+            <i class="fas fa-headphones"></i> Listen Recitations
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Quran Portal - Audios, Videos, Books, Tafseer & Hadith{% endblock %}</title>
+  <meta name="description" content="Explore Quran recitations (MP3), Islamic videos, books & PDFs, Tafseer, and Hadith collections in a beautiful modern portal.">
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Glassmorphic Header Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="{% url 'home' %}" class="brand-logo">
+        <i class="fas fa-quran"></i>
+        <span>Quran <span class="gold-text">Portal</span></span>
+      </a>
+
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="global-search-input" class="search-input" placeholder="Search Quran, Lectures, Books..." autocomplete="off">
+        <div id="global-search-results" class="search-results-dropdown"></div>
+      </div>
+
+      <button id="mobile-toggle-btn" class="mobile-toggle-btn" onclick="document.getElementById('nav-links').classList.toggle('mobile-active')" aria-label="Toggle Navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="{% url 'read' %}" class="nav-link {% if request.resolver_match.url_name == 'read' or request.resolver_match.url_name == 'read_surah' %}active{% endif %}"><i class="fas fa-book-open"></i> Read Quran</a></li>
+        <li><a href="{% url 'quran' %}" class="nav-link {% if request.resolver_match.url_name == 'quran' %}active{% endif %}"><i class="fas fa-headphones"></i> Quran MP3</a></li>
+        <li><a href="{% url 'videos' %}" class="nav-link {% if request.resolver_match.url_name == 'videos' %}active{% endif %}"><i class="fas fa-play-circle"></i> Videos</a></li>
+        <li><a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"><i class="fas fa-envelope"></i> Contact</a></li>
+        
+        {% if user.is_authenticated %}
+          <li class="nav-user-info">
+            <span class="user-greeting"><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+          </li>
+          {% if user.is_staff %}
+            <li><a href="{% url 'upload' %}" class="nav-link btn-upload"><i class="fas fa-cloud-upload-alt"></i> Upload</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}" class="nav-link btn-logout" title="Log Out"><i class="fas fa-sign-out-alt"></i></a></li>
+        {% else %}
+          <li><a href="{% url 'login' %}" class="nav-link btn-login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+          <li><a href="{% url 'signup' %}" class="nav-link btn-signup"><i class="fas fa-user-plus"></i> Sign Up</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+
+  <!-- Messages / Alerts -->
+  {% if messages %}
+    <div class="container" style="margin-top:1rem; margin-bottom:0;">
+      {% for message in messages %}
+        <div style="padding: 1rem 1.5rem; border-radius: 8px; background: var(--accent-gold-light); color: var(--accent-gold-dark); font-weight: 600; margin-bottom: 1rem;">
+          <i class="fas fa-info-circle"></i> {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Body Content -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global Persistent Audio Player Bar (Hidden by default until MP3 starts) -->
+  <div id="global-audio-player" class="audio-player-bar" style="display: none;">
+    <div class="player-container">
+      <div class="player-info">
+        <div class="player-icon">
+          <i class="fas fa-volume-up"></i>
+        </div>
+        <div class="player-text">
+          <span id="player-title" class="player-title">Select a Quran Surah to Play</span>
+          <span id="player-reciter" class="player-reciter">Reciter Stream</span>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <div class="control-buttons">
+          <button class="btn-player-ctrl" title="Previous"><i class="fas fa-step-backward"></i></button>
+          <button id="player-play-btn" class="btn-player-main" title="Play/Pause"><i class="fas fa-play"></i></button>
+          <button class="btn-player-ctrl" title="Next"><i class="fas fa-step-forward"></i></button>
+        </div>
+        <div class="progress-container">
+          <span id="player-curr-time" class="time-stamp">00:00</span>
+          <input type="range" id="player-progress" class="progress-bar-input" min="0" max="100" value="0">
+          <span id="player-dur-time" class="time-stamp">00:00</span>
+        </div>
+      </div>
+
+      <div class="volume-wrapper">
+        <i class="fas fa-volume-down" style="color:#cbd5e1; font-size: 0.9rem;"></i>
+        <input type="range" id="player-volume" class="volume-slider" min="0" max="100" value="80">
+      </div>
+    </div>
+  </div>
+
+  <!-- Media Preview Modal -->
+  <div id="media-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Media Preview</h3>
+        <button class="btn-close-modal" onclick="closeMediaModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-media-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clean 4-Columned Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand & About -->
+        <div class="footer-col brand-col">
+          <a href="{% url 'home' %}" class="brand-logo" style="margin-bottom: 0.75rem;">
+            <i class="fas fa-quran"></i>
+            <span>Quran <span class="gold-text">Portal</span></span>
+          </a>
+          <p class="footer-desc">Your modern portal for reading, listening, and learning the Holy Quran with recitations, authentic Tafseer commentary, and Hadith collections.</p>
+          <div class="social-links">
+            <a href="#" class="social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-btn" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-btn" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Quran Studies -->
+        <div class="footer-col">
+          <h4 class="footer-title">Quran Studies</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'read' %}"><i class="fas fa-book-open"></i> Read Quran</a></li>
+            <li><a href="{% url 'quran' %}"><i class="fas fa-headphones"></i> Quran Audio MP3</a></li>
+            <li><a href="{% url 'qaris' %}"><i class="fas fa-microphone"></i> 20+ Qaris & Reciters</a></li>
+            <li><a href="{% url 'tafseer' %}"><i class="fas fa-bookmark"></i> Tafseer Commentary</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Media & Books -->
+        <div class="footer-col">
+          <h4 class="footer-title">Media & Books</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'videos' %}"><i class="fas fa-play-circle"></i> Video Lectures</a></li>
+            <li><a href="{% url 'books' %}"><i class="fas fa-book"></i> PDF Books & Library</a></li>
+            <li><a href="{% url 'hadith' %}"><i class="fas fa-scroll"></i> Hadith Collection</a></li>
+            <li><a href="{% url 'home' %}"><i class="fas fa-star"></i> Featured Recitations</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Quick Navigation -->
+        <div class="footer-col">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home Portal</a></li>
+            {% if user.is_authenticated %}
+              {% if user.is_staff %}
+                <li><a href="{% url 'upload' %}"><i class="fas fa-cloud-upload-alt"></i> Upload Media</a></li>
+              {% endif %}
+              <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
+            {% else %}
+              <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+              <li><a href="{% url 'signup' %}"><i class="fas fa-user-plus"></i> Create Account</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <hr class="footer-divider">
+
+      <div class="footer-bottom">
+        <p class="arabic-font calligraphy-footer">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+        <p class="copyright-text">&copy; {% now "Y" %} Quran Portal. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core JavaScript -->
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/player.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

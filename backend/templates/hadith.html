@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Authentic Hadith Collections - Quran Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="section-header" style="margin-top: 1rem;">
+    <div>
+      <h1 class="section-title"><i class="fas fa-scroll"></i> Authentic Hadith Collections</h1>
+      <p style="color: var(--text-muted); margin-top: 0.25rem;">Explore traditions, sayings, and teachings of Prophet Muhammad (ﷺ).</p>
+    </div>
+    {% if user.is_staff %}
+      <a href="{% url 'upload' %}?tab=hadith" class="btn-link" style="background: var(--primary-emerald); color: var(--accent-gold); padding: 0.6rem 1.2rem; border-radius: 8px;">
+        <i class="fas fa-plus-circle"></i> Add Hadith
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{% url 'hadith' %}" class="filter-bar">
+    <div class="filter-group">
+      <label class="filter-label">Search:</label>
+      <input type="text" name="q" value="{{ query }}" placeholder="Search text, narrator, or number..." class="filter-input" style="min-width: 240px;">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Book Collection:</label>
+      <select name="book" class="filter-select" onchange="this.form.submit()">
+        <option value="">All Collections</option>
+        {% for val, label in books_list %}
+          <option value="{{ val }}" {% if selected_book == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-play" style="padding: 0.5rem 1.2rem;">
+      <i class="fas fa-filter"></i> Filter
+    </button>
+    {% if query or selected_book %}
+      <a href="{% url 'hadith' %}" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Reset Filters</a>
+    {% endif %}
+  </form>
+
+  <!-- Hadith Cards List -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for h in hadiths %}
+      <div class="hadith-card" style="margin-bottom: 0;">
+        <div class="hadith-header">
+          <div>
+            <span class="hadith-meta" style="font-size: 1rem;"><i class="fas fa-book-open"></i> {{ h.book_name }}</span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); margin-left: 0.5rem;">#{{ h.hadith_number }}</span>
+            {% if h.chapter %}
+              <span style="font-size: 0.85rem; color: var(--primary-light); font-weight: 600; margin-left: 0.5rem;">• {{ h.chapter }}</span>
+            {% endif %}
+          </div>
+          <span class="hadith-grade">{{ h.grade }}</span>
+        </div>
+
+        <div class="hadith-arabic arabic-font">{{ h.arabic_text }}</div>
+
+        <div class="hadith-translation" style="font-size: 1.05rem; line-height: 1.6; color: #1e293b;">
+          "{{ h.translation }}"
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;">
+          {% if h.narrated_by %}
+            <div class="hadith-narrator">— {{ h.narrated_by }}</div>
+          {% else %}
+            <div></div>
+          {% endif %}
+          <button onclick="navigator.clipboard.writeText('{{ h.translation|escapejs }}'); alert('Hadith translation copied to clipboard!');" class="btn-link" style="font-size: 0.85rem; cursor: pointer; border: none; background: transparent;">
+            <i class="fas fa-copy"></i> Copy Hadith
+          </button>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align: center; padding: 3rem; background: white; border-radius: 16px; border: 1px solid var(--border-color);">
+        <i class="fas fa-scroll" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--primary-dark);">No Hadith Records Found</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try adjusting your filters.</p>
+        {% if user.is_staff %}
+          <a href="{% url 'upload' %}?tab=hadith" class="btn-play" style="display: inline-flex; width: auto;">Add Hadith Entry</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

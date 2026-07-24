@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upload Media & Content - Quran Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--primary-dark);">
+      <i class="fas fa-cloud-upload-alt" style="color: var(--accent-gold-dark);"></i> Upload & Manage Content
+    </h1>
+    <p style="color: var(--text-muted);">Add new Quran Audios (MP3), Videos, Books (PDF), Tafseer entries, or Hadiths to your website.</p>
+  </div>
+
+  <div class="upload-container">
+    <!-- Upload Navigation Tabs -->
+    <div class="upload-tabs">
+      <button class="upload-tab {% if active_tab == 'audio' or not active_tab %}active{% endif %}" data-tab="audio">
+        <i class="fas fa-headphones"></i> Quran Audio
+      </button>
+      <button class="upload-tab {% if active_tab == 'video' %}active{% endif %}" data-tab="video">
+        <i class="fas fa-video"></i> Video Media
+      </button>
+      <button class="upload-tab {% if active_tab == 'book' %}active{% endif %}" data-tab="book">
+        <i class="fas fa-book"></i> Book / PDF
+      </button>
+      <button class="upload-tab {% if active_tab == 'tafseer' %}active{% endif %}" data-tab="tafseer">
+        <i class="fas fa-bookmark"></i> Tafseer
+      </button>
+      <button class="upload-tab {% if active_tab == 'hadith' %}active{% endif %}" data-tab="hadith">
+        <i class="fas fa-scroll"></i> Hadith
+      </button>
+    </div>
+
+    <div class="upload-content">
+      <!-- 1. Quran Audio Form -->
+      <div id="form-panel-audio" class="upload-form-panel" style="display: {% if active_tab == 'audio' or not active_tab %}block{% else %}none{% endif %};">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="audio">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Surah Number *</label>
+              {{ audio_form.surah_number }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Surah Name (English) *</label>
+              {{ audio_form.surah_name_english }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Surah Name (Arabic) *</label>
+              {{ audio_form.surah_name_arabic }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reciter / Qari Name</label>
+              {{ audio_form.reciter }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload Audio File (.mp3)</label>
+              {{ audio_form.audio_file }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or Direct MP3 Stream URL</label>
+              {{ audio_form.audio_url }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duration (e.g. 05:30)</label>
+              {{ audio_form.duration }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Revelation Place</label>
+              {{ audio_form.revelation_place }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total Ayahs</label>
+              {{ audio_form.total_ayahs }}
+            </div>
+          </div>
+          <button type="submit" class="btn-submit"><i class="fas fa-upload"></i> Upload Quran Audio</button>
+        </form>
+      </div>
+
+      <!-- 2. Video Media Form -->
+      <div id="form-panel-video" class="upload-form-panel" style="display: {% if active_tab == 'video' %}block{% else %}none{% endif %};">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="video">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Video Title *</label>
+              {{ video_form.title }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Speaker / Qari Name</label>
+              {{ video_form.speaker }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              {{ video_form.category }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload Video File</label>
+              {{ video_form.video_file }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or YouTube / Video URL</label>
+              {{ video_form.video_url }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload Cover Thumbnail</label>
+              {{ video_form.thumbnail }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or Cover Thumbnail Image URL</label>
+              {{ video_form.thumbnail_url }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Description</label>
+              {{ video_form.description }}
+            </div>
+          </div>
+          <button type="submit" class="btn-submit"><i class="fas fa-upload"></i> Upload Video Media</button>
+        </form>
+      </div>
+
+      <!-- 3. Book / PDF Form -->
+      <div id="form-panel-book" class="upload-form-panel" style="display: {% if active_tab == 'book' %}block{% else %}none{% endif %};">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="book">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Book Title *</label>
+              {{ book_form.title }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Author Name</label>
+              {{ book_form.author }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              {{ book_form.category }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload PDF Document</label>
+              {{ book_form.pdf_file }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or Direct PDF URL</label>
+              {{ book_form.pdf_url }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload Cover Image</label>
+              {{ book_form.cover_image }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or Cover Image URL</label>
+              {{ book_form.cover_url }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pages Count</label>
+              {{ book_form.pages_count }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Language</label>
+              {{ book_form.language }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Book Summary / Description</label>
+              {{ book_form.description }}
+            </div>
+          </div>
+          <button type="submit" class="btn-submit"><i class="fas fa-upload"></i> Upload Book / PDF</button>
+        </form>
+      </div>
+
+      <!-- 4. Tafseer Form -->
+      <div id="form-panel-tafseer" class="upload-form-panel" style="display: {% if active_tab == 'tafseer' %}block{% else %}none{% endif %};">
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="tafseer">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Surah Number *</label>
+              {{ tafseer_form.surah_number }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Surah Name *</label>
+              {{ tafseer_form.surah_name }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ayah Number *</label>
+              {{ tafseer_form.ayah_number }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Scholar / Tafseer Name</label>
+              {{ tafseer_form.scholar_name }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Arabic Ayah Text *</label>
+              {{ tafseer_form.arabic_text }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Translation *</label>
+              {{ tafseer_form.translation }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Detailed Tafseer Commentary *</label>
+              {{ tafseer_form.tafseer_text }}
+            </div>
+          </div>
+          <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Save Tafseer Entry</button>
+        </form>
+      </div>
+
+      <!-- 5. Hadith Form -->
+      <div id="form-panel-hadith" class="upload-form-panel" style="display: {% if active_tab == 'hadith' %}block{% else %}none{% endif %};">
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="hadith">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Hadith Book Collection *</label>
+              {{ hadith_form.book_name }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hadith Number *</label>
+              {{ hadith_form.hadith_number }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chapter / Book Title</label>
+              {{ hadith_form.chapter }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Narrated By</label>
+              {{ hadith_form.narrated_by }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Grade (e.g. Sahih, Hasan)</label>
+              {{ hadith_form.grade }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Arabic Text *</label>
+              {{ hadith_form.arabic_text }}
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Translation *</label>
+              {{ hadith_form.translation }}
+            </div>
+          </div>
+          <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Save Hadith Entry</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

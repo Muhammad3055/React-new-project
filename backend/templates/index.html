@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Quran & Islamic Media Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="hero-section">
+  <div class="hero-pattern"></div>
+  <div class="hero-content">
+    <h2 class="hero-title-arabic arabic-font">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
+    <h1 class="hero-title">Discover, Listen & Learn The Holy Quran</h1>
+    <p class="hero-subtitle">Access high-quality Quran MP3 recitations, video lectures, authentic Hadith collections, Tafseer explanations, and Islamic PDF books all in one portal.</p>
+    
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-number">{{ total_audios }}</div>
+        <div class="stat-label">Quran Audios</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ total_videos }}</div>
+        <div class="stat-label">Video Lectures</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ total_books }}</div>
+        <div class="stat-label">Books & PDFs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ total_hadiths }}</div>
+        <div class="stat-label">Hadiths</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Media Spotlight & Quick Demos -->
+<section class="container" style="margin-top: -1.5rem; margin-bottom: 3rem; position: relative; z-index: 10;">
+  <div class="grid-2" style="gap: 2rem;">
+    <!-- Featured MP3 Demo Card -->
+    <div class="card demo-card" style="background: linear-gradient(135deg, var(--primary-emerald), var(--primary-dark)); color: #fff; padding: 2rem; border-radius: var(--radius-lg); border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <span style="background: var(--accent-gold-light); color: var(--accent-gold-dark); font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Featured Audio Recitation</span>
+        <h3 style="font-size: 1.6rem; color: #fff; font-weight: 700; margin-top: 1rem; margin-bottom: 0.25rem;">Surah Al-Fatiha (The Opening)</h3>
+        <p class="arabic-font" style="font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 0.75rem; text-align: left; direction: ltr;">الفاتحة</p>
+        <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; margin-bottom: 1.5rem;">Experience the beautiful, peaceful recitation of the opening chapter of the Holy Quran, serving as a cure and guidance for all mankind.</p>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="demo-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-gold);">
+            <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--accent-gold);"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.9rem; font-weight: 600;">Mishary Rashid Alafasy</div>
+            <div style="font-size: 0.75rem; color: #cbd5e1;">Surah 1 • 7 Ayahs • 00:45</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-play" onclick="playAudioTrack('https://server8.mp3quran.net/afs/001.mp3', 'Surah Al-Fatiha', 'Mishary Rashid Alafasy')" style="background: var(--accent-gold); color: var(--primary-dark); font-weight: 700;">
+            <i class="fas fa-play"></i> Quick Play
+          </button>
+          <a href="https://server8.mp3quran.net/afs/001.mp3" download class="btn-play" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); padding: 0.5rem 0.75rem;" title="Download MP3 Recitation">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Video Lecture Demo Card -->
+    <div class="card demo-card" style="background: #ffffff; padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <span style="background: #f1f5f9; color: var(--primary-emerald); font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Featured Video Lecture</span>
+        <h3 style="font-size: 1.6rem; color: var(--primary-dark); font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem;">Understanding Wisdom of Surah Al-Mulk</h3>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">Watch an inspiring and educational video explaining how Surah Al-Mulk acts as a shield and intercessor for its reciters in this life and the hereafter.</p>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="demo-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-emerald);">
+            <i class="fas fa-chalkboard-teacher" style="font-size: 1.2rem; color: var(--primary-emerald);"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--primary-dark);">Mufti Menk</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Surah 67 Commentary • Video</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-play" onclick="openVideoModal('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Understanding the Wisdom of Surah Al-Mulk')" style="background: linear-gradient(135deg, var(--primary-emerald), var(--primary-dark)); color: var(--accent-gold);">
+            <i class="fas fa-video"></i> Watch Video
+          </button>
+          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="btn-play" style="background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 0.75rem;" title="Download / Link to YouTube">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Quran Recitations Section -->
+<section class="container">
+  <div class="section-header">
+    <h2 class="section-title"><i class="fas fa-headphones"></i> Featured Quran Recitations</h2>
+    <a href="{% url 'quran' %}" class="btn-link">View All Surahs <i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="grid-3">
+    {% for audio in featured_audios %}
+      <div class="card">
+        <div class="card-header-badge">
+          <div class="surah-number-badge">{{ audio.surah_number }}</div>
+          <span style="font-size: 0.8rem; font-weight: 700; background: var(--accent-gold-light); color: var(--accent-gold-dark); padding: 2px 8px; border-radius: 12px;">{{ audio.revelation_place }}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ audio.surah_name_english }}</h3>
+          <div class="card-arabic arabic-font">{{ audio.surah_name_arabic }}</div>
+          <div class="card-subtitle"><i class="fas fa-user-circle"></i> {{ audio.reciter }}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Total Ayahs: {{ audio.total_ayahs }} • Duration: {{ audio.duration }}</div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-play" onclick="playAudioTrack('{{ audio.get_playable_url }}', 'Surah {{ audio.surah_name_english }}', '{{ audio.reciter }}')">
+            <i class="fas fa-play"></i> Play Audio
+          </button>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">
+        No Quran audios uploaded yet. Use the <a href="{% url 'upload' %}" style="color:var(--primary-emerald); font-weight:600;">Upload section</a> to add audio files.
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Hadith & Tafseer Highlights -->
+<section class="container">
+  <div class="grid-2">
+    <div>
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-scroll"></i> Hadith Spotlight</h2>
+        <a href="{% url 'hadith' %}" class="btn-link">View Collection <i class="fas fa-arrow-right"></i></a>
+      </div>
+      {% for hadith in latest_hadiths %}
+        <div class="hadith-card">
+          <div class="hadith-header">
+            <span class="hadith-meta"><i class="fas fa-book"></i> {{ hadith.book_name }} #{{ hadith.hadith_number }}</span>
+            <span class="hadith-grade">{{ hadith.grade }}</span>
+          </div>
+          <div class="hadith-arabic arabic-font">{{ hadith.arabic_text }}</div>
+          <div class="hadith-translation">"{{ hadith.translation }}"</div>
+          {% if hadith.narrated_by %}
+            <div class="hadith-narrator">— Narrated by {{ hadith.narrated_by }}</div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div style="padding: 1.5rem; background: white; border-radius: 12px; color: var(--text-muted); text-align: center;">No Hadiths recorded yet.</div>
+      {% endfor %}
+    </div>
+
+    <div>
+      <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-bookmark"></i> Tafseer Commentary</h2>
+        <a href="{% url 'tafseer' %}" class="btn-link">Explore Tafseer <i class="fas fa-arrow-right"></i></a>
+      </div>
+      {% for taf in tafseer_sample %}
+        <div class="card" style="margin-bottom: 1.25rem; padding: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="font-size: 1.1rem; color: var(--primary-dark); font-weight: 700;">Surah {{ taf.surah_name }} ({{ taf.surah_number }}:{{ taf.ayah_number }})</h3>
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary-emerald);">{{ taf.scholar_name }}</span>
+          </div>
+          <div class="arabic-font" style="font-size: 1.3rem; color: var(--primary-light); margin-bottom: 0.5rem; text-align: right;">{{ taf.arabic_text }}</div>
+          <div style="font-size: 0.95rem; color: #374151; margin-bottom: 0.75rem;">"{{ taf.translation }}"</div>
+          <div style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; background: #fafafa; padding: 0.75rem; border-radius: 8px;">{{ taf.tafseer_text|truncatewords:40 }}</div>
+        </div>
+      {% empty %}
+        <div style="padding: 1.5rem; background: white; border-radius: 12px; color: var(--text-muted); text-align: center;">No Tafseer added yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Videos & Books Gallery -->
+<section class="container">
+  <div class="section-header">
+    <h2 class="section-title"><i class="fas fa-play-circle"></i> Video Lectures & Recitations</h2>
+    <a href="{% url 'videos' %}" class="btn-link">View All Videos <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="grid-4" style="margin-bottom: 3rem;">
+    {% for vid in featured_videos %}
+      <div class="card">
+        <div class="media-cover-wrapper">
+          {% if vid.thumbnail or vid.thumbnail_url %}
+            <img src="{% if vid.thumbnail %}{{ vid.thumbnail.url }}{% else %}{{ vid.thumbnail_url }}{% endif %}" alt="{{ vid.title }}" class="media-cover-img">
+          {% else %}
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #064e3b, #022c22); color:var(--accent-gold); font-size:2.5rem;">
+              <i class="fas fa-video"></i>
+            </div>
+          {% endif %}
+          <div class="media-play-overlay">
+            <button class="play-icon-lg" onclick="openVideoModal('{% if vid.video_file %}{{ vid.video_file.url }}{% else %}{{ vid.video_url }}{% endif %}', '{{ vid.title|escapejs }}')">
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title" style="font-size: 1rem;">{{ vid.title }}</h3>
+          <div class="card-subtitle"><i class="fas fa-chalkboard-teacher"></i> {{ vid.speaker }}</div>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">No videos available yet.</div>
+    {% endfor %}
+  </div>
+
+  <div class="section-header">
+    <h2 class="section-title"><i class="fas fa-book-open"></i> Islamic Books & PDF Library</h2>
+    <a href="{% url 'books' %}" class="btn-link">View All Books <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="grid-4">
+    {% for book in featured_books %}
+      <div class="card">
+        <div class="media-cover-wrapper" style="height: 200px;">
+          {% if book.cover_image or book.cover_url %}
+            <img src="{% if book.cover_image %}{{ book.cover_image.url }}{% else %}{{ book.cover_url }}{% endif %}" alt="{{ book.title }}" class="media-cover-img">
+          {% else %}
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #022c22, #047857); color:var(--accent-gold); font-size:2.5rem;">
+              <i class="fas fa-book"></i>
+            </div>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <h3 class="card-title" style="font-size: 1rem;">{{ book.title }}</h3>
+          <div class="card-subtitle"><i class="fas fa-pen-nib"></i> {{ book.author }}</div>
+        </div>
+        <div class="card-footer">
+          <a href="{{ book.get_document_url }}" target="_blank" class="btn-play" style="padding: 0.4rem 1rem;">
+            <i class="fas fa-file-pdf"></i> Read PDF
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">No books available yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
