@@ -160,69 +160,6 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </section>
       )}
 
-      {/* User Account Login & Registration Callout Banner */}
-      {!user && (
-        <section className="container" style={{ marginBottom: '2.5rem' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
-            borderRadius: '16px',
-            padding: '2rem',
-            color: '#ffffff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '1.5rem',
-            flexWrap: 'wrap',
-            boxShadow: '0 8px 24px rgba(2, 44, 34, 0.25)',
-            border: '1px solid rgba(251, 191, 36, 0.3)'
-          }}>
-            <div style={{ flex: '1 1 300px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
-                <i className="fas fa-user-shield" style={{ color: 'var(--accent-gold)', fontSize: '1.4rem' }}></i>
-                <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#ffffff' }}>
-                  Join the Global Quran Portal Community
-                </h3>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.92rem', color: '#e2e8f0', lineHeight: '1.5' }}>
-                Create your free account or sign in with Google/Microsoft to save Ayah bookmarks, track your reading progress, and receive 2-step security verification.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
-              <button
-                className="btn-play"
-                onClick={() => openAuthModal && openAuthModal('login')}
-                style={{
-                  background: 'var(--accent-gold)',
-                  color: 'var(--primary-dark)',
-                  fontWeight: 800,
-                  padding: '0.75rem 1.6rem',
-                  fontSize: '0.95rem',
-                  borderRadius: '10px'
-                }}
-              >
-                <i className="fas fa-sign-in-alt"></i> Sign In
-              </button>
-              <button
-                className="btn-play"
-                onClick={() => openAuthModal && openAuthModal('signup')}
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  fontWeight: 700,
-                  padding: '0.75rem 1.6rem',
-                  fontSize: '0.95rem',
-                  borderRadius: '10px'
-                }}
-              >
-                <i className="fas fa-user-plus"></i> Create Free Account
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Featured Audio Recitations */}
       <section className="container">
         <div className="section-header">
