@@ -1,6 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 
+const DEFAULT_AUDIOS = [
+  { id: 1, surah_number: 1, surah_name_arabic: "الفاتحة", surah_name_english: "Al-Fatiha", reciter: "Mishary Rashid Alafasy", audio_url: "https://server8.mp3quran.net/afs/001.mp3", duration: "00:45", revelation_place: "Makki" },
+  { id: 2, surah_number: 18, surah_name_arabic: "الكهف", surah_name_english: "Al-Kahf", reciter: "Mishary Rashid Alafasy", audio_url: "https://server8.mp3quran.net/afs/018.mp3", duration: "25:30", revelation_place: "Makki" },
+  { id: 3, surah_number: 36, surah_name_arabic: "يس", surah_name_english: "Ya-Sin", reciter: "Saad Al-Ghamdi", audio_url: "https://server7.mp3quran.net/s_gmd/036.mp3", duration: "13:45", revelation_place: "Makki" },
+  { id: 4, surah_number: 55, surah_name_arabic: "الرحمن", surah_name_english: "Ar-Rahman", reciter: "Abdul Rahman Al-Sudais", audio_url: "https://server11.mp3quran.net/sds/055.mp3", duration: "09:50", revelation_place: "Madani" }
+];
+
+const DEFAULT_BOOKS = [
+  { id: 1, title: "Tafseer Ibn Kathir (English)", author: "Hafiz Ibn Kathir", cover_url: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80", document_url: "https://www.quranfull.com", pages_count: 650, language: "English" },
+  { id: 2, title: "Riyad As-Salihin (Meadows of the Righteous)", author: "Imam An-Nawawi", cover_url: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80", document_url: "https://www.quranfull.com", pages_count: 420, language: "Arabic / English" },
+  { id: 3, title: "Stories of the Prophets", author: "Ibn Kathir", cover_url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80", document_url: "https://www.quranfull.com", pages_count: 380, language: "English" }
+];
+
+const DEFAULT_VIDEOS = [
+  { id: 1, title: "The Beauty of Quran Recitation & Reflection", speaker: "Mufti Menk", thumbnail_url: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=500&q=80", video_url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+  { id: 2, title: "Understanding Surah Al-Kahf & Friday Virtues", speaker: "Nouman Ali Khan", thumbnail_url: "https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=500&q=80", video_url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+];
+
+const DEFAULT_HADITHS = [
+  { id: 1, book_name: "Sahih Bukhari", hadith_number: 1, grade: "Sahih", arabic_text: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى", translation: "Actions are judged by intentions, and every person will get what they intended." },
+  { id: 2, book_name: "Sahih Muslim", hadith_number: 223, grade: "Sahih", arabic_text: "الطَّهُورُ شَطْرُ الإِيمَانِ", translation: "Purity is half of faith." }
+];
+
 export default function HomeView({ navigateToTab, setActiveTab, playTrack, openVideoModal, user, openAuthModal }) {
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
@@ -8,10 +31,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
   };
 
   const [stats, setStats] = useState({ total_audios: 7, total_videos: 3, total_books: 3, total_hadiths: 3 });
-  const [audios, setAudios] = useState([]);
-  const [videos, setVideos] = useState([]);
-  const [books, setBooks] = useState([]);
-  const [hadiths, setHadiths] = useState([]);
+  const [audios, setAudios] = useState(DEFAULT_AUDIOS);
+  const [videos, setVideos] = useState(DEFAULT_VIDEOS);
+  const [books, setBooks] = useState(DEFAULT_BOOKS);
+  const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
 
   useEffect(() => {
@@ -30,22 +53,30 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
 
     fetch('/api/quran/?featured=1')
       .then(res => res.json())
-      .then(data => setAudios(data.results || []))
+      .then(data => {
+        if (data.results && data.results.length > 0) setAudios(data.results);
+      })
       .catch(() => {});
 
     fetch('/api/videos/?page=1')
       .then(res => res.json())
-      .then(data => setVideos(data.results ? data.results.slice(0, 2) : []))
+      .then(data => {
+        if (data.results && data.results.length > 0) setVideos(data.results.slice(0, 2));
+      })
       .catch(() => {});
 
     fetch('/api/books/?page=1')
       .then(res => res.json())
-      .then(data => setBooks(data.results || []))
+      .then(data => {
+        if (data.results && data.results.length > 0) setBooks(data.results);
+      })
       .catch(() => {});
 
     fetch('/api/hadith/?page=1')
       .then(res => res.json())
-      .then(data => setHadiths(data.results ? data.results.slice(0, 2) : []))
+      .then(data => {
+        if (data.results && data.results.length > 0) setHadiths(data.results.slice(0, 2));
+      })
       .catch(() => {});
   }, []);
 
