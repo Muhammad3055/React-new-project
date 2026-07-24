@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
+from django.core.mail import send_mail
 
 from .models import Category, QuranAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage
 from .forms import QuranAudioForm, VideoMediaForm, BookMediaForm, TafseerForm, HadithForm
@@ -590,10 +591,31 @@ def api_send_otp(request):
     }
     request.session.modified = True
 
+    # Send verification email to user's personal Gmail / email address
+    subject = f"Quran Portal - Your 6-Digit Security Code: {otp_code}"
+    message = (
+        f"Assalamu Alaikum,\n\n"
+        f"Your 6-digit security verification code for Quran Portal is:\n\n"
+        f"  ===>  {otp_code}  <===\n\n"
+        f"Please enter this 6-digit code on the website to complete your sign-in.\n\n"
+        f"If you did not request this code, please ignore this email.\n\n"
+        f"BarakAllahu Feek,\n"
+        f"Quran Portal Team"
+    )
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=None,
+            recipient_list=[target_email],
+            fail_silently=True
+        )
+    except Exception as e:
+        print(f"Email dispatch log: {e}")
+
     return JsonResponse({
         'status': 'otp_sent',
         'email': target_email,
-        'code': otp_code,
         'message': f'A 6-digit security verification code has been sent to {target_email}.'
     })
 

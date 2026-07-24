@@ -9,15 +9,14 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Social Auth State
-  const [socialProvider, setSocialProvider] = useState(null); // 'google' | 'microsoft' | 'facebook' | 'instagram'
+  // Social Auth State ('google' | 'microsoft')
+  const [socialProvider, setSocialProvider] = useState(null);
   const [socialEmail, setSocialEmail] = useState('');
 
   // 2FA Verification Code (OTP) State
   const [step, setStep] = useState('input'); // 'input' | 'otp'
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
-  const [demoCode, setDemoCode] = useState('');
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -45,7 +44,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         setSubmitting(false);
         if (data.status === 'otp_sent') {
           setPendingEmail(data.email);
-          setDemoCode(data.code || '');
           setStep('otp');
           setOtpCode('');
         } else {
@@ -212,27 +210,24 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 </p>
               </div>
 
-              {/* Interactive Demo Code Helper Badge */}
-              {demoCode && (
-                <div
-                  onClick={() => setOtpCode(demoCode)}
-                  style={{
-                    background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)',
-                    border: '1px solid #fde68a',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '10px',
-                    textAlign: 'center',
-                    marginBottom: '1.25rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
-                  }}
-                  title="Click to auto-fill code"
-                >
-                  <span style={{ fontSize: '0.8rem', color: '#78350f', display: 'block', fontWeight: 600 }}>🔑 Active Verification Security Code:</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '6px', color: 'var(--primary-dark)' }}>{demoCode}</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--primary-light)', display: 'block', marginTop: '2px' }}>Tap to auto-fill</span>
-                </div>
-              )}
+              {/* Email Sent Notice Box */}
+              <div style={{
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '12px',
+                padding: '1rem',
+                textAlign: 'center',
+                marginBottom: '1.25rem',
+                color: '#166534'
+              }}>
+                <i className="fas fa-envelope-open-text" style={{ fontSize: '1.4rem', color: 'var(--primary-emerald)', marginBottom: '0.3rem', display: 'block' }}></i>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, display: 'block' }}>
+                  Code sent to your personal email inbox!
+                </span>
+                <span style={{ fontSize: '0.78rem', color: '#15803d', display: 'block', marginTop: '0.2rem' }}>
+                  Please check your Gmail / Email app to copy your 6-digit code.
+                </span>
+              </div>
 
               <form onSubmit={handleVerifyOtp}>
                 <div className="form-group" style={{ textAlign: 'center' }}>
@@ -296,44 +291,32 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             <div>
               <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
                 <i
-                  className={
-                    socialProvider === 'google' ? 'fab fa-google' :
-                    socialProvider === 'microsoft' ? 'fab fa-microsoft' :
-                    socialProvider === 'facebook' ? 'fab fa-facebook' : 'fab fa-instagram'
-                  }
+                  className={socialProvider === 'google' ? 'fab fa-google' : 'fab fa-microsoft'}
                   style={{
                     fontSize: '2.5rem',
-                    color:
-                      socialProvider === 'google' ? '#ea4335' :
-                      socialProvider === 'microsoft' ? '#00a4ef' :
-                      socialProvider === 'facebook' ? '#1877f2' : '#cc2366',
+                    color: socialProvider === 'google' ? '#ea4335' : '#00a4ef',
                     marginBottom: '0.5rem'
                   }}
                 ></i>
                 <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-dark)' }}>
-                  Sign in with {socialProvider.toUpperCase()}
+                  Sign in with {socialProvider === 'google' ? 'Google' : 'Microsoft'}
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
                   {socialProvider === 'google'
-                    ? 'Enter your official @gmail.com address for authentication code.'
-                    : socialProvider === 'microsoft'
-                    ? 'Enter your official @outlook.com address for authentication code.'
-                    : 'Enter your email address to receive your 6-digit security code.'}
+                    ? 'Enter your official @gmail.com address to receive your verification code.'
+                    : 'Enter your official @outlook.com address to receive your verification code.'}
                 </p>
               </div>
 
               <form onSubmit={handleSocialSubmit}>
                 <div className="form-group">
                   <label className="form-label">
-                    {socialProvider.toUpperCase()} Account Email Address
+                    {socialProvider === 'google' ? 'Google / Gmail Address' : 'Microsoft Account Email'}
                   </label>
                   <input
                     type="email"
                     className="form-input"
-                    placeholder={
-                      socialProvider === 'google' ? 'yourname@gmail.com' :
-                      socialProvider === 'microsoft' ? 'yourname@outlook.com' : 'yourname@example.com'
-                    }
+                    placeholder={socialProvider === 'google' ? 'yourname@gmail.com' : 'yourname@outlook.com'}
                     value={socialEmail}
                     onChange={(e) => setSocialEmail(e.target.value)}
                     required
@@ -361,10 +344,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     className="btn-submit"
                     style={{
                       flex: 2,
-                      background:
-                        socialProvider === 'google' ? '#ea4335' :
-                        socialProvider === 'microsoft' ? '#00a4ef' :
-                        socialProvider === 'facebook' ? '#1877f2' : 'linear-gradient(45deg, #f09433, #dc2743, #bc1888)'
+                      background: socialProvider === 'google' ? '#ea4335' : '#00a4ef'
                     }}
                     disabled={submitting}
                   >
@@ -447,14 +427,15 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #e2e8f0' }} />
               </div>
 
-              {/* Social Connect Logos as Buttons */}
-              <div className="auth-social-container" style={{ flexWrap: 'wrap', gap: '0.65rem' }}>
+              {/* Social Connect Logos (Only Google & Microsoft) */}
+              <div className="auth-social-container" style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
                   type="button"
                   className="auth-social-card google-card"
                   onClick={() => handleOpenSocialModal('google')}
                   disabled={submitting}
                   title="Sign in with Google"
+                  style={{ flex: 1, justifyContent: 'center' }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -471,6 +452,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   onClick={() => handleOpenSocialModal('microsoft')}
                   disabled={submitting}
                   title="Sign in with Microsoft"
+                  style={{ flex: 1, justifyContent: 'center' }}
                 >
                   <svg width="18" height="18" viewBox="0 0 23 23" style={{ flexShrink: 0 }}>
                     <path fill="#f35325" d="M1 1h10v10H1z"/>
@@ -479,30 +461,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     <path fill="#ffba08" d="M12 12h10v10H12z"/>
                   </svg>
                   <span>Microsoft</span>
-                </button>
-
-                <button
-                  type="button"
-                  className="auth-social-card facebook-card"
-                  onClick={() => handleOpenSocialModal('facebook')}
-                  disabled={submitting}
-                  title="Sign in with Facebook"
-                  style={{ background: '#1877f2', color: '#ffffff', borderColor: '#1877f2' }}
-                >
-                  <i className="fab fa-facebook-f" style={{ fontSize: '1rem' }}></i>
-                  <span>Facebook</span>
-                </button>
-
-                <button
-                  type="button"
-                  className="auth-social-card instagram-card"
-                  onClick={() => handleOpenSocialModal('instagram')}
-                  disabled={submitting}
-                  title="Sign in with Instagram"
-                  style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', color: '#ffffff', borderColor: '#cc2366' }}
-                >
-                  <i className="fab fa-instagram" style={{ fontSize: '1.05rem' }}></i>
-                  <span>Instagram</span>
                 </button>
               </div>
 
