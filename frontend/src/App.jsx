@@ -136,6 +136,8 @@ export default function App() {
             navigateToTab={navigateToTab}
             playTrack={playTrack}
             openVideoModal={openVideoModal}
+            user={user}
+            openAuthModal={openAuthModal}
           />
         )}
 
@@ -191,7 +193,7 @@ export default function App() {
         )}
       </main>
 
-      <Footer navigateToTab={navigateToTab} user={user} />
+      <Footer navigateToTab={navigateToTab} user={user} openAuthModal={openAuthModal} />
 
       <AudioPlayer
         currentTrack={currentTrack}

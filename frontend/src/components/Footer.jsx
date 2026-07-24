@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Footer({ navigateToTab, user }) {
+export default function Footer({ navigateToTab, user, openAuthModal }) {
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -42,18 +42,25 @@ export default function Footer({ navigateToTab, user }) {
             </ul>
           </div>
 
-          {/* Col 4: Quick Navigation */}
+          {/* Col 4: Quick Navigation & Account */}
           <div className="footer-col">
-            <h4 className="footer-title">Quick Links</h4>
+            <h4 className="footer-title">Account & Portal</h4>
             <ul className="footer-links">
               <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('home')}><i className="fas fa-home"></i> Home Portal</a></li>
               <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('about')}><i className="fas fa-info-circle"></i> About Us</a></li>
               <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('contact')}><i className="fas fa-envelope"></i> Contact Us</a></li>
-              {user && (
-                <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('bookmarks')}><i className="fas fa-star"></i> My Bookmarks</a></li>
-              )}
-              {user && user.is_staff && (
-                <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('upload')}><i className="fas fa-cloud-upload-alt"></i> Upload Content</a></li>
+              {user ? (
+                <>
+                  <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('bookmarks')}><i className="fas fa-star"></i> My Bookmarks</a></li>
+                  {user.is_staff && (
+                    <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('upload')}><i className="fas fa-cloud-upload-alt"></i> Upload Content</a></li>
+                  )}
+                </>
+              ) : (
+                <>
+                  <li><a style={{ cursor: 'pointer' }} onClick={() => openAuthModal && openAuthModal('login')}><i className="fas fa-sign-in-alt"></i> Sign In to Account</a></li>
+                  <li><a style={{ cursor: 'pointer' }} onClick={() => openAuthModal && openAuthModal('signup')}><i className="fas fa-user-plus"></i> Create Free Account</a></li>
+                </>
               )}
             </ul>
           </div>
