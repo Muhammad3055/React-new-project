@@ -6,6 +6,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
     if (typeof navigateToTab === 'function') navigateToTab(tab);
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
   };
+
   const [stats, setStats] = useState({ total_audios: 7, total_videos: 3, total_books: 3, total_hadiths: 3 });
   const [audios, setAudios] = useState([]);
   const [videos, setVideos] = useState([]);
@@ -39,7 +40,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
 
     fetch('/api/books/?page=1')
       .then(res => res.json())
-      .then(data => setBooks(data.results ? data.results.slice(0, 2) : []))
+      .then(data => setBooks(data.results || []))
       .catch(() => {});
 
     fetch('/api/hadith/?page=1')
@@ -54,7 +55,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
       <section style={{ background: 'linear-gradient(135deg, #022c22 0%, #064e3b 60%, #047857 100%)', color: '#fff', padding: '4rem 2rem', textAlign: 'center', borderBottom: '4px solid #f59e0b', position: 'relative', overflow: 'hidden' }}>
         <h2 className="arabic-font" style={{ fontSize: '2.8rem', color: '#f59e0b', marginBottom: '0.75rem' }}>اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0 1rem 0', letterSpacing: '-0.5px' }}>Discover, Listen & Learn The Holy Quran</h1>
-        <p style={{ color: '#e2e8f0', maxWidth: '750px', margin: '0 auto 2rem auto', fontSize: '1.1rem' }}>Modern React + Django Full-Stack Application for Quran Audio Recitations, Interactive Reading, Multi-Language Translations, Video Lectures, PDF Books & Authentic Hadiths.</p>
+        <p style={{ color: '#e2e8f0', maxWidth: '750px', margin: '0 auto 2rem auto', fontSize: '1.1rem' }}>Modern Full-Stack Application for Quran Audio Recitations, Interactive Reading, Tafseer Studies, PDF Books & Authentic Hadith Collections.</p>
         
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <a
@@ -112,13 +113,13 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
       </section>
 
       {/* Live Prayer Times & Hijri Date Widget */}
-      <section className="container" style={{ marginTop: '2rem' }}>
+      <section className="container" style={{ marginTop: '2rem', textAlign: 'center' }}>
         <PrayerTimesWidget />
       </section>
 
       {/* Continue Reading Quick Banner if saved position exists */}
       {lastRead && (
-        <section className="container" style={{ marginBottom: '1.5rem' }}>
+        <section className="container" style={{ marginBottom: '2.5rem' }}>
           <div style={{
             background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)',
             border: '1px solid #fde68a',
@@ -160,145 +161,221 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </section>
       )}
 
-      {/* Featured Audio Recitations */}
-      <section className="container">
-        <div className="section-header">
-          <h2 className="section-title"><i className="fas fa-volume-up" style={{ color: 'var(--accent-gold)' }}></i> Featured Audio Recitations</h2>
-          <a
-            href="/quran"
-            className="btn-link"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNav('quran');
-            }}
-          >
-            View All Audio <i className="fas fa-arrow-right"></i>
-          </a>
+      {/* 1. FEATURED AUDIO RECITATIONS (EXACTLY 4 SURAHS - CENTERED) */}
+      <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
+            <i className="fas fa-volume-up" style={{ color: 'var(--accent-gold)' }}></i> Featured Surahs Recitations
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
+            Listen to beautiful high-definition recitations from world-renowned Qaris.
+          </p>
         </div>
 
-        <div className="grid-3">
-          {audios.map((item) => (
-            <div key={item.id} className="card">
-              <div className="card-header-badge">
-                <span className="surah-number-badge">{item.surah_number}</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px' }}>{item.revelation_place}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+          {audios.slice(0, 4).map((item) => (
+            <div key={item.id} className="card" style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <span className="surah-number-badge">{item.surah_number}</span>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px' }}>
+                    {item.revelation_place}
+                  </span>
+                </div>
+                <h3 className="card-title" style={{ fontSize: '1.2rem', margin: '0.3rem 0' }}>Surah {item.surah_name_english}</h3>
+                <p className="arabic-font card-arabic" style={{ fontSize: '1.4rem', margin: '0.2rem 0 0.5rem 0' }}>{item.surah_name_arabic}</p>
+                <p className="card-subtitle" style={{ fontSize: '0.85rem' }}><i className="fas fa-user-alt"></i> {item.reciter}</p>
               </div>
-              <div className="card-body">
-                <h3 className="card-title">Surah {item.surah_name_english}</h3>
-                <p className="arabic-font card-arabic">{item.surah_name_arabic}</p>
-                <p className="card-subtitle"><i className="fas fa-user-alt"></i> {item.reciter}</p>
-              </div>
-              <div className="card-footer">
+
+              <div style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}><i className="far fa-clock"></i> {item.duration}</span>
-                <button className="btn-play" onClick={() => playTrack(item.audio_url, `Surah ${item.surah_name_english}`, item.reciter)}>
+                <button
+                  className="btn-play"
+                  onClick={() => playTrack(item.audio_url, `Surah ${item.surah_name_english}`, item.reciter)}
+                  style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
+                >
                   <i className="fas fa-play"></i> Play Audio
                 </button>
               </div>
             </div>
           ))}
         </div>
-      </section>
 
-      {/* Featured Video Lectures & Books */}
-      <section className="container">
-        <div className="grid-2">
-          {/* Featured Videos */}
-          <div>
-            <div className="section-header">
-              <h2 className="section-title"><i className="fas fa-video" style={{ color: 'var(--accent-gold)' }}></i> Video Lectures</h2>
-              <a
-                href="/videos"
-                className="btn-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNav('videos');
-                }}
-              >
-                View All <i className="fas fa-arrow-right"></i>
-              </a>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {videos.map((vid) => (
-                <div key={vid.id} className="card" style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <div className="media-cover-wrapper" style={{ width: '160px', height: '110px', flexShrink: 0 }}>
-                    <img src={vid.thumbnail_url || "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=500&q=80"} alt={vid.title} className="media-cover-img" />
-                    <div className="media-play-overlay" onClick={() => openVideoModal(vid.title, vid.video_url)}>
-                      <button className="play-icon-lg" style={{ width: '38px', height: '38px', fontSize: '1rem' }}><i className="fas fa-play"></i></button>
-                    </div>
-                  </div>
-                  <div style={{ padding: '1rem', flex: 1 }}>
-                    <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{vid.title}</h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--primary-light)', margin: '0.25rem 0' }}>{vid.speaker}</p>
-                    <button className="btn-play" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', marginTop: '0.4rem' }} onClick={() => openVideoModal(vid.title, vid.video_url)}>
-                      <i className="fas fa-play"></i> Watch Now
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Featured Books */}
-          <div>
-            <div className="section-header">
-              <h2 className="section-title"><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> PDF Books Library</h2>
-              <a
-                href="/books"
-                className="btn-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNav('books');
-                }}
-              >
-                View All <i className="fas fa-arrow-right"></i>
-              </a>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {books.map((bk) => (
-                <div key={bk.id} className="card" style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <div className="media-cover-wrapper" style={{ width: '100px', height: '110px', flexShrink: 0 }}>
-                    <img src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"} alt={bk.title} className="media-cover-img" />
-                  </div>
-                  <div style={{ padding: '1rem', flex: 1 }}>
-                    <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{bk.title}</h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>By {bk.author}</p>
-                    <a href={bk.document_url} target="_blank" rel="noreferrer" className="btn-play" style={{ display: 'inline-flex', padding: '0.3rem 0.8rem', fontSize: '0.75rem', marginTop: '0.4rem' }}>
-                      <i className="fas fa-file-pdf"></i> Read PDF
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
+          <a
+            href="/quran"
+            className="btn-play"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNav('quran');
+            }}
+            style={{
+              display: 'inline-flex',
+              padding: '0.7rem 2rem',
+              fontSize: '0.95rem',
+              background: 'var(--primary-dark)',
+              color: 'var(--accent-gold)',
+              textDecoration: 'none'
+            }}
+          >
+            View All 114 Surahs Recitations <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
+          </a>
         </div>
       </section>
 
-      {/* Hadith Spotlight */}
-      <section className="container" style={{ marginBottom: '3rem' }}>
-        <div className="section-header">
-          <h2 className="section-title"><i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Hadith Spotlight</h2>
+      {/* 2. DEDICATED PDF BOOKS LIBRARY SECTION (CENTERED) */}
+      <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
+            <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> PDF Books Library
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
+            Explore and download authentic Islamic literature, Quranic commentary, and Hadith guides.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {books.map((bk) => (
+            <div key={bk.id} className="card" style={{ padding: '1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div className="media-cover-wrapper" style={{ width: '130px', height: '160px', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                  <img src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"} alt={bk.title} className="media-cover-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.2rem 0' }}>{bk.title}</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0' }}>By {bk.author}</p>
+                <span style={{ fontSize: '0.78rem', color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px', marginTop: '0.4rem', fontWeight: 600 }}>
+                  {bk.pages_count} Pages &bull; {bk.language}
+                </span>
+              </div>
+
+              <div style={{ marginTop: '1.25rem', width: '100%' }}>
+                <a
+                  href={bk.document_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-play"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    width: '100%',
+                    padding: '0.6rem 1rem',
+                    fontSize: '0.85rem',
+                    background: 'var(--primary-emerald)',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <i className="fas fa-file-pdf"></i> Read / Download PDF
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
+          <a
+            href="/books"
+            className="btn-play"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNav('books');
+            }}
+            style={{
+              display: 'inline-flex',
+              padding: '0.7rem 2rem',
+              fontSize: '0.95rem',
+              background: 'var(--primary-dark)',
+              color: 'var(--accent-gold)',
+              textDecoration: 'none'
+            }}
+          >
+            Explore Full PDF Books Library <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
+          </a>
+        </div>
+      </section>
+
+      {/* 3. FEATURED VIDEO LECTURES (CENTERED) */}
+      <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
+            <i className="fas fa-video" style={{ color: 'var(--accent-gold)' }}></i> Video Lectures & Sermons
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
+            Watch inspiring Quranic reflections and Islamic video lectures.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          {videos.map((vid) => (
+            <div key={vid.id} className="card" style={{ padding: '1.25rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="media-cover-wrapper" style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', position: 'relative', marginBottom: '1rem' }}>
+                <img src={vid.thumbnail_url || "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=500&q=80"} alt={vid.title} className="media-cover-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div className="media-play-overlay" onClick={() => openVideoModal(vid.title, vid.video_url)}>
+                  <button className="play-icon-lg" style={{ width: '48px', height: '48px', fontSize: '1.2rem' }}><i className="fas fa-play"></i></button>
+                </div>
+              </div>
+              <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.2rem 0' }}>{vid.title}</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--primary-light)', margin: '0.2rem 0 0.8rem 0', fontWeight: 600 }}>{vid.speaker}</p>
+              <button
+                className="btn-play"
+                style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
+                onClick={() => openVideoModal(vid.title, vid.video_url)}
+              >
+                <i className="fas fa-play"></i> Watch Lecture
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. HADITH SPOTLIGHT (CENTERED) */}
+      <section className="container" style={{ marginBottom: '4rem', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
+            <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Authentic Hadith Spotlight
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
+            Read authentic traditions of Prophet Muhammad ﷺ.
+          </p>
+        </div>
+
+        <div className="grid-2" style={{ gap: '1.5rem' }}>
+          {hadiths.map((h) => (
+            <div key={h.id} className="card" style={{ padding: '1.75rem', textAlign: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-dark)', background: 'var(--accent-gold-light)', padding: '3px 12px', borderRadius: '12px' }}>
+                  {h.book_name} #{h.hadith_number}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 700, background: '#dcfce7', padding: '3px 12px', borderRadius: '12px' }}>
+                  {h.grade}
+                </span>
+              </div>
+              <p className="arabic-font" style={{ fontSize: '1.35rem', color: 'var(--primary-emerald)', lineHeight: '1.8', marginBottom: '1rem' }}>{h.arabic_text}</p>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontStyle: 'italic', lineHeight: '1.6' }}>"{h.translation}"</p>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
           <a
             href="/hadith"
-            className="btn-link"
+            className="btn-play"
             onClick={(e) => {
               e.preventDefault();
               handleNav('hadith');
             }}
+            style={{
+              display: 'inline-flex',
+              padding: '0.7rem 2rem',
+              fontSize: '0.95rem',
+              background: 'var(--primary-dark)',
+              color: 'var(--accent-gold)',
+              textDecoration: 'none'
+            }}
           >
-            Explore Hadiths <i className="fas fa-arrow-right"></i>
+            Explore Hadith Collections <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
           </a>
-        </div>
-        <div className="grid-2">
-          {hadiths.map((h) => (
-            <div key={h.id} className="card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-dark)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px' }}>{h.book_name} #{h.hadith_number}</span>
-                <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 600 }}>{h.grade}</span>
-              </div>
-              <p className="arabic-font" style={{ fontSize: '1.3rem', color: 'var(--primary-emerald)', lineHeight: '1.8', marginBottom: '0.75rem' }}>{h.arabic_text}</p>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontStyle: 'italic' }}>"{h.translation}"</p>
-            </div>
-          ))}
         </div>
       </section>
     </div>
