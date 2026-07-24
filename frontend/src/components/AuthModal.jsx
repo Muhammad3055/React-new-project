@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function AuthModal({ initialMode, onClose, setUser }) {
-  const [mode, setMode] = useState(initialMode || 'login');
+  const [mode, setMode] = useState(initialMode || 'login'); // 'login' | 'signup'
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -9,9 +9,15 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Social Auth Modal State
-  const [socialProvider, setSocialProvider] = useState(null); // 'google' | 'microsoft'
+  // Social Auth State
+  const [socialProvider, setSocialProvider] = useState(null); // 'google' | 'microsoft' | 'facebook' | 'instagram'
   const [socialEmail, setSocialEmail] = useState('');
+
+  // 2FA Verification Code (OTP) State
+  const [step, setStep] = useState('input'); // 'input' | 'otp'
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [demoCode, setDemoCode] = useState('');
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -24,15 +30,12 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Request 6-digit verification code from server
+  const handleRequestOtp = (payload) => {
     setSubmitting(true);
     setError('');
 
-    const endpoint = mode === 'login' ? '/api/auth/login/' : '/api/auth/signup/';
-    const payload = mode === 'login' ? { username, password } : { username, email, password };
-
-    fetch(endpoint, {
+    fetch('/api/auth/send-otp/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -40,17 +43,27 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       .then(res => res.json())
       .then(data => {
         setSubmitting(false);
-        if (data.status === 'success') {
-          setUser({ username: data.username, email: data.email, is_staff: data.is_staff });
-          onClose();
+        if (data.status === 'otp_sent') {
+          setPendingEmail(data.email);
+          setDemoCode(data.code || '');
+          setStep('otp');
+          setOtpCode('');
         } else {
-          setError(data.error || 'Authentication failed.');
+          setError(data.error || 'Authentication failed. Please check your details.');
         }
       })
       .catch(() => {
         setSubmitting(false);
         setError('Network error connecting to authentication server.');
       });
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const payload = mode === 'login'
+      ? { type: 'login', username, password }
+      : { type: 'signup', username, email, password };
+    handleRequestOtp(payload);
   };
 
   const handleOpenSocialModal = (provider) => {
@@ -61,48 +74,55 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
   const handleSocialSubmit = (e) => {
     e.preventDefault();
-    setSubmitting(true);
-    setError('');
-
     const targetEmail = socialEmail.trim().toLowerCase();
 
     // Client-side domain validation
     if (socialProvider === 'google') {
       const msDomains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.'];
       if (msDomains.some(dom => targetEmail.includes(dom))) {
-        setSubmitting(false);
-        setError('Invalid Google Account! Outlook/Hotmail addresses cannot be used for Google Sign-In. Please enter a valid @gmail.com address.');
+        setError('Invalid Google Account! Outlook/Hotmail addresses cannot be used for Google Sign-In.');
         return;
       }
       if (!targetEmail.includes('@gmail.com') && !targetEmail.includes('@googlemail.com')) {
-        setSubmitting(false);
-        setError('Invalid Google Account! Please enter a valid Gmail address (e.g. user@gmail.com).');
+        setError('Invalid Google Account! Please enter a valid Gmail address.');
         return;
       }
     }
 
     if (socialProvider === 'microsoft') {
       if (targetEmail.includes('@gmail.com') || targetEmail.includes('@googlemail.com')) {
-        setSubmitting(false);
-        setError('Invalid Microsoft Account! Gmail addresses cannot be used for Microsoft Sign-In. Please use an @outlook.com or @hotmail.com account.');
+        setError('Invalid Microsoft Account! Gmail addresses cannot be used for Microsoft Sign-In.');
         return;
       }
       const validMs = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.'];
       if (!validMs.some(dom => targetEmail.includes(dom))) {
-        setSubmitting(false);
-        setError('Invalid Microsoft Account! Please enter a valid Microsoft email address (e.g. user@outlook.com or user@hotmail.com).');
+        setError('Invalid Microsoft Account! Please enter a valid Microsoft email.');
         return;
       }
     }
 
-    fetch('/api/auth/social/', {
+    handleRequestOtp({
+      type: 'social',
+      provider: socialProvider,
+      email: targetEmail
+    });
+  };
+
+  // Submit 6-digit verification code
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (!otpCode || otpCode.trim().length !== 6) {
+      setError('Please enter the complete 6-digit security code.');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+
+    fetch('/api/auth/verify-otp/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        provider: socialProvider,
-        email: targetEmail,
-        name: targetEmail.split('@')[0]
-      })
+      body: JSON.stringify({ code: otpCode.trim() })
     })
       .then(res => res.json())
       .then(data => {
@@ -110,13 +130,14 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         if (data.status === 'success') {
           setUser({ username: data.username, email: data.email, is_staff: data.is_staff });
           onClose();
+          window.location.reload();
         } else {
-          setError(data.error || 'Social login failed.');
+          setError(data.error || 'Invalid 6-digit verification code.');
         }
       })
       .catch(() => {
         setSubmitting(false);
-        setError('Failed to connect to authentication server.');
+        setError('Verification failed. Server connection error.');
       });
   };
 
@@ -125,37 +146,37 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       <div
         className="modal-card"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '440px', borderRadius: '16px', overflow: 'hidden' }}
+        style={{ maxWidth: '450px', borderRadius: '16px', overflow: 'hidden' }}
       >
         {/* Header Tabs */}
         <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', alignItems: 'center' }}>
           <button
-            onClick={() => { setMode('login'); setError(''); setSocialProvider(null); }}
+            onClick={() => { setMode('login'); setStep('input'); setError(''); setSocialProvider(null); }}
             style={{
               flex: 1,
               padding: '1rem',
               border: 'none',
-              background: mode === 'login' && !socialProvider ? '#ffffff' : 'transparent',
-              color: mode === 'login' && !socialProvider ? 'var(--primary-dark)' : 'var(--text-muted)',
-              fontWeight: mode === 'login' && !socialProvider ? 800 : 600,
+              background: mode === 'login' && !socialProvider && step === 'input' ? '#ffffff' : 'transparent',
+              color: mode === 'login' && !socialProvider && step === 'input' ? 'var(--primary-dark)' : 'var(--text-muted)',
+              fontWeight: mode === 'login' && !socialProvider && step === 'input' ? 800 : 600,
               fontSize: '0.95rem',
-              borderBottom: mode === 'login' && !socialProvider ? '3px solid var(--accent-gold)' : 'none',
+              borderBottom: mode === 'login' && !socialProvider && step === 'input' ? '3px solid var(--accent-gold)' : 'none',
               cursor: 'pointer'
             }}
           >
             <i className="fas fa-sign-in-alt" style={{ marginRight: '0.4rem' }}></i> Sign In
           </button>
           <button
-            onClick={() => { setMode('signup'); setError(''); setSocialProvider(null); }}
+            onClick={() => { setMode('signup'); setStep('input'); setError(''); setSocialProvider(null); }}
             style={{
               flex: 1,
               padding: '1rem',
               border: 'none',
-              background: mode === 'signup' && !socialProvider ? '#ffffff' : 'transparent',
-              color: mode === 'signup' && !socialProvider ? 'var(--primary-dark)' : 'var(--text-muted)',
-              fontWeight: mode === 'signup' && !socialProvider ? 800 : 600,
+              background: mode === 'signup' && !socialProvider && step === 'input' ? '#ffffff' : 'transparent',
+              color: mode === 'signup' && !socialProvider && step === 'input' ? 'var(--primary-dark)' : 'var(--text-muted)',
+              fontWeight: mode === 'signup' && !socialProvider && step === 'input' ? 800 : 600,
               fontSize: '0.95rem',
-              borderBottom: mode === 'signup' && !socialProvider ? '3px solid var(--accent-gold)' : 'none',
+              borderBottom: mode === 'signup' && !socialProvider && step === 'input' ? '3px solid var(--accent-gold)' : 'none',
               cursor: 'pointer'
             }}
           >
@@ -167,7 +188,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             className="btn-close-modal"
             onClick={onClose}
             style={{ padding: '0.75rem 1rem', fontSize: '1.4rem', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-            title="Cancel and return to portal"
+            title="Cancel"
           >
             &times;
           </button>
@@ -175,37 +196,144 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
         <div className="modal-body" style={{ padding: '1.5rem' }}>
 
-          {/* Social Provider Prompt Sub-modal */}
-          {socialProvider ? (
+          {/* ===== STEP 2: 6-DIGIT VERIFICATION CODE (OTP) SCREEN ===== */}
+          {step === 'otp' ? (
+            <div>
+              <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', marginBottom: '0.75rem' }}>
+                  <i className="fas fa-shield-alt"></i>
+                </div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.25rem 0' }}>
+                  Security Verification Code
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                  A 6-digit authentication security code has been sent to:<br />
+                  <strong style={{ color: 'var(--primary-dark)' }}>{pendingEmail}</strong>
+                </p>
+              </div>
+
+              {/* Interactive Demo Code Helper Badge */}
+              {demoCode && (
+                <div
+                  onClick={() => setOtpCode(demoCode)}
+                  style={{
+                    background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)',
+                    border: '1px solid #fde68a',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    textAlign: 'center',
+                    marginBottom: '1.25rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+                  }}
+                  title="Click to auto-fill code"
+                >
+                  <span style={{ fontSize: '0.8rem', color: '#78350f', display: 'block', fontWeight: 600 }}>🔑 Active Verification Security Code:</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '6px', color: 'var(--primary-dark)' }}>{demoCode}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--primary-light)', display: 'block', marginTop: '2px' }}>Tap to auto-fill</span>
+                </div>
+              )}
+
+              <form onSubmit={handleVerifyOtp}>
+                <div className="form-group" style={{ textAlign: 'center' }}>
+                  <label className="form-label">Enter 6-Digit Security Code *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 749201"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    maxLength={6}
+                    required
+                    autoFocus
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '1.6rem',
+                      fontWeight: 800,
+                      letterSpacing: '8px',
+                      padding: '0.75rem',
+                      color: 'var(--primary-dark)',
+                      border: '2px solid var(--accent-gold)'
+                    }}
+                  />
+                </div>
+
+                {error && (
+                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                    <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="btn-submit"
+                  disabled={submitting || otpCode.length !== 6}
+                  style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', marginBottom: '0.75rem' }}
+                >
+                  {submitting ? 'Verifying Code...' : 'Verify Code & Complete Sign-In'}
+                </button>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setStep('input'); setError(''); }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    <i className="fas fa-arrow-left"></i> Change Email / Details
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRequestOtp(mode === 'login' ? { type: 'login', username, password } : { type: 'signup', username, email, password })}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--primary-light)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 700 }}
+                  >
+                    <i className="fas fa-sync-alt"></i> Resend Code
+                  </button>
+                </div>
+              </form>
+            </div>
+          ) : socialProvider ? (
+            /* ===== STEP 1: SOCIAL AUTH PROVIDER SUB-MODAL ===== */
             <div>
               <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
                 <i
-                  className={socialProvider === 'google' ? 'fab fa-google' : 'fab fa-microsoft'}
+                  className={
+                    socialProvider === 'google' ? 'fab fa-google' :
+                    socialProvider === 'microsoft' ? 'fab fa-microsoft' :
+                    socialProvider === 'facebook' ? 'fab fa-facebook' : 'fab fa-instagram'
+                  }
                   style={{
                     fontSize: '2.5rem',
-                    color: socialProvider === 'google' ? '#ea4335' : '#00a4ef',
+                    color:
+                      socialProvider === 'google' ? '#ea4335' :
+                      socialProvider === 'microsoft' ? '#00a4ef' :
+                      socialProvider === 'facebook' ? '#1877f2' : '#cc2366',
                     marginBottom: '0.5rem'
                   }}
                 ></i>
                 <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-dark)' }}>
-                  Sign in with {socialProvider === 'google' ? 'Google' : 'Microsoft'}
+                  Sign in with {socialProvider.toUpperCase()}
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
                   {socialProvider === 'google'
-                    ? 'Enter your official @gmail.com address to proceed.'
-                    : 'Enter your official @outlook.com or @hotmail.com address to proceed.'}
+                    ? 'Enter your official @gmail.com address for authentication code.'
+                    : socialProvider === 'microsoft'
+                    ? 'Enter your official @outlook.com address for authentication code.'
+                    : 'Enter your email address to receive your 6-digit security code.'}
                 </p>
               </div>
 
               <form onSubmit={handleSocialSubmit}>
                 <div className="form-group">
                   <label className="form-label">
-                    {socialProvider === 'google' ? 'Google / Gmail Address' : 'Microsoft Account Email'}
+                    {socialProvider.toUpperCase()} Account Email Address
                   </label>
                   <input
                     type="email"
                     className="form-input"
-                    placeholder={socialProvider === 'google' ? 'yourname@gmail.com' : 'yourname@outlook.com'}
+                    placeholder={
+                      socialProvider === 'google' ? 'yourname@gmail.com' :
+                      socialProvider === 'microsoft' ? 'yourname@outlook.com' : 'yourname@example.com'
+                    }
                     value={socialEmail}
                     onChange={(e) => setSocialEmail(e.target.value)}
                     required
@@ -233,18 +361,21 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     className="btn-submit"
                     style={{
                       flex: 2,
-                      background: socialProvider === 'google' ? '#ea4335' : '#00a4ef'
+                      background:
+                        socialProvider === 'google' ? '#ea4335' :
+                        socialProvider === 'microsoft' ? '#00a4ef' :
+                        socialProvider === 'facebook' ? '#1877f2' : 'linear-gradient(45deg, #f09433, #dc2743, #bc1888)'
                     }}
                     disabled={submitting}
                   >
-                    {submitting ? 'Verifying Account...' : `Authenticate ${socialProvider === 'google' ? 'Google' : 'Microsoft'}`}
+                    {submitting ? 'Sending Code...' : `Send Code to Email`}
                   </button>
                 </div>
               </form>
             </div>
           ) : (
-            /* Main Form (Form First, Social Connect Below) */
-            <form onSubmit={handleSubmit}>
+            /* ===== STEP 1: MAIN USERNAME / PASSWORD FORM ===== */
+            <form onSubmit={handleFormSubmit}>
               <div className="form-group">
                 <label className="form-label">{mode === 'login' ? 'Username or Email' : 'Username'}</label>
                 <input
@@ -259,13 +390,14 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
               {mode === 'signup' && (
                 <div className="form-group">
-                  <label className="form-label">Email Address (Optional)</label>
+                  <label className="form-label">Email Address (for Verification Code)</label>
                   <input
                     type="email"
                     className="form-input"
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
               )}
@@ -305,7 +437,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               )}
 
               <button type="submit" className="btn-submit" disabled={submitting} style={{ width: '100%', marginBottom: '1rem' }}>
-                {submitting ? 'Please wait...' : (mode === 'login' ? 'Sign In to Account' : 'Complete Registration')}
+                {submitting ? 'Authenticating & Sending Code...' : (mode === 'login' ? 'Send 6-Digit Code & Sign In' : 'Send 6-Digit Code & Register')}
               </button>
 
               {/* Divider */}
@@ -315,9 +447,8 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #e2e8f0' }} />
               </div>
 
-              {/* Centered Social Connect Logos as Buttons */}
+              {/* Social Connect Logos as Buttons */}
               <div className="auth-social-container" style={{ flexWrap: 'wrap', gap: '0.65rem' }}>
-                {/* Google Logo Button */}
                 <button
                   type="button"
                   className="auth-social-card google-card"
@@ -334,7 +465,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Google</span>
                 </button>
 
-                {/* Microsoft Logo Button */}
                 <button
                   type="button"
                   className="auth-social-card microsoft-card"
@@ -351,7 +481,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Microsoft</span>
                 </button>
 
-                {/* Facebook Logo Button */}
                 <button
                   type="button"
                   className="auth-social-card facebook-card"
@@ -364,7 +493,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Facebook</span>
                 </button>
 
-                {/* Instagram Logo Button */}
                 <button
                   type="button"
                   className="auth-social-card instagram-card"

@@ -52,7 +52,7 @@ export default function AboutView({ navigateToTab }) {
 
       {/* Main Container */}
       <div className="container" style={{ marginTop: '3rem', marginBottom: '4rem' }}>
-        
+
         {/* Mission & Vision Cards */}
         <div className="grid-2" style={{ marginBottom: '3.5rem' }}>
           <div className="card" style={{ padding: '2rem', borderTop: '4px solid var(--primary-emerald)' }}>

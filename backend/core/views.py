@@ -1,4 +1,5 @@
 import json
+import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
@@ -515,6 +516,151 @@ def api_social_auth(request):
         'is_staff': user.is_staff,
         'provider': provider
     })
+
+
+@csrf_exempt
+def api_send_otp(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    try:
+        body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+        auth_type = body.get('type', 'login')
+        email = body.get('email', '').strip().lower()
+        username = body.get('username', '').strip()
+        password = body.get('password', '').strip()
+        provider = body.get('provider', '').strip()
+    except Exception:
+        return JsonResponse({'error': 'Invalid request data'}, status=400)
+
+    target_email = email
+    target_user = None
+
+    if auth_type == 'login':
+        if not username or not password:
+            return JsonResponse({'error': 'Username/Email and Password are required.'}, status=400)
+        target_user = authenticate(username=username, password=password)
+        if target_user is None and '@' in username:
+            try:
+                u_obj = User.objects.get(email__iexact=username)
+                target_user = authenticate(username=u_obj.username, password=password)
+            except User.DoesNotExist:
+                target_user = None
+        if target_user is None:
+            return JsonResponse({'error': 'Invalid credentials. Please check your username/email and password.'}, status=400)
+        target_email = target_user.email or (username if '@' in username else f"{username}@gmail.com")
+
+    elif auth_type == 'signup':
+        if not username or not password:
+            return JsonResponse({'error': 'Username and Password are required.'}, status=400)
+        if User.objects.filter(username__iexact=username).exists():
+            return JsonResponse({'error': 'This username is already taken. Please choose another.'}, status=400)
+        if email and User.objects.filter(email__iexact=email).exists():
+            return JsonResponse({'error': 'An account with this email address already exists.'}, status=400)
+        target_email = email or f"{username}@gmail.com"
+
+    elif auth_type == 'social':
+        if not email:
+            return JsonResponse({'error': f'Please enter your {provider.capitalize()} email.'}, status=400)
+        if provider == 'google':
+            ms_domains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.']
+            if any(d in email for d in ms_domains):
+                return JsonResponse({'error': 'Invalid Google Account! Outlook/Hotmail addresses cannot be used for Google Sign-In.'}, status=400)
+            if '@gmail.com' not in email and '@googlemail.com' not in email:
+                return JsonResponse({'error': 'Invalid Google Account! Please enter a valid Gmail address.'}, status=400)
+        elif provider == 'microsoft':
+            if '@gmail.com' in email or '@googlemail.com' in email:
+                return JsonResponse({'error': 'Invalid Microsoft Account! Gmail addresses cannot be used for Microsoft Sign-In.'}, status=400)
+            valid_ms = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.']
+            if not any(d in email for d in valid_ms):
+                return JsonResponse({'error': 'Invalid Microsoft Account! Please enter a valid Microsoft email.'}, status=400)
+        target_email = email
+
+    # Generate 6-digit random verification security code
+    otp_code = f"{random.randint(100000, 999999)}"
+
+    # Save pending OTP payload to Django Session
+    request.session['pending_otp'] = {
+        'code': otp_code,
+        'email': target_email,
+        'type': auth_type,
+        'username': username,
+        'password': password,
+        'provider': provider,
+        'user_id': target_user.id if target_user else None
+    }
+    request.session.modified = True
+
+    return JsonResponse({
+        'status': 'otp_sent',
+        'email': target_email,
+        'code': otp_code,
+        'message': f'A 6-digit security verification code has been sent to {target_email}.'
+    })
+
+
+@csrf_exempt
+def api_verify_otp(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    try:
+        body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+        input_code = body.get('code', '').strip()
+    except Exception:
+        return JsonResponse({'error': 'Invalid request data'}, status=400)
+
+    pending = request.session.get('pending_otp')
+    if not pending:
+        return JsonResponse({'error': 'Verification session expired. Please request a new code.'}, status=400)
+
+    if input_code != pending.get('code'):
+        return JsonResponse({'error': 'Invalid 6-digit verification code. Please check your email and try again.'}, status=400)
+
+    auth_type = pending.get('type')
+    target_user = None
+
+    if auth_type == 'login':
+        user_id = pending.get('user_id')
+        if user_id:
+            try:
+                target_user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                pass
+        if not target_user:
+            target_user = authenticate(username=pending.get('username'), password=pending.get('password'))
+
+    elif auth_type == 'signup':
+        username = pending.get('username')
+        email = pending.get('email')
+        password = pending.get('password')
+        target_user = User.objects.create_user(username=username, email=email, password=password)
+
+    elif auth_type == 'social':
+        email = pending.get('email')
+        provider = pending.get('provider', 'google')
+        target_user = User.objects.filter(email__iexact=email).first()
+        if not target_user:
+            username_base = email.split('@')[0].replace('.', '_').replace('-', '_').lower() if email else f"{provider}_user"
+            username = username_base
+            counter = 1
+            while User.objects.filter(username__iexact=username).exists():
+                username = f"{username_base}_{counter}"
+                counter += 1
+            target_user = User.objects.create_user(username=username, email=email)
+            target_user.set_unusable_password()
+            target_user.save()
+
+    if target_user is not None:
+        login(request, target_user)
+        request.session['pending_otp'] = None
+        request.session.modified = True
+        return JsonResponse({
+            'status': 'success',
+            'username': target_user.username,
+            'email': target_user.email,
+            'is_staff': target_user.is_staff
+        })
+
+    return JsonResponse({'error': 'Verification failed. Could not authenticate user.'}, status=400)
 
 
 @csrf_exempt

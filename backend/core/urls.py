@@ -24,6 +24,8 @@ urlpatterns = [
     path('api/auth/login/', views.api_login, name='api_login'),
     path('api/auth/signup/', views.api_signup, name='api_signup'),
     path('api/auth/social/', views.api_social_auth, name='api_social_auth'),
+    path('api/auth/send-otp/', views.api_send_otp, name='api_send_otp'),
+    path('api/auth/verify-otp/', views.api_verify_otp, name='api_verify_otp'),
     path('api/auth/logout/', views.api_logout, name='api_logout'),
     # SEO Endpoints
     path('robots.txt', views.robots_txt_view, name='robots_txt'),
