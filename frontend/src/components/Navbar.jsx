@@ -65,14 +65,14 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('quran_portal_user');
+    sessionStorage.clear();
+    setUser(null);
     fetch('/api/auth/logout/', { method: 'POST', cache: 'no-store' })
-      .then(res => res.json())
       .then(() => {
-        setUser(null);
         window.location.reload();
       })
       .catch(() => {
-        setUser(null);
         window.location.reload();
       });
   };
