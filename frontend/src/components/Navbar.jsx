@@ -10,15 +10,14 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const extraMenuItems = [
     { label: 'Fazail (Virtues)', icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
-    { label: 'About Us', icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
+    { label: '99 Names', icon: 'fas fa-star', action: () => { navigateToTab('namesOfAllah'); setShowExtrasMenu(false); } },
+    { label: 'Tasbeeh Counter', icon: 'fas fa-hand-holding-heart', action: () => { navigateToTab('tasbeeh'); setShowExtrasMenu(false); } },
+    { label: "Du'as Library", icon: 'fas fa-hands', action: () => { navigateToTab('duas'); setShowExtrasMenu(false); } },
     { label: 'Hadith', icon: 'fas fa-scroll', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
     { label: 'Tafseer', icon: 'fas fa-bookmark', action: () => { navigateToTab('tafseer'); setShowExtrasMenu(false); } },
-    { label: 'Books', icon: 'fas fa-book', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
-    { label: 'PDF Library', icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
+    { label: 'Books Library', icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
+    { label: 'About Us', icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
     { label: 'Contact', icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
-    { label: 'Prayer Times', icon: 'fas fa-clock', action: () => { navigateToTab('home'); setShowExtrasMenu(false); } },
-    { label: "Du'as", icon: 'fas fa-hands', action: () => { showToast('🤲 Du\'as Library — Coming Soon!'); setShowExtrasMenu(false); } },
-    { label: '99 Names', icon: 'fas fa-star', action: () => { showToast('✨ 99 Names of Allah — Coming Soon!'); setShowExtrasMenu(false); } },
   ];
 
   const showToast = (msg) => {

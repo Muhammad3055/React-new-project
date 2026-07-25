@@ -19,6 +19,9 @@ import UploadView from './views/UploadView';
 import ContactView from './views/ContactView';
 import AboutView from './views/AboutView';
 import FazailView from './views/FazailView';
+import NamesOfAllahView from './views/NamesOfAllahView';
+import TasbeehView from './views/TasbeehView';
+import DuasView from './views/DuasView';
 
 export default function App() {
   const tabPathMap = {
@@ -31,6 +34,9 @@ export default function App() {
     tafseer: '/tafseer',
     hadith: '/hadith',
     fazail: '/fazail',
+    namesOfAllah: '/names-of-allah',
+    tasbeeh: '/tasbeeh',
+    duas: '/duas',
     contact: '/contact',
     about: '/about',
     bookmarks: '/bookmarks',
@@ -194,6 +200,18 @@ export default function App() {
 
         {activeTab === 'fazail' && (
           <FazailView />
+        )}
+
+        {activeTab === 'namesOfAllah' && (
+          <NamesOfAllahView />
+        )}
+
+        {activeTab === 'tasbeeh' && (
+          <TasbeehView />
+        )}
+
+        {activeTab === 'duas' && (
+          <DuasView />
         )}
 
         {activeTab === 'contact' && (
