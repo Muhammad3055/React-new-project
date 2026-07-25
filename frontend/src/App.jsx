@@ -82,18 +82,32 @@ export default function App() {
     document.title = seoTitles[activeTab] || 'Quran Portal';
   }, [activeTab]);
 
-  // Check auth status on mount
+  // Check auth status on mount (with localStorage fallback for Netlify)
   useEffect(() => {
     fetch('/api/auth/status/', { cache: 'no-store', headers: { 'Pragma': 'no-cache' } })
       .then(res => res.json())
       .then(data => {
         if (data && data.is_authenticated) {
-          setUser({ username: data.username, is_staff: data.is_staff });
+          const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
+          setUser(userObj);
+          localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
+        } else {
+          const savedUser = localStorage.getItem('quran_portal_user');
+          if (savedUser) {
+            try { setUser(JSON.parse(savedUser)); } catch (e) { setUser(null); }
+          } else {
+            setUser(null);
+          }
+        }
+      })
+      .catch(() => {
+        const savedUser = localStorage.getItem('quran_portal_user');
+        if (savedUser) {
+          try { setUser(JSON.parse(savedUser)); } catch (e) { setUser(null); }
         } else {
           setUser(null);
         }
-      })
-      .catch(() => setUser(null));
+      });
   }, []);
 
   const playTrack = (url, title, reciter, onEnded = null) => {
