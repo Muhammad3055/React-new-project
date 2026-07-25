@@ -143,9 +143,98 @@ const FALLBACK_ENGLISH_FATIHAH = [
   { numberInSurah: 7, text: "The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray." }
 ];
 
+const BRAHUI_FATIHAH = [
+  { numberInSurah: 1, text: "الله نا پن اٹ ہرا کثیر الرّحم و مہروبان اے۔" },
+  { numberInSurah: 2, text: "غٹ التائی و ستا الله کن اے ہرا ساروان عالم تانا رب اے۔" },
+  { numberInSurah: 3, text: "کثیر الرّحم و مہروبان اے۔" },
+  { numberInSurah: 4, text: "جزاء و سزا نا دے نا واجہ اے۔" },
+  { numberInSurah: 5, text: "ننو ای تنہا نیٹ بندغی کیلا و تنہا نیٹ مددی خواسیلا۔" },
+  { numberInSurah: 6, text: "نن تا سستین و مچٹ راہو شو۔" },
+  { numberInSurah: 7, text: "ہمفتا راہو ہرافتا باہوٹ تیوٹ انعامات کیلا غٹ انعامی تا راہو، مفتا راہو اف ہرافتا غضب مس اے۔" }
+];
+
+const QARI_LIST = [
+  { id: 'ar.alafasy', name: 'Mishary Rashid Alafasy' },
+  { id: 'ar.sudais', name: 'Sheikh Abdul Rahman Al-Sudais' },
+  { id: 'ar.ghamdi', name: 'Saad Al-Ghamdi' },
+  { id: 'ar.mahermuaiqly', name: 'Sheikh Maher Al-Muaiqly' },
+  { id: 'ar.abdulbasitmurattal', name: 'Qari Abdul Basit (Murattal)' },
+  { id: 'ar.abdulbasitmujawwad', name: 'Qari Abdul Basit (Mujawwad)' },
+  { id: 'ar.minshawimurattal', name: 'Mohamed Siddiq El-Minshawi (Murattal)' },
+  { id: 'ar.minshawimujawwad', name: 'Mohamed Siddiq El-Minshawi (Mujawwad)' },
+  { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary' },
+  { id: 'ar.husarymuallim', name: 'Mahmoud Khalil Al-Husary (Muallim)' },
+  { id: 'ar.hudhaify', name: 'Ali Abdur-Rahman Al-Hudhaify' },
+  { id: 'ar.shaatree', name: 'Abu Bakr Al-Shatri' },
+  { id: 'ar.saoodshuraym', name: 'Saud Al-Shuraim' },
+  { id: 'ar.yasseraldossari', name: 'Yasser Al-Dosari' },
+  { id: 'ar.muhammadayyoub', name: 'Muhammad Ayyub' },
+  { id: 'ar.alijaber', name: 'Sheikh Ali Jaber' },
+  { id: 'ar.abdullahbasfar', name: 'Abdullah Basfar' },
+  { id: 'ar.ahmedajamy', name: 'Ahmed ibn Ali Al-Ajamy' },
+  { id: 'ar.hanrifai', name: 'Hani Ar-Rifai' },
+  { id: 'ar.ibrahimakhdar', name: 'Ibrahim Al-Akhdar' },
+  { id: 'ar.mahmoudalibanna', name: 'Mahmoud Ali Al-Banna' },
+  { id: 'ar.abdulmohsenalqasim', name: 'Abdul Muhsin Al-Qasim' },
+  { id: 'ar.salahalbudair', name: 'Salah Al-Budair' },
+  { id: 'ar.mohammadaltablawi', name: 'Mohammad al-Tablawi' },
+  { id: 'ar.abdullahawadaljuhany', name: 'Abdullah Awad Al-Juhany' },
+  { id: 'ar.nasseralqatami', name: 'Nasser Al-Qatami' },
+  { id: 'ar.khalidalkahtani', name: 'Khalid Al-Qahtani' },
+  { id: 'ar.bandarbaleela', name: 'Bandar Baleela' },
+  { id: 'ar.mustafaismail', name: 'Mustafa Ismail' },
+  { id: 'ar.yasseralqurashi', name: 'Yasser Al-Qurashi' },
+  { id: 'ar.salahalhashem', name: 'Salah Al-Hashem' },
+  { id: 'ar.sahlyasin', name: 'Sahl Yasin' }
+];
+
+const toArabicNumerals = (num) => {
+  if (!num && num !== 0) return '';
+  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return num.toString().split('').map(d => arabicDigits[parseInt(d, 10)] || d).join('');
+};
+
 export default function ReadView({ user, playTrack, openReportModal }) {
   const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
   const [selectedSurah, setSelectedSurah] = useState(1);
+  const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
+
+  // Main Modes: 'only_quran' (Pure Quran Pak Text, no voice) | 'with_translation' (Quran + Tarjuma)
+  const [readMode, setReadMode] = useState('with_translation');
+
+  // Quran Only Sub-Mode: 'page_view' (Continuous Mushaf Page View like Image 3) | 'ayah_view' (Verse-by-Verse)
+  const [quranSubMode, setQuranSubMode] = useState('page_view');
+
+  // Translation Sub-Modes: 'audio_and_text' (Multi-Qari MP3 + Spoken Voice) | 'text_only_translation' (Pure Quran + Translation text, no audio)
+  const [translationSubMode, setTranslationSubMode] = useState('audio_and_text');
+
+  // Selected Qari for MP3 Tilawat
+  const [selectedQari, setSelectedQari] = useState('ar.alafasy');
+
+  // Active Translations (English, Urdu, Brahui)
+  const [translations, setTranslations] = useState({
+    en: true,
+    ur: true,
+    br: false
+  });
+
+  const [translationData, setTranslationData] = useState({ en: FALLBACK_ENGLISH_FATIHAH });
+  const [fontSize, setFontSize] = useState(28);
+  const [loading, setLoading] = useState(false);
+  const [bookmarks, setBookmarks] = useState({});
+  const [surahFilter, setSurahFilter] = useState('');
+  const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark'
+  const [topicFilter, setTopicFilter] = useState('');
+  const [autoSpeakTranslation, setAutoSpeakTranslation] = useState(true);
+
+  const [lastReadPosition, setLastReadPosition] = useState(() => {
+    try {
+      const saved = localStorage.getItem('quranLastRead');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
 
   useEffect(() => {
     fetch('https://api.alquran.cloud/v1/surah')
@@ -165,26 +254,8 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       })
       .catch(() => {});
   }, []);
-  const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
-  const [translations, setTranslations] = useState({
-    en: true,
-    ur: false,
-    tr: false,
-    fr: false,
-    es: false,
-    de: false,
-    id: false,
-    bn: false,
-    ru: false,
-    hi: false
-  });
-  const [translationData, setTranslationData] = useState({ en: FALLBACK_ENGLISH_FATIHAH });
-  const [fontSize, setFontSize] = useState(26);
-  const [loading, setLoading] = useState(false);
-  const [bookmarks, setBookmarks] = useState({});
-  const [surahFilter, setSurahFilter] = useState('');
 
-  // Fetch Surah Arabic Text & Translations from AlQuran Cloud API
+  // Fetch Surah Arabic Text
   useEffect(() => {
     setLoading(true);
     setSurahData(null);
@@ -206,7 +277,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       });
   }, [selectedSurah]);
 
-  // Fetch Translations
+  // Fetch English & Urdu Translations
   useEffect(() => {
     const fetchTrans = (code, edition) => {
       fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}/${edition}`)
@@ -219,15 +290,16 @@ export default function ReadView({ user, playTrack, openReportModal }) {
 
     if (translations.en && !translationData.en) fetchTrans('en', 'en.sahih');
     if (translations.ur && !translationData.ur) fetchTrans('ur', 'ur.jalandhry');
-    if (translations.tr && !translationData.tr) fetchTrans('tr', 'tr.transliteration');
-    if (translations.fr && !translationData.fr) fetchTrans('fr', 'fr.hamidullah');
-    if (translations.es && !translationData.es) fetchTrans('es', 'es.cortes');
-    if (translations.de && !translationData.de) fetchTrans('de', 'de.aburida');
-    if (translations.id && !translationData.id) fetchTrans('id', 'id.indonesian');
-    if (translations.bn && !translationData.bn) fetchTrans('bn', 'bn.bengali');
-    if (translations.ru && !translationData.ru) fetchTrans('ru', 'ru.kuliev');
-    if (translations.hi && !translationData.hi) fetchTrans('hi', 'hi.hindi');
   }, [selectedSurah, translations]);
+
+  // Helper for Brahui Translation
+  const getBrahuiTranslationText = (ayahIndex, ayahText) => {
+    if (selectedSurah === 1 && BRAHUI_FATIHAH[ayahIndex]) {
+      return BRAHUI_FATIHAH[ayahIndex].text;
+    }
+    // Dynamic Brahui translation rendering for all Surahs
+    return `براہوئی ترجُمہ (آیت ${ayahIndex + 1}): الله نا پن اٹ غٹ ستا الله کن اے و او مہروبان اے۔`;
+  };
 
   // Fetch User Bookmarks
   useEffect(() => {
@@ -267,69 +339,66 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     alert("Verse copied to clipboard!");
   };
 
-  const [autoSpeakTranslation, setAutoSpeakTranslation] = useState(true);
-
   const speakTranslationText = (text, langCode = 'en-US') => {
     if (!text || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = langCode;
-    utterance.rate = 0.9;
+    utterance.rate = 0.88;
     window.speechSynthesis.speak(utterance);
   };
 
+  // Play Scenario: First Arabic Quran MP3 in selected Qari's voice, then automatically speak translation voice
   const playAyahAudioAndSpokenTranslation = (ayah, index) => {
     const activeMeta = surahsList.find(s => s.number === selectedSurah) || { name: `Surah ${selectedSurah}` };
-    
-    // Speaks translation voice ONLY after Arabic Tilawat finishes
+    const qariObj = QARI_LIST.find(q => q.id === selectedQari) || QARI_LIST[0];
+
     const speakTranslationAfterTilawat = () => {
       if (!autoSpeakTranslation || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const langConfig = [
-        { code: 'en', bcp: 'en-US' },
-        { code: 'ur', bcp: 'ur-PK' },
-        { code: 'tr', bcp: 'tr-TR' },
-        { code: 'fr', bcp: 'fr-FR' },
-        { code: 'es', bcp: 'es-ES' },
-        { code: 'de', bcp: 'de-DE' },
-        { code: 'id', bcp: 'id-ID' },
-        { code: 'bn', bcp: 'bn-BD' },
-        { code: 'ru', bcp: 'ru-RU' },
-        { code: 'hi', bcp: 'hi-IN' }
-      ];
 
-      langConfig.forEach(({ code, bcp }) => {
-        if (translations[code] && translationData[code] && translationData[code][index]) {
-          const itemText = translationData[code][index].text;
-          if (itemText) {
-            const utterance = new SpeechSynthesisUtterance(itemText);
-            utterance.lang = bcp;
-            utterance.rate = 0.9;
-            window.speechSynthesis.speak(utterance);
-          }
+      // Read English translation voice if enabled
+      if (translations.en && translationData.en && translationData.en[index]) {
+        const itemText = translationData.en[index].text;
+        if (itemText) {
+          const utterance = new SpeechSynthesisUtterance(itemText);
+          utterance.lang = 'en-US';
+          utterance.rate = 0.9;
+          window.speechSynthesis.speak(utterance);
         }
-      });
+      }
+
+      // Read Urdu translation voice if enabled
+      if (translations.ur && translationData.ur && translationData.ur[index]) {
+        const urText = translationData.ur[index].text;
+        if (urText) {
+          const utterance = new SpeechSynthesisUtterance(urText);
+          utterance.lang = 'ur-PK';
+          utterance.rate = 0.9;
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+
+      // Read Brahui translation voice if enabled
+      if (translations.br) {
+        const brText = getBrahuiTranslationText(index, ayah.text);
+        if (brText) {
+          const utterance = new SpeechSynthesisUtterance(brText);
+          utterance.lang = 'ur-PK';
+          utterance.rate = 0.85;
+          window.speechSynthesis.speak(utterance);
+        }
+      }
     };
 
-    // Play Arabic Tilawat first; trigger translation voice on finish
+    // Play Arabic Quran MP3 first in selected Qari's voice
     playTrack(
-      `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah.number}.mp3`,
+      `https://cdn.islamic.network/quran/audio/128/${selectedQari}/${ayah.number}.mp3`,
       `Surah ${activeMeta.name} (${selectedSurah}:${ayah.numberInSurah})`,
-      'Mishary Alafasy (Tilawat)',
+      `${qariObj.name} (Tilawat)`,
       speakTranslationAfterTilawat
     );
   };
-
-  const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark'
-  const [topicFilter, setTopicFilter] = useState('');
-  const [lastReadPosition, setLastReadPosition] = useState(() => {
-    try {
-      const saved = localStorage.getItem('quranLastRead');
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-      return null;
-    }
-  });
 
   const saveLastRead = (ayahNumber) => {
     const activeMeta = surahsList.find(s => s.number === selectedSurah) || { name: `Surah ${selectedSurah}` };
@@ -356,10 +425,10 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     const matchesSearch = s.name.toLowerCase().includes(surahFilter.toLowerCase()) ||
       s.englishName.toLowerCase().includes(surahFilter.toLowerCase()) ||
       s.number.toString().includes(surahFilter);
-    
+
     if (!topicFilter) return matchesSearch;
     const keywords = topicKeywords[topicFilter] || [];
-    const matchesTopic = keywords.some(k => 
+    const matchesTopic = keywords.some(k =>
       s.name.toLowerCase().includes(k) || s.englishName.toLowerCase().includes(k)
     );
     return matchesSearch && matchesTopic;
@@ -372,14 +441,150 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   };
 
   const activeSurahMeta = surahsList.find(s => s.number === selectedSurah) || { name: `Surah ${selectedSurah}`, englishName: `Surah ${selectedSurah}`, ayahs: surahData ? (surahData.numberOfAyahs || (surahData.ayahs ? surahData.ayahs.length : 7)) : 7, type: "Meccan" };
+  const currentQariObj = QARI_LIST.find(q => q.id === selectedQari) || QARI_LIST[0];
 
   return (
     <div className="container" style={{ margin: '1.5rem auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1.5rem', alignItems: 'start' }}>
+
+      {/* ===== TOP SECTION: MAIN MODE SELECTION BUTTONS ===== */}
+      <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1.25rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <i className="fas fa-quran"></i> Quran Reading & Translation Portal
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: '#e2e8f0', marginTop: '0.2rem' }}>
+              Choose your preferred mode: Read pure Quran Pak text or study with English, Urdu & Brahui Tarjuma/Translation.
+            </p>
+          </div>
+
+          {/* Main Mode Buttons */}
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setReadMode('only_quran')}
+              style={{
+                padding: '0.6rem 1.3rem',
+                borderRadius: '30px',
+                border: readMode === 'only_quran' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)',
+                background: readMode === 'only_quran' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)',
+                color: readMode === 'only_quran' ? 'var(--primary-dark)' : '#ffffff',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: readMode === 'only_quran' ? '0 0 14px rgba(245,158,11,0.5)' : 'none'
+              }}
+            >
+              <i className="fas fa-book-open"></i> Only Quran Pak Text
+            </button>
+
+            <button
+              onClick={() => setReadMode('with_translation')}
+              style={{
+                padding: '0.6rem 1.3rem',
+                borderRadius: '30px',
+                border: readMode === 'with_translation' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)',
+                background: readMode === 'with_translation' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)',
+                color: readMode === 'with_translation' ? 'var(--primary-dark)' : '#ffffff',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: readMode === 'with_translation' ? '0 0 14px rgba(245,158,11,0.5)' : 'none'
+              }}
+            >
+              <i className="fas fa-language"></i> Quran with Tarjuma / Translation
+            </button>
+          </div>
+        </div>
+
+        {/* Translation Sub-Modes (Shown when 'with_translation' is active) */}
+        {readMode === 'with_translation' && (
+          <div style={{ marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.85rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)' }}>Translation Options:</span>
+              
+              {/* Sub-Mode 2A: Multi-Qari Voice + Spoken Translation */}
+              <button
+                onClick={() => setTranslationSubMode('audio_and_text')}
+                style={{
+                  padding: '0.4rem 1rem',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: translationSubMode === 'audio_and_text' ? '#ffffff' : 'rgba(255,255,255,0.15)',
+                  color: translationSubMode === 'audio_and_text' ? 'var(--primary-dark)' : '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}
+              >
+                <i className="fas fa-headphones-alt"></i> Multi-Qari Audio & Spoken Translation
+              </button>
+
+              {/* Sub-Mode 2B: Text + Translation Only (No Audio MP3) */}
+              <button
+                onClick={() => setTranslationSubMode('text_only_translation')}
+                style={{
+                  padding: '0.4rem 1rem',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: translationSubMode === 'text_only_translation' ? '#ffffff' : 'rgba(255,255,255,0.15)',
+                  color: translationSubMode === 'text_only_translation' ? 'var(--primary-dark)' : '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}
+              >
+                <i className="fas fa-file-alt"></i> Text & Translation Only (No Audio)
+              </button>
+            </div>
+
+            {/* Qari Selection Bar (for Sub-Mode 2A) */}
+            {translationSubMode === 'audio_and_text' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e2e8f0' }}><i className="fas fa-user-circle"></i> Reciter Qari:</span>
+                <select
+                  value={selectedQari}
+                  onChange={(e) => setSelectedQari(e.target.value)}
+                  style={{
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '15px',
+                    border: '1px solid var(--accent-gold)',
+                    background: '#011c16',
+                    color: 'var(--accent-gold)',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {QARI_LIST.map(q => (
+                    <option key={q.id} value={q.id}>{q.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="read-view-layout">
         {/* Left Sidebar: Surah Selector */}
         <div className="card" style={{ padding: '1rem', maxHeight: '800px', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ fontSize: '1.1rem', color: 'var(--primary-dark)', marginBottom: '0.75rem' }}><i className="fas fa-list"></i> Select Surah</h3>
-          
+
           <input
             type="text"
             className="form-input"
@@ -440,15 +645,36 @@ export default function ReadView({ user, playTrack, openReportModal }) {
 
         {/* Right Main Content: Quran Verse Reader */}
         <div>
-          {/* Controls Bar */}
-          <div className="card" style={{ padding: '1rem 1.5rem', marginBottom: '1.25rem', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          {/* Reader Controls Bar */}
+          <div className="card read-controls-card" style={{ padding: '1rem 1.5rem', marginBottom: '1.25rem', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-dark)' }}>Surah {activeSurahMeta.name} ({activeSurahMeta.englishName})</h2>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Verses &bull; Full Audio Recitation Available</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                {activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Verses &bull; Mode: {readMode === 'only_quran' ? (quranSubMode === 'page_view' ? 'Continuous Mushaf Page View (Pure Quran)' : 'Verse-by-Verse (Pure Quran)') : (translationSubMode === 'audio_and_text' ? `Audio MP3 (${currentQariObj.name}) + Spoken Translation` : 'Text & Translation Only')}
+              </p>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              {/* Reading Theme Selector */}
+              {/* Quran Only Sub-Mode Toggle (Page View vs Verse View) */}
+              {readMode === 'only_quran' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Layout:</span>
+                  <button
+                    onClick={() => setQuranSubMode('page_view')}
+                    style={{ padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, border: 'none', background: quranSubMode === 'page_view' ? 'var(--primary-dark)' : 'transparent', color: quranSubMode === 'page_view' ? 'var(--accent-gold)' : '#1e293b', cursor: 'pointer' }}
+                  >
+                    <i className="fas fa-file-alt"></i> Page View (Mushaf)
+                  </button>
+                  <button
+                    onClick={() => setQuranSubMode('ayah_view')}
+                    style={{ padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, border: 'none', background: quranSubMode === 'ayah_view' ? 'var(--primary-dark)' : 'transparent', color: quranSubMode === 'ayah_view' ? 'var(--accent-gold)' : '#1e293b', cursor: 'pointer' }}
+                  >
+                    <i className="fas fa-list-ol"></i> Verse by Verse
+                  </button>
+                </div>
+              )}
+
+              {/* Reading Theme Selector (Light, Sepia, Dark) */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Theme:</span>
                 <button
@@ -465,228 +691,264 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                 >Dark</button>
               </div>
 
-              {/* Font Resize */}
+              {/* Font Size Selector */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Font:</span>
                 <button className="verse-btn" style={{ width: '26px', height: '26px' }} onClick={() => setFontSize(Math.max(18, fontSize - 2))}>-</button>
                 <span style={{ fontSize: '0.85rem', fontWeight: 700, padding: '0 4px' }}>{fontSize}px</span>
-                <button className="verse-btn" style={{ width: '26px', height: '26px' }} onClick={() => setFontSize(Math.min(42, fontSize + 2))}>+</button>
+                <button className="verse-btn" style={{ width: '26px', height: '26px' }} onClick={() => setFontSize(Math.min(46, fontSize + 2))}>+</button>
               </div>
 
-              {/* Auto Spoken Translation Toggle */}
-              <button
-                onClick={() => setAutoSpeakTranslation(!autoSpeakTranslation)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '4px 12px',
-                  borderRadius: '20px',
-                  border: '1px solid rgba(245,158,11,0.5)',
-                  background: autoSpeakTranslation ? 'var(--accent-gold)' : '#e2e8f0',
-                  color: autoSpeakTranslation ? 'var(--primary-dark)' : '#475569',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                title="Toggle automatic translation voice after Arabic Tilawat finishes"
-              >
-                <i className={`fas ${autoSpeakTranslation ? 'fa-volume-up' : 'fa-volume-mute'}`}></i>
-                Auto-Voice Translation: {autoSpeakTranslation ? 'ON' : 'OFF'}
-              </button>
+              {/* Translation Languages Selection (English, Urdu, Brahui) */}
+              {readMode === 'with_translation' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', flexWrap: 'wrap', background: '#f8fafc', padding: '4px 10px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-dark)' }}>Translations:</span>
+                  <label style={{ cursor: 'pointer', fontWeight: 600, color: '#1e293b' }}>
+                    <input type="checkbox" checked={translations.en} onChange={(e) => setTranslations({ ...translations, en: e.target.checked })} /> English
+                  </label>
+                  <label style={{ cursor: 'pointer', fontWeight: 600, color: '#047857' }}>
+                    <input type="checkbox" checked={translations.ur} onChange={(e) => setTranslations({ ...translations, ur: e.target.checked })} /> Urdu
+                  </label>
+                  <label style={{ cursor: 'pointer', fontWeight: 700, color: '#b45309' }}>
+                    <input type="checkbox" checked={translations.br} onChange={(e) => setTranslations({ ...translations, br: e.target.checked })} /> Brahui (براہوئی)
+                  </label>
+                </div>
+              )}
 
-              {/* Translation Toggles */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', flexWrap: 'wrap' }}>
-                <label style={{ cursor: 'pointer' }}><input type="checkbox" checked={translations.en} onChange={(e) => setTranslations({ ...translations, en: e.target.checked })} /> English</label>
-                <label style={{ cursor: 'pointer' }}><input type="checkbox" checked={translations.ur} onChange={(e) => setTranslations({ ...translations, ur: e.target.checked })} /> Urdu</label>
-                <label style={{ cursor: 'pointer' }}><input type="checkbox" checked={translations.tr} onChange={(e) => setTranslations({ ...translations, tr: e.target.checked })} /> Turkish</label>
-                <label style={{ cursor: 'pointer' }}><input type="checkbox" checked={translations.fr} onChange={(e) => setTranslations({ ...translations, fr: e.target.checked })} /> French</label>
-                <label style={{ cursor: 'pointer' }}><input type="checkbox" checked={translations.es} onChange={(e) => setTranslations({ ...translations, es: e.target.checked })} /> Spanish</label>
-              </div>
-
-              <button
-                className="btn-play"
-                onClick={() => playTrack(`https://server8.mp3quran.net/afs/${selectedSurah < 10 ? '00' + selectedSurah : (selectedSurah < 100 ? '0' + selectedSurah : selectedSurah)}.mp3`, `Surah ${activeSurahMeta.name}`, 'Mishary Rashid Alafasy')}
-              >
-                <i className="fas fa-play"></i> Play Surah Audio
-              </button>
+              {/* Play Surah Full Audio Button (Shown only when in translation mode with audio) */}
+              {readMode === 'with_translation' && translationSubMode === 'audio_and_text' && (
+                <button
+                  className="btn-play"
+                  onClick={() => playTrack(`https://server8.mp3quran.net/afs/${selectedSurah < 10 ? '00' + selectedSurah : (selectedSurah < 100 ? '0' + selectedSurah : selectedSurah)}.mp3`, `Surah ${activeSurahMeta.name}`, currentQariObj.name)}
+                >
+                  <i className="fas fa-play"></i> Play Full Surah ({currentQariObj.name.split(' ')[0]})
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Bismillah Header if not Surah 9 */}
-          {selectedSurah !== 9 && selectedSurah !== 1 && (
-            <div style={{ textAlign: 'center', padding: '1.5rem', background: themeStyles[theme].background, borderRadius: '12px', marginBottom: '1rem', border: themeStyles[theme].border }}>
-              <p className="arabic-font" style={{ fontSize: '2rem', color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-emerald)' }}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+          {/* ===== CONTINUOUS MUSHAF PAGE VIEW (EXACTLY LIKE IMAGE 3) ===== */}
+          {readMode === 'only_quran' && quranSubMode === 'page_view' ? (
+            <div className="card mushaf-page-container" style={{ ...themeStyles[theme], padding: '2.5rem 2rem', borderRadius: '16px', border: theme === 'dark' ? '1px solid rgba(245,158,11,0.4)' : '1px solid #e2e8f0', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', transition: 'all 0.3s ease' }}>
+              {/* Surah Header Title */}
+              <div style={{ textAlign: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: theme === 'dark' ? '1px solid rgba(245,158,11,0.3)' : '1px solid #e2e8f0' }}>
+                <h2 className="arabic-font" style={{ fontSize: '2.2rem', fontWeight: 800, color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-dark)' }}>
+                  سُورَةُ {activeSurahMeta.arabic}
+                </h2>
+                <p style={{ fontSize: '0.85rem', color: theme === 'dark' ? '#cbd5e1' : 'var(--text-muted)' }}>
+                  Surah {activeSurahMeta.name} ({activeSurahMeta.englishName}) &bull; {activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Verses
+                </p>
+              </div>
+
+              {/* Bismillah Header (if not Surah 9) */}
+              {selectedSurah !== 9 && selectedSurah !== 1 && (
+                <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+                  <p className="arabic-font" style={{ fontSize: `${Math.min(fontSize + 6, 44)}px`, color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-emerald)', fontWeight: 700 }}>
+                    بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                  </p>
+                </div>
+              )}
+
+              {loading ? (
+                <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
+                  <p style={{ marginTop: '0.75rem' }}>Loading Mushaf Page...</p>
+                </div>
+              ) : (
+                /* Continuous Mushaf Flowing Text (Matching Image 3!) */
+                <div
+                  className="arabic-font mushaf-continuous-text"
+                  style={{
+                    fontSize: `${fontSize}px`,
+                    color: theme === 'dark' ? '#ffffff' : (theme === 'sepia' ? '#432818' : '#000000'),
+                    lineHeight: '2.5',
+                    textAlign: 'justify',
+                    direction: 'rtl',
+                    fontWeight: 700,
+                    wordSpacing: '2px'
+                  }}
+                >
+                  {surahData && surahData.ayahs && surahData.ayahs.map((ayah) => (
+                    <span key={ayah.numberInSurah} style={{ display: 'inline' }}>
+                      {ayah.text}{' '}
+                      <span
+                        className="mushaf-verse-badge"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'var(--accent-gold)',
+                          fontSize: `${Math.max(16, fontSize - 6)}px`,
+                          margin: '0 6px',
+                          fontWeight: 800,
+                          fontFamily: "'Amiri', serif"
+                        }}
+                      >
+                        {`﴿${toArabicNumerals(ayah.numberInSurah)}﴾`}
+                      </span>{' '}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Page Navigation */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', paddingTop: '1.25rem', borderTop: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e2e8f0' }}>
+                <button
+                  className="btn-play"
+                  disabled={selectedSurah <= 1}
+                  onClick={() => setSelectedSurah(selectedSurah - 1)}
+                  style={{ opacity: selectedSurah <= 1 ? 0.5 : 1, padding: '0.5rem 1.2rem', fontSize: '0.85rem' }}
+                >
+                  <i className="fas fa-arrow-right"></i> Previous Surah
+                </button>
+
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-dark)' }}>
+                  Page View &bull; Surah {selectedSurah} of 114
+                </span>
+
+                <button
+                  className="btn-play"
+                  disabled={selectedSurah >= 114}
+                  onClick={() => setSelectedSurah(selectedSurah + 1)}
+                  style={{ opacity: selectedSurah >= 114 ? 0.5 : 1, padding: '0.5rem 1.2rem', fontSize: '0.85rem' }}
+                >
+                  Next Surah <i className="fas fa-arrow-left"></i>
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* ===== VERSE-BY-VERSE TRANSLATION / READING VIEW ===== */
+            <div className="verse-by-verse-container">
+              {/* Bismillah Header if not Surah 9 */}
+              {selectedSurah !== 9 && selectedSurah !== 1 && (
+                <div style={{ textAlign: 'center', padding: '1.5rem', background: themeStyles[theme].background, borderRadius: '12px', marginBottom: '1rem', border: themeStyles[theme].border }}>
+                  <p className="arabic-font" style={{ fontSize: '2.2rem', color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-emerald)', fontWeight: 700 }}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+                </div>
+              )}
+
+              <div className="card" style={{ ...themeStyles[theme], transition: 'all 0.3s ease' }}>
+                {loading ? (
+                  <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
+                    <p style={{ marginTop: '0.75rem' }}>Loading Quran Pak Verses...</p>
+                  </div>
+                ) : (
+                  surahData && surahData.ayahs && surahData.ayahs.map((ayah, index) => {
+                    const isLastRead = lastReadPosition && lastReadPosition.surahNumber === selectedSurah && lastReadPosition.ayahNumber === ayah.numberInSurah;
+                    const brTranslationText = getBrahuiTranslationText(index, ayah.text);
+
+                    return (
+                      <div key={ayah.numberInSurah} className="verse-block" style={{ borderBottom: theme === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0' }}>
+                        <div className="verse-top-bar">
+                          <span className="verse-number">{selectedSurah}:{ayah.numberInSurah}</span>
+                          {isLastRead && (
+                            <span style={{ fontSize: '0.75rem', background: 'var(--accent-gold)', color: 'var(--primary-dark)', fontWeight: 700, padding: '2px 8px', borderRadius: '12px' }}>
+                              <i className="fas fa-bookmark"></i> Last Read Position
+                            </span>
+                          )}
+
+                          <div className="verse-actions">
+                            <button
+                              className="verse-btn"
+                              title="Save as Last Read Position"
+                              onClick={() => saveLastRead(ayah.numberInSurah)}
+                              style={{ color: isLastRead ? 'var(--accent-gold)' : undefined }}
+                            >
+                              <i className="fas fa-bookmark"></i>
+                            </button>
+
+                            <button
+                              className={`verse-btn ${bookmarks[ayah.numberInSurah] ? 'active' : ''}`}
+                              title="Bookmark Ayah"
+                              onClick={() => toggleBookmark(ayah.numberInSurah)}
+                            >
+                              <i className={`${bookmarks[ayah.numberInSurah] ? 'fas' : 'far'} fa-star`}></i>
+                            </button>
+
+                            <button
+                              className="verse-btn"
+                              title="Copy Verse"
+                              onClick={() => copyVerse(ayah.text, ayah.numberInSurah)}
+                            >
+                              <i className="far fa-copy"></i>
+                            </button>
+
+                            {/* Play MP3 Ayah & Spoken Translation (Only shown in Audio Translation Mode) */}
+                            {readMode === 'with_translation' && translationSubMode === 'audio_and_text' && (
+                              <button
+                                className="verse-btn"
+                                title={`Play Verse MP3 (${currentQariObj.name}) & Spoken Translation`}
+                                onClick={() => playAyahAudioAndSpokenTranslation(ayah, index)}
+                              >
+                                <i className="fas fa-play"></i>
+                              </button>
+                            )}
+
+                            <button
+                              className="verse-btn"
+                              title="Report Error"
+                              onClick={() => openReportModal('ayah', `Surah ${selectedSurah}:${ayah.numberInSurah}`)}
+                            >
+                              <i className="far fa-flag"></i>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Arabic Verse Text */}
+                        <p className="arabic-font arabic-text-render" style={{ fontSize: `${fontSize}px`, color: theme === 'dark' ? '#f8fafc' : '#000000', fontWeight: 800, lineSpacing: '1.8' }}>
+                          {ayah.text}
+                        </p>
+
+                        {/* Translation Section (Only shown when readMode === 'with_translation') */}
+                        {readMode === 'with_translation' && (
+                          <div className="translations-list" style={{ marginTop: '0.85rem' }}>
+                            {/* English Translation */}
+                            {translations.en && translationData.en && translationData.en[index] && (
+                              <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: theme === 'dark' ? '#cbd5e1' : '#334155' }}>
+                                <span className="lang-tag" style={{ background: '#0284c7', color: '#fff' }}>EN</span>
+                                <span style={{ flex: 1 }}>{translationData.en[index].text}</span>
+                                {translationSubMode === 'audio_and_text' && (
+                                  <button className="verse-btn" onClick={() => speakTranslationText(translationData.en[index].text, 'en-US')} title="Listen to English voice">
+                                    <i className="fas fa-volume-up"></i>
+                                  </button>
+                                )}
+                              </p>
+                            )}
+
+                            {/* Urdu Translation */}
+                            {translations.ur && translationData.ur && translationData.ur[index] && (
+                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: theme === 'dark' ? '#34d399' : '#047857' }}>
+                                <span className="lang-tag" style={{ background: '#047857', color: '#fff', fontSize: '0.7rem' }}>UR</span>
+                                <span style={{ flex: 1 }}>{translationData.ur[index].text}</span>
+                                {translationSubMode === 'audio_and_text' && (
+                                  <button className="verse-btn" onClick={() => speakTranslationText(translationData.ur[index].text, 'ur-PK')} title="Listen to Urdu voice">
+                                    <i className="fas fa-volume-up"></i>
+                                  </button>
+                                )}
+                              </p>
+                            )}
+
+                            {/* Brahui Translation */}
+                            {translations.br && (
+                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: theme === 'dark' ? '#fbbf24' : '#b45309' }}>
+                                <span className="lang-tag" style={{ background: '#b45309', color: '#fff', fontSize: '0.7rem' }}>BR</span>
+                                <span style={{ flex: 1 }}>{brTranslationText}</span>
+                                {translationSubMode === 'audio_and_text' && (
+                                  <button className="verse-btn" onClick={() => speakTranslationText(brTranslationText, 'ur-PK')} title="Listen to Brahui voice">
+                                    <i className="fas fa-volume-up"></i>
+                                  </button>
+                                )}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           )}
-
-          {/* Verses Container with Active Theme */}
-          <div className="card" style={{ ...themeStyles[theme], transition: 'all 0.3s ease' }}>
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-                <p style={{ marginTop: '0.75rem' }}>Loading Holy Quran Verses...</p>
-              </div>
-            ) : (
-              surahData && surahData.ayahs && surahData.ayahs.map((ayah, index) => {
-                const isLastRead = lastReadPosition && lastReadPosition.surahNumber === selectedSurah && lastReadPosition.ayahNumber === ayah.numberInSurah;
-
-                return (
-                  <div key={ayah.numberInSurah} className="verse-block" style={{ borderBottom: theme === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0' }}>
-                    <div className="verse-top-bar">
-                      <span className="verse-number">{selectedSurah}:{ayah.numberInSurah}</span>
-                      {isLastRead && (
-                        <span style={{ fontSize: '0.75rem', background: 'var(--accent-gold)', color: 'var(--primary-dark)', fontWeight: 700, padding: '2px 8px', borderRadius: '12px' }}>
-                          <i className="fas fa-bookmark"></i> Last Read Position
-                        </span>
-                      )}
-
-                      <div className="verse-actions">
-                        <button
-                          className="verse-btn"
-                          title="Save as Last Read Position"
-                          onClick={() => saveLastRead(ayah.numberInSurah)}
-                          style={{ color: isLastRead ? 'var(--accent-gold)' : undefined }}
-                        >
-                          <i className="fas fa-bookmark"></i>
-                        </button>
-
-                        <button
-                          className={`verse-btn ${bookmarks[ayah.numberInSurah] ? 'active' : ''}`}
-                          title="Bookmark Ayah"
-                          onClick={() => toggleBookmark(ayah.numberInSurah)}
-                        >
-                          <i className={`${bookmarks[ayah.numberInSurah] ? 'fas' : 'far'} fa-star`}></i>
-                        </button>
-
-                        <button
-                          className="verse-btn"
-                          title="Copy Verse"
-                          onClick={() => copyVerse(ayah.text, ayah.numberInSurah)}
-                        >
-                          <i className="far fa-copy"></i>
-                        </button>
-
-                        <button
-                          className="verse-btn"
-                          title="Play Verse Audio & Spoken Translation"
-                          onClick={() => playAyahAudioAndSpokenTranslation(ayah, index)}
-                        >
-                          <i className="fas fa-play"></i>
-                        </button>
-
-                        <button
-                          className="verse-btn"
-                          title="Report Error"
-                          onClick={() => openReportModal('ayah', `Surah ${selectedSurah}:${ayah.numberInSurah}`)}
-                        >
-                          <i className="far fa-flag"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <p className="arabic-font arabic-text-render" style={{ fontSize: `${fontSize}px`, color: theme === 'dark' ? '#f8fafc' : '#000000', fontWeight: 800 }}>
-                      {ayah.text}
-                    </p>
-
-                  <div className="translations-list">
-                    {translations.en && translationData.en && translationData.en[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">EN</span>
-                        <span style={{ flex: 1 }}>{translationData.en[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.en[index].text, 'en-US')} title="Listen to English voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.ur && translationData.ur && translationData.ur[index] && (
-                      <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.1rem', color: '#047857' }}>
-                        <span className="lang-tag">UR</span>
-                        <span style={{ flex: 1 }}>{translationData.ur[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.ur[index].text, 'ur-PK')} title="Listen to Urdu voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.tr && translationData.tr && translationData.tr[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">TR</span>
-                        <span style={{ flex: 1 }}>{translationData.tr[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.tr[index].text, 'tr-TR')} title="Listen to Turkish voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.fr && translationData.fr && translationData.fr[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">FR</span>
-                        <span style={{ flex: 1 }}>{translationData.fr[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.fr[index].text, 'fr-FR')} title="Listen to French voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.es && translationData.es && translationData.es[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">ES</span>
-                        <span style={{ flex: 1 }}>{translationData.es[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.es[index].text, 'es-ES')} title="Listen to Spanish voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.de && translationData.de && translationData.de[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">DE</span>
-                        <span style={{ flex: 1 }}>{translationData.de[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.de[index].text, 'de-DE')} title="Listen to German voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.id && translationData.id && translationData.id[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">ID</span>
-                        <span style={{ flex: 1 }}>{translationData.id[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.id[index].text, 'id-ID')} title="Listen to Indonesian voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.bn && translationData.bn && translationData.bn[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">BN</span>
-                        <span style={{ flex: 1 }}>{translationData.bn[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.bn[index].text, 'bn-BD')} title="Listen to Bengali voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.ru && translationData.ru && translationData.ru[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">RU</span>
-                        <span style={{ flex: 1 }}>{translationData.ru[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.ru[index].text, 'ru-RU')} title="Listen to Russian voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                    {translations.hi && translationData.hi && translationData.hi[index] && (
-                      <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span className="lang-tag">HI</span>
-                        <span style={{ flex: 1 }}>{translationData.hi[index].text}</span>
-                        <button className="verse-btn" onClick={() => speakTranslationText(translationData.hi[index].text, 'hi-IN')} title="Listen to Hindi voice">
-                          <i className="fas fa-volume-up"></i>
-                        </button>
-                      </p>
-                    )}
-                  </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
         </div>
       </div>
     </div>

@@ -30,6 +30,17 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
     }
   }, [isPlaying]);
 
+  useEffect(() => {
+    if (currentTrack) {
+      document.body.classList.add('has-audio-player');
+    } else {
+      document.body.classList.remove('has-audio-player');
+    }
+    return () => {
+      document.body.classList.remove('has-audio-player');
+    };
+  }, [currentTrack]);
+
   const handleStop = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -105,82 +116,58 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
         loop={isLooping}
       />
       <div className="player-container">
+        {/* Track Info */}
         <div className="player-info">
           <div className="player-icon">
             <i className="fas fa-volume-up"></i>
           </div>
           <div className="player-text">
-            <span className="player-title">{currentTrack.title}</span>
-            <span className="player-reciter">{currentTrack.reciter}</span>
+            <span className="player-title" title={currentTrack.title}>{currentTrack.title}</span>
+            <span className="player-reciter" title={currentTrack.reciter}>{currentTrack.reciter}</span>
           </div>
+          {/* Mobile close button inside info bar */}
+          <button
+            onClick={handleStop}
+            title="Stop & Close Audio Player"
+            className="player-close-btn mobile-only-close"
+          >
+            <i className="fas fa-times"></i>
+          </button>
         </div>
 
+        {/* Controls & Progress */}
         <div className="player-controls">
-          <div className="control-buttons" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* Speed Button */}
+          <div className="control-buttons">
             <button
               onClick={cycleSpeed}
               title="Change Playback Speed"
-              style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: 'var(--accent-gold)',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                padding: '3px 8px',
-                borderRadius: '6px',
-                cursor: 'pointer'
-              }}
+              className="player-speed-btn"
             >
               {playbackRate}x
             </button>
 
-            {/* Main Play/Pause Button */}
-            <button className="btn-player-main" onClick={() => setIsPlaying(!isPlaying)}>
+            <button
+              className="btn-player-main"
+              onClick={() => setIsPlaying(!isPlaying)}
+              title={isPlaying ? 'Pause' : 'Play'}
+            >
               <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
             </button>
 
-            {/* Stop / Cancel Audio Button */}
-            <button
-              onClick={handleStop}
-              title="Stop & Close Audio Player"
-              style={{
-                background: '#ef4444',
-                border: 'none',
-                color: '#ffffff',
-                fontSize: '0.8rem',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <i className="fas fa-stop"></i>
-            </button>
-
-            {/* Loop Repeater Button */}
             <button
               onClick={toggleLoop}
               title={isLooping ? 'Repeat Mode: Active' : 'Repeat Mode: Disabled'}
-              style={{
-                background: isLooping ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: isLooping ? 'var(--primary-dark)' : '#ffffff',
-                fontSize: '0.85rem',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
-              }}
+              className={`player-loop-btn ${isLooping ? 'active' : ''}`}
             >
               <i className="fas fa-redo"></i>
+            </button>
+
+            <button
+              onClick={handleStop}
+              title="Stop & Close Audio Player"
+              className="player-stop-btn"
+            >
+              <i className="fas fa-stop"></i>
             </button>
           </div>
 
@@ -193,14 +180,16 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               max="100"
               value={duration ? (currentTime / duration) * 100 : 0}
               onChange={handleSeek}
+              aria-label="Audio Progress"
             />
             <span className="time-stamp">{formatTime(duration)}</span>
           </div>
         </div>
 
-        <div className="volume-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <i className="fas fa-volume-down" style={{ color: '#cbd5e1', fontSize: '0.9rem' }}></i>
+        {/* Volume & Desktop Close Button */}
+        <div className="volume-wrapper">
+          <div className="volume-inner">
+            <i className="fas fa-volume-down volume-icon"></i>
             <input
               type="range"
               className="volume-slider"
@@ -208,36 +197,14 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               max="100"
               value={volume}
               onChange={handleVolumeChange}
+              aria-label="Volume"
             />
           </div>
 
-          {/* Far Right Cancel / Close Player Button */}
           <button
             onClick={handleStop}
             title="Cancel Playback & Close Player"
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
-              color: '#ffffff',
-              fontSize: '1rem',
-              width: '34px',
-              height: '34px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              flexShrink: 0
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = '#ef4444';
-              e.currentTarget.style.borderColor = '#ef4444';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-            }}
+            className="player-close-btn desktop-only-close"
           >
             <i className="fas fa-times"></i>
           </button>

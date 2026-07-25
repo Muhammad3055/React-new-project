@@ -83,10 +83,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
   return (
     <div>
       {/* Hero Section */}
-      <section style={{ background: 'linear-gradient(135deg, #022c22 0%, #064e3b 60%, #047857 100%)', color: '#fff', padding: '4rem 2rem', textAlign: 'center', borderBottom: '4px solid #f59e0b', position: 'relative', overflow: 'hidden' }}>
-        <h2 className="arabic-font" style={{ fontSize: '2.8rem', color: '#f59e0b', marginBottom: '0.75rem' }}>اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0 1rem 0', letterSpacing: '-0.5px' }}>Discover, Listen & Learn The Holy Quran</h1>
-        <p style={{ color: '#e2e8f0', maxWidth: '750px', margin: '0 auto 2rem auto', fontSize: '1.1rem' }}>Modern Full-Stack Application for Quran Audio Recitations, Interactive Reading, Tafseer Studies, PDF Books & Authentic Hadith Collections.</p>
+      <section className="hero-section">
+        <h2 className="arabic-font hero-arabic-title">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
+        <h1 className="hero-main-title">Discover, Listen & Learn The Holy Quran</h1>
+        <p className="hero-subtitle">Modern Full-Stack Application for Quran Audio Recitations, Interactive Reading, Tafseer Studies, PDF Books & Authentic Hadith Collections.</p>
         
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <a

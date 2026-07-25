@@ -225,6 +225,7 @@ def api_tafseer_list(request):
 def api_hadith_list(request):
     query = request.GET.get('q', '').strip()
     book_filter = request.GET.get('book', '').strip()
+    grade_filter = request.GET.get('grade', '').strip()
     page_number = request.GET.get('page', 1)
     
     hadiths = Hadith.objects.all()
@@ -236,6 +237,8 @@ def api_hadith_list(request):
         )
     if book_filter:
         hadiths = hadiths.filter(book_name=book_filter)
+    if grade_filter:
+        hadiths = hadiths.filter(grade__icontains=grade_filter)
 
     books_list = [b[0] for b in Hadith.BOOK_CHOICES]
     paginator = Paginator(hadiths, 25)
@@ -261,6 +264,7 @@ def api_hadith_list(request):
         'total_pages': paginator.num_pages,
         'total_count': paginator.count,
     })
+
 
 
 def api_categories_list(request):

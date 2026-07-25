@@ -5,13 +5,14 @@ export default function HadithView({ openReportModal }) {
   const [booksList, setBooksList] = useState([]);
   const [query, setQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/hadith/?q=${encodeURIComponent(query)}&book=${encodeURIComponent(selectedBook)}&page=${page}`)
+    fetch(`/api/hadith/?q=${encodeURIComponent(query)}&book=${encodeURIComponent(selectedBook)}&grade=${encodeURIComponent(selectedGrade)}&page=${page}`)
       .then(res => res.json())
       .then(data => {
         setHadiths(data.results || []);
@@ -20,21 +21,90 @@ export default function HadithView({ openReportModal }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [query, selectedBook, page]);
+  }, [query, selectedBook, selectedGrade, page]);
 
-  const copyHadith = (text, book, num) => {
-    navigator.clipboard.writeText(`"${text}" [${book} #${num}]`);
+  const copyHadith = (text, book, num, grade) => {
+    navigator.clipboard.writeText(`"${text}" [${book} #${num} - Grade: ${grade}]`);
     alert("Hadith copied to clipboard!");
   };
 
+  const renderGradeBadge = (grade = '') => {
+    const g = grade.toLowerCase();
+    if (g.includes('sahih') || g.includes('authentic')) {
+      return (
+        <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 700, background: '#dcfce7', border: '1px solid #86efac', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+          <i className="fas fa-check-circle"></i> Sahih (Authentic)
+        </span>
+      );
+    }
+    if (g.includes('hasan') || g.includes('good')) {
+      return (
+        <span style={{ fontSize: '0.78rem', color: '#0369a1', fontWeight: 700, background: '#e0f2fe', border: '1px solid #7dd3fc', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+          <i className="fas fa-star"></i> Hasan (Good)
+        </span>
+      );
+    }
+    if (g.includes('da') || g.includes('weak')) {
+      return (
+        <span style={{ fontSize: '0.78rem', color: '#b91c1c', fontWeight: 700, background: '#fee2e2', border: '1px solid #fca5a5', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+          <i className="fas fa-exclamation-triangle"></i> Da'if (Weak)
+        </span>
+      );
+    }
+    return (
+      <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(245, 158, 11, 0.15)', padding: '3px 10px', borderRadius: '15px' }}>
+        {grade}
+      </span>
+    );
+  };
+
+  const gradesOptions = [
+    { value: '', label: 'All Grades', icon: 'fas fa-layer-group' },
+    { value: 'Sahih', label: 'Sahih (Authentic)', icon: 'fas fa-check-circle', color: '#15803d' },
+    { value: 'Hasan', label: 'Hasan (Good)', icon: 'fas fa-star', color: '#0369a1' },
+    { value: 'Da\'if', label: 'Da\'if (Weak)', icon: 'fas fa-exclamation-triangle', color: '#b91c1c' },
+  ];
+
   return (
-    <div className="container">
-      <div className="section-header">
-        <h1 className="section-title"><i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Authentic Hadith Collections</h1>
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3rem' }}>
+      <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <h1 className="section-title">
+          <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Hadith Collections & Authenticity Grades
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem', maxWidth: '650px', marginInline: 'auto' }}>
+          Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings: <strong>Sahih</strong> (Authentic), <strong>Hasan</strong> (Good), and <strong>Da'if</strong> (Weak).
+        </p>
       </div>
 
-      <div className="filter-bar">
-        <div className="filter-group">
+      {/* Grade Authenticity Filter Toggle Bar */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        {gradesOptions.map((g) => (
+          <button
+            key={g.value}
+            onClick={() => { setSelectedGrade(g.value); setPage(1); }}
+            style={{
+              padding: '0.55rem 1.1rem',
+              borderRadius: '25px',
+              border: selectedGrade === g.value ? '1px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.12)',
+              background: selectedGrade === g.value ? 'rgba(245, 158, 11, 0.18)' : 'rgba(255,255,255,0.05)',
+              color: selectedGrade === g.value ? 'var(--accent-gold)' : '#e2e8f0',
+              fontWeight: 600,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              transition: 'all 0.25s ease',
+            }}
+          >
+            <i className={g.icon} style={{ color: g.color || 'var(--accent-gold)' }}></i>
+            {g.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="filter-bar" style={{ marginBottom: '2rem' }}>
+        <div className="filter-group" style={{ flex: 1 }}>
           <span className="filter-label"><i className="fas fa-search"></i> Search:</span>
           <input
             type="text"
@@ -68,17 +138,19 @@ export default function HadithView({ openReportModal }) {
       ) : (
         <div className="grid-2">
           {hadiths.map((h) => (
-            <div key={h.id} className="card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary-dark)', background: 'var(--accent-gold-light)', padding: '4px 12px', borderRadius: '15px' }}>
+            <div key={h.id} className="card" style={{ padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.12)', background: 'linear-gradient(145deg, rgba(3, 45, 35, 0.9), rgba(2, 30, 24, 0.95))' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#022c22', background: 'var(--accent-gold)', padding: '4px 12px', borderRadius: '15px' }}>
                   {h.book_name} #{h.hadith_number}
                 </span>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 700, background: '#dcfce7', padding: '2px 8px', borderRadius: '4px' }}>{h.grade}</span>
+                  {renderGradeBadge(h.grade)}
                   <button
                     className="verse-btn"
                     title="Copy Hadith"
-                    onClick={() => copyHadith(h.translation, h.book_name, h.hadith_number)}
+                    onClick={() => copyHadith(h.translation, h.book_name, h.hadith_number, h.grade)}
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
                   >
                     <i className="far fa-copy"></i>
                   </button>
@@ -86,6 +158,7 @@ export default function HadithView({ openReportModal }) {
                     className="verse-btn"
                     title="Report Issue"
                     onClick={() => openReportModal('hadith', `${h.book_name} #${h.hadith_number}`)}
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
                   >
                     <i className="far fa-flag"></i>
                   </button>
@@ -93,22 +166,29 @@ export default function HadithView({ openReportModal }) {
               </div>
 
               {h.chapter && (
-                <p style={{ fontSize: '0.85rem', color: 'var(--primary-light)', fontWeight: 600, marginBottom: '0.75rem' }}>
-                  Chapter: {h.chapter}
+                <p style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 600, marginBottom: '0.75rem' }}>
+                  <i className="fas fa-bookmark" style={{ marginRight: '0.4rem' }}></i> Chapter: {h.chapter}
                 </p>
               )}
 
-              <p className="arabic-font" style={{ fontSize: '1.4rem', color: 'var(--primary-emerald)', lineHeight: '1.8', marginBottom: '1rem' }}>{h.arabic_text}</p>
+              <p className="arabic-font" style={{ fontSize: '1.4rem', color: '#6ee7b7', lineHeight: '1.9', marginBottom: '1rem', textAlign: 'right' }}>{h.arabic_text}</p>
               
               {h.narrated_by && (
-                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
-                  Narrated by: {h.narrated_by}
+                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.4rem' }}>
+                  <i className="fas fa-user"></i> Narrated by: {h.narrated_by}
                 </p>
               )}
               
-              <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontStyle: 'italic', lineHeight: '1.6' }}>"{h.translation}"</p>
+              <p style={{ fontSize: '0.95rem', color: '#f8fafc', fontStyle: 'italic', lineHeight: '1.6' }}>"{h.translation}"</p>
             </div>
           ))}
+
+          {hadiths.length === 0 && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+              <i className="fas fa-info-circle fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
+              <p>No Hadiths found matching your selected criteria.</p>
+            </div>
+          )}
         </div>
       )}
 

@@ -215,7 +215,43 @@ def seed_database():
             "arabic_text": "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
             "translation": "Your smiling in the face of your brother is charity for you.",
             "narrated_by": "Abu Dharr (RA)",
-            "grade": "Sahih"
+            "grade": "Hasan"
+        },
+        {
+            "book_name": "Sunan Ibn Majah",
+            "chapter": "Book of Supplication",
+            "hadith_number": 3842,
+            "arabic_text": "إِنَّ لِلَّهِ عُتَقَاءَ فِي كُلِّ يَوْمٍ وَلَيْلَةٍ لِكُلِّ عَبْدٍ مِنْهُمْ دَعْوَةٌ مُسْتَجَابَةٌ",
+            "translation": "Allah frees people from the Fire every day and night, and every Muslim has a supplication that is answered.",
+            "narrated_by": "Abu Hurairah (RA)",
+            "grade": "Hasan"
+        },
+        {
+            "book_name": "Jami' at-Tirmidhi",
+            "chapter": "Book of Virtues",
+            "hadith_number": 3512,
+            "arabic_text": "أَفْضَلُ الذِّكْرِ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَفْضَلُ الدُّعَاءِ الْحَمْدُ لِلَّهِ",
+            "translation": "The best remembrance is 'La ilaha illallah' and the best supplication is 'Alhamdulillah'.",
+            "narrated_by": "Jabir bin Abdullah (RA)",
+            "grade": "Hasan"
+        },
+        {
+            "book_name": "Sunan Abu Dawud",
+            "chapter": "Book of General Manners",
+            "hadith_number": 5116,
+            "arabic_text": "اقْرَءُوا عَلَى مَوْتَاكُمْ يس",
+            "translation": "Recite Ya-Sin over your deceased.",
+            "narrated_by": "Ma'qil bin Yasar (RA)",
+            "grade": "Da'if"
+        },
+        {
+            "book_name": "Sunan Ibn Majah",
+            "chapter": "Book of Fasting",
+            "hadith_number": 1746,
+            "arabic_text": "نَوْمُ الصَّائِمِ عِبَادَةٌ وَصَمْتُهُ تَسْبِيحٌ",
+            "translation": "The sleep of a fasting person is worship and his silence is glorification of Allah.",
+            "narrated_by": "Abdullah ibn Amr (RA)",
+            "grade": "Da'if"
         },
         {
             "book_name": "Sahih Bukhari",
@@ -278,7 +314,7 @@ def seed_database():
             "arabic_text": "اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ، وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا، وَخَالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ",
             "translation": "Fear Allah wherever you are, follow up a bad deed with a good deed which will wipe it out, and behave well towards people.",
             "narrated_by": "Abu Dharr & Mu'adh bin Jabal (RA)",
-            "grade": "Sahih"
+            "grade": "Hasan"
         },
         {
             "book_name": "Sahih Muslim",

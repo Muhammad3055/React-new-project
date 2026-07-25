@@ -9,6 +9,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const [toast, setToast] = useState(null);
 
   const extraMenuItems = [
+    { label: 'Fazail (Virtues)', icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
     { label: 'About Us', icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
     { label: 'Hadith', icon: 'fas fa-scroll', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
     { label: 'Tafseer', icon: 'fas fa-bookmark', action: () => { navigateToTab('tafseer'); setShowExtrasMenu(false); } },
@@ -17,7 +18,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: 'Contact', icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
     { label: 'Prayer Times', icon: 'fas fa-clock', action: () => { navigateToTab('home'); setShowExtrasMenu(false); } },
     { label: "Du'as", icon: 'fas fa-hands', action: () => { showToast('🤲 Du\'as Library — Coming Soon!'); setShowExtrasMenu(false); } },
-    { label: '99 Names', icon: 'fas fa-star-and-crescent', action: () => { showToast('✨ 99 Names of Allah — Coming Soon!'); setShowExtrasMenu(false); } },
+    { label: '99 Names', icon: 'fas fa-star', action: () => { showToast('✨ 99 Names of Allah — Coming Soon!'); setShowExtrasMenu(false); } },
   ];
 
   const showToast = (msg) => {
@@ -47,6 +48,16 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     return () => document.removeEventListener('click', handleClickOutside);
   }, [showExtrasMenu]);
 
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileActive) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileActive]);
+
   const handleResultClick = (result) => {
     navigateToTab(result.tab || 'home');
     setShowDropdown(false);
@@ -70,9 +81,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'home', label: 'Home', icon: 'fas fa-home' },
     { id: 'read', label: 'Read Quran', icon: 'fas fa-book-open' },
     { id: 'quran', label: 'Quran MP3', icon: 'fas fa-headphones' },
+    { id: 'fazail', label: 'Fazail', icon: 'fas fa-book' },
     { id: 'about', label: 'About Us', icon: 'fas fa-info-circle' },
   ];
-
 
   return (
     <>
@@ -87,7 +98,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         <div className="nav-container">
           <div className="navbar-left-group">
             <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
-              <span>Quran <span className="gold-text">Al Kareem</span></span>
+              <span className="brand-text">Quran <span className="gold-text">Al Kareem</span></span>
             </div>
 
             <ul className="nav-links desktop-nav">
@@ -97,125 +108,162 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                     className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
                     onClick={() => navigateToTab(item.id)}
                   >
-                    <i className={item.icon}></i> {item.label}
+                    <i className={item.icon}></i>
+                    <span className="nav-link-text">{item.label}</span>
                   </span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Search */}
-          <div className="search-wrapper">
-            <i className="fas fa-search search-icon"></i>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search Quran, Videos, Books..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-            />
-            {showDropdown && searchResults.length > 0 && (
-              <div className="search-results-dropdown">
-                {searchResults.map((item, idx) => (
-                  <div key={idx} className="search-item" onClick={() => handleResultClick(item)}>
-                    <span>{item.title}</span>
-                    <span className="search-item-type">{item.type}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Desktop Extras Menu Toggle */}
-          <div className="desktop-extras-menu">
-            <button
-              className={`extras-menu-toggle ${showExtrasMenu ? 'active' : ''}`}
-              onClick={(e) => { e.stopPropagation(); setShowExtrasMenu(!showExtrasMenu); }}
-              aria-label="Open extras menu"
-            >
-              <i className="fas fa-th-large"></i>
-              <span>More</span>
-            </button>
-            {showExtrasMenu && (
-              <>
-                <div className="desktop-extras-overlay" onClick={() => setShowExtrasMenu(false)} />
-                <aside className="desktop-extras-sidepanel" onClick={(e) => e.stopPropagation()}>
-                  <div className="desktop-extras-header">
-                    <div>
-                      <p className="extras-title">Explore More</p>
-                      <p className="extras-subtitle">Hadith, Tafseer, 99 Names & more</p>
+          {/* Right side controls group */}
+          <div className="navbar-right-group">
+            {/* Search */}
+            <div className="search-wrapper">
+              <i className="fas fa-search search-icon"></i>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              />
+              {showDropdown && searchResults.length > 0 && (
+                <div className="search-results-dropdown">
+                  {searchResults.map((item, idx) => (
+                    <div key={idx} className="search-item" onClick={() => handleResultClick(item)}>
+                      <span>{item.title}</span>
+                      <span className="search-item-type">{item.type}</span>
                     </div>
-                    <button className="extras-close-btn" onClick={() => setShowExtrasMenu(false)} aria-label="Close menu">
-                      <i className="fas fa-times"></i>
-                    </button>
-                  </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-                  <div className="desktop-extras-body">
-                    {extraMenuItems.map((item) => (
-                      <button key={item.label} className="desktop-extras-card" onClick={item.action}>
-                        <div className="desktop-extras-card-icon"><i className={item.icon}></i></div>
-                        <div>
-                          <p>{item.label}</p>
-                        </div>
+            {/* Desktop Extras Menu Toggle */}
+            <div className="desktop-extras-menu">
+              <button
+                className={`extras-menu-toggle ${showExtrasMenu ? 'active' : ''}`}
+                onClick={(e) => { e.stopPropagation(); setShowExtrasMenu(!showExtrasMenu); }}
+                aria-label="Open extras menu"
+              >
+                <i className="fas fa-th-large"></i>
+                <span className="more-text">More</span>
+              </button>
+              {showExtrasMenu && (
+                <>
+                  <div className="desktop-extras-overlay" onClick={() => setShowExtrasMenu(false)} />
+                  <aside className="desktop-extras-sidepanel" onClick={(e) => e.stopPropagation()}>
+                    <div className="desktop-extras-header">
+                      <div>
+                        <p className="extras-title">Explore More</p>
+                        <p className="extras-subtitle">Hadith, Tafseer, 99 Names & more</p>
+                      </div>
+                      <button className="extras-close-btn" onClick={() => setShowExtrasMenu(false)} aria-label="Close menu">
+                        <i className="fas fa-times"></i>
                       </button>
-                    ))}
-                  </div>
-                </aside>
-              </>
-            )}
-          </div>
+                    </div>
 
-          {/* Hamburger Toggle */}
+                    <div className="desktop-extras-body">
+                      {extraMenuItems.map((item) => (
+                        <button key={item.label} className="desktop-extras-card" onClick={item.action}>
+                          <div className="desktop-extras-card-icon"><i className={item.icon}></i></div>
+                          <div>
+                            <p>{item.label}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </aside>
+                </>
+              )}
+            </div>
+
+            {/* Persistent Header Auth Area */}
+            <div className="desktop-auth-area">
+              {user ? (
+                <div className="desktop-user-menu">
+                  <span className="user-greeting">Hi, {user.username}</span>
+                  {user.is_staff && (
+                    <button className="nav-action-btn" title="Upload" onClick={() => navigateToTab('upload')}>
+                      <i className="fas fa-cloud-upload-alt"></i>
+                    </button>
+                  )}
+                  <button className="nav-action-btn" title="Bookmarks" onClick={() => navigateToTab('bookmarks')}>
+                    <i className="fas fa-star"></i>
+                  </button>
+                  <button className="nav-action-btn logout" title="Logout" onClick={handleLogout}>
+                    <i className="fas fa-sign-out-alt"></i> <span className="logout-text">Logout</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="desktop-login-signup">
+                  <button className="auth-btn login-btn" onClick={() => openAuthModal('login')}>
+                    <i className="fas fa-sign-in-alt"></i> <span className="auth-btn-text">Login</span>
+                  </button>
+                  <button className="auth-btn signup-btn" onClick={() => openAuthModal('signup')}>
+                    <i className="fas fa-user-plus"></i> <span className="auth-btn-text">Sign Up</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Hamburger Toggle */}
+            <button
+              className={`mobile-toggle-btn ${mobileActive ? 'is-open' : ''}`}
+              onClick={() => setMobileActive(!mobileActive)}
+              aria-label="Toggle navigation"
+            >
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+            </button>
+          </div>
+        </div>
+
+        {/* ===== FULL-SCREEN MOBILE MENU OVERLAY ===== */}
+        <div className={`mobile-menu-overlay ${mobileActive ? 'mobile-menu-open' : ''}`}>
           <button
-            className={`mobile-toggle-btn ${mobileActive ? 'is-open' : ''}`}
-            onClick={() => setMobileActive(!mobileActive)}
-            aria-label="Toggle navigation"
+            className="mobile-menu-close"
+            onClick={() => setMobileActive(false)}
+            aria-label="Close menu"
           >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
+            <i className="fas fa-times"></i>
           </button>
 
-          {/* Desktop Auth Buttons */}
-          <div className="desktop-auth-area">
+          <div className="mobile-menu-brand" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
+            <span>Quran <span style={{ color: 'var(--accent-gold)' }}>Al Kareem</span></span>
+          </div>
+
+          {/* Top Auth Section inside Mobile Drawer */}
+          <div className="mobile-auth-area">
             {user ? (
-              <div className="desktop-user-menu">
-                <span className="user-greeting">Hi, {user.username}</span>
-                {user.is_staff && (
-                  <button className="nav-action-btn" onClick={() => navigateToTab('upload')}>
-                    <i className="fas fa-cloud-upload-alt"></i>
-                  </button>
-                )}
-                <button className="nav-action-btn" onClick={() => navigateToTab('bookmarks')}>
-                  <i className="fas fa-star"></i>
-                </button>
-                <button className="nav-action-btn logout" onClick={handleLogout}>
+              <div className="mobile-user-card">
+                <div className="mobile-user-info">
+                  <i className="fas fa-user-circle"></i>
+                  <span>Logged in as <strong>{user.username}</strong></span>
+                </div>
+                <button className="mobile-auth-btn mobile-logout-btn" onClick={() => { handleLogout(); setMobileActive(false); }}>
                   <i className="fas fa-sign-out-alt"></i> Logout
                 </button>
               </div>
             ) : (
-              <div className="desktop-login-signup">
-                <button className="auth-btn login-btn" onClick={() => openAuthModal('login')}>
+              <div className="mobile-auth-grid">
+                <button className="mobile-auth-btn mobile-login-btn" onClick={() => { openAuthModal('login'); setMobileActive(false); }}>
                   <i className="fas fa-sign-in-alt"></i> Login
                 </button>
-                <button className="auth-btn signup-btn" onClick={() => openAuthModal('signup')}>
+                <button className="mobile-auth-btn mobile-signup-btn" onClick={() => { openAuthModal('signup'); setMobileActive(false); }}>
                   <i className="fas fa-user-plus"></i> Sign Up
                 </button>
               </div>
             )}
           </div>
-        </div>
 
-        {/* ===== FULL-SCREEN MOBILE MENU ===== */}
-        <div className={`mobile-menu-overlay ${mobileActive ? 'mobile-menu-open' : ''}`}>
-          <div className="mobile-menu-brand" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
-            <span>Quran <span style={{ color: 'var(--accent-gold)' }}>Al Kareem</span></span>
-          </div>
-
-          {/* Main Nav Items */}
-          <nav className="mobile-nav-grid">
+          {/* Main Navigation Items Grid */}
+          <div className="mobile-section-title">Main Navigation</div>
+          <nav className="mobile-nav-grid main-nav-grid">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -226,8 +274,11 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 <span>{item.label}</span>
               </button>
             ))}
+          </nav>
 
-            {/* Extra Feature Buttons */}
+          {/* Explore Features Grid */}
+          <div className="mobile-section-title">Explore Features</div>
+          <nav className="mobile-nav-grid extra-nav-grid">
             {extraMenuItems.map((item) => (
               <button
                 key={item.label}
@@ -260,24 +311,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             )}
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="mobile-auth-area">
-            {user ? (
-              <button className="mobile-auth-btn mobile-logout-btn" onClick={() => { handleLogout(); setMobileActive(false); }}>
-                <i className="fas fa-sign-out-alt"></i> Logout ({user.username})
-              </button>
-            ) : (
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button className="mobile-auth-btn mobile-login-btn" onClick={() => { openAuthModal('login'); setMobileActive(false); }}>
-                  <i className="fas fa-sign-in-alt"></i> Login
-                </button>
-                <button className="mobile-auth-btn mobile-signup-btn" onClick={() => { openAuthModal('signup'); setMobileActive(false); }}>
-                  <i className="fas fa-user-plus"></i> Sign Up
-                </button>
-              </div>
-            )}
-          </div>
-
           {/* Arabic calligraphy decoration */}
           <p className="mobile-menu-calligraphy">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
         </div>
@@ -285,3 +318,4 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     </>
   );
 }
+
