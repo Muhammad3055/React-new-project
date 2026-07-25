@@ -83,22 +83,23 @@ export default function HadithView({ openReportModal }) {
             key={g.value}
             onClick={() => { setSelectedGrade(g.value); setPage(1); }}
             style={{
-              padding: '0.55rem 1.1rem',
+              padding: '0.55rem 1.15rem',
               borderRadius: '25px',
-              border: selectedGrade === g.value ? '1px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.12)',
-              background: selectedGrade === g.value ? 'rgba(245, 158, 11, 0.18)' : 'rgba(255,255,255,0.05)',
-              color: selectedGrade === g.value ? 'var(--accent-gold)' : '#e2e8f0',
-              fontWeight: 600,
-              fontSize: '0.88rem',
+              border: selectedGrade === g.value ? '2px solid var(--accent-gold)' : '1.5px solid #cbd5e1',
+              background: selectedGrade === g.value ? 'rgba(245, 158, 11, 0.2)' : '#ffffff',
+              color: selectedGrade === g.value ? '#b45309' : '#000000',
+              fontWeight: 700,
+              fontSize: '0.9rem',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.45rem',
               transition: 'all 0.25s ease',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
             }}
           >
-            <i className={g.icon} style={{ color: g.color || 'var(--accent-gold)' }}></i>
-            {g.label}
+            <i className={g.icon} style={{ color: g.color || 'var(--accent-gold)', fontSize: '1rem' }}></i>
+            <span style={{ color: selectedGrade === g.value ? '#b45309' : '#000000' }}>{g.label}</span>
           </button>
         ))}
       </div>

@@ -151,22 +151,23 @@ export default function FazailView() {
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
             style={{
-              padding: '0.55rem 1.1rem',
+              padding: '0.55rem 1.15rem',
               borderRadius: '30px',
-              border: selectedCategory === cat.id ? '1px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.12)',
-              background: selectedCategory === cat.id ? 'rgba(245, 158, 11, 0.18)' : 'rgba(255,255,255,0.05)',
-              color: selectedCategory === cat.id ? 'var(--accent-gold)' : '#e2e8f0',
-              fontWeight: 600,
-              fontSize: '0.88rem',
+              border: selectedCategory === cat.id ? '2px solid var(--accent-gold)' : '1.5px solid #cbd5e1',
+              background: selectedCategory === cat.id ? 'rgba(245, 158, 11, 0.2)' : '#ffffff',
+              color: selectedCategory === cat.id ? '#b45309' : '#000000',
+              fontWeight: 700,
+              fontSize: '0.9rem',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.45rem',
               transition: 'all 0.25s ease',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
             }}
           >
-            <i className={cat.icon} style={{ color: selectedCategory === cat.id ? 'var(--accent-gold)' : '#cbd5e1' }}></i>
-            {cat.label}
+            <i className={cat.icon} style={{ color: selectedCategory === cat.id ? 'var(--accent-gold)' : '#d97706', fontSize: '1rem' }}></i>
+            <span style={{ color: selectedCategory === cat.id ? '#b45309' : '#000000' }}>{cat.label}</span>
           </button>
         ))}
       </div>
