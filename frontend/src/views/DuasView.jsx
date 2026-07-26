@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
-export default function DuasView() {
+export default function DuasView({ playTrack, user }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [bookmarkedIds, setBookmarkedIds] = useState({});
 
   const categories = [
     { id: 'all', label: 'All Du\'as (تمام مسنون دعائیں)', icon: 'fas fa-hands' },
@@ -29,11 +30,11 @@ export default function DuasView() {
       transliteration: 'Asbahna wa-asbahal-mulku lillah wal-hamdu lillah, la ilaha illallahu wahdahu la sharika lah',
       translation: 'We have reached the morning and at this very time unto Allah belongs all sovereignty, and all praise is for Allah. There is no god worthy of worship except Allah alone, without partner.',
       translation_ur: 'ہم نے صبح کی اور اللہ کے تمام ملک نے صبح کی اور سب تعریف اللہ کے لیے ہے، اللہ کے سوا کوئی معبود نہیں وہ اکیلا ہے اس کا کوئی شریک نہیں۔',
-      whenToPray: 'Recite once every morning after Fajr prayer.',
       whenToPray_ur: 'ہر صبح نمازِ فجر کے بعد ۱ بار پڑھیں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Sahih Muslim 2723',
-      virtue_ur: 'دن بھر اللہ تعالیٰ کی حفاظت اور بادشاہی کے تحت رہنے کا عظیم ذریعہ۔'
+      virtue_ur: 'دن بھر اللہ تعالیٰ کی حفاظت اور بادشاہی کے تحت رہنے کا عظیم ذریعہ۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3'
     },
     {
       id: 2,
@@ -44,11 +45,11 @@ export default function DuasView() {
       transliteration: 'Allahumma anta Rabbi la ilaha illa anta, khalaqtani wa-ana \'abduk, wa-ana \'ala \'ahdika wa-wa\'dika mas-tata\'t, a\'udhu bika min sharri ma sana\'t, abu\'u laka bi-ni\'matika \'alayya wa-abu\'u bi-dhanbi faghfir li fa-innahu la yaghfirudh-dhunuba illa ant',
       translation: 'O Allah, You are my Lord, there is no god but You. You created me and I am Your servant. I am faithful to my covenant and promise as much as I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me.',
       translation_ur: 'اے اللہ! تو ہی میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے ہی مجھے پیدا کیا اور میں تیرا بندہ ہوں، اور اپنے مقدور بھر تیرے عہد اور وعدے پر قائم ہوں۔ میں اپنے کیے کے شر سے تیری پناہ مانگتا ہوں، اپنے اوپر تیری نعمتوں کا اعتراف کرتا ہوں اور اپنے گناہوں کا اقرار کرتا ہوں، پس مجھے بخش دے۔',
-      whenToPray: 'Recite every morning and evening with conviction.',
       whenToPray_ur: 'صبح اور شام باقاعدگی سے یقین کے ساتھ پڑھیں۔',
       recommendedCount: '1 Time Morning & Evening (صبح و شام ۱ بار)',
       reference: 'Sahih al-Bukhari 6306',
-      virtue_ur: 'جو شخص دن یا رات میں اسے سچے دل سے پڑھے اور اسی دن فوت ہو جائے تو وہ جنتی ہے۔'
+      virtue_ur: 'جو شخص دن یا رات میں اسے سچے دل سے پڑھے اور اسی دن فوت ہو جائے تو وہ جنتی ہے۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/255.mp3'
     },
     {
       id: 3,
@@ -59,11 +60,11 @@ export default function DuasView() {
       transliteration: 'A\'udhu bi-kalimatil-lahit-tam-mati min sharri ma khalaq',
       translation: 'I seek refuge in the Perfect Words of Allah from the evil of what He has created.',
       translation_ur: 'میں اللہ کے مکمل کلمات کی پناہ مانگتا ہوں اس کی مخلوق کے شر سے۔',
-      whenToPray: 'Recite 3 times in the evening or when arriving at a new place.',
       whenToPray_ur: 'شام کے وقت یا کسی نئے مکان/منزل پر پہنچ کر ۳ بار پڑھیں۔',
       recommendedCount: '3 Times Evening (شام کو ۳ بار)',
       reference: 'Sahih Muslim 2709',
-      virtue_ur: 'اس کے پڑھنے والے کو رات بھر کوئی زہریلی چیز یا شر نقصان نہیں پہنچا سکتا۔'
+      virtue_ur: 'اس کے پڑھنے والے کو رات بھر کوئی زہریلی چیز یا شر نقصان نہیں پہنچا سکتا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6234.mp3'
     },
     {
       id: 4,
@@ -74,11 +75,11 @@ export default function DuasView() {
       transliteration: 'Bismillahil-ladhi la yadurru ma\'as-mihi shay\'un fil-ardi wa la fis-sama\'i wa huwas-Sami\'ul-\'Alim',
       translation: 'In the Name of Allah, with Whose Name nothing can cause harm in the earth or in the heaven, and He is the All-Hearing, the All-Knowing.',
       translation_ur: 'اللہ کے نام کے ساتھ جس کے نام کی برکت سے زمین اور آسمان میں کوئی چیز نقصان نہیں پہنچا سکتی اور وہی سننے والا جاننے والا ہے۔',
-      whenToPray: 'Recite 3 times every morning after Fajr and evening after Maghrib.',
       whenToPray_ur: 'صبح فجر اور شام مغرب کے بعد ۳، ۳ بار لازمی پڑھیں۔',
       recommendedCount: '3 Times Morning & Evening (صبح و شام ۳ بار)',
       reference: 'Sunan Abu Dawud 5088 (Sahih)',
-      virtue_ur: 'جو اسے صبح و شام ۳ بار پڑھے گا اسے اچانک کوئی آفت یا زہر نقصان نہیں پہنچائے گا۔'
+      virtue_ur: 'جو اسے صبح و شام ۳ بار پڑھے گا اسے اچانک کوئی آفت یا زہر نقصان نہیں پہنچائے گا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'
     },
     {
       id: 5,
@@ -89,11 +90,11 @@ export default function DuasView() {
       transliteration: 'Allahu la ilaha illa huwal-Hayyul-Qayyum, la ta\'khudhuhu sinatun wa la nawm, lahu ma fis-samawati wa ma fil-ard',
       translation: 'Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth.',
       translation_ur: 'اللہ! اس کے سوا کوئی معبود نہیں، وہ زندہ اور سب کو قائم رکھنے والا ہے، اسے نہ اونگھ آتی ہے نہ نیند، جو کچھ آسمانوں اور زمین میں ہے اسی کا ہے۔',
-      whenToPray: 'Recite after every obligatory Salah and before going to sleep.',
       whenToPray_ur: 'ہر فرض نماز کے بعد اور رات سوتے وقت ۱ بار پڑھیں۔',
       recommendedCount: '1 Time After Each Salah (ہر فرض نماز کے بعد ۱ بار)',
       reference: 'Surah Al-Baqarah 2:255 / An-Nasa\'i (Sahih)',
-      virtue_ur: 'ہر فرض نماز کے بعد آیۃ الکرسی پڑھنے والے اور جنت کے درمیان صرف موت کا فاصلہ ہوتا ہے۔'
+      virtue_ur: 'ہر فرض نماز کے بعد آیۃ الکرسی پڑھنے والے اور جنت کے درمیان صرف موت کا فاصلہ ہوتا ہے۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/262.mp3'
     },
     {
       id: 6,
@@ -104,11 +105,11 @@ export default function DuasView() {
       transliteration: 'Astaghfirullah (3x), Allahumma antas-Salam wa minkas-Salam, tabarakta ya Dhal-Jalali wal-Ikram',
       translation: 'I ask Allah for forgiveness (3 times). O Allah, You are Peace and from You comes peace. Blessed are You, O Possessor of Majesty and Honor.',
       translation_ur: 'میں اللہ سے بخشش مانگتا ہوں (۳ بار)۔ اے اللہ! تو سلامتی والا ہے اور تیری ہی طرف سے سلامتی ہے، تو بابرکت ہے اے عظمت اور عزت والے۔',
-      whenToPray: 'Recite immediately after finishing obligatory prayer.',
       whenToPray_ur: 'فرض نماز کے سلام کے فوراً بعد پڑھیں۔',
       recommendedCount: 'Astaghfirullah 3x + Dua 1x (استغفر اللہ ۳ بار + دعا ۱ بار)',
       reference: 'Sahih Muslim 591',
-      virtue_ur: 'نبی کریم ﷺ ہر فرض نماز کے بعد یہ کلمات باقاعدگی سے فرماتے تھے۔'
+      virtue_ur: 'نبی کریم ﷺ ہر فرض نماز کے بعد یہ کلمات باقاعدگی سے فرماتے تھے۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/112.mp3'
     },
     {
       id: 7,
@@ -119,11 +120,11 @@ export default function DuasView() {
       transliteration: 'Bismika-Allahumma amutu wa-ahya',
       translation: 'In Your Name, O Allah, I die and I live.',
       translation_ur: 'اے اللہ! میں تیرے نام کے ساتھ ہی مرتا (سوتا) ہوں اور جیتا (جاگتا) ہوں۔',
-      whenToPray: 'Recite when lying down on the right side in bed.',
       whenToPray_ur: 'بستر پر دائیں کروٹ لیٹتے وقت پڑھیں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Sahih al-Bukhari 6312',
-      virtue_ur: 'نیند کو اللہ کے سپرد کرنے اور تحفظ حاصل کرنے کا سنت طریقہ۔'
+      virtue_ur: 'نیند کو اللہ کے سپرد کرنے اور تحفظ حاصل کرنے کا سنت طریقہ۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6232.mp3'
     },
     {
       id: 8,
@@ -134,11 +135,11 @@ export default function DuasView() {
       transliteration: 'Alhamdu lillahil-ladhi ahyana ba\'da ma amatana wa ilaihin-nushur',
       translation: 'All praise is for Allah Who gave us life after having caused us to die, and unto Him is the resurrection.',
       translation_ur: 'سب تعریفیں اللہ کے لیے ہیں جس نے ہمیں مارنے (سلانے) کے بعد دوبارہ زندگی دی اور اسی کی طرف لوٹ کر جانا ہے۔',
-      whenToPray: 'Recite immediately upon opening eyes in the morning.',
       whenToPray_ur: 'صبح آنکھ کھلتے ہی سب سے پہلے پڑھیں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Sahih al-Bukhari 6314',
-      virtue_ur: 'نئی زندگی ملنے پر اللہ تعالیٰ کا شکر ادا کرنے کی مسنون دعا۔'
+      virtue_ur: 'نئی زندگی ملنے پر اللہ تعالیٰ کا شکر ادا کرنے کی مسنون دعا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3'
     },
     {
       id: 9,
@@ -149,11 +150,11 @@ export default function DuasView() {
       transliteration: 'La ilaha illa anta subhanaka inni kuntu minadh-dhalimin',
       translation: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
       translation_ur: 'تیرے سوا کوئی معبود نہیں، تو پاک ہے، بے شک میں ہی ظالموں (قصورواروں) میں سے تھا۔',
-      whenToPray: 'Recite when facing severe worry, anxiety, illness, or distress.',
       whenToPray_ur: 'کسی بھی پریشانی، دکھ، بیماری یا مصیبت کے وقت کثرت سے پڑھیں۔',
       recommendedCount: 'Abundantly / 40 Times (کثرت سے یا ۴۰ بار)',
       reference: 'Surah Al-Anbiya 21:87 / Jami` at-Tirmidhi (Sahih)',
-      virtue_ur: 'جو مسلمان بھی اس دعا کے ذریعے اللہ کو پکارے گا، اللہ اس کی پریشانی ضرور دور فرمائے گا۔'
+      virtue_ur: 'جو مسلمان بھی اس دعا کے ذریعے اللہ کو پکارے گا، اللہ اس کی پریشانی ضرور دور فرمائے گا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2570.mp3'
     },
     {
       id: 10,
@@ -164,11 +165,11 @@ export default function DuasView() {
       transliteration: 'Allahumma inni a\'udhu bika minal-hammi wal-hazani, wal-\'ajzi wal-kasali, wal-bukhli wal-jubni, wa dal-\'id-daini wa ghalabatir-rijal',
       translation: 'O Allah, I seek refuge in You from anxiety and grief, helplessness and laziness, miserliness and cowardice, the burden of debt and being overpowered by men.',
       translation_ur: 'اے اللہ! میں پریشانی، غم، عاجزی، سستی، بخل، بزدلی، قرض کے بوجھ اور لوگوں کے تسلط سے تیری پناہ مانگتا ہوں۔',
-      whenToPray: 'Recite morning and evening during stressful times.',
       whenToPray_ur: 'صبح اور شام پریشانی یا قرض کی صورت میں باقاعدگی سے پڑھیں۔',
       recommendedCount: '1 or 3 Times (۱ یا ۳ بار)',
       reference: 'Sahih al-Bukhari 6369',
-      virtue_ur: 'غموں کو دور کرنے اور قرضوں کی ادائیگی کا مجرب مسنون علاج۔'
+      virtue_ur: 'غموں کو دور کرنے اور قرضوں کی ادائیگی کا مجرب مسنون علاج۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6233.mp3'
     },
     {
       id: 11,
@@ -179,11 +180,11 @@ export default function DuasView() {
       transliteration: 'Rabbi zidni \'ilma',
       translation: 'My Lord, increase me in knowledge.',
       translation_ur: 'اے میرے پروردگار! میرے علم میں اضافہ فرما۔',
-      whenToPray: 'Recite before studying, reading Quran, or taking exams.',
       whenToPray_ur: 'مطالعہ کرنے، سبق یاد کرنے یا امتحان دیتے وقت کثرت سے پڑھیں۔',
       recommendedCount: 'Recite frequently (کثرت سے پڑھیں)',
       reference: 'Surah Taha 20:114',
-      virtue_ur: 'علم نافع اور حافظے کی مضبوطی کے لیے قرآن پاک کی خوبصورت دعا۔'
+      virtue_ur: 'علم نافع اور حافظے کی مضبوطی کے لیے قرآن پاک کی خوبصورت دعا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2462.mp3'
     },
     {
       id: 12,
@@ -194,11 +195,11 @@ export default function DuasView() {
       transliteration: 'Rabbish-rah li sadri wa yassir li amri wahlul \'uqdatam min lisani yafqahu qawli',
       translation: 'My Lord, expand for me my chest, and ease for me my task, and untie the knot from my tongue that they may understand my speech.',
       translation_ur: 'اے میرے رب! میرا سینہ کھول دے، میرے کام کو آسان کر دے اور میری زبان کی گرہ کھول دے تاکہ لوگ میری بات سمجھ سکیں۔',
-      whenToPray: 'Recite before giving a presentation, speech, or taking an exam.',
       whenToPray_ur: 'انٹرویو، تقریر، امتحان یا کسی مشکل کام سے پہلے پڑھیں۔',
       recommendedCount: '1 or 3 Times (۱ یا ۳ بار)',
       reference: 'Surah Taha 20:25-28',
-      virtue_ur: 'حضرت موسیٰ علیہ السلام کی دعا جو زبان کی لکنت اور ہچکچاہٹ دور کرتی ہے۔'
+      virtue_ur: 'حضرت موسیٰ علیہ السلام کی دعا جو زبان کی لکنت اور ہچکچاہٹ دور کرتی ہے۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2373.mp3'
     },
     {
       id: 13,
@@ -209,11 +210,11 @@ export default function DuasView() {
       transliteration: 'Bismillahi wa \'ala barakatillah',
       translation: 'In the Name of Allah and upon the blessings of Allah.',
       translation_ur: 'اللہ کے نام کے ساتھ اور اللہ کی برکت پر (میں کھانا شروع کرتا ہوں)۔',
-      whenToPray: 'Recite before eating any meal.',
       whenToPray_ur: 'کھانا شروع کرنے سے پہلے پڑھیں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Al-Mustadrak (Sahih)',
-      virtue_ur: 'کھانے میں شیطانی شرکت کو روکتا ہے اور رزق میں برکت دیتا ہے۔'
+      virtue_ur: 'کھانے میں شیطانی شرکت کو روکتا ہے اور رزق میں برکت دیتا ہے۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'
     },
     {
       id: 14,
@@ -224,11 +225,11 @@ export default function DuasView() {
       transliteration: 'Alhamdu lillahil-ladhi at\'amana wa saqana wa ja\'alana minal-Muslimin',
       translation: 'Praise be to Allah Who has fed us, given us drink, and made us Muslims.',
       translation_ur: 'تمام تعریفیں اللہ ہی کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور ہمیں مسلمانوں میں سے بنایا۔',
-      whenToPray: 'Recite immediately after finishing eating.',
       whenToPray_ur: 'کھانے سے فارغ ہو کر ہاتھ دھونے سے پہلے پڑھیں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Sunan Abu Dawud 3850',
-      virtue_ur: 'کھانے کی نعمت پر شکر گزاری اور گناہوں کی بخشش کا ذریعہ۔'
+      virtue_ur: 'کھانے کی نعمت پر شکر گزاری اور گناہوں کی بخشش کا ذریعہ۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3'
     },
     {
       id: 15,
@@ -239,11 +240,11 @@ export default function DuasView() {
       transliteration: 'Subhanal-ladhi sakkhara lana hadha wa ma kunna lahu muqrinin wa inna ila Rabbina lamunqalibun',
       translation: 'Glory to Him Who has subjected this to us, and we could not have otherwise subdued it. And indeed, to our Lord we will return.',
       translation_ur: 'پاک ہے وہ ذات جس نے اس سواری کو ہمارے تابع کر دیا حالانکہ ہم اسے قابو میں لانے والے نہ تھے اور بے شک ہم اپنے رب کی طرف لوٹنے والے ہیں۔',
-      whenToPray: 'Recite when sitting inside a car, bus, train, plane, or bike.',
       whenToPray_ur: 'گاڑی، موٹر سائیکل، بس یا جہاز پر بیٹھتے وقت پڑھیں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Surah Az-Zukhruf 43:13-14',
-      virtue_ur: 'سفر کے دوران حادثات اور بلاؤں سے محفوظ رہنے کی مسنون دعا۔'
+      virtue_ur: 'سفر کے دوران حادثات اور بلاؤں سے محفوظ رہنے کی مسنون دعا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/4347.mp3'
     },
     {
       id: 16,
@@ -254,11 +255,11 @@ export default function DuasView() {
       transliteration: 'Bismillahi walajna, wa bismillahi kharajna, wa \'alallahi Rabbina tawakkalna',
       translation: 'In the name of Allah we enter, and in the name of Allah we leave, and upon Allah our Lord we rely.',
       translation_ur: 'اللہ کے نام کے ساتھ ہم داخل ہوئے اور اللہ کے نام کے ساتھ ہی ہم نکلے اور اپنے رب اللہ ہی پر ہم نے بھروسہ کیا۔',
-      whenToPray: 'Recite when entering your home and say Salam to family.',
       whenToPray_ur: 'گھر میں داخل ہوتے وقت پڑھیں اور گھر والوں کو سلام کریں۔',
       recommendedCount: '1 Time (۱ بار)',
       reference: 'Sunan Abu Dawud 5096',
-      virtue_ur: 'شیطان گھر میں داخل ہونے اور رات گزارنے سے محروم ہو جاتا ہے۔'
+      virtue_ur: 'شیطان گھر میں داخل ہونے اور رات گزارنے سے محروم ہو جاتا ہے۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'
     },
     {
       id: 17,
@@ -269,11 +270,11 @@ export default function DuasView() {
       transliteration: 'Rabbana hab lana min azwajina wa dhurriyyatina qurrata a\'yunin waj\'alna lil-muttaqina imama',
       translation: 'Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous.',
       translation_ur: 'اے ہمارے پروردگار! ہمیں ہماری بیویوں اور ہماری اولاد کی طرف سے آنکھوں کی ٹھنڈک عطا فرما اور ہمیں پرہیزگاروں کا پیشوا بنا۔',
-      whenToPray: 'Recite daily after prayers or during Sujood.',
       whenToPray_ur: 'روزانہ بعد نماز یا سجدے میں کثرت سے مانگیں۔',
       recommendedCount: 'Recite frequently (کثرت سے پڑھیں)',
       reference: 'Surah Al-Furqan 25:74',
-      virtue_ur: 'گھریلو سکون اور نیک نسل کی بقا کے لیے بہترین قرآنی دعا۔'
+      virtue_ur: 'گھریلو سکون اور نیک نسل کی بقا کے لیے بہترین قرآنی دعا۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2927.mp3'
     },
     {
       id: 18,
@@ -284,11 +285,11 @@ export default function DuasView() {
       transliteration: 'Rabbir-hamhuma kama rabbayani saghira',
       translation: 'My Lord, have mercy upon them both as they brought me up when I was small.',
       translation_ur: 'اے میرے رب! ان دونوں (والدین) پر رحم فرما جس طرح انہوں نے مجھے بچپن میں (محبت سے) پالا تھا۔',
-      whenToPray: 'Recite for parents alive or passed away.',
       whenToPray_ur: 'والدین کی زندگی یا وفات کے بعد ان کے لیے پڑھیں۔',
       recommendedCount: 'Recite daily (روزانہ پڑھیں)',
       reference: 'Surah Al-Isra 17:24',
-      virtue_ur: 'والدین کے ساتھ حسنِ سلوک اور ان کی بخشش کا سب سے بڑا ذریعہ۔'
+      virtue_ur: 'والدین کے ساتھ حسنِ سلوک اور ان کی بخشش کا سب سے بڑا ذریعہ۔',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2053.mp3'
     }
   ];
 
@@ -311,13 +312,36 @@ export default function DuasView() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const speakDuaText = (text, langCode = 'ar-SA') => {
-    if (!text || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = langCode;
-    utterance.rate = 0.85;
-    window.speechSynthesis.speak(utterance);
+  const handlePlayDua = (item) => {
+    if (playTrack && item.audioUrl) {
+      playTrack(item.audioUrl, `${item.title} (${item.title_ur})`, 'Mishary Rashid Alafasy Recitation');
+      return;
+    }
+
+    // Speech synthesis fallback
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(item.arabic);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.82;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleBookmarkDua = (item) => {
+    if (!user) {
+      alert("Sign in to save this Dua to your Account Favorites!");
+      return;
+    }
+    const updated = { ...bookmarkedIds };
+    if (updated[item.id]) {
+      delete updated[item.id];
+      alert(`Removed "${item.title}" from your account favorites.`);
+    } else {
+      updated[item.id] = true;
+      alert(`Saved "${item.title}" to your User Account Favorites!`);
+    }
+    setBookmarkedIds(updated);
   };
 
   return (
@@ -381,7 +405,7 @@ export default function DuasView() {
             className="card"
             style={{ padding: '1.6rem', background: '#ffffff', borderRadius: '18px', border: '1.5px solid #e2e8f0', boxShadow: '0 4px 16px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
           >
-            {/* Top Bar Badges */}
+            {/* Top Bar Badges & Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary-dark)', background: '#fef3c7', border: '1px solid #fde68a', padding: '4px 12px', borderRadius: '15px' }}>
@@ -393,50 +417,73 @@ export default function DuasView() {
                 </span>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'nowrap' }}>
+              {/* Clean Icon Controls: Play Speaker Circle Button + Copy + Star Bookmark */}
+              <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+                {/* Audio Playback Circle Icon Button */}
                 <button
-                  onClick={() => speakDuaText(item.arabic, 'ar-SA')}
-                  title="Listen Audio Recitation"
+                  onClick={() => handlePlayDua(item)}
+                  title="Play Supplication Audio Recitation"
                   style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: 'var(--accent-gold)',
+                    color: 'var(--primary-dark)',
+                    border: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.4rem',
-                    background: '#ecfdf5',
-                    color: '#047857',
-                    border: '1.5px solid #a7f3d0',
-                    padding: '0.4rem 0.85rem',
-                    borderRadius: '20px',
+                    justify: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 5px rgba(4, 120, 87, 0.1)'
-                  }}
-                >
-                  <i className="fas fa-volume-up" style={{ color: '#10b981', fontSize: '0.9rem' }}></i> Listen Audio
-                </button>
-
-                <button
-                  onClick={() => handleCopy(item)}
-                  title="Copy Supplication"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    background: '#f8fafc',
-                    color: copiedId === item.id ? '#15803d' : '#475569',
-                    border: '1px solid #cbd5e1',
-                    padding: '0.4rem 0.85rem',
-                    borderRadius: '20px',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    whiteSpace: 'nowrap',
+                    fontSize: '0.95rem',
+                    boxShadow: '0 2px 8px rgba(245,158,11,0.35)',
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  <i className={`fas ${copiedId === item.id ? 'fa-check-circle' : 'fa-copy'}`}></i> {copiedId === item.id ? 'Copied!' : 'Copy'}
+                  <i className="fas fa-volume-up"></i>
+                </button>
+
+                {/* Star Bookmark Icon Button */}
+                <button
+                  onClick={() => handleBookmarkDua(item)}
+                  title="Bookmark Dua to Account"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: bookmarkedIds[item.id] ? '#fef3c7' : '#f8fafc',
+                    color: bookmarkedIds[item.id] ? '#b45309' : '#64748b',
+                    border: bookmarkedIds[item.id] ? '1.5px solid #fde68a' : '1px solid #e2e8f0',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justify: 'center',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <i className={`${bookmarkedIds[item.id] ? 'fas' : 'far'} fa-star`}></i>
+                </button>
+
+                {/* Copy Icon Button */}
+                <button
+                  onClick={() => handleCopy(item)}
+                  title="Copy Supplication Text"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: copiedId === item.id ? '#dcfce7' : '#f8fafc',
+                    color: copiedId === item.id ? '#15803d' : '#64748b',
+                    border: copiedId === item.id ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justify: 'center',
+                    cursor: 'pointer',
+                    fontSize: '0.88rem',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <i className={`fas ${copiedId === item.id ? 'fa-check' : 'fa-copy'}`}></i>
                 </button>
               </div>
             </div>

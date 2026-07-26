@@ -219,7 +219,7 @@ export default function App() {
         )}
 
         {activeTab === 'duas' && (
-          <DuasView />
+          <DuasView playTrack={playTrack} user={user} />
         )}
 
         {activeTab === 'contact' && (
