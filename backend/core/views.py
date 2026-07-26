@@ -1006,3 +1006,22 @@ def toggle_bookmark(request):
         
         return JsonResponse({'status': 'added', 'message': f'Saved Surah {surah_num}:{ayah_num} to your account favorites!'})
     return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def api_save_zakat_history(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method == 'POST':
+        import json
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+        year = int(body.get('year', 2026))
+        assets = float(body.get('total_assets', 0))
+        zakat = float(body.get('zakat_payable', 0))
+
+        rec, _ = ZakatHistory.objects.get_or_create(user=request.user, year=year)
+        rec.total_assets = assets
+        rec.zakat_payable = zakat
+        rec.save()
+        return JsonResponse({'status': 'success', 'message': 'Zakat record saved to history!'})
+    return JsonResponse({'status': 'error'}, status=400)
