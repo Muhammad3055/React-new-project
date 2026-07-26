@@ -184,7 +184,12 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             <div className="desktop-auth-area">
               {user ? (
                 <div className="desktop-user-menu">
-                  <span className="user-greeting">Hi, {user.username}</span>
+                  <span className="user-greeting" onClick={() => navigateToTab('dashboard')} style={{ cursor: 'pointer' }}>
+                    <i className="fas fa-user-circle"></i> Hi, {user.username}
+                  </span>
+                  <button className="nav-action-btn" title="My Progress & Dashboard" onClick={() => navigateToTab('dashboard')} style={{ background: 'var(--accent-gold)', color: 'var(--primary-dark)' }}>
+                    <i className="fas fa-tasks"></i> <span className="logout-text" style={{ color: 'var(--primary-dark)', fontWeight: 800 }}>Dashboard</span>
+                  </button>
                   {user.is_staff && (
                     <button className="nav-action-btn" title="Upload" onClick={() => navigateToTab('upload')}>
                       <i className="fas fa-cloud-upload-alt"></i>

@@ -250,3 +250,65 @@ class ContactMessage(models.Model):
         return f"From {self.name} ({self.email}) - {self.subject}"
 
 
+class UserProfilePreferences(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferences')
+    preferred_qari = models.CharField(max_length=100, default='ar.alafasy')
+    preferred_language = models.CharField(max_length=20, default='ur')
+    preferred_font_size = models.PositiveIntegerField(default=28)
+    preferred_theme = models.CharField(max_length=20, default='light')
+    location_city = models.CharField(max_length=100, blank=True, default='Karachi')
+    last_read_surah = models.PositiveIntegerField(default=1)
+    last_read_ayah = models.PositiveIntegerField(default=1)
+    khatm_target_days = models.PositiveIntegerField(default=30)
+    completed_surahs_json = models.TextField(default='[]')
+
+    def __str__(self):
+        return f"Preferences for {self.user.username}"
+
+
+class DailyPrayerTracker(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='namaz_records')
+    date = models.DateField()
+    fajr = models.BooleanField(default=False)
+    dhuhr = models.BooleanField(default=False)
+    asr = models.BooleanField(default=False)
+    maghrib = models.BooleanField(default=False)
+    isha = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'date')
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.user.username} - Namaz ({self.date})"
+
+
+class AyahReflectionNote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ayah_notes')
+    surah_number = models.PositiveIntegerField()
+    ayah_number = models.PositiveIntegerField()
+    note_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Note by {self.user.username} on ({self.surah_number}:{self.ayah_number})"
+
+
+class ZakatHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='zakat_records')
+    year = models.PositiveIntegerField()
+    total_assets = models.DecimalField(max_digits=15, decimal_places=2)
+    zakat_payable = models.DecimalField(max_digits=15, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-year']
+
+    def __str__(self):
+        return f"Zakat {self.year} - {self.user.username}: PKR {self.zakat_payable}"
+
+
+

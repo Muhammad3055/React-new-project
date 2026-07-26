@@ -23,6 +23,8 @@ import NamesOfAllahView from './views/NamesOfAllahView';
 import TasbeehView from './views/TasbeehView';
 import DuasView from './views/DuasView';
 
+import UserDashboardView from './views/UserDashboardView';
+
 export default function App() {
   const tabPathMap = {
     home: '/',
@@ -40,6 +42,7 @@ export default function App() {
     contact: '/contact',
     about: '/about',
     bookmarks: '/bookmarks',
+    dashboard: '/dashboard',
     upload: '/upload',
   };
 
@@ -229,6 +232,10 @@ export default function App() {
 
         {activeTab === 'bookmarks' && (
           <BookmarksView user={user} navigateToTab={navigateToTab} />
+        )}
+
+        {activeTab === 'dashboard' && (
+          <UserDashboardView user={user} openAuthModal={openAuthModal} navigateToTab={navigateToTab} playTrack={playTrack} />
         )}
 
         {activeTab === 'upload' && (

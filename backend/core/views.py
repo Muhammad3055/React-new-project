@@ -841,3 +841,158 @@ def sitemap_xml_view(request):
 {xml_entries}</urlset>
 """
     return HttpResponse(content, content_type="application/xml")
+
+
+@csrf_exempt
+def api_user_dashboard(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'guest', 'authenticated': False})
+
+    pref, _ = UserProfilePreferences.objects.get_or_create(user=request.user)
+
+    # Bookmarks
+    bookmarks_qs = Bookmark.objects.filter(user=request.user)
+    bookmarks_data = [{'surah_number': b.surah_number, 'ayah_number': b.ayah_number, 'created_at': b.created_at.strftime('%Y-%m-%d %H:%M')} for b in bookmarks_qs]
+
+    # Prayer Tracker for last 7 days
+    from datetime import date, timedelta
+    today = date.today()
+    namaz_days = []
+    streak = 0
+
+    for i in range(7):
+        d = today - timedelta(days=i)
+        rec, _ = DailyPrayerTracker.objects.get_or_create(user=request.user, date=d)
+        all_completed = rec.fajr and rec.dhuhr and rec.asr and rec.maghrib and rec.isha
+        if i == 0 or streak == i:
+            if all_completed:
+                streak += 1
+        namaz_days.append({
+            'date': d.strftime('%Y-%m-%d'),
+            'fajr': rec.fajr,
+            'dhuhr': rec.dhuhr,
+            'asr': rec.asr,
+            'maghrib': rec.maghrib,
+            'isha': rec.isha,
+        })
+
+    # Ayah Notes
+    notes_qs = AyahReflectionNote.objects.filter(user=request.user)
+    notes_data = [{'id': n.id, 'surah_number': n.surah_number, 'ayah_number': n.ayah_number, 'note_text': n.note_text, 'created_at': n.created_at.strftime('%Y-%m-%d')} for n in notes_qs]
+
+    # Zakat History
+    zakat_qs = ZakatHistory.objects.filter(user=request.user)
+    zakat_data = [{'year': z.year, 'total_assets': float(z.total_assets), 'zakat_payable': float(z.zakat_payable)} for z in zakat_qs]
+
+    import json
+    try:
+        completed_surahs = json.loads(pref.completed_surahs_json)
+    except Exception:
+        completed_surahs = []
+
+    khatm_percent = round((len(completed_surahs) / 114) * 100, 1)
+
+    return JsonResponse({
+        'status': 'success',
+        'authenticated': True,
+        'username': request.user.username,
+        'email': request.user.email,
+        'preferences': {
+            'preferred_qari': pref.preferred_qari,
+            'preferred_language': pref.preferred_language,
+            'preferred_font_size': pref.preferred_font_size,
+            'preferred_theme': pref.preferred_theme,
+            'location_city': pref.location_city,
+            'last_read_surah': pref.last_read_surah,
+            'last_read_ayah': pref.last_read_ayah,
+            'khatm_target_days': pref.khatm_target_days,
+            'completed_surahs': completed_surahs,
+            'khatm_percent': khatm_percent,
+        },
+        'bookmarks': bookmarks_data,
+        'namaz_days': namaz_days,
+        'namaz_streak': streak,
+        'ayah_notes': notes_data,
+        'zakat_history': zakat_data,
+    })
+
+
+@csrf_exempt
+def api_update_user_preferences(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method == 'POST':
+        import json
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+        pref, _ = UserProfilePreferences.objects.get_or_create(user=request.user)
+
+        if 'preferred_qari' in body: pref.preferred_qari = body['preferred_qari']
+        if 'preferred_language' in body: pref.preferred_language = body['preferred_language']
+        if 'preferred_font_size' in body: pref.preferred_font_size = int(body['preferred_font_size'])
+        if 'preferred_theme' in body: pref.preferred_theme = body['preferred_theme']
+        if 'location_city' in body: pref.location_city = body['location_city']
+        if 'last_read_surah' in body: pref.last_read_surah = int(body['last_read_surah'])
+        if 'last_read_ayah' in body: pref.last_read_ayah = int(body['last_read_ayah'])
+        if 'khatm_target_days' in body: pref.khatm_target_days = int(body['khatm_target_days'])
+        if 'completed_surahs' in body: pref.completed_surahs_json = json.dumps(body['completed_surahs'])
+
+        pref.save()
+        return JsonResponse({'status': 'success', 'message': 'Preferences saved successfully'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def api_toggle_namaz(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method == 'POST':
+        import json
+        from datetime import date
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+        target_date_str = body.get('date', date.today().strftime('%Y-%m-%d'))
+        prayer_name = body.get('prayer')
+
+        rec, _ = DailyPrayerTracker.objects.get_or_create(user=request.user, date=target_date_str)
+        if hasattr(rec, prayer_name):
+            setattr(rec, prayer_name, not getattr(rec, prayer_name))
+            rec.save()
+
+        return JsonResponse({'status': 'success', 'fajr': rec.fajr, 'dhuhr': rec.dhuhr, 'asr': rec.asr, 'maghrib': rec.maghrib, 'isha': rec.isha})
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def api_save_ayah_note(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method == 'POST':
+        import json
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+        surah_num = int(body.get('surah_number', 1))
+        ayah_num = int(body.get('ayah_number', 1))
+        note_text = body.get('note_text', '').strip()
+
+        note, _ = AyahReflectionNote.objects.get_or_create(user=request.user, surah_number=surah_num, ayah_number=ayah_num)
+        note.note_text = note_text
+        note.save()
+        return JsonResponse({'status': 'success', 'message': 'Reflection note saved!'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def api_save_zakat_history(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method == 'POST':
+        import json
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+        year = int(body.get('year', 2026))
+        assets = float(body.get('total_assets', 0))
+        zakat = float(body.get('zakat_payable', 0))
+
+        rec, _ = ZakatHistory.objects.get_or_create(user=request.user, year=year)
+        rec.total_assets = assets
+        rec.zakat_payable = zakat
+        rec.save()
+        return JsonResponse({'status': 'success', 'message': 'Zakat record saved to history!'})
+    return JsonResponse({'status': 'error'}, status=400)

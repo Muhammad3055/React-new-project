@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/report/submit/', views.submit_report_view, name='submit_report'),
     path('api/contact/submit/', views.submit_contact_view, name='submit_contact'),
 
-    # Authentication API
+    # Authentication & User Tracker API
     path('api/auth/status/', views.api_auth_status, name='api_auth_status'),
     path('api/auth/login/', views.api_login, name='api_login'),
     path('api/auth/signup/', views.api_signup, name='api_signup'),
@@ -27,6 +27,14 @@ urlpatterns = [
     path('api/auth/send-otp/', views.api_send_otp, name='api_send_otp'),
     path('api/auth/verify-otp/', views.api_verify_otp, name='api_verify_otp'),
     path('api/auth/logout/', views.api_logout, name='api_logout'),
+
+    # Logged-in User Dashboard & Personalization API
+    path('api/user/dashboard/', views.api_user_dashboard, name='api_user_dashboard'),
+    path('api/user/preferences/update/', views.api_update_user_preferences, name='api_update_user_preferences'),
+    path('api/user/namaz/toggle/', views.api_toggle_namaz, name='api_toggle_namaz'),
+    path('api/user/note/add/', views.api_save_ayah_note, name='api_save_ayah_note'),
+    path('api/user/zakat/save/', views.api_save_zakat_history, name='api_save_zakat_history'),
+
     # SEO Endpoints
     path('robots.txt', views.robots_txt_view, name='robots_txt'),
     path('sitemap.xml', views.sitemap_xml_view, name='sitemap_xml'),
