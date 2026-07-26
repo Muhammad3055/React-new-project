@@ -180,7 +180,7 @@ export default function App() {
         )}
 
         {activeTab === 'quran' && (
-          <QuranView playTrack={playTrack} />
+          <QuranView playTrack={playTrack} user={user} navigateToTab={navigateToTab} />
         )}
 
         {activeTab === 'qaris' && (

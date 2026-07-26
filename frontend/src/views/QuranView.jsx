@@ -48,23 +48,39 @@ const QARIS = [
   { id: 'daghistani', name: 'Zaki Daghistani', server: 'https://server9.mp3quran.net/zaki/' }
 ];
 
-export default function QuranView({ playTrack }) {
+export default function QuranView({ playTrack, user, navigateToTab }) {
   const [surahsList, setSurahsList] = useState([]);
-  const [selectedQari, setSelectedQari] = useState(QARIS[0].id);
+  const [selectedQari, setSelectedQari] = useState('alafasy');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [offlineSurahs, setOfflineSurahs] = useState({});
   const itemsPerPage = 12;
 
   useEffect(() => {
     fetch('https://api.alquran.cloud/v1/surah')
       .then(res => res.json())
       .then(data => {
-        if (data && data.data) {
-          setSurahsList(data.data);
-        }
+        if (data.data) setSurahsList(data.data);
       })
       .catch(() => {});
-  }, []);
+
+    // Sync preferred Qari if user is logged in
+    if (user) {
+      fetch('/api/user/dashboard/')
+        .then(res => res.json())
+        .then(d => {
+          if (d?.preferences?.preferred_qari) {
+            setSelectedQari(d.preferences.preferred_qari);
+          }
+        })
+        .catch(() => {});
+    }
+
+    try {
+      const cached = localStorage.getItem('quranOfflineSurahs');
+      if (cached) setOfflineSurahs(JSON.parse(cached));
+    } catch (e) {}
+  }, [user]);
 
   const activeQariObj = QARIS.find(q => q.id === selectedQari) || QARIS[0];
 
@@ -76,8 +92,42 @@ export default function QuranView({ playTrack }) {
   const getTranslationAudioUrl = (surahNumber, langCode) => {
     if (langCode === 'ur') return `https://cdn.islamic.network/quran/audio-surah/128/ur.khan/${surahNumber}.mp3`;
     if (langCode === 'en') return `https://cdn.islamic.network/quran/audio-surah/128/en.walk/${surahNumber}.mp3`;
-    if (langCode === 'fr') return `https://cdn.islamic.network/quran/audio-surah/128/fr.leclerc/${surahNumber}.mp3`;
     return `https://cdn.islamic.network/quran/audio-surah/128/en.walk/${surahNumber}.mp3`;
+  };
+
+  const handleSetFavoriteQari = (qariId) => {
+    if (!user) {
+      alert("Sign in to save your preferred Qari across devices!");
+      return;
+    }
+    fetch('/api/user/preferences/update/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ preferred_qari: qariId })
+    })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || `Set ${activeQariObj.name} as your preferred Qari!`);
+      });
+  };
+
+  const handleDownloadMp3 = (surahNumber, surahName, audioUrl) => {
+    const updated = { ...offlineSurahs };
+    updated[surahNumber] = {
+      number: surahNumber,
+      name: surahName,
+      downloadedAt: new Date().toLocaleDateString()
+    };
+    setOfflineSurahs(updated);
+    localStorage.setItem('quranOfflineSurahs', JSON.stringify(updated));
+
+    const link = document.createElement('a');
+    link.href = audioUrl;
+    link.download = `Surah_${surahNumber}_${surahName.replace(/\s+/g, '_')}_${activeQariObj.name.replace(/\s+/g, '_')}.mp3`;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const filteredSurahs = surahsList.filter(s =>
@@ -93,18 +143,16 @@ export default function QuranView({ playTrack }) {
     <div className="container">
       <div className="section-header">
         <h1 className="section-title">
-          <i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Complete 114 Surahs MP3 & Audio Translations
+          <i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Complete 114 Surahs MP3 & Audio Recitations
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
-          Listen to complete 114 Surah recitations by top Qaris or play English & Urdu spoken audio translations directly.
+          Listen to complete 114 Surah recitations by top Qaris, download MP3s directly, or play spoken Urdu & English translations.
         </p>
       </div>
 
-      {/* Filter Bar */}
       <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1.2rem', alignItems: 'center' }}>
-        {/* Qari Selection */}
         <div className="filter-group">
-          <span className="filter-label"><i className="fas fa-user-alt"></i> Select Qari (Arabic Recitation):</span>
+          <span className="filter-label"><i className="fas fa-user-alt"></i> Select Qari:</span>
           <select
             className="filter-select"
             value={selectedQari}
@@ -114,9 +162,19 @@ export default function QuranView({ playTrack }) {
               <option key={q.id} value={q.id}>{q.name}</option>
             ))}
           </select>
+
+          {user && (
+            <button
+              onClick={() => handleSetFavoriteQari(selectedQari)}
+              className="nav-action-btn"
+              title="Set as My Default Preferred Qari"
+              style={{ background: 'var(--accent-gold)', color: 'var(--primary-dark)', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 700 }}
+            >
+              <i className="fas fa-star"></i> Set Default
+            </button>
+          )}
         </div>
 
-        {/* Search Input */}
         <div className="filter-group">
           <span className="filter-label"><i className="fas fa-search"></i> Search Surah:</span>
           <input
@@ -129,7 +187,6 @@ export default function QuranView({ playTrack }) {
         </div>
       </div>
 
-      {/* 114 Surahs Grid */}
       {surahsList.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '3rem' }}>
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
@@ -139,17 +196,22 @@ export default function QuranView({ playTrack }) {
         <div className="grid-3">
           {displayedSurahs.map((surah) => {
             const qariAudioUrl = getQariAudioUrl(surah.number, activeQariObj);
-            const englishAudioUrl = getTranslationAudioUrl(surah.number, 'en');
-            const urduAudioUrl = getTranslationAudioUrl(surah.number, 'ur');
+            const isDownloaded = !!offlineSurahs[surah.number];
 
             return (
-              <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: isDownloaded ? '1.5px solid #10b981' : '1px solid #e2e8f0' }}>
                 <div>
                   <div className="card-header-badge">
                     <span className="surah-number-badge">{surah.number}</span>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px' }}>
                       {surah.revelationType} &bull; {surah.numberOfAyahs} Verses
                     </span>
+
+                    {isDownloaded && (
+                      <span style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                        <i className="fas fa-check-circle"></i> Offline
+                      </span>
+                    )}
                   </div>
                   <div className="card-body">
                     <h3 className="card-title">Surah {surah.englishName}</h3>
@@ -159,13 +221,22 @@ export default function QuranView({ playTrack }) {
                   </div>
                 </div>
 
-                <div className="card-footer" style={{ marginTop: '0.75rem' }}>
+                <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
                   <button
                     className="btn-play"
-                    style={{ width: '100%', justifyContent: 'center' }}
+                    style={{ flex: 1, justifyContent: 'center' }}
                     onClick={() => playTrack(qariAudioUrl, `Surah ${surah.englishName} (${surah.name})`, activeQariObj.name)}
                   >
-                    <i className="fas fa-play"></i> Play Tilawat ({activeQariObj.name.split(' ')[0]})
+                    <i className="fas fa-play"></i> Play Tilawat
+                  </button>
+
+                  <button
+                    className="btn-play"
+                    title="Download MP3 Audio"
+                    onClick={() => handleDownloadMp3(surah.number, surah.englishName, qariAudioUrl)}
+                    style={{ background: isDownloaded ? '#10b981' : 'var(--primary-emerald)', color: '#fff', padding: '0.55rem 0.9rem', fontSize: '0.9rem' }}
+                  >
+                    <i className="fas fa-download"></i>
                   </button>
                 </div>
               </div>
