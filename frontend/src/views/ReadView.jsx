@@ -348,7 +348,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     window.speechSynthesis.speak(utterance);
   };
 
-  // Play Scenario: First Arabic Quran MP3 in selected Qari's voice, then automatically speak translation voice
+  // Play Scenario: First Arabic Quran MP3 in selected Qari's voice, then automatically speak translation voices (English, Urdu, Brahui) in sequence
   const playAyahAudioAndSpokenTranslation = (ayah, index) => {
     const activeMeta = surahsList.find(s => s.number === selectedSurah) || { name: `Surah ${selectedSurah}` };
     const qariObj = QARI_LIST.find(q => q.id === selectedQari) || QARI_LIST[0];
@@ -357,37 +357,49 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       if (!autoSpeakTranslation || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
 
-      // Read English translation voice if enabled
+      const speechQueue = [];
+
+      // 1. English Spoken Voice (if checked)
       if (translations.en && translationData.en && translationData.en[index]) {
-        const itemText = translationData.en[index].text;
-        if (itemText) {
-          const utterance = new SpeechSynthesisUtterance(itemText);
-          utterance.lang = 'en-US';
-          utterance.rate = 0.9;
-          window.speechSynthesis.speak(utterance);
+        const enText = translationData.en[index].text;
+        if (enText) {
+          const uEn = new SpeechSynthesisUtterance(enText);
+          uEn.lang = 'en-US';
+          uEn.rate = 0.9;
+          speechQueue.push(uEn);
         }
       }
 
-      // Read Urdu translation voice if enabled
+      // 2. Urdu Spoken Voice (if checked)
       if (translations.ur && translationData.ur && translationData.ur[index]) {
         const urText = translationData.ur[index].text;
         if (urText) {
-          const utterance = new SpeechSynthesisUtterance(urText);
-          utterance.lang = 'ur-PK';
-          utterance.rate = 0.9;
-          window.speechSynthesis.speak(utterance);
+          const uUr = new SpeechSynthesisUtterance(urText);
+          uUr.lang = 'ur-PK';
+          uUr.rate = 0.9;
+          speechQueue.push(uUr);
         }
       }
 
-      // Read Brahui translation voice if enabled
+      // 3. Brahui Spoken Voice (if checked)
       if (translations.br) {
         const brText = getBrahuiTranslationText(index, ayah.text);
         if (brText) {
-          const utterance = new SpeechSynthesisUtterance(brText);
-          utterance.lang = 'ur-PK';
-          utterance.rate = 0.85;
-          window.speechSynthesis.speak(utterance);
+          const uBr = new SpeechSynthesisUtterance(brText);
+          uBr.lang = 'ur-PK';
+          uBr.rate = 0.85;
+          speechQueue.push(uBr);
         }
+      }
+
+      // Chain speech utterances one by one seamlessly
+      if (speechQueue.length > 0) {
+        for (let i = 0; i < speechQueue.length - 1; i++) {
+          speechQueue[i].onend = () => {
+            window.speechSynthesis.speak(speechQueue[i + 1]);
+          };
+        }
+        window.speechSynthesis.speak(speechQueue[0]);
       }
     };
 

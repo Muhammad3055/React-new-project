@@ -244,11 +244,11 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={onClose} style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div
         className="modal-card"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '450px', borderRadius: '16px', overflow: 'hidden' }}
+        style={{ maxWidth: '450px', width: '92%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px', margin: 'auto' }}
       >
         {/* Header Tabs */}
         <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', alignItems: 'center' }}>

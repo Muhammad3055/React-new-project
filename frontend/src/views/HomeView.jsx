@@ -24,6 +24,58 @@ const DEFAULT_HADITHS = [
   { id: 2, book_name: "Sahih Muslim", hadith_number: 223, grade: "Sahih", arabic_text: "الطَّهُورُ شَطْرُ الإِيمَانِ", translation: "Purity is half of faith." }
 ];
 
+const DAILY_VERSES_COLLECTION = [
+  {
+    surahName: "Ar-Ra'd (13:28)",
+    arabic: "الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ ۗ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+    translation_en: "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah do hearts find peace.",
+    translation_ur: "جو لوگ ایمان لائے اور ان کے دل اللہ کے ذکر سے اطمینان پاتے ہیں، سن لو! اللہ کے ذکر ہی سے دلوں کو اطمینان ملتا ہے۔",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1735.mp3"
+  },
+  {
+    surahName: "Ash-Sharh (94:5)",
+    arabic: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    translation_en: "For indeed, with hardship will be ease.",
+    translation_ur: "پس بلاشبہ ہر مشکل کے ساتھ آسانیاں ہیں!",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6095.mp3"
+  },
+  {
+    surahName: "Al-Baqarah (2:286)",
+    arabic: "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ",
+    translation_en: "Allah does not charge a soul except with that within its capacity. It will have [the consequence of] what good it has gained.",
+    translation_ur: "اللہ کسی بھی انسان پر اس کی طاقت سے زیادہ بوجھ نہیں ڈالتا، جو نیکی اس نے کمائی اس کا فائدہ اسی کو ہے۔",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/293.mp3"
+  },
+  {
+    surahName: "Ali 'Imran (3:139)",
+    arabic: "وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ",
+    translation_en: "So do not weaken and do not grieve, and you will be superior if you are true believers.",
+    translation_ur: "اور نہ تم کمزور پڑو اور نہ غمگین ہو، تم ہی غالب رہو گے اگر تم سچے مومن ہو۔",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/432.mp3"
+  },
+  {
+    surahName: "Al-Anfal (8:30)",
+    arabic: "وَإِذْ يَمْكُرُ بِكَ الَّذِينَ كَفَرُوا لِيُثْبِتُوكَ أَوْ يَقْتُلُوكَ أَوْ يُخْرِجُوكَ ۚ وَيَمْكُرُونَ وَيَمْكُرُ اللَّهُ ۖ وَاللَّهُ خَيْرُ الْمَاكِرِينَ",
+    translation_en: "And [remember, O Muhammad], when those who disbelieved plotted against you to restrain you or kill you or evict you. But they plan, and Allah plans. And Allah is the best of planners.",
+    translation_ur: "اور (یاد کریں) جب کافر لوگ آپ کے خلاف تدبیریں کر رہے تھے کہ آپ کو قید کر دیں یا قتل کر دیں یا وطن سے نکال دیں، وہ تدبیریں کر رہے تھے اور اللہ بھی تدبیر فرما رہا تھا، اور اللہ سب سے بہترین تدبیر فرمانے والا ہے۔",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1190.mp3"
+  },
+  {
+    surahName: "Taha (20:114)",
+    arabic: "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ ۗ وَلَا تَعْجَلْ بِالْقُرْآنِ مِن قَبْلِ أَن يُقْضَىٰ إِلَيْكَ وَحْيُهُ ۖ وَقُل رَّبِّ زِدْنِي عِلْمًا",
+    translation_en: "So high [above all] is Allah, the Sovereign, the Truth. And do not hasten with the Quran before its revelation is completed to you, and say: My Lord, increase me in knowledge.",
+    translation_ur: "پس اللہ سچا بادشاہ بلند و برتر ہے، اور آپ قرآن پڑھنے میں جلدی نہ کریں اور دعا کریں: اے میرے پروردگار! میرے علم میں اضافہ فرما۔",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2462.mp3"
+  },
+  {
+    surahName: "Al-Anbiya (21:87)",
+    arabic: "وَذَا النُّونِ إِذ ذَّهَبَ مُغَاضِبًا فَظَنَّ أَن لَّن نَّقْدِرَ عَلَيْهِ فَنَادَىٰ فِي الظُّلُمَاتِ أَن لَّا إِلَـٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ",
+    translation_en: "And [remember] Dhul-Nun (Yunis), when he went off in anger and thought that We would not decree [any hardship] upon him. And he called out within the darknesses: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.'",
+    translation_ur: "اور حضرت یونس علیہ السلام جب غصے میں چلے گئے اور انہوں نے اندھیروں میں پکارا: تیرے سوا کوئی معبود نہیں، تو پاک ہے، بے شک میں ہی قصوروار تھا۔",
+    audio_url: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2570.mp3"
+  }
+];
+
 export default function HomeView({ navigateToTab, setActiveTab, playTrack, openVideoModal, user, openAuthModal }) {
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
@@ -36,6 +88,17 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
   const [books, setBooks] = useState(DEFAULT_BOOKS);
   const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
+
+  // Automatic Daily 12 AM Midnight Section Rotator Algorithm
+  const getDailyRotatedSlice = (arr, count = 4) => {
+    if (!arr || arr.length === 0) return [];
+    if (arr.length <= count) return arr;
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const offset = (dayOfYear * count) % arr.length;
+    const rotated = [...arr.slice(offset), ...arr.slice(0, offset)];
+    return rotated.slice(0, count);
+  };
 
   useEffect(() => {
     // Check local storage for last read position
@@ -58,24 +121,24 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
       })
       .catch(() => {});
 
-    fetch('/api/videos/?page=1')
+    fetch('/api/videos/')
       .then(res => res.json())
       .then(data => {
-        if (data.results && data.results.length > 0) setVideos(data.results.slice(0, 2));
+        if (data.results && data.results.length > 0) setVideos(data.results);
       })
       .catch(() => {});
 
-    fetch('/api/books/?page=1')
+    fetch('/api/books/')
       .then(res => res.json())
       .then(data => {
         if (data.results && data.results.length > 0) setBooks(data.results);
       })
       .catch(() => {});
 
-    fetch('/api/hadith/?page=1')
+    fetch('/api/hadith/')
       .then(res => res.json())
       .then(data => {
-        if (data.results && data.results.length > 0) setHadiths(data.results.slice(0, 2));
+        if (data.results && data.results.length > 0) setHadiths(data.results);
       })
       .catch(() => {});
   }, []);
@@ -143,6 +206,83 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </div>
       </section>
 
+      {/* DAILY VERSE & INSPIRATION SPOTLIGHT (DYNAMICALLY ROTATES EVERY DAY AT MIDNIGHT) */}
+      {(() => {
+        const today = new Date();
+        const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+        const todayVerse = DAILY_VERSES_COLLECTION[dayOfYear % DAILY_VERSES_COLLECTION.length];
+        return (
+          <section className="container" style={{ marginTop: '2rem' }}>
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+                border: '2px solid var(--accent-gold)',
+                borderRadius: '16px',
+                padding: '2rem 1.75rem',
+                color: '#ffffff',
+                boxShadow: '0 12px 32px rgba(2, 44, 34, 0.25)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(245,158,11,0.15)', padding: '0.35rem 0.85rem', borderRadius: '20px' }}>
+                  <i className="fas fa-sun"></i> Daily Verse & Reflection of the Day
+                </span>
+                <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
+                  Surah {todayVerse.surahName}
+                </span>
+              </div>
+
+              <div style={{ textAlign: 'center', margin: '1rem 0 1.5rem 0' }}>
+                <p className="arabic-font" style={{ fontSize: '1.8rem', color: '#ffffff', lineHeight: '2.2', marginBottom: '1rem', fontWeight: 700 }}>
+                  {todayVerse.arabic}
+                </p>
+                <p style={{ fontSize: '1.05rem', color: '#fef3c7', fontStyle: 'italic', maxWidth: '850px', margin: '0 auto 0.75rem auto', lineHeight: '1.6' }}>
+                  "{todayVerse.translation_en}"
+                </p>
+                <p style={{ fontSize: '0.92rem', color: '#6ee7b7', margin: '0 auto', maxWidth: '800px', fontWeight: 600 }}>
+                  اردو ترجمہ: "{todayVerse.translation_ur}"
+                </p>
+              </div>
+
+              {/* Share & Interactive Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <button
+                  className="btn-play"
+                  onClick={() => playTrack(todayVerse.audio_url, `Surah ${todayVerse.surahName}`, "Mishary Rashid Alafasy")}
+                  style={{ padding: '0.55rem 1.25rem', fontSize: '0.88rem' }}
+                >
+                  <i className="fas fa-play"></i> Listen Recitation
+                </button>
+
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🌸 Daily Quranic Reflection 🌸\n\n${todayVerse.arabic}\n\n"${todayVerse.translation_en}"\n[Surah ${todayVerse.surahName}]\n\nRead more on Quran Portal!`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-play"
+                  style={{ background: '#25D366', borderColor: '#25D366', color: '#ffffff', padding: '0.55rem 1.25rem', fontSize: '0.88rem', textDecoration: 'none' }}
+                >
+                  <i className="fab fa-whatsapp"></i> Share on WhatsApp
+                </a>
+
+                <button
+                  className="btn-play"
+                  onClick={() => {
+                    const text = `${todayVerse.arabic}\n\n"${todayVerse.translation_en}"\n[Surah ${todayVerse.surahName}]`;
+                    navigator.clipboard.writeText(text);
+                    alert("Daily verse copied to clipboard!");
+                  }}
+                  style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.3)', color: '#ffffff', padding: '0.55rem 1.25rem', fontSize: '0.88rem' }}
+                >
+                  <i className="fas fa-copy"></i> Copy Verse
+                </button>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Live Prayer Times & Hijri Date Widget */}
       <section className="container" style={{ marginTop: '2rem', textAlign: 'center' }}>
         <PrayerTimesWidget />
@@ -204,7 +344,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-          {audios.slice(0, 4).map((item) => (
+          {getDailyRotatedSlice(audios, 4).map((item) => (
             <div key={item.id} className="card" style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
@@ -266,7 +406,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-          {books.map((bk) => (
+          {getDailyRotatedSlice(books, 4).map((bk) => (
             <div key={bk.id} className="card" style={{ padding: '1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div className="media-cover-wrapper" style={{ width: '130px', height: '160px', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
@@ -338,7 +478,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          {videos.map((vid) => (
+          {getDailyRotatedSlice(videos, 4).map((vid) => (
             <div key={vid.id} className="card" style={{ padding: '1.25rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="media-cover-wrapper" style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', position: 'relative', marginBottom: '1rem' }}>
                 <img src={vid.thumbnail_url || "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=500&q=80"} alt={vid.title} className="media-cover-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -372,7 +512,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, openV
         </div>
 
         <div className="grid-2" style={{ gap: '1.5rem' }}>
-          {hadiths.map((h) => (
+          {getDailyRotatedSlice(hadiths, 4).map((h) => (
             <div key={h.id} className="card" style={{ padding: '1.75rem', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-dark)', background: 'var(--accent-gold-light)', padding: '3px 12px', borderRadius: '12px' }}>

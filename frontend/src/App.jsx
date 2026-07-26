@@ -71,21 +71,26 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Dynamic SEO Page Title update
+  // Dynamic SEO Page Title update (English, Urdu & Brahui SEO)
   useEffect(() => {
     const seoTitles = {
-      home: 'Quran Portal - Read Quran Online, MP3 Recitations, Tafseer & Hadith',
-      read: 'Read Holy Quran Online - 114 Surahs with Multi-Language Translations',
-      quran: 'Quran MP3 Recitations - Listen to Top 10 Qaris in HD Audio',
-      tafseer: 'Tafseer Quran - Detailed Verse Explanations & Commentary',
-      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan',
-      books: 'Islamic PDF Books & Library - Free Digital Islamic Literature',
+      home: 'Quran Portal - Read Quran Online in English, Urdu (اردو) & Brahui (براہوئی) | MP3 Recitations',
+      read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui Translations',
+      quran: 'Quran MP3 Recitations - Listen to 20 World-Renowned Qaris in HD Audio',
+      qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads',
+      tafseer: 'Tafseer Quran - Detailed Verse Explanations & Commentary (تفسیر ابن کثیر)',
+      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan (احادیث مبارکہ)',
+      fazail: 'Fazail & Virtues of Quran & Good Deeds (فضائل الاعمال - اردو و انگریزی)',
+      books: 'Islamic PDF Books & Library - Free Digital Islamic Literature & E-Books',
+      namesOfAllah: '99 Names of Allah (Asma ul Husna - أسماء الله الحسنى)',
+      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr (ڈیجیٹل تسبیح)',
+      duas: 'Masnoon Duas & Supplications (مسنون دعائیں)',
       contact: 'Contact Us & Feedback - Quran Portal',
       about: 'About Us & Developer Profile - Quran Al Kareem',
       bookmarks: 'My Bookmarks - Quran Portal',
       upload: 'Admin Upload Content - Quran Portal'
     };
-    document.title = seoTitles[activeTab] || 'Quran Portal';
+    document.title = seoTitles[activeTab] || 'Quran Portal - Read Quran Online (English, Urdu, Brahui)';
   }, [activeTab]);
 
   // Check auth status on mount (with localStorage fallback for Netlify)

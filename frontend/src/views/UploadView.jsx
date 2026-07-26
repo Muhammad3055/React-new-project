@@ -25,7 +25,7 @@ export default function UploadView({ user }) {
   const [videoData, setVideoData] = useState({ title: '', speaker: '', video_url: '', thumbnail_url: '', description: '' });
 
   // Book Form State
-  const [bookData, setBookData] = useState({ title: '', author: '', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
+  const [bookData, setBookData] = useState({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
 
   // Hadith Form State
   const [hadithData, setHadithData] = useState({ book_name: 'Sahih Bukhari', hadith_number: 1, chapter: '', arabic_text: '', translation: '', narrated_by: '', grade: 'Sahih' });
@@ -61,12 +61,12 @@ export default function UploadView({ user }) {
     })
       .then(res => res.json())
       .then(() => {
-        setSubmittedMessage('PDF Book added successfully!');
-        setBookData({ title: '', author: '', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
+        setSubmittedMessage('Library Document added successfully!');
+        setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
-        setSubmittedMessage('PDF Book saved successfully!');
+        setSubmittedMessage('Library Document saved successfully!');
         setTimeout(() => setSubmittedMessage(''), 4000);
       });
   };
@@ -237,22 +237,31 @@ export default function UploadView({ user }) {
 
         {activeTab === 'book' && (
           <form onSubmit={handleBookSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Add New PDF Book</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <h3><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Add New Library Document / Resource</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Book Title *</label>
-                <input type="text" className="form-input" required value={bookData.title} onChange={e => setBookData({ ...bookData, title: e.target.value })} placeholder="e.g. Tafsir Ibn Kathir Complete" />
+                <label className="form-label">Document Title *</label>
+                <input type="text" className="form-input" required value={bookData.title} onChange={e => setBookData({ ...bookData, title: e.target.value })} placeholder="e.g. Tafsir Ibn Kathir / Tajweed Guide" />
               </div>
               <div>
-                <label className="form-label">Author Name *</label>
+                <label className="form-label">Author / Scholar *</label>
                 <input type="text" className="form-input" required value={bookData.author} onChange={e => setBookData({ ...bookData, author: e.target.value })} placeholder="e.g. Hafiz Ibn Kathir" />
+              </div>
+              <div>
+                <label className="form-label">Document Format *</label>
+                <select className="form-select" value={bookData.file_type} onChange={e => setBookData({ ...bookData, file_type: e.target.value })}>
+                  <option value="pdf">PDF Document (.pdf)</option>
+                  <option value="doc">Word Document (.docx)</option>
+                  <option value="ppt">PowerPoint Presentation (.pptx)</option>
+                  <option value="book">Printed / E-Book</option>
+                </select>
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">PDF Document URL *</label>
-                <input type="url" className="form-input" required value={bookData.pdf_url} onChange={e => setBookData({ ...bookData, pdf_url: e.target.value })} placeholder="https://domain.com/books/sample.pdf" />
+                <label className="form-label">Document File URL *</label>
+                <input type="url" className="form-input" required value={bookData.pdf_url} onChange={e => setBookData({ ...bookData, pdf_url: e.target.value })} placeholder="https://domain.com/docs/sample.docx" />
               </div>
               <div>
                 <label className="form-label">Cover Image URL</label>
@@ -262,7 +271,7 @@ export default function UploadView({ user }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Total Pages</label>
+                <label className="form-label">Total Pages / Slides</label>
                 <input type="number" className="form-input" value={bookData.pages_count} onChange={e => setBookData({ ...bookData, pages_count: parseInt(e.target.value) || 100 })} />
               </div>
               <div>
@@ -273,11 +282,11 @@ export default function UploadView({ user }) {
 
             <div>
               <label className="form-label">Description</label>
-              <textarea className="form-textarea" rows="3" value={bookData.description} onChange={e => setBookData({ ...bookData, description: e.target.value })} placeholder="Book summary or description..."></textarea>
+              <textarea className="form-textarea" rows="3" value={bookData.description} onChange={e => setBookData({ ...bookData, description: e.target.value })} placeholder="Document summary or description..."></textarea>
             </div>
 
             <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-plus"></i> Upload PDF Book
+              <i className="fas fa-plus"></i> Upload Library Document
             </button>
           </form>
         )}

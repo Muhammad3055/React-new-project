@@ -23,8 +23,8 @@ class VideoMediaAdmin(admin.ModelAdmin):
 
 @admin.register(BookMedia)
 class BookMediaAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'category', 'pages_count', 'language', 'created_at')
-    list_filter = ('category', 'language')
+    list_display = ('title', 'file_type', 'author', 'category', 'pages_count', 'language', 'created_at')
+    list_filter = ('file_type', 'category', 'language')
     search_fields = ('title', 'author', 'description')
 
 

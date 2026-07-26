@@ -125,6 +125,101 @@ def seed_database():
     for item in video_items:
         VideoMedia.objects.get_or_create(title=item["title"], defaults=item)
 
+    # Islamic Library Resources (PDF, Word DOCX, PPT Presentations, E-Books)
+    book_items = [
+        {
+            "title": "Tafsir Ibn Kathir (Complete English Translation)",
+            "author": "Hafiz Ibn Kathir",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Tafsir-Ibn-Kathir.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "Comprehensive classical Quran commentary covering all 114 Surahs with authentic Hadith explanations.",
+            "pages_count": 1250,
+            "language": "English / Arabic",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Introduction to Tajweed Rules & Pronunciation Guide",
+            "author": "Dr. Ayman Swayd",
+            "file_type": "doc",
+            "pdf_url": "https://www.quranproject.org/Tajweed-Rules.docx",
+            "cover_url": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80",
+            "description": "Editable Word document guide on Tajweed articulation points (Makharij) and characteristics of Arabic letters.",
+            "pages_count": 45,
+            "language": "English / Arabic",
+            "category": cat_recitation
+        },
+        {
+            "title": "Overview of Quranic Sciences & Revelation Overview",
+            "author": "Sheikh Yasir Qadhi",
+            "file_type": "ppt",
+            "pdf_url": "https://www.quranproject.org/Quranic-Sciences-Presentation.pptx",
+            "cover_url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=500&q=80",
+            "description": "Interactive PowerPoint slide presentation covering the history of Quranic preservation and compilation.",
+            "pages_count": 68,
+            "language": "English",
+            "category": cat_lectures
+        },
+        {
+            "title": "The Sealed Nectar (Ar-Raheeq Al-Makhtum)",
+            "author": "Safi-ur-Rahman al-Mubarakpuri",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Sealed-Nectar-Seerah.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80",
+            "description": "Award-winning biography of the Prophet Muhammad (peace be upon him) based on authentic historical sources.",
+            "pages_count": 520,
+            "language": "English / Urdu",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Fortress of the Muslim (Hisn al-Muslim)",
+            "author": "Sa'id bin Ali bin Wahf Al-Qahtani",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Hisn-al-Muslim.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "Essential pocket collection of authentic supplications and daily Azkar from the Sunnah.",
+            "pages_count": 180,
+            "language": "Arabic / English / Transliteration",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Surah Al-Baqarah Ayah Breakdown & Grammar Notes",
+            "author": "Ustadh Nouman Ali Khan",
+            "file_type": "doc",
+            "pdf_url": "https://www.quranproject.org/Surah-Baqarah-Grammar.docx",
+            "cover_url": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=500&q=80",
+            "description": "Comprehensive Word document containing sentence structure, verb forms, and linguistic notes.",
+            "pages_count": 92,
+            "language": "English / Arabic",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Stories of the Prophets in the Light of Quran",
+            "author": "Hafiz Ibn Kathir",
+            "file_type": "ppt",
+            "pdf_url": "https://www.quranproject.org/Stories-of-Prophets.pptx",
+            "cover_url": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=500&q=80",
+            "description": "Visual presentation slides illustrating lessons, timelines, and verses from the lives of the Prophets.",
+            "pages_count": 115,
+            "language": "English",
+            "category": cat_lectures
+        },
+        {
+            "title": "Riyad as-Salihin (The Meadows of the Righteous)",
+            "author": "Imam Al-Nawawi",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Riyad-as-Salihin.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80",
+            "description": "A classic compilation of verses and authentic Hadiths arranged by ethical topics.",
+            "pages_count": 640,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        }
+    ]
+
+    for item in book_items:
+        BookMedia.objects.get_or_create(title=item["title"], defaults=item)
+
     # 20 Authentic Hadith Entries
     hadith_items = [
         {

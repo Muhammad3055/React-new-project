@@ -37,13 +37,14 @@ class VideoMediaForm(forms.ModelForm):
 class BookMediaForm(forms.ModelForm):
     class Meta:
         model = BookMedia
-        fields = ['title', 'author', 'category', 'pdf_file', 'pdf_url', 'cover_image', 'cover_url', 'description', 'pages_count', 'language']
+        fields = ['title', 'author', 'category', 'file_type', 'pdf_file', 'pdf_url', 'cover_image', 'cover_url', 'description', 'pages_count', 'language']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Book Title'}),
             'author': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Author Name'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
+            'file_type': forms.Select(attrs={'class': 'form-select'}),
             'pdf_file': forms.FileInput(attrs={'class': 'form-file'}),
-            'pdf_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'Direct PDF link'}),
+            'pdf_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'Direct document link'}),
             'cover_image': forms.FileInput(attrs={'class': 'form-file'}),
             'cover_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'Cover Image URL'}),
             'description': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 4}),

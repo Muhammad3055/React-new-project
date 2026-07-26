@@ -145,9 +145,28 @@ def api_videos_list(request):
     })
 
 
+@csrf_exempt
 def api_books_list(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            bk = BookMedia.objects.create(
+                title=body.get('title', 'Untitled Document'),
+                author=body.get('author', 'Unknown Author'),
+                file_type=body.get('file_type', 'pdf'),
+                pdf_url=body.get('pdf_url', ''),
+                cover_url=body.get('cover_url', ''),
+                pages_count=int(body.get('pages_count', 1)),
+                language=body.get('language', 'English / Urdu'),
+                description=body.get('description', '')
+            )
+            return JsonResponse({'status': 'success', 'id': bk.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '').strip()
+    file_type_filter = request.GET.get('file_type', '').strip()
     page_number = request.GET.get('page', 1)
     
     books = BookMedia.objects.all()
@@ -157,6 +176,8 @@ def api_books_list(request):
         )
     if category_id:
         books = books.filter(category_id=category_id)
+    if file_type_filter:
+        books = books.filter(file_type=file_type_filter)
 
     paginator = Paginator(books, 25)
     page_obj = paginator.get_page(page_number)
@@ -167,6 +188,8 @@ def api_books_list(request):
             'id': item.id,
             'title': item.title,
             'author': item.author,
+            'file_type': item.file_type,
+            'file_type_display': item.get_file_type_display(),
             'document_url': item.get_document_url(),
             'cover_url': item.cover_image.url if item.cover_image else item.cover_url,
             'description': item.description,
@@ -789,43 +812,32 @@ Sitemap: http://127.0.0.1:8000/sitemap.xml
 
 
 def sitemap_xml_view(request):
-    content = """<?xml version="1.0" encoding="UTF-8"?>
+    urls = [
+        ('/', '1.0', 'daily'),
+        ('/read', '0.95', 'daily'),
+        ('/quran', '0.95', 'daily'),
+        ('/qaris', '0.90', 'weekly'),
+        ('/tafseer', '0.90', 'weekly'),
+        ('/hadith', '0.90', 'weekly'),
+        ('/fazail', '0.90', 'weekly'),
+        ('/books', '0.85', 'weekly'),
+        ('/names-of-allah', '0.85', 'monthly'),
+        ('/tasbeeh', '0.80', 'monthly'),
+        ('/duas', '0.85', 'weekly'),
+        ('/videos', '0.85', 'weekly'),
+        ('/about', '0.60', 'monthly'),
+        ('/contact', '0.50', 'monthly'),
+    ]
+    xml_entries = ""
+    for path, priority, freq in urls:
+        xml_entries += f"""  <url>
+    <loc>http://127.0.0.1:8000{path}</loc>
+    <changefreq>{freq}</changefreq>
+    <priority>{priority}</priority>
+  </url>\n"""
+
+    content = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://127.0.0.1:8000/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>http://127.0.0.1:8000/read</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://127.0.0.1:8000/quran</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>http://127.0.0.1:8000/tafseer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://127.0.0.1:8000/hadith</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://127.0.0.1:8000/books</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://127.0.0.1:8000/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-</urlset>
+{xml_entries}</urlset>
 """
     return HttpResponse(content, content_type="application/xml")

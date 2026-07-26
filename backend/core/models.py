@@ -63,23 +63,89 @@ class VideoMedia(models.Model):
 
 
 class BookMedia(models.Model):
+    FILE_TYPE_CHOICES = [
+        ('pdf', 'PDF Document'),
+        ('doc', 'Word Document (.docx)'),
+        ('ppt', 'PPT Presentation (.pptx)'),
+        ('book', 'Printed / E-Book'),
+    ]
+
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=150, default="Unknown Author")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="books")
+    file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='pdf')
     pdf_file = models.FileField(upload_to="books/", blank=True, null=True)
-    pdf_url = models.URLField(max_length=500, blank=True, help_text="Direct PDF document URL")
+    pdf_url = models.URLField(max_length=500, blank=True, help_text="Direct Document URL")
     cover_image = models.ImageField(upload_to="covers/", blank=True, null=True)
     cover_url = models.URLField(max_length=500, blank=True)
     description = models.TextField(blank=True)
-    pages_count = models.PositiveIntegerField(default=100, blank=True)
+    pages_count = models.PositiveIntegerField(default=1, blank=True)
     language = models.CharField(max_length=50, default="Arabic / English")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
 
+    def save(self, *args, **kwargs):
+        # Universal Auto-Analyzer for PDF, Word (.docx), and PPT (.pptx) files
+        if self.pdf_file and (not self.pages_count or self.pages_count == 1):
+            filename = self.pdf_file.name.lower()
+            try:
+                self.pdf_file.seek(0)
+                file_bytes = self.pdf_file.read()
+                self.pdf_file.seek(0)
+
+                if filename.endswith('.pdf'):
+                    # PDF Page Counter
+                    import re
+                    pages = len(re.findall(b"/Type\s*/Page[^s]", file_bytes))
+                    if pages > 0:
+                        self.pages_count = pages
+                        self.file_type = 'book' if pages >= 100 else 'pdf'
+
+                elif filename.endswith('.docx') or filename.endswith('.doc'):
+                    # Word Document Page Counter
+                    import zipfile, xml.etree.ElementTree as ET
+                    try:
+                        with zipfile.ZipFile(self.pdf_file, 'r') as z:
+                            if 'docProps/app.xml' in z.namelist():
+                                app_xml = z.read('docProps/app.xml')
+                                root = ET.fromstring(app_xml)
+                                for child in root:
+                                    if 'Pages' in child.tag and child.text and child.text.isdigit():
+                                        self.pages_count = int(child.text)
+                                        break
+                    except Exception:
+                        pass
+                    self.pdf_file.seek(0)
+                    self.file_type = 'doc'
+
+                elif filename.endswith('.pptx') or filename.endswith('.ppt'):
+                    # PPT Presentation Slide Counter
+                    import zipfile
+                    try:
+                        with zipfile.ZipFile(self.pdf_file, 'r') as z:
+                            slides = [f for f in z.namelist() if f.startswith('ppt/slides/slide') and f.endswith('.xml')]
+                            if slides:
+                                self.pages_count = len(slides)
+                    except Exception:
+                        pass
+                    self.pdf_file.seek(0)
+                    self.file_type = 'ppt'
+            except Exception:
+                pass
+
+        # Automatic Classification Rule:
+        # If document format is pdf or book: 100+ pages => 'book', <100 pages => 'pdf'
+        if self.file_type in ['pdf', 'book']:
+            if self.pages_count >= 100:
+                self.file_type = 'book'
+            else:
+                self.file_type = 'pdf'
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.title} by {self.author}"
+        return f"{self.title} ({self.get_file_type_display()}) by {self.author}"
 
     def get_document_url(self):
         if self.pdf_file:
