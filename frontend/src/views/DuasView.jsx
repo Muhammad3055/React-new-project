@@ -393,19 +393,48 @@ export default function DuasView() {
                 </span>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'nowrap' }}>
                 <button
                   onClick={() => speakDuaText(item.arabic, 'ar-SA')}
-                  className="verse-btn"
-                  title="Listen Arabic Recitation"
-                  style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '4px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}
+                  title="Listen Audio Recitation"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: '#ecfdf5',
+                    color: '#047857',
+                    border: '1.5px solid #a7f3d0',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 5px rgba(4, 120, 87, 0.1)'
+                  }}
                 >
-                  <i className="fas fa-volume-up"></i> Listen Voice
+                  <i className="fas fa-volume-up" style={{ color: '#10b981', fontSize: '0.9rem' }}></i> Listen Audio
                 </button>
 
                 <button
                   onClick={() => handleCopy(item)}
-                  style={{ background: 'transparent', border: 'none', color: copiedId === item.id ? '#15803d' : '#64748b', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}
+                  title="Copy Supplication"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    background: '#f8fafc',
+                    color: copiedId === item.id ? '#15803d' : '#475569',
+                    border: '1px solid #cbd5e1',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s ease'
+                  }}
                 >
                   <i className={`fas ${copiedId === item.id ? 'fa-check-circle' : 'fa-copy'}`}></i> {copiedId === item.id ? 'Copied!' : 'Copy'}
                 </button>
