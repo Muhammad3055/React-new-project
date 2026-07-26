@@ -163,7 +163,7 @@ const QARI_LIST = [
   { id: 'ar.minshawimurattal', name: 'Mohamed Siddiq El-Minshawi (Murattal)' },
   { id: 'ar.minshawimujawwad', name: 'Mohamed Siddiq El-Minshawi (Mujawwad)' },
   { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary' },
-  { id: 'ar.husarymuallim', name: 'Mahmoud Khalil Al-Husary (Muallim)' },
+  { id: 'ar.husarymujawwad', name: 'Mahmoud Khalil Al-Husary (Mujawwad)' },
   { id: 'ar.hudhaify', name: 'Ali Abdur-Rahman Al-Hudhaify' },
   { id: 'ar.shaatree', name: 'Abu Bakr Al-Shatri' },
   { id: 'ar.saoodshuraym', name: 'Saud Al-Shuraim' },
@@ -185,7 +185,20 @@ const QARI_LIST = [
   { id: 'ar.mustafaismail', name: 'Mustafa Ismail' },
   { id: 'ar.yasseralqurashi', name: 'Yasser Al-Qurashi' },
   { id: 'ar.salahalhashem', name: 'Salah Al-Hashem' },
-  { id: 'ar.sahlyasin', name: 'Sahl Yasin' }
+  { id: 'ar.sahlyasin', name: 'Sahl Yasin' },
+  { id: 'ar.muhammadjibreel', name: 'Muhammad Jibreel' },
+  { id: 'ar.salahbukhatir', name: 'Salah Bukhatir' },
+  { id: 'ar.khalifaaltunaiji', name: 'Khalifa Al-Tunaiji' },
+  { id: 'ar.ahmedneana', name: 'Ahmed Neana' },
+  { id: 'ar.abdulazizazzahrani', name: 'Abdul Aziz Az-Zahrani' },
+  { id: 'ar.adelryyan', name: 'Adel Ryyan' },
+  { id: 'ar.hatemfarid', name: 'Hatem Farid Al-Waer' },
+  { id: 'ar.idreesabkar', name: 'Idrees Abkar' },
+  { id: 'ar.khaledjaleel', name: 'Khalid Al-Jaleel' },
+  { id: 'ar.nabilrifai', name: 'Nabil Ar-Rifai' },
+  { id: 'ar.abdullahkhalaf', name: 'Abdullah Khalaf' },
+  { id: 'ar.akramalalaqmi', name: 'Akram Al-Alaqmi' },
+  { id: 'ar.zakidaghistani', name: 'Zaki Daghistani' }
 ];
 
 const toArabicNumerals = (num) => {
