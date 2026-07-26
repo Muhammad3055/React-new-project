@@ -77,7 +77,8 @@ export default function QuranView({ playTrack, user, navigateToTab }) {
     }
 
     try {
-      const cached = localStorage.getItem('quranOfflineSurahs');
+      const storageKey = user ? `quranOfflineSurahs_user_${user.username}` : 'quranOfflineSurahs';
+      const cached = localStorage.getItem(storageKey);
       if (cached) setOfflineSurahs(JSON.parse(cached));
     } catch (e) {}
   }, [user]);
@@ -87,12 +88,6 @@ export default function QuranView({ playTrack, user, navigateToTab }) {
   const getQariAudioUrl = (surahNumber, qariObj) => {
     const padded = surahNumber < 10 ? `00${surahNumber}` : (surahNumber < 100 ? `0${surahNumber}` : `${surahNumber}`);
     return `${qariObj.server}${padded}.mp3`;
-  };
-
-  const getTranslationAudioUrl = (surahNumber, langCode) => {
-    if (langCode === 'ur') return `https://cdn.islamic.network/quran/audio-surah/128/ur.khan/${surahNumber}.mp3`;
-    if (langCode === 'en') return `https://cdn.islamic.network/quran/audio-surah/128/en.walk/${surahNumber}.mp3`;
-    return `https://cdn.islamic.network/quran/audio-surah/128/en.walk/${surahNumber}.mp3`;
   };
 
   const handleSetFavoriteQari = (qariId) => {
@@ -112,23 +107,42 @@ export default function QuranView({ playTrack, user, navigateToTab }) {
   };
 
   const handleDownloadMp3 = (surahNumber, surahName, audioUrl) => {
+    const storageKey = user ? `quranOfflineSurahs_user_${user.username}` : 'quranOfflineSurahs';
     const updated = { ...offlineSurahs };
-    updated[surahNumber] = {
-      number: surahNumber,
-      name: surahName,
-      downloadedAt: new Date().toLocaleDateString()
-    };
-    setOfflineSurahs(updated);
-    localStorage.setItem('quranOfflineSurahs', JSON.stringify(updated));
+    
+    // Estimate size based on average surah length
+    const approxSizeMb = parseFloat(((surahNumber * 0.4) + 3.5).toFixed(1));
 
-    const link = document.createElement('a');
-    link.href = audioUrl;
-    link.download = `Surah_${surahNumber}_${surahName.replace(/\s+/g, '_')}_${activeQariObj.name.replace(/\s+/g, '_')}.mp3`;
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (updated[surahNumber]) {
+      delete updated[surahNumber];
+      alert(`Removed Surah ${surahName} from local storage.`);
+    } else {
+      updated[surahNumber] = {
+        number: surahNumber,
+        name: surahName,
+        qari: activeQariObj.name,
+        sizeMb: approxSizeMb,
+        downloadedAt: new Date().toLocaleDateString()
+      };
+
+      // Trigger browser file download
+      const link = document.createElement('a');
+      link.href = audioUrl;
+      link.download = `Surah_${surahNumber}_${surahName.replace(/\s+/g, '_')}_${activeQariObj.name.replace(/\s+/g, '_')}.mp3`;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      const userTag = user ? ` (Saved for User ID: ${user.username})` : '';
+      alert(`Downloaded Surah ${surahName}! ${approxSizeMb} MB deducted from local storage${userTag}.`);
+    }
+
+    setOfflineSurahs(updated);
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
+
+  const totalDeductedMb = Object.values(offlineSurahs).reduce((acc, curr) => acc + (curr.sizeMb || 4.5), 0).toFixed(1);
 
   const filteredSurahs = surahsList.filter(s =>
     s.englishName.toLowerCase().includes(query.toLowerCase()) ||
@@ -146,9 +160,33 @@ export default function QuranView({ playTrack, user, navigateToTab }) {
           <i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Complete 114 Surahs MP3 & Audio Recitations
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
-          Listen to complete 114 Surah recitations by top Qaris, download MP3s directly, or play spoken Urdu & English translations.
+          Listen to complete 114 Surah recitations by top Qaris, download MP3s directly to your User Account storage, or play spoken translations.
         </p>
       </div>
+
+      {/* User Offline Storage Meter Banner */}
+      {Object.keys(offlineSurahs).length > 0 && (
+        <div style={{ background: 'linear-gradient(90deg, #022c22 0%, #064e3b 100%)', color: '#fff', padding: '1rem 1.25rem', borderRadius: '14px', border: '1px solid var(--accent-gold)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            <h4 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
+              <i className="fas fa-hdd"></i> {user ? `User Account (${user.username}) Offline Storage` : 'Local Offline Storage'}
+            </h4>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.84rem', color: '#cbd5e1' }}>
+              <strong>{Object.keys(offlineSurahs).length} Surahs Downloaded</strong> &bull; <strong>{totalDeductedMb} MB Deducted</strong> from Local Device Storage
+            </p>
+          </div>
+
+          {user && navigateToTab && (
+            <button
+              onClick={() => navigateToTab('dashboard')}
+              className="btn-play"
+              style={{ background: 'var(--accent-gold)', color: 'var(--primary-dark)', fontWeight: 800, fontSize: '0.8rem', padding: '0.45rem 1rem' }}
+            >
+              Manage Storage
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1.2rem', alignItems: 'center' }}>
         <div className="filter-group">

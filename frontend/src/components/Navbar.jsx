@@ -183,23 +183,50 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             {/* Persistent Header Auth Area */}
             <div className="desktop-auth-area">
               {user ? (
-                <div className="desktop-user-menu">
-                  <span className="user-greeting" onClick={() => navigateToTab('dashboard')} style={{ cursor: 'pointer' }}>
-                    <i className="fas fa-user-circle"></i> Hi, {user.username}
-                  </span>
-                  <button className="nav-action-btn" title="My Progress & Dashboard" onClick={() => navigateToTab('dashboard')} style={{ background: 'var(--accent-gold)', color: 'var(--primary-dark)' }}>
-                    <i className="fas fa-tasks"></i> <span className="logout-text" style={{ color: 'var(--primary-dark)', fontWeight: 800 }}>Dashboard</span>
+                <div className="desktop-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => navigateToTab('dashboard')}
+                    title={`Logged in as ${user.username} - Open Dashboard`}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '25px',
+                      border: '1.5px solid var(--accent-gold)',
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      color: '#ffffff',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>
+                      {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span style={{ color: '#ffffff', fontWeight: 700 }}>{user.username}</span>
                   </button>
+
                   {user.is_staff && (
-                    <button className="nav-action-btn" title="Upload" onClick={() => navigateToTab('upload')}>
+                    <button
+                      className="nav-action-btn"
+                      title="Upload"
+                      onClick={() => navigateToTab('upload')}
+                      style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                    >
                       <i className="fas fa-cloud-upload-alt"></i>
                     </button>
                   )}
-                  <button className="nav-action-btn" title="Bookmarks" onClick={() => navigateToTab('bookmarks')}>
-                    <i className="fas fa-star"></i>
-                  </button>
-                  <button className="nav-action-btn logout" title="Logout" onClick={handleLogout}>
-                    <i className="fas fa-sign-out-alt"></i> <span className="logout-text">Logout</span>
+
+                  <button
+                    className="nav-action-btn logout"
+                    title="Logout"
+                    onClick={handleLogout}
+                    style={{ background: 'transparent', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <i className="fas fa-sign-out-alt"></i>
                   </button>
                 </div>
               ) : (
