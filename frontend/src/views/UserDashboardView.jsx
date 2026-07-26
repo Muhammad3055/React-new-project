@@ -3,14 +3,18 @@ import React, { useState, useEffect } from 'react';
 export default function UserDashboardView({ user, openAuthModal, navigateToTab, playTrack }) {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('tracker'); // 'tracker' | 'bookmarks' | 'offline' | 'preferences'
+  const [activeTab, setActiveTab] = useState('downloads'); // Default to Downloads section
   const [offlineSurahs, setOfflineSurahs] = useState({});
+  const [allSurahs, setAllSurahs] = useState([]);
+  const [downloadSearch, setDownloadSearch] = useState('');
 
   useEffect(() => {
     if (!user) {
       setLoading(false);
       return;
     }
+
+    // Fetch user dashboard data
     fetch('/api/user/dashboard/')
       .then(res => res.json())
       .then(data => {
@@ -21,9 +25,18 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       })
       .catch(() => setLoading(false));
 
-    // Check localStorage for offline cached surahs
+    // Fetch 114 Surahs for download catalog
+    fetch('https://api.alquran.cloud/v1/surah')
+      .then(res => res.json())
+      .then(data => {
+        if (data.data) setAllSurahs(data.data);
+      })
+      .catch(() => {});
+
+    // Sync user-specific offline storage
     try {
-      const cached = localStorage.getItem('quranOfflineSurahs');
+      const storageKey = `quranOfflineSurahs_user_${user.username}`;
+      const cached = localStorage.getItem(storageKey) || localStorage.getItem('quranOfflineSurahs');
       if (cached) setOfflineSurahs(JSON.parse(cached));
     } catch (e) {}
   }, [user]);
@@ -37,7 +50,6 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
     })
       .then(res => res.json())
       .then(() => {
-        // Refresh dashboard
         fetch('/api/user/dashboard/')
           .then(res => res.json())
           .then(data => setDashboardData(data));
@@ -48,48 +60,77 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
     fetch('/api/user/preferences/update/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newPrefs)
+      body: JSON.stringify({ ...dashboardData?.preferences, ...newPrefs })
     })
       .then(res => res.json())
       .then(data => {
         alert(data.message || 'Preferences updated!');
+        fetch('/api/user/dashboard/')
+          .then(res => res.json())
+          .then(d => setDashboardData(d));
       });
   };
 
   const toggleOfflineSurahDownload = (surahNumber, surahName) => {
+    const storageKey = `quranOfflineSurahs_user_${user.username}`;
     const updated = { ...offlineSurahs };
+    const approxSizeMb = parseFloat(((surahNumber * 0.35) + 3.2).toFixed(1));
+
     if (updated[surahNumber]) {
       delete updated[surahNumber];
-      alert(`Removed Surah ${surahName} from offline storage.`);
+      alert(`Removed Surah ${surahName} from User Portal storage.`);
     } else {
+      const qariName = dashboardData?.preferences?.preferred_qari || 'Mishary Rashid Alafasy';
       updated[surahNumber] = {
         number: surahNumber,
         name: surahName,
+        qari: qariName,
+        sizeMb: approxSizeMb,
         downloadedAt: new Date().toLocaleDateString()
       };
-      alert(`Downloaded Surah ${surahName} for offline reading & listening!`);
+
+      // Trigger MP3 audio file download
+      const audioUrl = `https://server8.mp3quran.net/afs/${surahNumber < 10 ? `00${surahNumber}` : (surahNumber < 100 ? `0${surahNumber}` : `${surahNumber}`)}.mp3`;
+      const link = document.createElement('a');
+      link.href = audioUrl;
+      link.download = `Surah_${surahNumber}_${surahName.replace(/\s+/g, '_')}.mp3`;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert(`Downloaded Surah ${surahName}! ${approxSizeMb} MB deducted from device storage for User ID: ${user.username}.`);
     }
+
     setOfflineSurahs(updated);
-    localStorage.setItem('quranOfflineSurahs', JSON.stringify(updated));
+    localStorage.setItem(storageKey, JSON.stringify(updated));
   };
+
+  const totalDeductedMb = Object.values(offlineSurahs).reduce((acc, curr) => acc + (curr.sizeMb || 4.2), 0).toFixed(1);
+
+  const filteredCatalogSurahs = allSurahs.filter(s =>
+    s.englishName.toLowerCase().includes(downloadSearch.toLowerCase()) ||
+    s.englishNameTranslation.toLowerCase().includes(downloadSearch.toLowerCase()) ||
+    s.number.toString().includes(downloadSearch)
+  );
 
   if (!user) {
     return (
       <div className="container" style={{ padding: '3.5rem 1rem', textAlign: 'center' }}>
         <div className="card" style={{ maxWidth: '580px', margin: '0 auto', padding: '2.5rem', borderRadius: '20px', border: '1.5px solid var(--accent-gold)' }}>
-          <i className="fas fa-lock fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
+          <i className="fas fa-user-lock fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>
-            Unlock Personal Progress & Dashboard
+            User Portal & Downloads Vault
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-            Guest users can read Quran, listen to recitations, and check prayer times without restrictions! Sign in to unlock personal progress tracking, 5 daily Namaz streak tracker, Khatm Quran calculator, saved Ayah notes, and offline Surah downloads.
+            Guest users can freely read and listen to Quran. Sign in to unlock your personal User Downloads Vault, offline MP3 storage manager, Namaz streak tracker, and Khatm Quran progress!
           </p>
           <button
-            onClick={openAuthModal}
+            onClick={() => openAuthModal ? openAuthModal('login') : null}
             className="btn-play"
             style={{ padding: '0.75rem 2rem', fontSize: '1rem', background: 'var(--primary-dark)', color: 'var(--accent-gold)', margin: '0 auto' }}
           >
-            <i className="fas fa-sign-in-alt"></i> Sign In / Create Account
+            <i className="fas fa-sign-in-alt"></i> Sign In to User Portal
           </button>
         </div>
       </div>
@@ -100,7 +141,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
     return (
       <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
         <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-        <p style={{ marginTop: '0.75rem', color: 'var(--text-muted)' }}>Loading your personal dashboard...</p>
+        <p style={{ marginTop: '0.75rem', color: 'var(--text-muted)' }}>Loading User Portal & Offline Storage...</p>
       </div>
     );
   }
@@ -116,10 +157,10 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold)', margin: 0 }}>
-              <i className="fas fa-user-circle"></i> Welcome, {dashboardData?.username || user.username}!
+              <i className="fas fa-user-circle"></i> User Portal & Downloads Vault
             </h1>
             <p style={{ fontSize: '0.88rem', color: '#cbd5e1', marginTop: '0.3rem' }}>
-              Track your daily spiritual goals, Namaz streaks, Khatm Quran progress, and offline downloads.
+              Logged-in Account: <strong>{user.username}</strong> ({user.email}) &bull; Offline Storage Deducted: <strong>{totalDeductedMb} MB</strong>
             </p>
           </div>
 
@@ -136,7 +177,14 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', pb: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', pb: '0.5rem', flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setActiveTab('downloads')}
+          style={{ padding: '0.6rem 1.2rem', border: 'none', borderBottom: activeTab === 'downloads' ? '3px solid var(--accent-gold)' : 'none', background: 'transparent', fontWeight: 800, color: activeTab === 'downloads' ? 'var(--primary-dark)' : 'var(--text-muted)', cursor: 'pointer' }}
+        >
+          <i className="fas fa-download"></i> User Downloads Vault ({Object.keys(offlineSurahs).length} Downloaded)
+        </button>
+
         <button
           onClick={() => setActiveTab('tracker')}
           style={{ padding: '0.6rem 1.2rem', border: 'none', borderBottom: activeTab === 'tracker' ? '3px solid var(--accent-gold)' : 'none', background: 'transparent', fontWeight: 800, color: activeTab === 'tracker' ? 'var(--primary-dark)' : 'var(--text-muted)', cursor: 'pointer' }}
@@ -152,24 +200,101 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
         </button>
 
         <button
-          onClick={() => setActiveTab('offline')}
-          style={{ padding: '0.6rem 1.2rem', border: 'none', borderBottom: activeTab === 'offline' ? '3px solid var(--accent-gold)' : 'none', background: 'transparent', fontWeight: 800, color: activeTab === 'offline' ? 'var(--primary-dark)' : 'var(--text-muted)', cursor: 'pointer' }}
-        >
-          <i className="fas fa-download"></i> Offline Downloads ({Object.keys(offlineSurahs).length})
-        </button>
-
-        <button
           onClick={() => setActiveTab('preferences')}
           style={{ padding: '0.6rem 1.2rem', border: 'none', borderBottom: activeTab === 'preferences' ? '3px solid var(--accent-gold)' : 'none', background: 'transparent', fontWeight: 800, color: activeTab === 'preferences' ? 'var(--primary-dark)' : 'var(--text-muted)', cursor: 'pointer' }}
         >
-          <i className="fas fa-cog"></i> Preferences
+          <i className="fas fa-cog"></i> Account Preferences
         </button>
       </div>
 
-      {/* TAB 1: PROGRESS & NAMAZ TRACKER */}
+      {/* TAB 1: DOWNLOADS VAULT */}
+      {activeTab === 'downloads' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Storage Summary Bar */}
+          <div className="card" style={{ padding: '1.25rem', background: '#ecfdf5', borderRadius: '16px', border: '1.5px solid #a7f3d0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#065f46' }}>
+                  <i className="fas fa-hdd" style={{ marginRight: '0.4rem' }}></i> Device Offline Storage for User: {user.username}
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#047857' }}>
+                  Total <strong>{Object.keys(offlineSurahs).length} Surahs Saved</strong> &bull; <strong>{totalDeductedMb} MB Storage Deducted</strong>
+                </p>
+              </div>
+
+              <div style={{ maxWidth: '320px', flex: 1 }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Filter 114 Surahs to download..."
+                  value={downloadSearch}
+                  onChange={(e) => setDownloadSearch(e.target.value)}
+                  style={{ padding: '0.45rem 1rem', borderRadius: '20px', fontSize: '0.85rem' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 114 Surahs Download Catalog */}
+          <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '1rem' }}>
+              <i className="fas fa-music" style={{ color: 'var(--accent-gold)' }}></i> Complete 114 Surahs MP3 Offline Downloads
+            </h3>
+
+            <div className="grid-3" style={{ gap: '1rem' }}>
+              {filteredCatalogSurahs.slice(0, 30).map((surah) => {
+                const isDownloaded = !!offlineSurahs[surah.number];
+                const itemData = offlineSurahs[surah.number] || {};
+                const audioUrl = `https://server8.mp3quran.net/afs/${surah.number < 10 ? `00${surah.number}` : (surah.number < 100 ? `0${surah.number}` : `${surah.number}`)}.mp3`;
+
+                return (
+                  <div key={surah.number} style={{ padding: '1rem', border: isDownloaded ? '1.5px solid #10b981' : '1px solid #e2e8f0', borderRadius: '14px', background: isDownloaded ? '#f0fdf4' : '#ffffff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'var(--accent-gold)', color: 'var(--primary-dark)', width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {surah.number}
+                        </span>
+                        {isDownloaded && (
+                          <span style={{ fontSize: '0.72rem', background: '#10b981', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                            <i className="fas fa-check-circle"></i> Downloaded
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>Surah {surah.englishName}</h4>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.1rem 0 0.5rem 0' }}>{surah.englishNameTranslation} &bull; {surah.numberOfAyahs} Ayahs</p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.75rem' }}>
+                      <button
+                        onClick={() => playTrack ? playTrack(audioUrl, `Surah ${surah.englishName}`, 'Mishary Rashid Alafasy') : null}
+                        className="btn-play"
+                        style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.5rem', fontSize: '0.78rem' }}
+                      >
+                        <i className="fas fa-play"></i> Play
+                      </button>
+
+                      <button
+                        onClick={() => toggleOfflineSurahDownload(surah.number, surah.englishName)}
+                        className="btn-play"
+                        title={isDownloaded ? "Remove from device storage" : "Download MP3 to device"}
+                        style={{ background: isDownloaded ? '#dc2626' : 'var(--primary-emerald)', color: '#fff', padding: '0.45rem 0.8rem', fontSize: '0.78rem' }}
+                      >
+                        <i className={`fas ${isDownloaded ? 'fa-trash' : 'fa-download'}`}></i>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: PROGRESS & NAMAZ TRACKER */}
       {activeTab === 'tracker' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          {/* 1. Daily 5 Namaz Tracker Card */}
+          {/* Daily 5 Namaz Tracker Card */}
           <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px', border: '1.5px solid #e2e8f0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>
@@ -205,7 +330,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </div>
           </div>
 
-          {/* 2. Quran Khatm Tracker Card */}
+          {/* Quran Khatm Tracker Card */}
           <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px', border: '1.5px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.75rem' }}>
               <i className="fas fa-book-reader" style={{ color: 'var(--accent-gold)' }}></i> Quran Khatm Completion
@@ -227,7 +352,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
         </div>
       )}
 
-      {/* TAB 2: BOOKMARKS & NOTES */}
+      {/* TAB 3: BOOKMARKS & NOTES */}
       {activeTab === 'bookmarks' && (
         <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '1rem' }}>
@@ -246,39 +371,6 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               ))}
             </div>
           )}
-        </div>
-      )}
-
-      {/* TAB 3: OFFLINE DOWNLOADS MANAGER */}
-      {activeTab === 'offline' && (
-        <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px' }}>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>
-            <i className="fas fa-download" style={{ color: 'var(--accent-gold)' }}></i> Offline Surah Download Manager
-          </h3>
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-            Download complete Surahs (Audio MP3 & Text) directly into browser offline cache to read & listen without an active internet connection!
-          </p>
-
-          <div className="grid-3" style={{ gap: '1rem' }}>
-            {[1, 36, 55, 67, 112, 113, 114].map((num) => {
-              const names = { 1: 'Al-Fatihah', 36: 'Ya-Sin', 55: 'Ar-Rahman', 67: 'Al-Mulk', 112: 'Al-Ikhlas', 113: 'Al-Falaq', 114: 'An-Nas' };
-              const isDownloaded = !!offlineSurahs[num];
-
-              return (
-                <div key={num} style={{ padding: '1rem', border: isDownloaded ? '1.5px solid #10b981' : '1px solid #e2e8f0', borderRadius: '12px', background: isDownloaded ? '#ecfdf5' : '#fff' }}>
-                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>{num}. {names[num]}</h4>
-                  <button
-                    onClick={() => toggleOfflineSurahDownload(num, names[num])}
-                    className="btn-play"
-                    style={{ marginTop: '0.75rem', width: '100%', justifyContent: 'center', fontSize: '0.8rem', background: isDownloaded ? '#dc2626' : 'var(--primary-emerald)' }}
-                  >
-                    <i className={`fas ${isDownloaded ? 'fa-trash' : 'fa-download'}`}></i>
-                    {isDownloaded ? ' Remove Offline Data' : ' Save For Offline'}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
         </div>
       )}
 
