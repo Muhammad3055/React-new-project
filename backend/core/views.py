@@ -980,19 +980,29 @@ def api_save_ayah_note(request):
 
 
 @csrf_exempt
-def api_save_zakat_history(request):
+def user_bookmarks_json(request):
     if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+        return JsonResponse({'bookmarks': []})
+    bookmarks_qs = Bookmark.objects.filter(user=request.user)
+    bookmarks_data = [{'surah_number': b.surah_number, 'ayah_number': b.ayah_number, 'created_at': b.created_at.strftime('%Y-%m-%d %H:%M')} for b in bookmarks_qs]
+    return JsonResponse({'bookmarks': bookmarks_data})
+
+
+@csrf_exempt
+def toggle_bookmark(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Please sign in to save items to your account!'}, status=401)
+    
     if request.method == 'POST':
         import json
         body = json.loads(request.body.decode('utf-8')) if request.body else {}
-        year = int(body.get('year', 2026))
-        assets = float(body.get('total_assets', 0))
-        zakat = float(body.get('zakat_payable', 0))
+        surah_num = int(body.get('surah_number', 1))
+        ayah_num = int(body.get('ayah_number', 1))
 
-        rec, _ = ZakatHistory.objects.get_or_create(user=request.user, year=year)
-        rec.total_assets = assets
-        rec.zakat_payable = zakat
-        rec.save()
-        return JsonResponse({'status': 'success', 'message': 'Zakat record saved to history!'})
+        bm, created = Bookmark.objects.get_or_create(user=request.user, surah_number=surah_num, ayah_number=ayah_num)
+        if not created:
+            bm.delete()
+            return JsonResponse({'status': 'removed', 'message': f'Removed Surah {surah_num}:{ayah_num} from your account favorites.'})
+        
+        return JsonResponse({'status': 'added', 'message': f'Saved Surah {surah_num}:{ayah_num} to your account favorites!'})
     return JsonResponse({'status': 'error'}, status=400)

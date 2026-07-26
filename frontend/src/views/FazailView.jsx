@@ -196,7 +196,7 @@ export default function FazailView() {
             cursor: 'pointer'
           }}
         >
-          🇬🇧 English Fazail
+          English Fazail
         </button>
 
         <button
@@ -212,7 +212,7 @@ export default function FazailView() {
             cursor: 'pointer'
           }}
         >
-          🇵🇰 اردو فضائل (Urdu)
+          اردو فضائل (Urdu)
         </button>
       </div>
 
@@ -303,14 +303,14 @@ export default function FazailView() {
               {/* English Translation */}
               {(selectedLang === 'both' || selectedLang === 'en') && (
                 <p style={{ fontSize: '0.95rem', color: '#f8fafc', fontStyle: 'italic', lineHeight: '1.6', marginBottom: '0.85rem' }}>
-                  🇬🇧 "{item.translation_en}"
+                  English: "{item.translation_en}"
                 </p>
               )}
 
               {/* Urdu Translation */}
               {(selectedLang === 'both' || selectedLang === 'ur') && (
                 <p style={{ fontSize: '1rem', color: '#fef3c7', lineHeight: '1.8', marginBottom: '0.85rem', textAlign: 'right', fontWeight: 600 }}>
-                  🇵🇰 اردو: "{item.translation_ur}"
+                  اردو: "{item.translation_ur}"
                 </p>
               )}
 

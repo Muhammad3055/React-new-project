@@ -435,7 +435,17 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     };
     localStorage.setItem('quranLastRead', JSON.stringify(pos));
     setLastReadPosition(pos);
-    alert(`Saved last read position: Surah ${pos.surahName} (Ayah ${ayahNumber})`);
+
+    // Sync last read position to backend user profile if logged in
+    if (user) {
+      fetch('/api/user/preferences/update/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ last_read_surah: selectedSurah, last_read_ayah: ayahNumber })
+      });
+    }
+
+    alert(`Saved last read position: Surah ${pos.surahName} (Ayah ${ayahNumber}) to your account!`);
   };
 
   const topicKeywords = {
