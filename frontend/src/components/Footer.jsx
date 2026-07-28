@@ -35,7 +35,7 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
           <div className="footer-col">
             <h4 className="footer-title">Media & Books</h4>
             <ul className="footer-links">
-              <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('videos')}><i className="fas fa-play-circle"></i> Video Lectures</a></li>
+              <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('quran')}><i className="fas fa-bullhorn"></i> MP3 Taqreer Audios</a></li>
               <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('books')}><i className="fas fa-book"></i> PDF Books Library</a></li>
               <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('hadith')}><i className="fas fa-scroll"></i> Hadith Collections</a></li>
               <li><a style={{ cursor: 'pointer' }} onClick={() => navigateToTab('home')}><i className="fas fa-star"></i> Featured Spotlight</a></li>
@@ -70,7 +70,7 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
 
         <div className="footer-bottom">
           <p className="arabic-font calligraphy-footer">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-          <p className="copyright-text">&copy; {new Date().getFullYear()} Quran Portal. Built with React & Django REST API.</p>
+          <p className="copyright-text">&copy; {new Date().getFullYear()} Quran Portal.</p>
         </div>
       </div>
     </footer>

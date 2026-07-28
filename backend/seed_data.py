@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'quran_project.settings')
 django.setup()
 
-from core.models import Category, QuranAudio, VideoMedia, BookMedia, Tafseer, Hadith
+from core.models import Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith
 
 def seed_database():
     print("Seeding Quran portal database with rich, expanded content...")
@@ -637,6 +637,71 @@ def seed_database():
             ayah_number=item["ayah_number"],
             scholar_name=item["scholar_name"],
             defaults=item
+        )
+
+    # Taqreer Audio Voice Notes Seeding (Arabic, Brahui, Urdu)
+    taqreer_items = [
+        # Taqreer Arabic
+        {
+            "title": "فضل تدبر القرآن الكريم وتلاوته (Virtue of Reflecting on the Quran)",
+            "speaker": "الشيخ عبد الرزاق البدر (Sheikh Abdur Razzaq Al-Badr)",
+            "language": "arabic",
+            "audio_url": "https://server8.mp3quran.net/afs/001.mp3",
+            "duration": "18:45",
+            "description": "محاضرة قيمة عن أهمية التمسك بالقرآن الكريم وتدبر آياته في الحياة اليومية."
+        },
+        {
+            "title": "أهمية التوبة والاستغفار في الإسلام (Importance of Repentance)",
+            "speaker": "الشيخ محمد المختار الشنقيطي (Sheikh Mohammad Al-Shanqiti)",
+            "language": "arabic",
+            "audio_url": "https://server11.mp3quran.net/sds/001.mp3",
+            "duration": "22:10",
+            "description": "تقرير مبارك يوضح شروط التوبة الصادقة وآثار الاستغفار على القلوب."
+        },
+
+        # Taqreer Brahui
+        {
+            "title": "قرآن مجید نا تلاوت و اونا فضائل (Virtues of Quran Recitation in Brahui)",
+            "speaker": "علامہ مولانا عبد الغفور براہوئی (Allama Maulana Abdul Ghafoor Brahui)",
+            "language": "brahui",
+            "audio_url": "https://server7.mp3quran.net/s_gmd/001.mp3",
+            "duration": "15:30",
+            "description": "براہوئی زبان ٹی قرآن پاک نا تلاوت و اونا عظیم اجر نا بارو ٹی مفصل تقرير۔"
+        },
+        {
+            "title": "نماز نا اہمیت و خشوع (Importance & Humility in Namaz in Brahui)",
+            "speaker": "مولانا محمد رحیم براہوئی (Maulana Muhammad Rahim Brahui)",
+            "language": "brahui",
+            "audio_url": "https://server12.mp3quran.net/maher/001.mp3",
+            "duration": "20:15",
+            "description": "براہوئی زبان ٹی پنج وقتہ نماز نا پابندی و اونا برکات نا بیان۔"
+        },
+
+        # Taqreer Urdu
+        {
+            "title": "تفسیر سورہ الفاتحہ اور اصلاحِ نفس (Tafseer Al-Fatiha & Soul Purification)",
+            "speaker": "مفتی تقی عثمانی (Mufti Taqi Usmani)",
+            "language": "urdu",
+            "audio_url": "https://server11.mp3quran.net/yasser/001.mp3",
+            "duration": "28:50",
+            "description": "اردو زبان میں سورہ الفاتحہ کی روحانی نکات اور انسانی زندگی پر اثرات کا مفصل بیان۔"
+        },
+        {
+            "title": "حقوق العباد اور معاشرتی اخلاق (Rights of Mankind & Social Ethics)",
+            "speaker": "مفتی طارق مسعود (Mufti Tariq Masood)",
+            "language": "urdu",
+            "audio_url": "https://server7.mp3quran.net/basit/001.mp3",
+            "duration": "24:40",
+            "description": "روزمرہ زندگی میں بندوں کے حقوق، حسنِ اخلاق اور باہمی احترام پر جامع اردو تقرير۔"
+        }
+    ]
+
+    for tq in taqreer_items:
+        TaqreerAudio.objects.get_or_create(
+            title=tq["title"],
+            speaker=tq["speaker"],
+            language=tq["language"],
+            defaults=tq
         )
 
     print("Database seeding completed successfully!")

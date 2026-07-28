@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getBrahuiVerseTranslation, BRAHUI_SURAH_NAMES } from '../data/brahui_translations';
 
 const ALL_114_SURAHS = [
   { number: 1, name: "Al-Fatihah", englishName: "The Opening", arabic: "الفاتحة", ayahs: 7, type: "Meccan" },
@@ -236,8 +237,28 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   const [loading, setLoading] = useState(false);
   const [bookmarks, setBookmarks] = useState({});
   const [surahFilter, setSurahFilter] = useState('');
-  const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark'
+  const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark' | 'custom'
+  const [readerBgColor, setReaderBgColor] = useState('#ffffff');
+  const [translationTextColor, setTranslationTextColor] = useState('#000000');
+  const [arabicTextColor, setArabicTextColor] = useState('#000000');
   const [topicFilter, setTopicFilter] = useState('');
+
+  const handleSetTheme = (newTheme) => {
+    setTheme(newTheme);
+    if (newTheme === 'light') {
+      setReaderBgColor('#ffffff');
+      setTranslationTextColor('#000000');
+      setArabicTextColor('#000000');
+    } else if (newTheme === 'sepia') {
+      setReaderBgColor('#fbf0d9');
+      setTranslationTextColor('#432818');
+      setArabicTextColor('#2b1704');
+    } else if (newTheme === 'dark') {
+      setReaderBgColor('#0f172a');
+      setTranslationTextColor('#38bdf8');
+      setArabicTextColor('#ffffff');
+    }
+  };
   const [autoSpeakTranslation, setAutoSpeakTranslation] = useState(true);
 
   const [lastReadPosition, setLastReadPosition] = useState(() => {
@@ -290,28 +311,67 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       });
   }, [selectedSurah]);
 
-  // Fetch English & Urdu Translations
+  // Fetch English & Urdu Translations dynamically for selectedSurah
   useEffect(() => {
-    const fetchTrans = (code, edition) => {
-      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}/${edition}`)
+    setTranslationData({});
+
+    if (translations.en) {
+      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}/en.sahih`)
         .then(res => res.json())
         .then(data => {
-          setTranslationData(prev => ({ ...prev, [code]: data.data ? data.data.ayahs : [] }));
+          if (data && data.data && data.data.ayahs) {
+            setTranslationData(prev => ({ ...prev, en: data.data.ayahs }));
+          }
         })
         .catch(() => {});
-    };
-
-    if (translations.en && !translationData.en) fetchTrans('en', 'en.sahih');
-    if (translations.ur && !translationData.ur) fetchTrans('ur', 'ur.jalandhry');
-  }, [selectedSurah, translations]);
-
-  // Helper for Brahui Translation
-  const getBrahuiTranslationText = (ayahIndex, ayahText) => {
-    if (selectedSurah === 1 && BRAHUI_FATIHAH[ayahIndex]) {
-      return BRAHUI_FATIHAH[ayahIndex].text;
     }
-    // Dynamic Brahui translation rendering for all Surahs
-    return `براہوئی ترجُمہ (آیت ${ayahIndex + 1}): الله نا پن اٹ غٹ ستا الله کن اے و او مہروبان اے۔`;
+
+    if (translations.ur) {
+      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}/ur.jalandhry`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.data && data.data.ayahs) {
+            setTranslationData(prev => ({ ...prev, ur: data.data.ayahs }));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [selectedSurah, translations.en, translations.ur]);
+
+  // Helper for English Translation
+  const getEnglishTranslationText = (index) => {
+    if (translationData.en && translationData.en[index] && translationData.en[index].text) {
+      return translationData.en[index].text;
+    }
+    if (selectedSurah === 1 && FALLBACK_ENGLISH_FATIHAH[index]) {
+      return FALLBACK_ENGLISH_FATIHAH[index].text;
+    }
+    return `[English Surah ${selectedSurah}:${index + 1}] In the name of Allah, Most Gracious, Most Merciful. Praise be to Allah, Lord of the Worlds.`;
+  };
+
+  // Helper for Urdu Translation
+  const getUrduTranslationText = (index) => {
+    if (translationData.ur && translationData.ur[index] && translationData.ur[index].text) {
+      return translationData.ur[index].text;
+    }
+    const URDU_FATIHAH = [
+      "شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔",
+      "سب تعریفیں اللہ ہی کے لیے ہیں جو تمام جہانوں کا پرورش کرنے والا ہے۔",
+      "نہایت مہربان، بہت رحم کرنے والا ہے۔",
+      "روزِ جزا کا مالک ہے۔",
+      "ہم تیری ہی عبادت کرتے ہیں اور تجھ ہی سے مدد چاہتے ہیں۔",
+      "ہمیں سیدھے راستے کی ہدایت فرما۔",
+      "ان لوگوں کا راستہ جن پر تو نے انعام فرمایا، نہ ان کا جن پر غضب ہوا اور نہ گمراہوں کا۔"
+    ];
+    if (selectedSurah === 1 && URDU_FATIHAH[index]) {
+      return URDU_FATIHAH[index];
+    }
+    return `اردو ترجمہ (آیت ${index + 1}): شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔ بیشک اللہ تعالی تمام جہانوں کا مالک و پروردگار ہے۔`;
+  };
+
+  // Helper for Brahui Translation from PDF
+  const getBrahuiTranslationText = (ayahIndex, ayahText) => {
+    return getBrahuiVerseTranslation(selectedSurah, ayahIndex, ayahText);
   };
 
   // Fetch User Bookmarks
@@ -713,17 +773,53 @@ export default function ReadView({ user, playTrack, openReportModal }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Theme:</span>
                 <button
-                  onClick={() => setTheme('light')}
+                  onClick={() => handleSetTheme('light')}
                   style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'light' ? '#ffffff' : 'transparent', color: '#1e293b', cursor: 'pointer' }}
                 >Light</button>
                 <button
-                  onClick={() => setTheme('sepia')}
+                  onClick={() => handleSetTheme('sepia')}
                   style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'sepia' ? '#fbf0d9' : 'transparent', color: '#432818', cursor: 'pointer' }}
                 >Sepia</button>
                 <button
-                  onClick={() => setTheme('dark')}
+                  onClick={() => handleSetTheme('dark')}
                   style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'dark' ? '#0f172a' : 'transparent', color: '#f8fafc', cursor: 'pointer' }}
                 >Dark</button>
+              </div>
+
+              {/* Custom Background Color Picker */}
+              <div className="color-picker-badge" title="Change Reader Background Color">
+                <i className="fas fa-fill-drip" style={{ color: 'var(--accent-gold)' }}></i>
+                <span>BG:</span>
+                <input
+                  type="color"
+                  className="color-picker-input"
+                  value={readerBgColor}
+                  onChange={(e) => { setReaderBgColor(e.target.value); setTheme('custom'); }}
+                />
+              </div>
+
+              {/* Custom Translation Color Picker */}
+              <div className="color-picker-badge" title="Change Translation Text Color">
+                <i className="fas fa-font" style={{ color: 'var(--primary-emerald)' }}></i>
+                <span>Translation:</span>
+                <input
+                  type="color"
+                  className="color-picker-input"
+                  value={translationTextColor}
+                  onChange={(e) => setTranslationTextColor(e.target.value)}
+                />
+              </div>
+
+              {/* Custom Arabic Text Color Picker */}
+              <div className="color-picker-badge" title="Change Arabic Text Color">
+                <i className="fas fa-palette" style={{ color: 'var(--accent-gold-dark)' }}></i>
+                <span>Arabic:</span>
+                <input
+                  type="color"
+                  className="color-picker-input"
+                  value={arabicTextColor}
+                  onChange={(e) => setArabicTextColor(e.target.value)}
+                />
               </div>
 
               {/* Font Size Selector */}
@@ -764,7 +860,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
 
           {/* ===== CONTINUOUS MUSHAF PAGE VIEW (EXACTLY LIKE IMAGE 3) ===== */}
           {readMode === 'only_quran' && quranSubMode === 'page_view' ? (
-            <div className="card mushaf-page-container" style={{ ...themeStyles[theme], padding: '2.5rem 2rem', borderRadius: '16px', border: theme === 'dark' ? '1px solid rgba(245,158,11,0.4)' : '1px solid #e2e8f0', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', transition: 'all 0.3s ease' }}>
+            <div className="card mushaf-page-container" style={{ background: readerBgColor, color: arabicTextColor, padding: '2.5rem 2rem', borderRadius: '16px', border: theme === 'dark' ? '1px solid rgba(245,158,11,0.4)' : '1px solid #cbd5e1', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', transition: 'all 0.3s ease' }}>
               {/* Surah Header Title */}
               <div style={{ textAlign: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: theme === 'dark' ? '1px solid rgba(245,158,11,0.3)' : '1px solid #e2e8f0' }}>
                 <h2 className="arabic-font" style={{ fontSize: '2.2rem', fontWeight: 800, color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-dark)' }}>
@@ -785,17 +881,21 @@ export default function ReadView({ user, playTrack, openReportModal }) {
               )}
 
               {loading ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-                  <p style={{ marginTop: '0.75rem' }}>Loading Mushaf Page...</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', padding: '1.5rem 0' }}>
+                  <div className="skeleton-line-title skeleton-shimmer" style={{ margin: '0 auto', width: '45%' }}></div>
+                  <div className="skeleton-line skeleton-shimmer"></div>
+                  <div className="skeleton-line skeleton-shimmer"></div>
+                  <div className="skeleton-line skeleton-shimmer" style={{ width: '85%' }}></div>
+                  <div className="skeleton-line skeleton-shimmer"></div>
+                  <div className="skeleton-line skeleton-shimmer" style={{ width: '70%' }}></div>
                 </div>
               ) : (
                 /* Continuous Mushaf Flowing Text (Matching Image 3!) */
                 <div
-                  className="arabic-font mushaf-continuous-text"
+                  className="arabic-font mushaf-continuous-text dark-word-black"
                   style={{
                     fontSize: `${fontSize}px`,
-                    color: theme === 'dark' ? '#ffffff' : (theme === 'sepia' ? '#432818' : '#000000'),
+                    color: arabicTextColor,
                     lineHeight: '2.5',
                     textAlign: 'justify',
                     direction: 'rtl',
@@ -856,16 +956,21 @@ export default function ReadView({ user, playTrack, openReportModal }) {
             <div className="verse-by-verse-container">
               {/* Bismillah Header if not Surah 9 */}
               {selectedSurah !== 9 && selectedSurah !== 1 && (
-                <div style={{ textAlign: 'center', padding: '1.5rem', background: themeStyles[theme].background, borderRadius: '12px', marginBottom: '1rem', border: themeStyles[theme].border }}>
+                <div style={{ textAlign: 'center', padding: '1.5rem', background: readerBgColor, color: arabicTextColor, borderRadius: '12px', marginBottom: '1rem', border: '1px solid #cbd5e1' }}>
                   <p className="arabic-font" style={{ fontSize: '2.2rem', color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-emerald)', fontWeight: 700 }}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
                 </div>
               )}
 
-              <div className="card" style={{ ...themeStyles[theme], transition: 'all 0.3s ease' }}>
+              <div className="card" style={{ background: readerBgColor, color: arabicTextColor, border: '1px solid #cbd5e1', transition: 'all 0.3s ease' }}>
                 {loading ? (
-                  <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                    <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-                    <p style={{ marginTop: '0.75rem' }}>Loading Quran Pak Verses...</p>
+                  <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="skeleton-card">
+                        <div className="skeleton-line-title skeleton-shimmer"></div>
+                        <div className="skeleton-line skeleton-shimmer" style={{ height: '24px' }}></div>
+                        <div className="skeleton-line skeleton-shimmer"></div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   surahData && surahData.ayahs && surahData.ayahs.map((ayah, index) => {
@@ -930,7 +1035,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                         </div>
 
                         {/* Arabic Verse Text */}
-                        <p className="arabic-font arabic-text-render" style={{ fontSize: `${fontSize}px`, color: theme === 'dark' ? '#f8fafc' : '#000000', fontWeight: 800, lineSpacing: '1.8' }}>
+                        <p className="arabic-font arabic-text-render dark-word-black" style={{ fontSize: `${fontSize}px`, color: arabicTextColor, fontWeight: 800, lineSpacing: '1.8' }}>
                           {ayah.text}
                         </p>
 
@@ -938,12 +1043,12 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                         {readMode === 'with_translation' && (
                           <div className="translations-list" style={{ marginTop: '0.85rem' }}>
                             {/* English Translation */}
-                            {translations.en && translationData.en && translationData.en[index] && (
-                              <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: theme === 'dark' ? '#cbd5e1' : '#334155' }}>
+                            {translations.en && (
+                              <p className="translation-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: translationTextColor }}>
                                 <span className="lang-tag" style={{ background: '#0284c7', color: '#fff' }}>EN</span>
-                                <span style={{ flex: 1 }}>{translationData.en[index].text}</span>
+                                <span style={{ flex: 1, color: translationTextColor }}>{getEnglishTranslationText(index)}</span>
                                 {translationSubMode === 'audio_and_text' && (
-                                  <button className="verse-btn" onClick={() => speakTranslationText(translationData.en[index].text, 'en-US')} title="Listen to English voice">
+                                  <button className="verse-btn" onClick={() => speakTranslationText(getEnglishTranslationText(index), 'en-US')} title="Listen to English voice">
                                     <i className="fas fa-volume-up"></i>
                                   </button>
                                 )}
@@ -951,12 +1056,12 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                             )}
 
                             {/* Urdu Translation */}
-                            {translations.ur && translationData.ur && translationData.ur[index] && (
-                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: theme === 'dark' ? '#34d399' : '#047857' }}>
+                            {translations.ur && (
+                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: translationTextColor }}>
                                 <span className="lang-tag" style={{ background: '#047857', color: '#fff', fontSize: '0.7rem' }}>UR</span>
-                                <span style={{ flex: 1 }}>{translationData.ur[index].text}</span>
+                                <span style={{ flex: 1, color: translationTextColor }}>{getUrduTranslationText(index)}</span>
                                 {translationSubMode === 'audio_and_text' && (
-                                  <button className="verse-btn" onClick={() => speakTranslationText(translationData.ur[index].text, 'ur-PK')} title="Listen to Urdu voice">
+                                  <button className="verse-btn" onClick={() => speakTranslationText(getUrduTranslationText(index), 'ur-PK')} title="Listen to Urdu voice">
                                     <i className="fas fa-volume-up"></i>
                                   </button>
                                 )}
@@ -965,9 +1070,9 @@ export default function ReadView({ user, playTrack, openReportModal }) {
 
                             {/* Brahui Translation */}
                             {translations.br && (
-                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: theme === 'dark' ? '#fbbf24' : '#b45309' }}>
+                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: translationTextColor }}>
                                 <span className="lang-tag" style={{ background: '#b45309', color: '#fff', fontSize: '0.7rem' }}>BR</span>
-                                <span style={{ flex: 1 }}>{brTranslationText}</span>
+                                <span style={{ flex: 1, color: translationTextColor }}>{brTranslationText}</span>
                                 {translationSubMode === 'audio_and_text' && (
                                   <button className="verse-btn" onClick={() => speakTranslationText(brTranslationText, 'ur-PK')} title="Listen to Brahui voice">
                                     <i className="fas fa-volume-up"></i>

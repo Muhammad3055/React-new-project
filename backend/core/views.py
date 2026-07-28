@@ -11,7 +11,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 
-from .models import Category, QuranAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage
+from .models import (
+    Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
+    Bookmark, ContentReport, ContactMessage, UserProfilePreferences,
+    DailyPrayerTracker, AyahReflectionNote, ZakatHistory
+)
 from .forms import QuranAudioForm, VideoMediaForm, BookMediaForm, TafseerForm, HadithForm
 
 QARIS_LIST = [
@@ -134,6 +138,59 @@ def api_videos_list(request):
             'thumbnail_url': item.thumbnail.url if item.thumbnail else item.thumbnail_url,
             'description': item.description,
             'category_id': item.category_id,
+            'created_at': item.created_at.strftime('%Y-%m-%d'),
+        })
+
+    return JsonResponse({
+        'results': data,
+        'page': page_obj.number,
+        'total_pages': paginator.num_pages,
+        'total_count': paginator.count,
+    })
+
+
+@csrf_exempt
+def api_taqreer_list(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            tq = TaqreerAudio.objects.create(
+                title=body.get('title', 'Untitled Taqreer'),
+                speaker=body.get('speaker', 'Islamic Scholar'),
+                language=body.get('language', 'urdu'),
+                audio_url=body.get('audio_url', ''),
+                duration=body.get('duration', '00:00'),
+                description=body.get('description', '')
+            )
+            return JsonResponse({'status': 'success', 'id': tq.id, 'message': 'Taqreer Audio uploaded successfully!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    query = request.GET.get('q', '').strip()
+    language = request.GET.get('language', '').strip()
+    page_number = request.GET.get('page', 1)
+    
+    taqreers = TaqreerAudio.objects.all()
+    if language:
+        taqreers = taqreers.filter(language=language)
+    if query:
+        taqreers = taqreers.filter(
+            Q(title__icontains=query) | Q(speaker__icontains=query) | Q(description__icontains=query)
+        )
+
+    paginator = Paginator(taqreers, 25)
+    page_obj = paginator.get_page(page_number)
+
+    data = []
+    for item in page_obj:
+        data.append({
+            'id': item.id,
+            'title': item.title,
+            'speaker': item.speaker,
+            'language': item.language,
+            'audio_url': item.get_playable_url(),
+            'duration': item.duration,
+            'description': item.description,
             'created_at': item.created_at.strftime('%Y-%m-%d'),
         })
 
@@ -1013,15 +1070,18 @@ def api_save_zakat_history(request):
     if not request.user.is_authenticated:
         return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
     if request.method == 'POST':
-        import json
-        body = json.loads(request.body.decode('utf-8')) if request.body else {}
-        year = int(body.get('year', 2026))
-        assets = float(body.get('total_assets', 0))
-        zakat = float(body.get('zakat_payable', 0))
+        try:
+            import json
+            body = json.loads(request.body.decode('utf-8')) if request.body else {}
+            year = int(body.get('year', 2026))
+            assets = float(body.get('total_assets', 0))
+            zakat = float(body.get('zakat_payable', 0))
 
-        rec, _ = ZakatHistory.objects.get_or_create(user=request.user, year=year)
-        rec.total_assets = assets
-        rec.zakat_payable = zakat
-        rec.save()
-        return JsonResponse({'status': 'success', 'message': 'Zakat record saved to history!'})
-    return JsonResponse({'status': 'error'}, status=400)
+            rec, _ = ZakatHistory.objects.get_or_create(user=request.user, year=year)
+            rec.total_assets = assets
+            rec.zakat_payable = zakat
+            rec.save()
+            return JsonResponse({'status': 'success', 'message': 'Zakat record saved to history!'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid HTTP method'}, status=405)

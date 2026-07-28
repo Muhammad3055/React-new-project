@@ -44,6 +44,37 @@ class QuranAudio(models.Model):
         return self.audio_url or "#"
 
 
+class TaqreerAudio(models.Model):
+    LANGUAGE_CHOICES = [
+        ('arabic', 'Arabic (عربي)'),
+        ('brahui', 'Brahui (براہوئی)'),
+        ('urdu', 'Urdu (اردو)'),
+    ]
+
+    title = models.CharField(max_length=255)
+    speaker = models.CharField(max_length=150, default="Islamic Scholar")
+    language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default='urdu')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="taqreers")
+    audio_file = models.FileField(upload_to="taqreer_audio/", blank=True, null=True)
+    audio_url = models.URLField(max_length=500, blank=True, help_text="Direct MP3 Audio URL")
+    duration = models.CharField(max_length=20, default="00:00", blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Taqreer Audio"
+        verbose_name_plural = "Taqreer Audios"
+
+    def __str__(self):
+        return f"[{self.get_language_display()}] {self.title} - {self.speaker}"
+
+    def get_playable_url(self):
+        if self.audio_file:
+            return self.audio_file.url
+        return self.audio_url or "#"
+
+
 class VideoMedia(models.Model):
     title = models.CharField(max_length=255)
     speaker = models.CharField(max_length=150, default="Islamic Scholar")

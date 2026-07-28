@@ -8,7 +8,24 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const [showExtrasMenu, setShowExtrasMenu] = useState(false);
   const [toast, setToast] = useState(null);
 
+  // Global Website Theme Modes ('light' | 'sepia' | 'black' | 'auto')
+  const [globalTheme, setGlobalTheme] = useState(() => {
+    try {
+      return localStorage.getItem('quran_portal_global_theme') || 'auto';
+    } catch (e) {
+      return 'auto';
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-site-theme', globalTheme);
+    try {
+      localStorage.setItem('quran_portal_global_theme', globalTheme);
+    } catch (e) {}
+  }, [globalTheme]);
+
   const extraMenuItems = [
+    { label: 'Khatam Tracker', icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },
     { label: 'Fazail (Virtues)', icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
     { label: '99 Names', icon: 'fas fa-star', action: () => { navigateToTab('namesOfAllah'); setShowExtrasMenu(false); } },
     { label: 'Tasbeeh Counter', icon: 'fas fa-hand-holding-heart', action: () => { navigateToTab('tasbeeh'); setShowExtrasMenu(false); } },
@@ -79,7 +96,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const navItems = [
     { id: 'home', label: 'Home', icon: 'fas fa-home' },
     { id: 'read', label: 'Read Quran', icon: 'fas fa-book-open' },
-    { id: 'quran', label: 'Quran MP3', icon: 'fas fa-headphones' },
+    { id: 'quran', label: 'MP3 & Taqreer', icon: 'fas fa-headphones' },
     { id: 'fazail', label: 'Fazail', icon: 'fas fa-book' },
     { id: 'about', label: 'About Us', icon: 'fas fa-info-circle' },
   ];
@@ -139,6 +156,34 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Global Website Theme Selector (Light, Sepia, Black, Auto) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.35)' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-gold)' }} title="Website Theme">
+                <i className="fas fa-palette"></i>
+              </span>
+              <select
+                value={globalTheme}
+                onChange={(e) => setGlobalTheme(e.target.value)}
+                style={{
+                  background: '#022c22',
+                  color: 'var(--accent-gold)',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  borderRadius: '12px'
+                }}
+                title="Select Website Theme (Light, Sepia, Black, Auto)"
+              >
+                <option value="light">☀️ Light</option>
+                <option value="sepia">📜 Sepia</option>
+                <option value="black">🌙 Black</option>
+                <option value="auto">🌓 Auto</option>
+              </select>
             </div>
 
             {/* Desktop Extras Menu Toggle */}
@@ -241,6 +286,29 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               )}
             </div>
 
+            {/* Quick Mobile Auth Header Buttons (Always Visible on Mobile Header for iPhone, Samsung, Infinix, etc.) */}
+            <div className="mobile-header-auth-bar">
+              {user ? (
+                <button
+                  className="mobile-header-user-btn"
+                  onClick={() => navigateToTab('dashboard')}
+                  title={`Logged in as ${user.username}`}
+                >
+                  <i className="fas fa-user-circle"></i>
+                  <span>{user.username}</span>
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                  <button className="mobile-header-login-btn" onClick={() => openAuthModal('login')}>
+                    <i className="fas fa-sign-in-alt"></i> Login
+                  </button>
+                  <button className="mobile-header-signup-btn" onClick={() => openAuthModal('signup')}>
+                    <i className="fas fa-user-plus"></i> Sign Up
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Hamburger Toggle */}
             <button
               className={`mobile-toggle-btn ${mobileActive ? 'is-open' : ''}`}
@@ -290,6 +358,33 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 </button>
               </div>
             )}
+          </div>
+
+          {/* Global Theme Selector inside Mobile Drawer */}
+          <div style={{ margin: '1rem 0', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-palette"></i> Website Theme:
+            </span>
+            <select
+              value={globalTheme}
+              onChange={(e) => setGlobalTheme(e.target.value)}
+              style={{
+                background: '#022c22',
+                color: 'var(--accent-gold)',
+                border: '1px solid var(--accent-gold)',
+                fontWeight: 700,
+                fontSize: '0.82rem',
+                outline: 'none',
+                cursor: 'pointer',
+                padding: '4px 10px',
+                borderRadius: '14px'
+              }}
+            >
+              <option value="light">☀️ Light</option>
+              <option value="sepia">📜 Sepia</option>
+              <option value="black">🌙 Black</option>
+              <option value="auto">🌓 Auto (System)</option>
+            </select>
           </div>
 
           {/* Main Navigation Items Grid */}

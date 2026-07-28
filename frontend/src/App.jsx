@@ -3,14 +3,12 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AudioPlayer from './components/AudioPlayer';
 import ReportModal from './components/ReportModal';
-import VideoModal from './components/VideoModal';
 import AuthModal from './components/AuthModal';
 
 import HomeView from './views/HomeView';
 import ReadView from './views/ReadView';
 import QuranView from './views/QuranView';
 import QarisView from './views/QarisView';
-import VideosView from './views/VideosView';
 import BooksView from './views/BooksView';
 import TafseerView from './views/TafseerView';
 import HadithView from './views/HadithView';
@@ -22,6 +20,7 @@ import FazailView from './views/FazailView';
 import NamesOfAllahView from './views/NamesOfAllahView';
 import TasbeehView from './views/TasbeehView';
 import DuasView from './views/DuasView';
+import KhatamTrackerView from './views/KhatamTrackerView';
 
 import UserDashboardView from './views/UserDashboardView';
 
@@ -31,7 +30,6 @@ export default function App() {
     read: '/read',
     quran: '/quran',
     qaris: '/qaris',
-    videos: '/videos',
     books: '/books',
     tafseer: '/tafseer',
     hadith: '/hadith',
@@ -39,6 +37,7 @@ export default function App() {
     namesOfAllah: '/names-of-allah',
     tasbeeh: '/tasbeeh',
     duas: '/duas',
+    khatam: '/khatam-tracker',
     contact: '/contact',
     about: '/about',
     bookmarks: '/bookmarks',
@@ -60,7 +59,6 @@ export default function App() {
 
   // Modal States
   const [reportData, setReportData] = useState(null);
-  const [videoModalData, setVideoModalData] = useState(null);
   const [authModalMode, setAuthModalMode] = useState(null);
 
   // Keep UI in sync with browser URL and history
@@ -74,29 +72,30 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Dynamic SEO Page Title update (English, Urdu & Brahui SEO)
+  // Dynamic SEO Page Title update
   useEffect(() => {
     const seoTitles = {
-      home: 'Quran Portal - Read Quran Online in English, Urdu (اردو) & Brahui (براہوئی) | MP3 Recitations',
+      home: 'Quran Portal - Read Quran Online in English, Urdu & Brahui | MP3 Recitations & Taqreers',
       read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui Translations',
-      quran: 'Quran MP3 Recitations - Listen to 20 World-Renowned Qaris in HD Audio',
+      quran: 'Quran & Taqreer MP3 Audio Portal - Listen to Qaris & Lectures in Arabic, Brahui & Urdu',
       qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads',
-      tafseer: 'Tafseer Quran - Detailed Verse Explanations & Commentary (تفسیر ابن کثیر)',
-      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan (احادیث مبارکہ)',
-      fazail: 'Fazail & Virtues of Quran & Good Deeds (فضائل الاعمال - اردو و انگریزی)',
+      tafseer: 'Tafseer Quran - Detailed Verse Explanations & Commentary',
+      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan',
+      fazail: 'Fazail & Virtues of Quran & Good Deeds',
       books: 'Islamic PDF Books & Library - Free Digital Islamic Literature & E-Books',
-      namesOfAllah: '99 Names of Allah (Asma ul Husna - أسماء الله الحسنى)',
-      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr (ڈیجیٹل تسبیح)',
-      duas: 'Masnoon Duas & Supplications (مسنون دعائیں)',
+      namesOfAllah: '99 Names of Allah (Asma ul Husna)',
+      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr',
+      duas: 'Masnoon Duas & Supplications',
+      khatam: 'Khatam Quran 30-Day Progress Tracker & Schedule Planner',
       contact: 'Contact Us & Feedback - Quran Portal',
       about: 'About Us & Developer Profile - Quran Al Kareem',
       bookmarks: 'My Bookmarks - Quran Portal',
       upload: 'Admin Upload Content - Quran Portal'
     };
-    document.title = seoTitles[activeTab] || 'Quran Portal - Read Quran Online (English, Urdu, Brahui)';
+    document.title = seoTitles[activeTab] || 'Quran Portal - Read Quran & MP3 Taqreers';
   }, [activeTab]);
 
-  // Check auth status on mount (with localStorage fallback for Netlify)
+  // Check auth status on mount
   useEffect(() => {
     fetch('/api/auth/status/', { cache: 'no-store', headers: { 'Pragma': 'no-cache' } })
       .then(res => res.json())
@@ -141,10 +140,6 @@ export default function App() {
     setReportData({ contentType, contentId });
   };
 
-  const openVideoModal = (title, url) => {
-    setVideoModalData({ title, url });
-  };
-
   const openAuthModal = (mode) => {
     setAuthModalMode(mode);
   };
@@ -165,7 +160,6 @@ export default function App() {
           <HomeView
             navigateToTab={navigateToTab}
             playTrack={playTrack}
-            openVideoModal={openVideoModal}
             user={user}
             openAuthModal={openAuthModal}
           />
@@ -185,13 +179,6 @@ export default function App() {
 
         {activeTab === 'qaris' && (
           <QarisView playTrack={playTrack} />
-        )}
-
-        {activeTab === 'videos' && (
-          <VideosView
-            openVideoModal={openVideoModal}
-            openReportModal={openReportModal}
-          />
         )}
 
         {activeTab === 'books' && (
@@ -220,6 +207,10 @@ export default function App() {
 
         {activeTab === 'duas' && (
           <DuasView playTrack={playTrack} user={user} />
+        )}
+
+        {activeTab === 'khatam' && (
+          <KhatamTrackerView navigateToTab={navigateToTab} user={user} openAuthModal={openAuthModal} />
         )}
 
         {activeTab === 'contact' && (
@@ -256,13 +247,6 @@ export default function App() {
         <ReportModal
           reportData={reportData}
           onClose={() => setReportData(null)}
-        />
-      )}
-
-      {videoModalData && (
-        <VideoModal
-          videoData={videoModalData}
-          onClose={() => setVideoModalData(null)}
         />
       )}
 
