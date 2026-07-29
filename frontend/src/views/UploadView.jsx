@@ -23,27 +23,42 @@ export default function UploadView({ user }) {
 
   // Taqreer Form State
   const [taqreerData, setTaqreerData] = useState({ title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
+  const [taqreerFile, setTaqreerFile] = useState(null);
 
   // Book Form State
   const [bookData, setBookData] = useState({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
+  const [bookFile, setBookFile] = useState(null);
 
   // Hadith Form State
   const [hadithData, setHadithData] = useState({ book_name: 'Sahih Bukhari', hadith_number: 1, chapter: '', arabic_text: '', translation: '', narrated_by: '', grade: 'Sahih' });
 
   // Audio Form State
   const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
+  const [audioFile, setAudioFile] = useState(null);
 
   const handleTaqreerSubmit = (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', taqreerData.title);
+    formData.append('speaker', taqreerData.speaker);
+    formData.append('language', taqreerData.language);
+    formData.append('duration', taqreerData.duration);
+    formData.append('description', taqreerData.description);
+    if (taqreerFile) {
+      formData.append('audio_file', taqreerFile);
+    } else {
+      formData.append('audio_url', taqreerData.audio_url);
+    }
+
     fetch('/api/taqreer/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taqreerData)
+      body: formData
     })
       .then(res => res.json())
       .then((data) => {
-        setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully!');
+        setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully from laptop!');
         setTaqreerData({ title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
+        setTaqreerFile(null);
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
@@ -54,15 +69,28 @@ export default function UploadView({ user }) {
 
   const handleBookSubmit = (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', bookData.title);
+    formData.append('author', bookData.author);
+    formData.append('language', bookData.language);
+    formData.append('file_type', bookData.file_type);
+    formData.append('description', bookData.description);
+    if (bookFile) {
+      formData.append('pdf_file', bookFile);
+    } else {
+      formData.append('pdf_url', bookData.pdf_url);
+    }
+    if (bookData.cover_url) formData.append('cover_url', bookData.cover_url);
+
     fetch('/api/books/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bookData)
+      body: formData
     })
       .then(res => res.json())
       .then(() => {
-        setSubmittedMessage('Book document added successfully!');
+        setSubmittedMessage('Book document uploaded successfully from laptop!');
         setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
+        setBookFile(null);
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
@@ -92,15 +120,26 @@ export default function UploadView({ user }) {
 
   const handleAudioSubmit = (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append('surah_number', audioData.surah_number);
+    formData.append('surah_name_english', audioData.surah_name_english);
+    formData.append('reciter', audioData.reciter);
+    formData.append('language', audioData.language);
+    if (audioFile) {
+      formData.append('audio_file', audioFile);
+    } else {
+      formData.append('audio_url', audioData.audio_url);
+    }
+
     fetch('/api/quran/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(audioData)
+      body: formData
     })
       .then(res => res.json())
       .then(() => {
-        setSubmittedMessage('Quran Audio recitation added successfully!');
-        setAudioData({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', audio_url: '' });
+        setSubmittedMessage('Quran Audio recitation uploaded successfully from laptop!');
+        setAudioData({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
+        setAudioFile(null);
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
@@ -116,7 +155,7 @@ export default function UploadView({ user }) {
           <i className="fas fa-cloud-upload-alt" style={{ color: 'var(--accent-gold)' }}></i> Admin Content Upload & Portal
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
-          Upload MP3 Taqreer voice notes (Arabic, Brahui, Urdu), PDF books, Hadiths, and Quran recitations to the portal.
+          Upload MP3 Taqreer voice notes, PDF books, Word (.docx), PowerPoint (.pptx), and Quran recitations directly from your laptop.
         </p>
       </div>
 
@@ -161,7 +200,7 @@ export default function UploadView({ user }) {
             gap: '0.4rem'
           }}
         >
-          <i className="fas fa-book"></i> PDF Books
+          <i className="fas fa-book"></i> PDF / Word / PPT Documents
         </button>
 
         <button
@@ -227,8 +266,18 @@ export default function UploadView({ user }) {
                 </select>
               </div>
               <div>
-                <label className="form-label">Direct MP3 Audio Stream URL *</label>
-                <input type="url" className="form-input" required value={taqreerData.audio_url} onChange={e => setTaqreerData({ ...taqreerData, audio_url: e.target.value })} placeholder="https://domain.com/audio.mp3" />
+                <label className="form-label">Choose MP3 File from Laptop</label>
+                <input
+                  type="file"
+                  className="form-input"
+                  accept="audio/*,.mp3"
+                  onChange={e => setTaqreerFile(e.target.files[0])}
+                  style={{ padding: '0.4rem' }}
+                />
+              </div>
+              <div>
+                <label className="form-label">OR Direct MP3 Web URL</label>
+                <input type="url" className="form-input" value={taqreerData.audio_url} onChange={e => setTaqreerData({ ...taqreerData, audio_url: e.target.value })} placeholder="https://domain.com/audio.mp3" />
               </div>
               <div>
                 <label className="form-label">Duration (e.g. 18:45)</label>
@@ -242,14 +291,14 @@ export default function UploadView({ user }) {
             </div>
 
             <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-plus"></i> Upload Taqreer MP3 Audio
+              <i className="fas fa-upload"></i> Save & Upload Taqreer MP3
             </button>
           </form>
         )}
 
         {activeTab === 'book' && (
           <form onSubmit={handleBookSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Add New Library Document / Resource</h3>
+            <h3><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Add New PDF, Word (.docx), or PPT (.pptx) Document</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
               <div>
                 <label className="form-label">Document Title *</label>
@@ -267,17 +316,23 @@ export default function UploadView({ user }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Document File URL *</label>
-                <input type="url" className="form-input" required value={bookData.pdf_url} onChange={e => setBookData({ ...bookData, pdf_url: e.target.value })} placeholder="https://domain.com/book.pdf" />
+                <label className="form-label">Choose Document File from Laptop (.pdf, .docx, .pptx) *</label>
+                <input
+                  type="file"
+                  className="form-input"
+                  accept=".pdf,.docx,.doc,.pptx,.ppt"
+                  onChange={e => setBookFile(e.target.files[0])}
+                  style={{ padding: '0.4rem' }}
+                />
               </div>
               <div>
-                <label className="form-label">Cover Image URL</label>
-                <input type="url" className="form-input" value={bookData.cover_url} onChange={e => setBookData({ ...bookData, cover_url: e.target.value })} placeholder="https://images.unsplash.com/..." />
+                <label className="form-label">OR Document Web URL</label>
+                <input type="url" className="form-input" value={bookData.pdf_url} onChange={e => setBookData({ ...bookData, pdf_url: e.target.value })} placeholder="https://domain.com/book.pdf" />
               </div>
             </div>
 
             <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-plus"></i> Upload Document
+              <i className="fas fa-upload"></i> Save & Upload Document
             </button>
           </form>
         )}
@@ -350,13 +405,25 @@ export default function UploadView({ user }) {
               </div>
             </div>
 
-            <div>
-              <label className="form-label">Direct MP3 Audio URL *</label>
-              <input type="url" className="form-input" required value={audioData.audio_url} onChange={e => setAudioData({ ...audioData, audio_url: e.target.value })} placeholder="https://server8.mp3quran.net/afs/001.mp3" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              <div>
+                <label className="form-label">Choose MP3 File from Laptop *</label>
+                <input
+                  type="file"
+                  className="form-input"
+                  accept="audio/*,.mp3"
+                  onChange={e => setAudioFile(e.target.files[0])}
+                  style={{ padding: '0.4rem' }}
+                />
+              </div>
+              <div>
+                <label className="form-label">OR Direct MP3 Web URL</label>
+                <input type="url" className="form-input" value={audioData.audio_url} onChange={e => setAudioData({ ...audioData, audio_url: e.target.value })} placeholder="https://server8.mp3quran.net/afs/001.mp3" />
+              </div>
             </div>
 
             <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-plus"></i> Save Quran Audio
+              <i className="fas fa-upload"></i> Save & Upload Quran Audio
             </button>
           </form>
         )}
