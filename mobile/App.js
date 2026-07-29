@@ -7,19 +7,36 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  FlatList,
   StatusBar,
   Linking
 } from 'react-native';
 
-// Set your Django API URL (Change to your live domain or local IP)
+// Django Backend API Base URL (Local IP / Live Server URL)
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
+const FAZAIL_SAMPLE = [
+  {
+    id: 1,
+    title: 'The Best of People / بہترین انسان',
+    arabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',
+    translation: 'The best among you are those who learn the Quran and teach it.',
+    reference: 'Sahih al-Bukhari 5027'
+  },
+  {
+    id: 2,
+    title: '10 Good Deeds Per Letter / ہر حرف پر ۱۰ نیکیاں',
+    arabic: 'مَنْ قَرَأَ حَرْفًا مِنْ كِتَابِ اللَّهِ فَلَهُ بِهِ حَسَنَةٌ وَالْحَسَنَةُ بِعَشْرِ أَمْثَالِهَا',
+    translation: 'Whoever recites a letter from the Book of Allah gets a 10-fold reward.',
+    reference: 'Sunan at-Tirmidhi 2910'
+  }
+];
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState('read'); // 'read' | 'mp3' | 'books' | 'hadith'
+  const [activeTab, setActiveTab] = useState('read'); // 'read' | 'mp3' | 'books' | 'fazail' | 'hadith'
   const [loading, setLoading] = useState(false);
   const [books, setBooks] = useState([]);
   const [audios, setAudios] = useState([]);
+  const [taqreers, setTaqreers] = useState([]);
   const [hadiths, setHadiths] = useState([]);
   const [activeAudio, setActiveAudio] = useState(null);
 
@@ -30,22 +47,27 @@ export default function App() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Fetch Books
+      // 1. Fetch PDF / Word Books
       const booksRes = await fetch(`${API_BASE_URL}/api/books/`);
       const booksData = await booksRes.json();
       setBooks(booksData.results || []);
 
-      // Fetch Quran Audios
+      // 2. Fetch Quran Audios
       const audiosRes = await fetch(`${API_BASE_URL}/api/quran/?featured=1`);
       const audiosData = await audiosRes.json();
       setAudios(audiosData.results || []);
 
-      // Fetch Hadiths
+      // 3. Fetch Taqreer Speeches
+      const taqreerRes = await fetch(`${API_BASE_URL}/api/taqreer/`);
+      const taqreerData = await taqreerRes.json();
+      setTaqreers(taqreerData.results || []);
+
+      // 4. Fetch Hadiths
       const hadithsRes = await fetch(`${API_BASE_URL}/api/hadith/`);
       const hadithsData = await hadithsRes.json();
       setHadiths(hadithsData.results || []);
     } catch (e) {
-      console.log('Error fetching data from Django backend:', e);
+      console.log('Django Backend API Fetch Notice:', e);
     } finally {
       setLoading(false);
     }
@@ -56,7 +78,7 @@ export default function App() {
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#f59e0b" />
-          <Text style={styles.loadingText}>Loading Islamic Portal Data...</Text>
+          <Text style={styles.loadingText}>Loading Islamic Portal Mobile Data...</Text>
         </View>
       );
     }
@@ -72,14 +94,21 @@ export default function App() {
             <Text style={styles.translationText}>
               "Unquestionably, by the remembrance of Allah do hearts find peace." [Ar-Ra'd 13:28]
             </Text>
+            <Text style={styles.urduText}>
+              اردو: "سن لو! اللہ کے ذکر ہی سے دلوں کو اطمینان ملتا ہے۔"
+            </Text>
           </View>
 
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>📖 Interactive Quran Reading</Text>
+          <View style={styles.cardHeader}>
+            <Text style={styles.sectionTitle}>📖 Interactive Quran Portal</Text>
+            <Text style={styles.infoText}>
+              Read Holy Quran with side-by-side Brahui, Urdu & English translations, Tafseer commentary, and Qari audio recitations.
+            </Text>
           </View>
-          <Text style={styles.infoText}>
-            Select Surahs and read Arabic text with Brahui, Urdu & English translations side-by-side.
-          </Text>
+
+          <TouchableOpacity style={styles.primaryActionButton}>
+            <Text style={styles.primaryActionButtonText}>📖 Open Full Quran Reader</Text>
+          </TouchableOpacity>
         </ScrollView>
       );
     }
@@ -87,22 +116,44 @@ export default function App() {
     if (activeTab === 'mp3') {
       return (
         <ScrollView style={styles.tabContent}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>🎧 Quran & Taqreer MP3 Audios</Text>
-          </View>
-          {audios.map((item) => (
-            <View key={item.id} style={styles.audioCard}>
+          <Text style={styles.sectionTitle}>🎧 Quran Recitations & Taqreers</Text>
+          <Text style={styles.subTitle}>Listen to Arabic Tilawat, Brahui & Urdu translations, and voice notes.</Text>
+
+          {audios.length > 0 ? (
+            audios.map((item) => (
+              <View key={`audio-${item.id}`} style={styles.audioCard}>
+                <View style={styles.audioInfo}>
+                  <Text style={styles.cardTitle}>Surah {item.surah_name_english} ({item.surah_name_arabic})</Text>
+                  <Text style={styles.cardSubTitle}>Qari: {item.reciter}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.goldPlayBtn}
+                  onPress={() => {
+                    setActiveAudio(item.audio_url);
+                    Linking.openURL(item.audio_url);
+                  }}
+                >
+                  <Text style={styles.goldPlayBtnText}>▶ Play MP3</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyText}>Surah Al-Fatiha & Al-Kahf MP3 Recitations Available</Text>
+            </View>
+          )}
+
+          {taqreers.map((tq) => (
+            <View key={`tq-${tq.id}`} style={styles.audioCard}>
               <View style={styles.audioInfo}>
-                <Text style={styles.surahTitle}>Surah {item.surah_name_english} ({item.surah_name_arabic})</Text>
-                <Text style={styles.reciterName}>Qari: {item.reciter}</Text>
+                <Text style={styles.cardTitle}>{tq.title}</Text>
+                <Text style={styles.cardSubTitle}>Speaker: {tq.speaker} ({tq.language.toUpperCase()})</Text>
               </View>
               <TouchableOpacity
-                style={styles.playButton}
-                onPress={() => setActiveAudio(item.audio_url)}
+                style={styles.goldPlayBtn}
+                onPress={() => Linking.openURL(tq.audio_url)}
               >
-                <Text style={styles.playButtonText}>
-                  {activeAudio === item.audio_url ? '⏸ Playing' : '▶ Play MP3'}
-                </Text>
+                <Text style={styles.goldPlayBtnText}>▶ Play Taqreer</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -113,19 +164,50 @@ export default function App() {
     if (activeTab === 'books') {
       return (
         <ScrollView style={styles.tabContent}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>📚 PDF Books & Library</Text>
-          </View>
-          {books.map((b) => (
-            <View key={b.id} style={styles.bookCard}>
-              <Text style={styles.bookTitle}>{b.title}</Text>
-              <Text style={styles.authorName}>By {b.author} ({b.language})</Text>
+          <Text style={styles.sectionTitle}>📚 PDF & Word Books Library</Text>
+          <Text style={styles.subTitle}>Read authentic Islamic literature, Tafseer, and tajweed guides.</Text>
+
+          {books.length > 0 ? (
+            books.map((b) => (
+              <View key={`book-${b.id}`} style={styles.bookCard}>
+                <Text style={styles.cardTitle}>{b.title}</Text>
+                <Text style={styles.cardSubTitle}>By {b.author} &bull; {b.language}</Text>
+                <TouchableOpacity
+                  style={styles.emeraldButton}
+                  onPress={() => Linking.openURL(b.document_url || `${API_BASE_URL}/media/books/30_sabab_saadah.pdf`)}
+                >
+                  <Text style={styles.emeraldButtonText}>📄 Open PDF / Word Document</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <View style={styles.bookCard}>
+              <Text style={styles.cardTitle}>Holy Quran Brahui & Urdu Translation</Text>
+              <Text style={styles.cardSubTitle}>Digital PDF Library Document</Text>
               <TouchableOpacity
-                style={styles.downloadButton}
-                onPress={() => Linking.openURL(b.document_url || `${API_BASE_URL}/media/books/30_sabab_saadah.pdf`)}
+                style={styles.emeraldButton}
+                onPress={() => Linking.openURL(`${API_BASE_URL}/media/books/Holy_Quran_Translation_in_Brahui_Language.pdf`)}
               >
-                <Text style={styles.downloadButtonText}>📖 Read / Open PDF Document</Text>
+                <Text style={styles.emeraldButtonText}>📄 Open Brahui PDF Book</Text>
               </TouchableOpacity>
+            </View>
+          )}
+        </ScrollView>
+      );
+    }
+
+    if (activeTab === 'fazail') {
+      return (
+        <ScrollView style={styles.tabContent}>
+          <Text style={styles.sectionTitle}>🌟 Fazail & Virtues of Quran (فضائل)</Text>
+          <Text style={styles.subTitle}>Authentic Hadith virtues for reciting Quran and good deeds.</Text>
+
+          {FAZAIL_SAMPLE.map((fz) => (
+            <View key={fz.id} style={styles.fazailCard}>
+              <Text style={styles.fazailTitle}>{fz.title}</Text>
+              <Text style={styles.arabicText}>{fz.arabic}</Text>
+              <Text style={styles.translationText}>"{fz.translation}"</Text>
+              <Text style={styles.refText}>Reference: {fz.reference}</Text>
             </View>
           ))}
         </ScrollView>
@@ -135,9 +217,9 @@ export default function App() {
     if (activeTab === 'hadith') {
       return (
         <ScrollView style={styles.tabContent}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>📜 Authentic Hadiths</Text>
-          </View>
+          <Text style={styles.sectionTitle}>📜 Authentic Hadith Collections</Text>
+          <Text style={styles.subTitle}>Sahih Bukhari, Sahih Muslim, Riyad As-Salihin & more.</Text>
+
           {hadiths.map((h) => (
             <View key={h.id} style={styles.hadithCard}>
               <Text style={styles.hadithBadge}>{h.book_name} #{h.hadith_number} ({h.grade})</Text>
@@ -154,46 +236,39 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#022c22" />
 
-      {/* Mobile Top Header Banner */}
+      {/* Header Banner */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</Text>
-        <Text style={styles.headerSubtitle}>Holy Quran & Islamic Portal</Text>
+        <Text style={styles.headerSubtitle}>Holy Quran & Islamic Media Portal</Text>
       </View>
 
-      {/* Body View */}
+      {/* Body Area */}
       <View style={styles.body}>{renderContent()}</View>
 
-      {/* Bottom Navigation Bar */}
+      {/* Bottom Navigation Tabs Bar */}
       <View style={styles.navBar}>
-        <TouchableOpacity
-          style={[styles.navItem, activeTab === 'read' && styles.navItemActive]}
-          onPress={() => setActiveTab('read')}
-        >
-          <Text style={[styles.navIcon, activeTab === 'read' && styles.navIconActive]}>📖</Text>
+        <TouchableOpacity style={[styles.navItem, activeTab === 'read' && styles.navItemActive]} onPress={() => setActiveTab('read')}>
+          <Text style={styles.navIcon}>📖</Text>
           <Text style={[styles.navLabel, activeTab === 'read' && styles.navLabelActive]}>Read</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.navItem, activeTab === 'mp3' && styles.navItemActive]}
-          onPress={() => setActiveTab('mp3')}
-        >
-          <Text style={[styles.navIcon, activeTab === 'mp3' && styles.navIconActive]}>🎧</Text>
+        <TouchableOpacity style={[styles.navItem, activeTab === 'mp3' && styles.navItemActive]} onPress={() => setActiveTab('mp3')}>
+          <Text style={styles.navIcon}>🎧</Text>
           <Text style={[styles.navLabel, activeTab === 'mp3' && styles.navLabelActive]}>MP3</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.navItem, activeTab === 'books' && styles.navItemActive]}
-          onPress={() => setActiveTab('books')}
-        >
-          <Text style={[styles.navIcon, activeTab === 'books' && styles.navIconActive]}>📚</Text>
+        <TouchableOpacity style={[styles.navItem, activeTab === 'books' && styles.navItemActive]} onPress={() => setActiveTab('books')}>
+          <Text style={styles.navIcon}>📚</Text>
           <Text style={[styles.navLabel, activeTab === 'books' && styles.navLabelActive]}>Books</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.navItem, activeTab === 'hadith' && styles.navItemActive]}
-          onPress={() => setActiveTab('hadith')}
-        >
-          <Text style={[styles.navIcon, activeTab === 'hadith' && styles.navIconActive]}>📜</Text>
+        <TouchableOpacity style={[styles.navItem, activeTab === 'fazail' && styles.navItemActive]} onPress={() => setActiveTab('fazail')}>
+          <Text style={styles.navIcon}>🌟</Text>
+          <Text style={[styles.navLabel, activeTab === 'fazail' && styles.navLabelActive]}>Fazail</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.navItem, activeTab === 'hadith' && styles.navItemActive]} onPress={() => setActiveTab('hadith')}>
+          <Text style={styles.navIcon}>📜</Text>
           <Text style={[styles.navLabel, activeTab === 'hadith' && styles.navLabelActive]}>Hadith</Text>
         </TouchableOpacity>
       </View>
@@ -208,20 +283,20 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#022c22',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: 'center',
     borderBottomWidth: 2,
     borderBottomColor: '#f59e0b',
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#f59e0b',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#e2e8f0',
     fontWeight: '600',
   },
@@ -247,44 +322,69 @@ const styles = StyleSheet.create({
     borderColor: '#f59e0b',
     borderWidth: 1.5,
     borderRadius: 14,
-    padding: 18,
+    padding: 16,
     marginBottom: 16,
   },
   badgeText: {
     color: '#f59e0b',
     fontWeight: 'bold',
     fontSize: 13,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   arabicText: {
     color: '#ffffff',
-    fontSize: 20,
-    lineHeight: 34,
+    fontSize: 19,
+    lineHeight: 32,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   translationText: {
     color: '#fef3c7',
-    fontSize: 14,
+    fontSize: 13,
     fontStyle: 'italic',
     textAlign: 'center',
   },
-  sectionHeader: {
+  urduText: {
+    color: '#6ee7b7',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 6,
+    fontWeight: '600',
+  },
+  cardHeader: {
     marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#f59e0b',
+    marginBottom: 4,
+  },
+  subTitle: {
+    fontSize: 13,
+    color: '#cbd5e1',
+    marginBottom: 14,
   },
   infoText: {
     color: '#cbd5e1',
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 20,
+  },
+  primaryActionButton: {
+    backgroundColor: '#f59e0b',
+    paddingVertical: 12,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginTop: 14,
+  },
+  primaryActionButtonText: {
+    color: '#022c22',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   audioCard: {
     backgroundColor: '#064e3b',
-    borderColor: 'rgba(245,158,11,0.3)',
+    borderColor: 'rgba(245,158,11,0.35)',
     borderWidth: 1,
     borderRadius: 12,
     padding: 14,
@@ -297,60 +397,70 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   },
-  surahTitle: {
+  cardTitle: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 15,
   },
-  reciterName: {
+  cardSubTitle: {
     color: '#cbd5e1',
     fontSize: 13,
     marginTop: 4,
   },
-  playButton: {
+  goldPlayBtn: {
     backgroundColor: '#f59e0b',
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 20,
   },
-  playButtonText: {
+  goldPlayBtnText: {
     color: '#022c22',
     fontWeight: 'bold',
     fontSize: 13,
   },
   bookCard: {
     backgroundColor: '#064e3b',
-    borderColor: 'rgba(245,158,11,0.3)',
+    borderColor: 'rgba(245,158,11,0.35)',
     borderWidth: 1,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
   },
-  bookTitle: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  authorName: {
-    color: '#f59e0b',
-    fontSize: 13,
-    marginVertical: 6,
-  },
-  downloadButton: {
+  emeraldButton: {
     backgroundColor: '#059669',
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 10,
   },
-  downloadButtonText: {
+  emeraldButtonText: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 13,
   },
+  fazailCard: {
+    backgroundColor: '#064e3b',
+    borderColor: '#f59e0b',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  fazailTitle: {
+    color: '#f59e0b',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginBottom: 8,
+  },
+  refText: {
+    color: '#6ee7b7',
+    fontSize: 12,
+    marginTop: 8,
+    fontWeight: 'bold',
+  },
   hadithCard: {
     backgroundColor: '#064e3b',
-    borderColor: 'rgba(245,158,11,0.3)',
+    borderColor: 'rgba(245,158,11,0.35)',
     borderWidth: 1,
     borderRadius: 12,
     padding: 16,
@@ -367,12 +477,20 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 10,
   },
+  emptyCard: {
+    padding: 20,
+    textAlign: 'center',
+  },
+  emptyText: {
+    color: '#cbd5e1',
+    fontStyle: 'italic',
+  },
   navBar: {
     flexDirection: 'row',
     backgroundColor: '#022c22',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(245,158,11,0.3)',
-    paddingVertical: 8,
+    borderTopColor: 'rgba(245,158,11,0.35)',
+    paddingVertical: 6,
   },
   navItem: {
     flex: 1,
@@ -384,10 +502,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f59e0b',
   },
   navIcon: {
-    fontSize: 18,
-  },
-  navIconActive: {
-    fontSize: 20,
+    fontSize: 17,
   },
   navLabel: {
     fontSize: 11,
