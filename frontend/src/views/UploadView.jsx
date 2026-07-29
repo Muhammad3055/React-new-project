@@ -31,7 +31,7 @@ export default function UploadView({ user }) {
   const [hadithData, setHadithData] = useState({ book_name: 'Sahih Bukhari', hadith_number: 1, chapter: '', arabic_text: '', translation: '', narrated_by: '', grade: 'Sahih' });
 
   // Audio Form State
-  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', audio_url: '' });
+  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
 
   const handleTaqreerSubmit = (e) => {
     e.preventDefault();
@@ -337,8 +337,16 @@ export default function UploadView({ user }) {
                 <input type="text" className="form-input" value={audioData.surah_name_english} onChange={e => setAudioData({ ...audioData, surah_name_english: e.target.value })} placeholder="e.g. Al-Fatiha" />
               </div>
               <div>
-                <label className="form-label">Qari / Reciter Name *</label>
-                <input type="text" className="form-input" required value={audioData.reciter} onChange={e => setAudioData({ ...audioData, reciter: e.target.value })} placeholder="e.g. Mishary Rashid Alafasy" />
+                <label className="form-label">Audio Type / Language *</label>
+                <select className="form-select" value={audioData.language} onChange={e => setAudioData({ ...audioData, language: e.target.value })}>
+                  <option value="arabic">Arabic Recitation (تلاوت)</option>
+                  <option value="brahui">Brahui Translation MP3 (براہوئی ترجمہ)</option>
+                  <option value="urdu">Urdu Translation MP3 (اردو ترجمہ)</option>
+                </select>
+              </div>
+              <div>
+                <label className="form-label">Qari / Scholar Name *</label>
+                <input type="text" className="form-input" required value={audioData.reciter} onChange={e => setAudioData({ ...audioData, reciter: e.target.value })} placeholder="e.g. Mishary Alafasy / Scholar Name" />
               </div>
             </div>
 

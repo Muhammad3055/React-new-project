@@ -4,12 +4,13 @@ from .models import QuranAudio, VideoMedia, BookMedia, Tafseer, Hadith
 class QuranAudioForm(forms.ModelForm):
     class Meta:
         model = QuranAudio
-        fields = ['surah_number', 'surah_name_arabic', 'surah_name_english', 'reciter', 'audio_file', 'audio_url', 'duration', 'revelation_place', 'total_ayahs']
+        fields = ['surah_number', 'surah_name_arabic', 'surah_name_english', 'reciter', 'language', 'audio_file', 'audio_url', 'duration', 'revelation_place', 'total_ayahs']
         widgets = {
             'surah_number': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'e.g. 1'}),
             'surah_name_arabic': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. الفاتحة'}),
             'surah_name_english': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. Al-Fatiha'}),
             'reciter': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. Mishary Rashid Alafasy'}),
+            'language': forms.Select(attrs={'class': 'form-select'}),
             'audio_file': forms.FileInput(attrs={'class': 'form-file'}),
             'audio_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://... direct mp3 link'}),
             'duration': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '02:45'}),

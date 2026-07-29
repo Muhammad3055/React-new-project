@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, QuranAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage
+from .models import Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -9,9 +9,16 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(QuranAudio)
 class QuranAudioAdmin(admin.ModelAdmin):
-    list_display = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'reciter', 'revelation_place', 'duration')
-    list_filter = ('revelation_place', 'reciter')
+    list_display = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'reciter', 'language', 'revelation_place', 'duration')
+    list_filter = ('language', 'revelation_place', 'reciter')
     search_fields = ('surah_name_english', 'surah_name_arabic', 'reciter')
+
+
+@admin.register(TaqreerAudio)
+class TaqreerAudioAdmin(admin.ModelAdmin):
+    list_display = ('title', 'speaker', 'language', 'category', 'duration', 'created_at')
+    list_filter = ('language', 'category', 'speaker')
+    search_fields = ('title', 'speaker', 'description')
 
 
 @admin.register(VideoMedia)

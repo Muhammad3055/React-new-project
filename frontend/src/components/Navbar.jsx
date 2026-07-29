@@ -21,7 +21,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     document.documentElement.setAttribute('data-site-theme', globalTheme);
     try {
       localStorage.setItem('quran_portal_global_theme', globalTheme);
-    } catch (e) {}
+    } catch (e) { }
   }, [globalTheme]);
 
   const extraMenuItems = [
@@ -159,7 +159,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             </div>
 
             {/* Global Website Theme Selector (Light, Sepia, Black, Auto) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.35)' }}>
+            <div className="header-theme-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.35)' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-gold)' }} title="Website Theme">
                 <i className="fas fa-palette"></i>
               </span>

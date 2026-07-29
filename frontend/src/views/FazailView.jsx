@@ -158,10 +158,10 @@ export default function FazailView() {
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3rem' }}>
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
         <h1 className="section-title">
-          <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Fazail & Virtues of Good Deeds (فضائلِ اعمال)
+          <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Fazail & Virtues of Good Deeds (فضائل)
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.5rem', maxWidth: '680px', marginInline: 'auto' }}>
-          Explore authentic virtues (فضائلِ اعمال و فضائلِ قرآن) in English & Urdu for reciting the Holy Quran, performing Salah, Dhikr, and good deeds.
+          Explore authentic virtues (فضائل و فضائلِ قرآن) in English & Urdu for reciting the Holy Quran, performing Salah, Dhikr, and good deeds.
         </p>
       </div>
 

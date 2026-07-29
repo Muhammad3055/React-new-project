@@ -18,11 +18,17 @@ class QuranAudio(models.Model):
         ('Makki', 'Makki'),
         ('Madani', 'Madani'),
     ]
+    LANGUAGE_CHOICES = [
+        ('arabic', 'Arabic Recitation (تلاوت)'),
+        ('brahui', 'Brahui Translation MP3 (براہوئی ترجمہ)'),
+        ('urdu', 'Urdu Translation MP3 (اردو ترجمہ)'),
+    ]
 
-    surah_number = models.PositiveIntegerField()
+    surah_number = models.PositiveIntegerField(db_index=True)
     surah_name_arabic = models.CharField(max_length=100)
     surah_name_english = models.CharField(max_length=100)
-    reciter = models.CharField(max_length=150, default="Mishary Rashid Alafasy")
+    reciter = models.CharField(max_length=150, default="Mishary Rashid Alafasy", db_index=True)
+    language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default='arabic', db_index=True)
     audio_file = models.FileField(upload_to="audio/", blank=True, null=True)
     audio_url = models.URLField(max_length=500, blank=True, help_text="Direct MP3 Audio Stream URL if no file uploaded")
     duration = models.CharField(max_length=20, default="00:00", blank=True)
@@ -53,7 +59,7 @@ class TaqreerAudio(models.Model):
 
     title = models.CharField(max_length=255)
     speaker = models.CharField(max_length=150, default="Islamic Scholar")
-    language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default='urdu')
+    language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default='urdu', db_index=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="taqreers")
     audio_file = models.FileField(upload_to="taqreer_audio/", blank=True, null=True)
     audio_url = models.URLField(max_length=500, blank=True, help_text="Direct MP3 Audio URL")
@@ -104,7 +110,7 @@ class BookMedia(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=150, default="Unknown Author")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="books")
-    file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='pdf')
+    file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='pdf', db_index=True)
     pdf_file = models.FileField(upload_to="books/", blank=True, null=True)
     pdf_url = models.URLField(max_length=500, blank=True, help_text="Direct Document URL")
     cover_image = models.ImageField(upload_to="covers/", blank=True, null=True)
@@ -118,6 +124,29 @@ class BookMedia(models.Model):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
+        # Auto-sanitize filename for non-ASCII/Arabic characters to prevent 404 URL encoding mismatch on Windows/Web servers
+        if self.pdf_file and self.pdf_file.name:
+            import os, re
+            name = self.pdf_file.name
+            dir_name, base_name = os.path.split(name)
+            try:
+                base_name.encode('ascii')
+            except UnicodeEncodeError:
+                name_part, ext_part = os.path.splitext(base_name)
+                clean_name = re.sub(r'[^a-zA-Z0-9_-]', '_', name_part).strip('_')
+                if not clean_name:
+                    clean_name = 'document'
+                new_base = f"{clean_name}{ext_part.lower()}"
+                if hasattr(self.pdf_file, 'path') and os.path.exists(self.pdf_file.path):
+                    old_path = self.pdf_file.path
+                    new_full = os.path.join(os.path.dirname(old_path), new_base)
+                    if old_path != new_full and not os.path.exists(new_full):
+                        try:
+                            os.rename(old_path, new_full)
+                        except Exception:
+                            pass
+                self.pdf_file.name = os.path.join(dir_name, new_base).replace('\\', '/')
+
         # Universal Auto-Analyzer for PDF, Word (.docx), and PPT (.pptx) files
         if self.pdf_file and (not self.pages_count or self.pages_count == 1):
             filename = self.pdf_file.name.lower()
@@ -185,13 +214,13 @@ class BookMedia(models.Model):
 
 
 class Tafseer(models.Model):
-    surah_number = models.PositiveIntegerField()
+    surah_number = models.PositiveIntegerField(db_index=True)
     surah_name = models.CharField(max_length=100)
     ayah_number = models.PositiveIntegerField()
     arabic_text = models.TextField()
     translation = models.TextField()
     tafseer_text = models.TextField()
-    scholar_name = models.CharField(max_length=150, default="Tafseer Ibn Kathir")
+    scholar_name = models.CharField(max_length=150, default="Tafseer Ibn Kathir", db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -213,13 +242,13 @@ class Hadith(models.Model):
         ('Riyad As-Salihin', 'Riyad As-Salihin'),
     ]
 
-    book_name = models.CharField(max_length=100, choices=BOOK_CHOICES, default='Sahih Bukhari')
+    book_name = models.CharField(max_length=100, choices=BOOK_CHOICES, default='Sahih Bukhari', db_index=True)
     chapter = models.CharField(max_length=255, blank=True)
     hadith_number = models.PositiveIntegerField()
     arabic_text = models.TextField()
     translation = models.TextField()
     narrated_by = models.CharField(max_length=150, blank=True)
-    grade = models.CharField(max_length=50, default="Sahih")
+    grade = models.CharField(max_length=50, default="Sahih", db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

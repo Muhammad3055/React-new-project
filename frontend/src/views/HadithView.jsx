@@ -4,6 +4,7 @@ export default function HadithView({ openReportModal }) {
   const [hadiths, setHadiths] = useState([]);
   const [booksList, setBooksList] = useState([]);
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [page, setPage] = useState(1);
@@ -11,8 +12,13 @@ export default function HadithView({ openReportModal }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const handler = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(handler);
+  }, [query]);
+
+  useEffect(() => {
     setLoading(true);
-    fetch(`/api/hadith/?q=${encodeURIComponent(query)}&book=${encodeURIComponent(selectedBook)}&grade=${encodeURIComponent(selectedGrade)}&page=${page}`)
+    fetch(`/api/hadith/?q=${encodeURIComponent(debouncedQuery)}&book=${encodeURIComponent(selectedBook)}&grade=${encodeURIComponent(selectedGrade)}&page=${page}`)
       .then(res => res.json())
       .then(data => {
         setHadiths(data.results || []);
@@ -21,7 +27,7 @@ export default function HadithView({ openReportModal }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [query, selectedBook, selectedGrade, page]);
+  }, [debouncedQuery, selectedBook, selectedGrade, page]);
 
   const copyHadith = (text, book, num, grade) => {
     navigator.clipboard.writeText(`"${text}" [${book} #${num} - Grade: ${grade}]`);

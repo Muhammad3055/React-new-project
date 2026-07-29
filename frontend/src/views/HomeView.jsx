@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
+import { fetchWithCache } from '../utils/apiCache';
 
 const DEFAULT_AUDIOS = [
   { id: 1, surah_number: 1, surah_name_arabic: "الفاتحة", surah_name_english: "Al-Fatiha", reciter: "Mishary Rashid Alafasy", audio_url: "https://server8.mp3quran.net/afs/001.mp3", duration: "00:45", revelation_place: "Makki" },
@@ -110,34 +111,29 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       } catch (e) {}
     }
 
-    fetch('/api/stats/')
-      .then(res => res.json())
+    fetchWithCache('/api/stats/')
       .then(data => setStats(data))
       .catch(() => {});
 
-    fetch('/api/quran/?featured=1')
-      .then(res => res.json())
+    fetchWithCache('/api/quran/?featured=1')
       .then(data => {
         if (data.results && data.results.length > 0) setAudios(data.results);
       })
       .catch(() => {});
 
-    fetch('/api/taqreer/')
-      .then(res => res.json())
+    fetchWithCache('/api/taqreer/')
       .then(data => {
         if (data.results && data.results.length > 0) setTaqreers(data.results);
       })
       .catch(() => {});
 
-    fetch('/api/books/')
-      .then(res => res.json())
+    fetchWithCache('/api/books/')
       .then(data => {
         if (data.results && data.results.length > 0) setBooks(data.results);
       })
       .catch(() => {});
 
-    fetch('/api/hadith/')
-      .then(res => res.json())
+    fetchWithCache('/api/hadith/')
       .then(data => {
         if (data.results && data.results.length > 0) setHadiths(data.results);
       })
@@ -186,14 +182,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
         {/* Stats Grid */}
         <div className="container" style={{ margin: '3rem auto 0 auto', padding: 0 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
             <div style={{ background: 'rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
               <h3 style={{ fontSize: '1.8rem', color: '#f59e0b' }}>{stats.total_audios}</h3>
               <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Quran Recitations</p>
-            </div>
-            <div style={{ background: 'rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.8rem', color: '#f59e0b' }}>{stats.total_videos}</h3>
-              <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Video Lectures</p>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
               <h3 style={{ fontSize: '1.8rem', color: '#f59e0b' }}>{stats.total_books}</h3>

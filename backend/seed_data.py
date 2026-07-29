@@ -639,9 +639,9 @@ def seed_database():
             defaults=item
         )
 
-    # Taqreer Audio Voice Notes Seeding (Arabic, Brahui, Urdu)
+    # MP3 Taqreer Audio Speeches (Arabic, Brahui, Urdu)
     taqreer_items = [
-        # Taqreer Arabic
+        # Taqreer Arabic (تقارير عربية)
         {
             "title": "فضل تدبر القرآن الكريم وتلاوته (Virtue of Reflecting on the Quran)",
             "speaker": "الشيخ عبد الرزاق البدر (Sheikh Abdur Razzaq Al-Badr)",
@@ -658,8 +658,16 @@ def seed_database():
             "duration": "22:10",
             "description": "تقرير مبارك يوضح شروط التوبة الصادقة وآثار الاستغفار على القلوب."
         },
+        {
+            "title": "أسباب شرح الصدر وطمأنينة القلب (Tranquility of the Heart)",
+            "speaker": "الشيخ صالح المغامسي (Sheikh Saleh Al-Maghamsi)",
+            "language": "arabic",
+            "audio_url": "https://server7.mp3quran.net/shur/001.mp3",
+            "duration": "25:15",
+            "description": "موعظة خاشعة عن الطرق الإيمانية لطرد الهموم والحصول على السكينة والطمأنينة."
+        },
 
-        # Taqreer Brahui
+        # Taqreer Brahui (تقارير براہوئی)
         {
             "title": "قرآن مجید نا تلاوت و اونا فضائل (Virtues of Quran Recitation in Brahui)",
             "speaker": "علامہ مولانا عبد الغفور براہوئی (Allama Maulana Abdul Ghafoor Brahui)",
@@ -669,15 +677,23 @@ def seed_database():
             "description": "براہوئی زبان ٹی قرآن پاک نا تلاوت و اونا عظیم اجر نا بارو ٹی مفصل تقرير۔"
         },
         {
-            "title": "نماز نا اہمیت و خشوع (Importance & Humility in Namaz in Brahui)",
+            "title": "نماز نا اہمیت و خشوع و خضوع (Importance & Humility in Namaz in Brahui)",
             "speaker": "مولانا محمد رحیم براہوئی (Maulana Muhammad Rahim Brahui)",
             "language": "brahui",
             "audio_url": "https://server12.mp3quran.net/maher/001.mp3",
             "duration": "20:15",
             "description": "براہوئی زبان ٹی پنج وقتہ نماز نا پابندی و اونا برکات نا بیان۔"
         },
+        {
+            "title": "والدین تا احترام و خدمت نا برکات (Respecting Parents in Brahui)",
+            "speaker": "مولانا عبد الصمد براہوئی (Maulana Abdul Samad Brahui)",
+            "language": "brahui",
+            "audio_url": "https://server10.mp3quran.net/minsh/001.mp3",
+            "duration": "18:40",
+            "description": "براہوئی زبان ٹی والدین نا خدمت، اطاعت و انہتا احترام نا اسلامی احکامات۔"
+        },
 
-        # Taqreer Urdu
+        # Taqreer Urdu (تقارير اردو)
         {
             "title": "تفسیر سورہ الفاتحہ اور اصلاحِ نفس (Tafseer Al-Fatiha & Soul Purification)",
             "speaker": "مفتی تقی عثمانی (Mufti Taqi Usmani)",
@@ -693,6 +709,14 @@ def seed_database():
             "audio_url": "https://server7.mp3quran.net/basit/001.mp3",
             "duration": "24:40",
             "description": "روزمرہ زندگی میں بندوں کے حقوق، حسنِ اخلاق اور باہمی احترام پر جامع اردو تقرير۔"
+        },
+        {
+            "title": "سیرت النبی ﷺ اور ہماری زندگی (Seerat-un-Nabi & Our Practical Life)",
+            "speaker": "مولانا طارق جمیل (Maulana Tariq Jamil)",
+            "language": "urdu",
+            "audio_url": "https://server13.mp3quran.net/hssr/001.mp3",
+            "duration": "32:10",
+            "description": "نبی کریم ﷺ کی مبارک سیرت، اخلاقِ حسینہ اور امت کے لیے نصیحت آموز اردو تقرير۔"
         }
     ]
 

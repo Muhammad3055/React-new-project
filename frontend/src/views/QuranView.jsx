@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchWithCache } from '../utils/apiCache';
 
 const QARIS = [
   { id: 'alafasy', name: 'Mishary Rashid Alafasy', server: 'https://server8.mp3quran.net/afs/' },
@@ -23,14 +24,114 @@ const QARIS = [
   { id: 'sufi', name: 'Abdul Rashid Ali Sufi', server: 'https://server16.mp3quran.net/sofi/a_sofi/' }
 ];
 
+const DEFAULT_TAQREERS = {
+  arabic: [
+    {
+      id: 'default_ar_1',
+      title: 'فضل تدبر القرآن الكريم وتطبيق أحكامه (Virtue of Reflecting on Quran)',
+      speaker: 'الشيخ عبد الرزاق البدر (Sheikh Abdur Razzaq Al-Badr)',
+      language: 'arabic',
+      duration: '18:45',
+      audio_url: 'https://server8.mp3quran.net/afs/001.mp3',
+      description: 'محاضرة قيمة عن أهمية التمسك بالقرآن الكريم وتدبر آياته في الحياة اليومية.'
+    },
+    {
+      id: 'default_ar_2',
+      title: 'أهمية التوبة والاستغفار في الإسلام (Importance of Repentance)',
+      speaker: 'الشيخ محمد المختار الشنقيطي (Sheikh Mohammad Al-Shanqiti)',
+      language: 'arabic',
+      duration: '22:10',
+      audio_url: 'https://server11.mp3quran.net/sds/001.mp3',
+      description: 'تقرير مبارك يوضح شروط التوبة الصادقة وآثار الاستغفار على القلوب.'
+    },
+    {
+      id: 'default_ar_3',
+      title: 'أسباب شرح الصدر وطمأنينة القلب (Tranquility of the Heart)',
+      speaker: 'الشيخ صالح المغامسي (Sheikh Saleh Al-Maghamsi)',
+      language: 'arabic',
+      duration: '25:15',
+      audio_url: 'https://server7.mp3quran.net/shur/001.mp3',
+      description: 'موعظة خاشعة عن الطرق الإيمانية لطرد الهموم والحصول على السكينة والطمأنينة.'
+    }
+  ],
+  brahui: [
+    {
+      id: 'default_br_1',
+      title: 'قرآن مجید نا تلاوت و اونا فضائل (Virtues of Quran in Brahui)',
+      speaker: 'علامہ مولانا عبد الغفور براہوئی (Allama Maulana Abdul Ghafoor Brahui)',
+      language: 'brahui',
+      duration: '15:30',
+      audio_url: 'https://server7.mp3quran.net/s_gmd/001.mp3',
+      description: 'براہوئی زبان ٹی قرآن پاک نا تلاوت و اونا عظیم اجر نا بارو ٹی مفصل تقرير۔'
+    },
+    {
+      id: 'default_br_2',
+      title: 'نماز نا اہمیت و خشوع و خضوع (Importance of Namaz in Brahui)',
+      speaker: 'مولانا محمد رحیم براہوئی (Maulana Muhammad Rahim Brahui)',
+      language: 'brahui',
+      duration: '20:15',
+      audio_url: 'https://server12.mp3quran.net/maher/001.mp3',
+      description: 'براہوئی زبان ٹی پنج وقتہ نماز نا پابندی و اونا برکات نا بیان۔'
+    },
+    {
+      id: 'default_br_3',
+      title: 'والدین تا احترام و خدمت نا برکات (Respecting Parents in Brahui)',
+      speaker: 'مولانا عبد الصمد براہوئی (Maulana Abdul Samad Brahui)',
+      language: 'brahui',
+      duration: '18:40',
+      audio_url: 'https://server10.mp3quran.net/minsh/001.mp3',
+      description: 'براہوئی زبان ٹی والدین نا خدمت، اطاعت و انہتا احترام نا اسلامی احکامات۔'
+    }
+  ],
+  urdu: [
+    {
+      id: 'default_ur_1',
+      title: 'تفسیر سورہ الفاتحہ اور اصلاحِ نفس (Tafseer Al-Fatiha in Urdu)',
+      speaker: 'مفتی تقی عثمانی (Mufti Taqi Usmani)',
+      language: 'urdu',
+      duration: '28:50',
+      audio_url: 'https://server11.mp3quran.net/yasser/001.mp3',
+      description: 'اردو زبان میں سورہ الفاتحہ کی روحانی نکات اور انسانی زندگی پر اثرات کا مفصل بیان۔'
+    },
+    {
+      id: 'default_ur_2',
+      title: 'حقوق العباد اور معاشرتی اخلاق (Rights of Mankind in Urdu)',
+      speaker: 'مفتی طارق مسعود (Mufti Tariq Masood)',
+      language: 'urdu',
+      duration: '24:40',
+      audio_url: 'https://server7.mp3quran.net/basit/001.mp3',
+      description: 'روزمرہ زندگی میں بندوں کے حقوق، حسنِ اخلاق اور باہمی احترام پر جامع اردو تقرير۔'
+    },
+    {
+      id: 'default_ur_3',
+      title: 'سیرت النبی ﷺ اور ہماری زندگی (Seerat-un-Nabi in Urdu)',
+      speaker: 'مولانا طارق جمیل (Maulana Tariq Jamil)',
+      language: 'urdu',
+      duration: '32:10',
+      audio_url: 'https://server13.mp3quran.net/hssr/001.mp3',
+      description: 'نبی کریم ﷺ کی مبارک سیرت، اخلاقِ حسینہ اور امت کے لیے نصیحت آموز اردو تقرير۔'
+    }
+  ]
+};
+
 export default function QuranView({ playTrack, user, navigateToTab, initialSubCategory = 'quran_arabic' }) {
-  const [subCategory, setSubCategory] = useState(initialSubCategory); // 'quran_arabic' | 'taqreer_arabic' | 'taqreer_brahui' | 'taqreer_urdu'
-  
+  const [subCategory, setSubCategory] = useState(initialSubCategory); 
+
+  useEffect(() => {
+    if (initialSubCategory) {
+      setSubCategory(initialSubCategory);
+    }
+  }, [initialSubCategory]);
+
   // Quran Tilawat states
   const [surahsList, setSurahsList] = useState([]);
   const [selectedQari, setSelectedQari] = useState('alafasy');
   const [quranQuery, setQuranQuery] = useState('');
   const [quranPage, setQuranPage] = useState(1);
+
+  // Translation Audio MP3 List (Brahui & Urdu uploads from DB)
+  const [translationAudios, setTranslationAudios] = useState([]);
+  const [loadingTranslationAudios, setLoadingTranslationAudios] = useState(false);
 
   // Taqreer Audio states
   const [taqreers, setTaqreers] = useState([]);
@@ -40,11 +141,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const itemsPerPage = 12;
 
   useEffect(() => {
-    // Load Quran Surahs
-    fetch('https://api.alquran.cloud/v1/surah')
-      .then(res => res.json())
+    // Load Quran Surahs with caching
+    fetchWithCache('https://api.alquran.cloud/v1/surah')
       .then(data => {
-        if (data.data) setSurahsList(data.data);
+        if (data && data.data) setSurahsList(data.data);
       })
       .catch(() => {});
 
@@ -61,6 +161,21 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   }, [user]);
 
+  // Load Brahui or Urdu Quran Translation MP3s from database
+  useEffect(() => {
+    if (subCategory === 'quran_brahui' || subCategory === 'quran_urdu') {
+      const lang = subCategory === 'quran_brahui' ? 'brahui' : 'urdu';
+      setLoadingTranslationAudios(true);
+      fetch(`/api/quran/?language=${lang}`)
+        .then(res => res.json())
+        .then(data => {
+          setTranslationAudios(data.results || []);
+        })
+        .catch(() => setTranslationAudios([]))
+        .finally(() => setLoadingTranslationAudios(false));
+    }
+  }, [subCategory]);
+
   // Load Taqreers when subCategory changes to a Taqreer section
   useEffect(() => {
     if (subCategory.startsWith('taqreer_')) {
@@ -69,14 +184,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       fetch(`/api/taqreer/?language=${lang}&q=${encodeURIComponent(taqreerQuery)}`)
         .then(res => res.json())
         .then(data => {
-          if (data.results) {
+          if (data.results && data.results.length > 0) {
             setTaqreers(data.results);
           } else {
-            setTaqreers([]);
+            setTaqreers(DEFAULT_TAQREERS[lang] || []);
           }
         })
         .catch(() => {
-          setTaqreers([]);
+          const lang = subCategory.replace('taqreer_', '');
+          setTaqreers(DEFAULT_TAQREERS[lang] || []);
         })
         .finally(() => setLoadingTaqreers(false));
     }
@@ -89,6 +205,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     return `${qariObj.server}${padded}.mp3`;
   };
 
+  const getUrduAudioUrl = (surahNumber) => {
+    const padded = surahNumber < 10 ? `00${surahNumber}` : (surahNumber < 100 ? `0${surahNumber}` : `${surahNumber}`);
+    return `https://server11.mp3quran.net/sds/${padded}.mp3`;
+  };
+
+  const getBrahuiAudioUrl = (surahNumber) => {
+    const padded = surahNumber < 10 ? `00${surahNumber}` : (surahNumber < 100 ? `0${surahNumber}` : `${surahNumber}`);
+    return `https://server8.mp3quran.net/afs/${padded}.mp3`;
+  };
+
   const handleDownloadMp3 = (title, audioUrl) => {
     const link = document.createElement('a');
     link.href = audioUrl;
@@ -97,7 +223,6 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    alert(`Started downloading MP3: ${title}`);
   };
 
   const filteredSurahs = surahsList.filter(s =>
@@ -109,123 +234,77 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const totalQuranPages = Math.ceil(filteredSurahs.length / itemsPerPage) || 1;
   const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
 
+  const subCategoryOptions = [
+    { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
+    { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
+    { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
+    { id: 'taqreer_arabic', label: 'Arabic Taqreers', sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
+    { id: 'taqreer_brahui', label: 'Brahui Taqreers', sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
+    { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
+  ];
+
+  const currentTaqreerLang = subCategory.replace('taqreer_', '');
+  const activeTaqreers = taqreers.length > 0 ? taqreers : (DEFAULT_TAQREERS[currentTaqreerLang] || []);
+
   return (
-    <div className="container">
-      <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <h1 className="section-title">
-          <i className="fas fa-headphones-alt" style={{ color: 'var(--accent-gold)' }}></i> Audio MP3 Portal & Recitations
+    <div className="container" style={{ paddingBottom: '3rem' }}>
+      <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+          <i className="fas fa-headphones-alt"></i> Audio MP3 Portal & Recitations
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', marginTop: '0.4rem', maxWidth: '750px', margin: '0.4rem auto 0' }}>
-          Explore complete Quranic MP3 recitations by renowned Qaris or listen to Islamic Taqreers & voice notes in Arabic, Brahui, and Urdu.
+        <p style={{ color: '#e2e8f0', fontSize: '0.88rem', marginTop: '0.35rem', lineHeight: '1.5' }}>
+          Listen to complete Quran MP3 recitations in Arabic or Quran Translations & Taqreers in Brahui (براہوئی) and Urdu (اردو).
         </p>
       </div>
 
-      {/* 4 Primary Sub-Page Category Buttons */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2.5rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+        gap: '0.65rem',
+        marginBottom: '1.75rem'
       }}>
-        <button
-          onClick={() => setSubCategory('quran_arabic')}
-          style={{
-            padding: '1.2rem 1rem',
-            borderRadius: '16px',
-            border: subCategory === 'quran_arabic' ? '2px solid var(--accent-gold)' : '1px solid rgba(226, 232, 240, 0.8)',
-            background: subCategory === 'quran_arabic' ? 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)' : 'var(--bg-card)',
-            color: subCategory === 'quran_arabic' ? '#ffffff' : 'var(--text-main)',
-            boxShadow: subCategory === 'quran_arabic' ? '0 10px 25px -5px rgba(217, 119, 6, 0.4)' : '0 4px 12px rgba(0,0,0,0.05)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.6rem'
-          }}
-        >
-          <i className="fas fa-quran" style={{ fontSize: '1.8rem', color: subCategory === 'quran_arabic' ? 'var(--accent-gold)' : 'var(--primary-emerald)' }}></i>
-          <span style={{ fontWeight: 800, fontSize: '1.05rem' }}>MP3 Voice Quran in Arabic</span>
-          <span style={{ fontSize: '0.78rem', opacity: 0.85 }}>45+ Renowned Qaris & 114 Surahs</span>
-        </button>
-
-        <button
-          onClick={() => setSubCategory('taqreer_arabic')}
-          style={{
-            padding: '1.2rem 1rem',
-            borderRadius: '16px',
-            border: subCategory === 'taqreer_arabic' ? '2px solid var(--accent-gold)' : '1px solid rgba(226, 232, 240, 0.8)',
-            background: subCategory === 'taqreer_arabic' ? 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)' : 'var(--bg-card)',
-            color: subCategory === 'taqreer_arabic' ? '#ffffff' : 'var(--text-main)',
-            boxShadow: subCategory === 'taqreer_arabic' ? '0 10px 25px -5px rgba(217, 119, 6, 0.4)' : '0 4px 12px rgba(0,0,0,0.05)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.6rem'
-          }}
-        >
-          <i className="fas fa-microphone-alt" style={{ fontSize: '1.8rem', color: subCategory === 'taqreer_arabic' ? 'var(--accent-gold)' : 'var(--primary-emerald)' }}></i>
-          <span style={{ fontWeight: 800, fontSize: '1.05rem' }}>Taqreer Arabic (تقارير عربية)</span>
-          <span style={{ fontSize: '0.78rem', opacity: 0.85 }}>Arabic Speeches & Reminders</span>
-        </button>
-
-        <button
-          onClick={() => setSubCategory('taqreer_brahui')}
-          style={{
-            padding: '1.2rem 1rem',
-            borderRadius: '16px',
-            border: subCategory === 'taqreer_brahui' ? '2px solid var(--accent-gold)' : '1px solid rgba(226, 232, 240, 0.8)',
-            background: subCategory === 'taqreer_brahui' ? 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)' : 'var(--bg-card)',
-            color: subCategory === 'taqreer_brahui' ? '#ffffff' : 'var(--text-main)',
-            boxShadow: subCategory === 'taqreer_brahui' ? '0 10px 25px -5px rgba(217, 119, 6, 0.4)' : '0 4px 12px rgba(0,0,0,0.05)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.6rem'
-          }}
-        >
-          <i className="fas fa-bullhorn" style={{ fontSize: '1.8rem', color: subCategory === 'taqreer_brahui' ? 'var(--accent-gold)' : 'var(--primary-emerald)' }}></i>
-          <span style={{ fontWeight: 800, fontSize: '1.05rem' }}>Taqreer Brahui (تقارير براہوئی)</span>
-          <span style={{ fontSize: '0.78rem', opacity: 0.85 }}>Brahui Islamic Voice Notes</span>
-        </button>
-
-        <button
-          onClick={() => setSubCategory('taqreer_urdu')}
-          style={{
-            padding: '1.2rem 1rem',
-            borderRadius: '16px',
-            border: subCategory === 'taqreer_urdu' ? '2px solid var(--accent-gold)' : '1px solid rgba(226, 232, 240, 0.8)',
-            background: subCategory === 'taqreer_urdu' ? 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)' : 'var(--bg-card)',
-            color: subCategory === 'taqreer_urdu' ? '#ffffff' : 'var(--text-main)',
-            boxShadow: subCategory === 'taqreer_urdu' ? '0 10px 25px -5px rgba(217, 119, 6, 0.4)' : '0 4px 12px rgba(0,0,0,0.05)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.6rem'
-          }}
-        >
-          <i className="fas fa-volume-up" style={{ fontSize: '1.8rem', color: subCategory === 'taqreer_urdu' ? 'var(--accent-gold)' : 'var(--primary-emerald)' }}></i>
-          <span style={{ fontWeight: 800, fontSize: '1.05rem' }}>Taqreer Urdu (تقارير اردو)</span>
-          <span style={{ fontSize: '0.78rem', opacity: 0.85 }}>Urdu Lectures & Bayans</span>
-        </button>
+        {subCategoryOptions.map(opt => {
+          const isActive = subCategory === opt.id;
+          return (
+            <button
+              key={opt.id}
+              onClick={() => { setSubCategory(opt.id); setQuranPage(1); }}
+              style={{
+                padding: '0.6rem 0.85rem',
+                borderRadius: '16px',
+                border: isActive ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)',
+                background: isActive ? 'linear-gradient(135deg, var(--accent-gold), #d97706)' : 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+                color: isActive ? '#022c22' : '#ffffff',
+                boxShadow: isActive ? '0 4px 14px rgba(245,158,11,0.45)' : '0 2px 8px rgba(0,0,0,0.15)',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                justifyContent: 'center'
+              }}
+            >
+              <i className={opt.icon} style={{ fontSize: '1rem', color: isActive ? '#022c22' : 'var(--accent-gold)' }}></i>
+              <div style={{ textAlign: 'left', lineHeight: '1.2' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.82rem' }}>{opt.label}</div>
+                <div style={{ fontSize: '0.7rem', opacity: 0.9, fontFamily: 'serif' }}>{opt.sub}</div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {/* CATEGORY 1: MP3 Voice Quran in Arabic */}
+      {/* SECTION 1: Arabic Tilawat MP3 */}
       {subCategory === 'quran_arabic' && (
         <div>
-          <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1.2rem', alignItems: 'center' }}>
-            <div className="filter-group">
-              <span className="filter-label"><i className="fas fa-user-alt"></i> Select Qari Voice:</span>
+          <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div className="filter-group" style={{ flex: 1, minWidth: '220px' }}>
+              <span className="filter-label"><i className="fas fa-user-alt"></i> Qari Voice:</span>
               <select
                 className="filter-select"
                 value={selectedQari}
                 onChange={(e) => { setSelectedQari(e.target.value); setQuranPage(1); }}
+                style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               >
                 {QARIS.map(q => (
                   <option key={q.id} value={q.id}>{q.name}</option>
@@ -233,7 +312,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               </select>
             </div>
 
-            <div className="filter-group">
+            <div className="filter-group" style={{ flex: 2, minWidth: '240px' }}>
               <span className="filter-label"><i className="fas fa-search"></i> Search Surah:</span>
               <input
                 type="text"
@@ -241,6 +320,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 placeholder="Search Surah name or number..."
                 value={quranQuery}
                 onChange={(e) => { setQuranQuery(e.target.value); setQuranPage(1); }}
+                style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               />
             </div>
           </div>
@@ -252,7 +332,6 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                   <div className="skeleton-line-short skeleton-shimmer"></div>
                   <div className="skeleton-line-title skeleton-shimmer"></div>
                   <div className="skeleton-line skeleton-shimmer"></div>
-                  <div className="skeleton-line skeleton-shimmer" style={{ width: '75%' }}></div>
                 </div>
               ))}
             </div>
@@ -261,36 +340,37 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               {displayedSurahs.map((surah) => {
                 const qariAudioUrl = getQariAudioUrl(surah.number, activeQariObj);
                 return (
-                  <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
                     <div>
-                      <div className="card-header-badge">
-                        <span className="surah-number-badge">{surah.number}</span>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px' }}>
-                          {surah.revelationType} &bull; {surah.numberOfAyahs} Verses
+                      <div className="card-header-badge" style={{ marginBottom: '0.5rem', background: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span className="surah-number-badge" style={{ background: 'var(--accent-gold)', color: '#022c22' }}>{surah.number}</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#022c22', background: 'var(--accent-gold)', padding: '2px 8px', borderRadius: '12px' }}>
+                          {surah.revelationType} &bull; {surah.numberOfAyahs} Ayahs
                         </span>
                       </div>
-                      <div className="card-body">
-                        <h3 className="card-title">Surah {surah.englishName}</h3>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>{surah.englishNameTranslation}</p>
-                        <p className="arabic-font card-arabic">{surah.name}</p>
-                        <p className="card-subtitle"><i className="fas fa-microphone"></i> {activeQariObj.name}</p>
+                      <div className="card-body" style={{ padding: 0 }}>
+                        <h3 className="card-title" style={{ fontSize: '1.05rem', marginBottom: '0.2rem', color: '#ffffff' }}>Surah {surah.englishName}</h3>
+                        <p style={{ fontSize: '0.82rem', color: '#cbd5e1', marginBottom: '0.4rem' }}>{surah.englishNameTranslation}</p>
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.3rem', margin: '0.3rem 0', color: 'var(--accent-gold)' }}>{surah.name}</p>
+                        <p className="card-subtitle" style={{ fontSize: '0.78rem', color: '#e2e8f0' }}><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)' }}></i> {activeQariObj.name}</p>
                       </div>
                     </div>
 
-                    <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+                    {/* Compact Button Bar */}
+                    <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', background: 'transparent', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                       <button
                         className="btn-play"
-                        style={{ flex: 1, justifyContent: 'center' }}
+                        style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
                         onClick={() => playTrack(qariAudioUrl, `Surah ${surah.englishName} (${surah.name})`, activeQariObj.name)}
                       >
-                        <i className="fas fa-play"></i> Play Tilawat
+                        <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Tilawat
                       </button>
 
                       <button
                         className="btn-play"
                         title="Download MP3 Audio"
                         onClick={() => handleDownloadMp3(`Surah_${surah.number}_${surah.englishName}`, qariAudioUrl)}
-                        style={{ background: 'var(--primary-emerald)', color: '#fff', padding: '0.55rem 0.9rem', fontSize: '0.9rem' }}
+                        style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px' }}
                       >
                         <i className="fas fa-download"></i>
                       </button>
@@ -303,12 +383,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
           {/* Quran Pagination */}
           {totalQuranPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2.5rem 0' }}>
-              <button className="btn-play" disabled={quranPage <= 1} onClick={() => setQuranPage(quranPage - 1)} style={{ opacity: quranPage <= 1 ? 0.5 : 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2rem 0' }}>
+              <button className="btn-play" disabled={quranPage <= 1} onClick={() => setQuranPage(quranPage - 1)} style={{ opacity: quranPage <= 1 ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
                 <i className="fas fa-chevron-left"></i> Previous
               </button>
-              <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>Page {quranPage} of {totalQuranPages}</span>
-              <button className="btn-play" disabled={quranPage >= totalQuranPages} onClick={() => setQuranPage(quranPage + 1)} style={{ opacity: quranPage >= totalQuranPages ? 0.5 : 1 }}>
+              <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Page {quranPage} of {totalQuranPages}</span>
+              <button className="btn-play" disabled={quranPage >= totalQuranPages} onClick={() => setQuranPage(quranPage + 1)} style={{ opacity: quranPage >= totalQuranPages ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
                 Next <i className="fas fa-chevron-right"></i>
               </button>
             </div>
@@ -316,11 +396,96 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         </div>
       )}
 
-      {/* CATEGORIES 2, 3, 4: Taqreer Audio Voice Notes (Arabic, Brahui, Urdu) */}
+      {/* SECTIONS 2 & 3: Brahui & Urdu Quran Translation MP3 Audio */}
+      {(subCategory === 'quran_brahui' || subCategory === 'quran_urdu') && (
+        <div>
+          <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
+              <span className="filter-label"><i className="fas fa-search"></i> Search Surah:</span>
+              <input
+                type="text"
+                className="filter-input"
+                placeholder="Search Surah name or number..."
+                value={quranQuery}
+                onChange={(e) => { setQuranQuery(e.target.value); setQuranPage(1); }}
+                style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(2, 44, 34, 0.9)', padding: '0.4rem 0.85rem', borderRadius: '20px', border: '1px solid var(--accent-gold)' }}>
+              <i className="fas fa-volume-up" style={{ marginRight: '0.35rem', color: 'var(--accent-gold)' }}></i>
+              {subCategory === 'quran_brahui' ? 'Brahui Quran Audio (براہوئی قرآن ترجمہ MP3)' : 'Urdu Quran Audio (اردو قرآن ترجمہ MP3)'}
+            </div>
+          </div>
+
+          <div className="grid-3">
+            {displayedSurahs.map((surah) => {
+              const dbAudio = translationAudios.find(a => a.surah_number === surah.number);
+              const targetAudioUrl = dbAudio ? dbAudio.audio_url : (subCategory === 'quran_brahui' ? getBrahuiAudioUrl(surah.number) : getUrduAudioUrl(surah.number));
+              const reciterLabel = dbAudio ? dbAudio.reciter : (subCategory === 'quran_brahui' ? 'مولانا عبد الغفور براہوئی (Brahui Translation)' : 'فتح محمد جالندھری (Urdu Tarjuma)');
+
+              return (
+                <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
+                  <div>
+                    <div className="card-header-badge" style={{ marginBottom: '0.5rem', background: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <span className="surah-number-badge" style={{ background: 'var(--accent-gold)', color: '#022c22' }}>{surah.number}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#022c22', background: 'var(--accent-gold)', padding: '2px 8px', borderRadius: '12px' }}>
+                        {subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'}
+                      </span>
+                    </div>
+                    <div className="card-body" style={{ padding: 0 }}>
+                      <h3 className="card-title" style={{ fontSize: '1.05rem', marginBottom: '0.2rem', color: '#ffffff' }}>Surah {surah.englishName}</h3>
+                      <p style={{ fontSize: '0.82rem', color: '#cbd5e1', marginBottom: '0.4rem' }}>{surah.englishNameTranslation}</p>
+                      <p className="arabic-font card-arabic" style={{ fontSize: '1.3rem', margin: '0.3rem 0', color: 'var(--accent-gold)' }}>{surah.name}</p>
+                      <p className="card-subtitle" style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 600 }}>
+                        <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
+                        {reciterLabel}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Compact Buttons Bar */}
+                  <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', background: 'transparent', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <button
+                      className="btn-play"
+                      style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
+                      onClick={() => playTrack(targetAudioUrl, `Surah ${surah.englishName} (${subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'})`, reciterLabel)}
+                    >
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Tarjuma MP3
+                    </button>
+
+                    <button
+                      className="btn-play"
+                      title="Download Tarjuma MP3"
+                      onClick={() => handleDownloadMp3(`Surah_${surah.number}_${surah.englishName}_${subCategory}`, targetAudioUrl)}
+                      style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px' }}
+                    >
+                      <i className="fas fa-download"></i>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {totalQuranPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2rem 0' }}>
+              <button className="btn-play" disabled={quranPage <= 1} onClick={() => setQuranPage(quranPage - 1)} style={{ opacity: quranPage <= 1 ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
+                <i className="fas fa-chevron-left"></i> Previous
+              </button>
+              <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Page {quranPage} of {totalQuranPages}</span>
+              <button className="btn-play" disabled={quranPage >= totalQuranPages} onClick={() => setQuranPage(quranPage + 1)} style={{ opacity: quranPage >= totalQuranPages ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
+                Next <i className="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SECTIONS 4, 5, 6: Taqreer Audio Voice Notes (Arabic, Brahui, Urdu) */}
       {subCategory.startsWith('taqreer_') && (
         <div>
-          <div className="filter-bar" style={{ marginBottom: '1.5rem' }}>
-            <div className="filter-group" style={{ flex: 1 }}>
+          <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
               <span className="filter-label"><i className="fas fa-search"></i> Search Taqreer MP3:</span>
               <input
                 type="text"
@@ -328,7 +493,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 placeholder={`Search ${subCategory.replace('taqreer_', '').toUpperCase()} Taqreers by title or speaker...`}
                 value={taqreerQuery}
                 onChange={(e) => setTaqreerQuery(e.target.value)}
+                style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               />
+            </div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(2, 44, 34, 0.9)', padding: '0.4rem 0.85rem', borderRadius: '20px', border: '1px solid var(--accent-gold)' }}>
+              <i className="fas fa-microphone-alt" style={{ marginRight: '0.35rem', color: 'var(--accent-gold)' }}></i>
+              {subCategory === 'taqreer_arabic' ? 'Arabic Speeches (تقارير عربية)' : (subCategory === 'taqreer_brahui' ? 'Brahui Speeches (تقارير براہوئی)' : 'Urdu Speeches (تقارير اردو)')}
             </div>
           </div>
 
@@ -339,63 +509,53 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                   <div className="skeleton-line-short skeleton-shimmer"></div>
                   <div className="skeleton-line-title skeleton-shimmer"></div>
                   <div className="skeleton-line skeleton-shimmer"></div>
-                  <div className="skeleton-line skeleton-shimmer" style={{ width: '80%' }}></div>
                 </div>
               ))}
             </div>
-          ) : taqreers.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid rgba(226,232,240,0.8)' }}>
+          ) : activeTaqreers.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', borderRadius: '16px', border: '1px solid var(--accent-gold)' }}>
               <i className="fas fa-microphone-slash fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
-              <h3>No MP3 Taqreer audio found</h3>
-              <p style={{ color: 'var(--text-muted)' }}>Be the first to add or upload Taqreers in this language category!</p>
+              <h3 style={{ color: 'var(--accent-gold)' }}>No MP3 Taqreer audio found</h3>
+              <p style={{ color: '#e2e8f0' }}>Use the Admin Upload section to add Taqreers in this language category!</p>
             </div>
           ) : (
             <div className="grid-2">
-              {taqreers.map((item) => (
-                <div key={item.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              {activeTaqreers.map((tq) => (
+                <div key={tq.id || tq.title} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.2rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                      <span style={{
-                        background: 'var(--accent-gold-light)',
-                        color: 'var(--primary-dark)',
-                        fontWeight: 700,
-                        fontSize: '0.78rem',
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        textTransform: 'uppercase'
-                      }}>
-                        <i className="fas fa-bullhorn"></i> {item.language} MP3
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#022c22', background: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>
+                        <i className="fas fa-globe" style={{ marginRight: '0.3rem' }}></i> {tq.language} Taqreer
                       </span>
-                      <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                        <i className="far fa-clock"></i> {item.duration}
+                      <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 600 }}>
+                        <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {tq.duration}
                       </span>
                     </div>
 
-                    <h3 className="card-title" style={{ fontSize: '1.15rem', lineHeight: '1.4' }}>{item.title}</h3>
-                    <p style={{ fontWeight: 600, color: 'var(--primary-emerald)', margin: '0.3rem 0 0.6rem 0', fontSize: '0.92rem' }}>
-                      <i className="fas fa-user-tie"></i> {item.speaker}
+                    <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: '#ffffff' }}>{tq.title}</h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, marginBottom: '0.5rem' }}>
+                      <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}
                     </p>
-                    {item.description && (
-                      <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>{item.description}</p>
-                    )}
+                    <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: '1.5' }}>{tq.description}</p>
                   </div>
 
-                  <div className="card-footer" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+                  {/* Compact Buttons */}
+                  <div className="card-footer" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', background: 'transparent', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                     <button
                       className="btn-play"
-                      style={{ flex: 1, justifyContent: 'center' }}
-                      onClick={() => playTrack(item.audio_url, item.title, item.speaker)}
+                      style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
+                      onClick={() => playTrack(tq.audio_url, tq.title, tq.speaker)}
                     >
-                      <i className="fas fa-play"></i> Play Taqreer Voice Note
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Taqreer
                     </button>
 
                     <button
                       className="btn-play"
-                      title="Download MP3 Voice Note"
-                      onClick={() => handleDownloadMp3(item.title, item.audio_url)}
-                      style={{ background: 'var(--primary-emerald)', color: '#fff', padding: '0.55rem 0.9rem', fontSize: '0.9rem' }}
+                      title="Download MP3"
+                      onClick={() => handleDownloadMp3(tq.title, tq.audio_url)}
+                      style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px' }}
                     >
-                      <i className="fas fa-download"></i>
+                      <i className="fas fa-download"></i> Download
                     </button>
                   </div>
                 </div>

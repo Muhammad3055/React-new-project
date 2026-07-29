@@ -10,6 +10,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
+from django.core.cache import cache
 
 from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
@@ -44,9 +45,27 @@ QARIS_LIST = [
 
 # --- REST API Endpoints for React SPA ---
 
+@csrf_exempt
 def api_quran_list(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            qa = QuranAudio.objects.create(
+                surah_number=int(body.get('surah_number', 1)),
+                surah_name_english=body.get('surah_name_english', 'Surah'),
+                surah_name_arabic=body.get('surah_name_arabic', 'سورة'),
+                reciter=body.get('reciter', 'Islamic Scholar'),
+                language=body.get('language', 'arabic'),
+                audio_url=body.get('audio_url', ''),
+                duration=body.get('duration', '00:00')
+            )
+            return JsonResponse({'status': 'success', 'id': qa.id, 'message': 'Quran Audio uploaded successfully!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
     query = request.GET.get('q', '').strip()
     reciter_filter = request.GET.get('reciter', '').strip()
+    language_filter = request.GET.get('language', '').strip()
     page_number = request.GET.get('page', 1)
     featured = request.GET.get('featured', '').strip()
     
@@ -67,6 +86,7 @@ def api_quran_list(request):
                     'surah_name_arabic': match.surah_name_arabic,
                     'surah_name_english': match.surah_name_english,
                     'reciter': match.reciter,
+                    'language': match.language,
                     'audio_url': match.get_playable_url(),
                     'duration': match.duration,
                     'revelation_place': match.revelation_place,
@@ -83,8 +103,13 @@ def api_quran_list(request):
         )
     if reciter_filter:
         audios = audios.filter(reciter__icontains=reciter_filter)
+    if language_filter:
+        audios = audios.filter(language=language_filter)
         
-    reciters = list(QuranAudio.objects.values_list('reciter', flat=True).distinct())
+    reciters = cache.get('quran_reciters_list')
+    if not reciters:
+        reciters = list(QuranAudio.objects.values_list('reciter', flat=True).distinct())
+        cache.set('quran_reciters_list', reciters, 600)
 
     paginator = Paginator(audios, 25)
     page_obj = paginator.get_page(page_number)
@@ -97,19 +122,22 @@ def api_quran_list(request):
             'surah_name_arabic': item.surah_name_arabic,
             'surah_name_english': item.surah_name_english,
             'reciter': item.reciter,
+            'language': item.language,
             'audio_url': item.get_playable_url(),
             'duration': item.duration,
             'revelation_place': item.revelation_place,
             'total_ayahs': item.total_ayahs,
         })
 
-    return JsonResponse({
+    res = JsonResponse({
         'results': data,
         'reciters': reciters,
         'page': page_obj.number,
         'total_pages': paginator.num_pages,
         'total_count': paginator.count,
     })
+    res.headers['Cache-Control'] = 'public, max-age=60'
+    return res
 
 
 def api_videos_list(request):
@@ -348,21 +376,34 @@ def api_hadith_list(request):
 
 
 def api_categories_list(request):
-    cats = list(Category.objects.values('id', 'name', 'slug'))
-    return JsonResponse({'categories': cats})
+    cats = cache.get('categories_list')
+    if not cats:
+        cats = list(Category.objects.values('id', 'name', 'slug'))
+        cache.set('categories_list', cats, 600)
+    res = JsonResponse({'categories': cats})
+    res.headers['Cache-Control'] = 'public, max-age=300'
+    return res
 
 
 def api_qaris_list(request):
-    return JsonResponse({'qaris': QARIS_LIST})
+    res = JsonResponse({'qaris': QARIS_LIST})
+    res.headers['Cache-Control'] = 'public, max-age=600'
+    return res
 
 
 def api_home_stats(request):
-    return JsonResponse({
-        'total_audios': QuranAudio.objects.count(),
-        'total_videos': VideoMedia.objects.count(),
-        'total_books': BookMedia.objects.count(),
-        'total_hadiths': Hadith.objects.count(),
-    })
+    stats = cache.get('home_stats')
+    if not stats:
+        stats = {
+            'total_audios': QuranAudio.objects.count(),
+            'total_videos': VideoMedia.objects.count(),
+            'total_books': BookMedia.objects.count(),
+            'total_hadiths': Hadith.objects.count(),
+        }
+        cache.set('home_stats', stats, 300)
+    res = JsonResponse(stats)
+    res.headers['Cache-Control'] = 'public, max-age=120'
+    return res
 
 
 @csrf_exempt

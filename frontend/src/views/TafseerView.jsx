@@ -4,14 +4,20 @@ export default function TafseerView({ openReportModal }) {
   const [tafseers, setTafseers] = useState([]);
   const [surahList, setSurahList] = useState([]);
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedSurah, setSelectedSurah] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const handler = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(handler);
+  }, [query]);
+
+  useEffect(() => {
     setLoading(true);
-    fetch(`/api/tafseer/?q=${encodeURIComponent(query)}&surah=${encodeURIComponent(selectedSurah)}&page=${page}`)
+    fetch(`/api/tafseer/?q=${encodeURIComponent(debouncedQuery)}&surah=${encodeURIComponent(selectedSurah)}&page=${page}`)
       .then(res => res.json())
       .then(data => {
         setTafseers(data.results || []);
@@ -20,7 +26,7 @@ export default function TafseerView({ openReportModal }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [query, selectedSurah, page]);
+  }, [debouncedQuery, selectedSurah, page]);
 
   return (
     <div className="container">

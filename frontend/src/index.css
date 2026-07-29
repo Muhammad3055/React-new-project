@@ -842,19 +842,29 @@ a {
 /* ====================================
    RESPONSIVE BREAKPOINTS & ALWAYS-VISIBLE AUTH
    ==================================== */
-.desktop-auth-area,
-.persistent-header-auth {
-  display: flex !important;
-  align-items: center !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  flex-shrink: 0 !important;
+@media (min-width: 769px) {
+  .desktop-auth-area,
+  .persistent-header-auth {
+    display: flex !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-auth-area,
+  .desktop-extras-menu,
+  .header-theme-selector {
+    display: none !important;
+  }
 }
 
 .desktop-login-signup {
   display: flex !important;
   align-items: center !important;
-  gap: 0.35rem !important;
+  gap: 0.45rem !important;
   flex-shrink: 0 !important;
 }
 
@@ -862,10 +872,10 @@ a {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 0.3rem !important;
-  padding: 0.38rem 0.65rem !important;
+  gap: 0.35rem !important;
+  padding: 0.4rem 0.85rem !important;
   border-radius: 20px !important;
-  font-size: 0.78rem !important;
+  font-size: 0.8rem !important;
   font-weight: 700 !important;
   font-family: inherit !important;
   cursor: pointer !important;
@@ -875,10 +885,25 @@ a {
   flex-shrink: 0 !important;
 }
 
+.auth-btn.signup-btn {
+  background: linear-gradient(135deg, var(--accent-gold), #d97706) !important;
+  color: #022c22 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+}
+
+.auth-btn.signup-btn:hover {
+  background: linear-gradient(135deg, #fbbf24, var(--accent-gold)) !important;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6) !important;
+  transform: translateY(-1px) !important;
+}
+
 .auth-btn-text {
   display: inline-block !important;
   visibility: visible !important;
-  font-size: 0.75rem !important;
+  font-size: 0.78rem !important;
   font-weight: 700 !important;
 }
 
@@ -913,45 +938,49 @@ a {
   transform-origin: center;
 }
 
-@media (max-width: 1120px) {
+@media (max-width: 1300px) {
   .navbar-left-group { gap: 0.85rem; }
-  .navbar-right-group { gap: 0.45rem; }
-  .nav-links.desktop-nav { gap: 0.35rem; }
+  .navbar-right-group { gap: 0.5rem; }
+  .nav-links.desktop-nav { gap: 0.4rem; }
   .nav-link { padding: 0.35rem 0.45rem; font-size: 0.78rem; }
-  .search-wrapper { width: 140px; }
+  .search-wrapper { width: 150px; flex-shrink: 1; }
 }
 
-@media (max-width: 950px) {
-  .nav-link-text { display: none; } /* Show icons for inline links when screen is narrow */
-  .nav-link { padding: 0.4rem 0.5rem; font-size: 0.88rem; }
-  .search-wrapper { width: 120px; }
+@media (max-width: 1150px) {
+  .nav-link-text { display: none !important; } /* Hide link label text early on laptops so Sign Up button is never pushed off screen */
+  .nav-link { padding: 0.4rem 0.55rem; font-size: 0.9rem; }
+  .search-wrapper { width: 130px; flex-shrink: 1; }
 }
 
 @media (max-width: 768px) {
-  .navbar { padding: 0.45rem 0.65rem !important; }
-  .nav-container { padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; }
+  .navbar { padding: 0.4rem 0.5rem !important; }
+  .nav-container { padding: 0 !important; width: 100% !important; max-width: 100% !important; gap: 0.35rem !important; overflow: visible !important; }
+  .navbar-left-group { gap: 0.35rem !important; flex-shrink: 1 !important; min-width: 0 !important; }
+  .navbar-right-group { gap: 0.25rem !important; flex-shrink: 0 !important; }
   .desktop-nav { display: none !important; }
   .desktop-extras-menu { display: none !important; }
-  .mobile-toggle-btn { display: flex !important; }
-  .brand-logo { font-size: 1.05rem !important; }
-  .search-wrapper { width: 95px !important; min-width: 65px !important; }
-  .search-input { font-size: 0.72rem !important; padding: 0.35rem 0.5rem 0.35rem 1.6rem !important; }
-  .search-icon { left: 0.5rem !important; font-size: 0.7rem !important; }
-  .auth-btn { padding: 0.32rem 0.52rem !important; font-size: 0.72rem !important; }
+  .mobile-toggle-btn { display: flex !important; flex-shrink: 0 !important; margin-left: 0 !important; padding: 5px 6px !important; }
+  .brand-logo { font-size: 1rem !important; gap: 0.3rem !important; }
+  .search-wrapper { width: 80px !important; min-width: 48px !important; flex-shrink: 1 !important; }
+  .search-input { font-size: 0.72rem !important; padding: 0.35rem 0.4rem 0.35rem 1.5rem !important; }
+  .search-icon { left: 0.45rem !important; font-size: 0.68rem !important; }
+  .auth-btn { padding: 0.32rem 0.5rem !important; font-size: 0.72rem !important; }
   .auth-btn-text { display: inline-block !important; font-size: 0.72rem !important; }
   .user-greeting { font-size: 0.72rem !important; padding: 0.25rem 0.45rem !important; }
 }
 
 @media (max-width: 480px) {
-  .navbar { padding: 0.4rem 0.4rem !important; }
-  .brand-text { font-size: 0.92rem !important; }
-  .search-wrapper { width: 75px !important; min-width: 55px !important; }
-  .search-input { font-size: 0.68rem !important; padding: 0.3rem 0.4rem 0.3rem 1.4rem !important; }
-  .search-icon { left: 0.4rem !important; font-size: 0.65rem !important; }
-  .auth-btn { padding: 0.28rem 0.42rem !important; font-size: 0.68rem !important; gap: 0.2rem !important; }
-  .auth-btn-text { display: inline-block !important; font-size: 0.68rem !important; }
-  .mobile-toggle-btn { padding: 5px 6px !important; }
-  .hamburger-line { width: 18px !important; }
+  .navbar { padding: 0.35rem 0.3rem !important; }
+  .nav-container { gap: 0.2rem !important; }
+  .navbar-left-group { gap: 0.2rem !important; flex-shrink: 1 !important; }
+  .navbar-right-group { gap: 0.2rem !important; flex-shrink: 0 !important; }
+  .brand-logo { font-size: 0.88rem !important; gap: 0.2rem !important; }
+  .brand-text { font-size: 0.85rem !important; }
+  .search-wrapper { width: 62px !important; min-width: 40px !important; flex-shrink: 1 !important; }
+  .search-input { font-size: 0.66rem !important; padding: 0.25rem 0.3rem 0.25rem 1.25rem !important; }
+  .search-icon { left: 0.35rem !important; font-size: 0.62rem !important; }
+  .mobile-toggle-btn { padding: 4px 5px !important; flex-shrink: 0 !important; margin-left: 0 !important; }
+  .hamburger-line { width: 16px !important; }
   .user-greeting { display: none !important; }
 }
 
@@ -2402,52 +2431,232 @@ body.has-audio-player footer {
 
 /* Mobile Header Auth Quick Buttons (Visible on Mobile Header) */
 .mobile-header-auth-bar {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 768px) {
   .mobile-header-auth-bar {
-    display: flex;
-    align-items: center;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    flex-shrink: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .mobile-header-login-btn {
-    padding: 0.3rem 0.65rem;
-    border-radius: 16px;
-    border: 1.5px solid var(--accent-gold);
-    background: rgba(245, 158, 11, 0.15);
-    color: var(--accent-gold);
-    font-weight: 700;
-    font-size: 0.76rem;
-    cursor: pointer;
-    white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.3rem !important;
+    padding: 0.35rem 0.65rem !important;
+    border-radius: 18px !important;
+    border: 1.5px solid var(--accent-gold) !important;
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: var(--accent-gold) !important;
+    font-weight: 700 !important;
+    font-size: 0.76rem !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobile-header-login-btn:hover {
+    background: rgba(245, 158, 11, 0.3) !important;
   }
 
   .mobile-header-signup-btn {
-    padding: 0.3rem 0.65rem;
-    border-radius: 16px;
-    border: none;
-    background: var(--accent-gold);
-    color: var(--primary-dark);
-    font-weight: 800;
-    font-size: 0.76rem;
-    cursor: pointer;
-    white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.3rem !important;
+    padding: 0.35rem 0.72rem !important;
+    border-radius: 18px !important;
+    border: none !important;
+    background: linear-gradient(135deg, var(--accent-gold), #d97706) !important;
+    color: #022c22 !important;
+    font-weight: 800 !important;
+    font-size: 0.76rem !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobile-header-signup-btn:hover {
+    background: linear-gradient(135deg, #fbbf24, var(--accent-gold)) !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5) !important;
+    transform: translateY(-1px) !important;
   }
 
   .mobile-header-user-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 20px;
-    border: 1.5px solid var(--accent-gold);
-    background: rgba(245, 158, 11, 0.2);
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.76rem;
-    cursor: pointer;
-    white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.75rem !important;
+    border-radius: 20px !important;
+    border: 1.5px solid var(--accent-gold) !important;
+    background: rgba(245, 158, 11, 0.2) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 0.76rem !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-header-login-btn {
+    padding: 0.28rem 0.55rem !important;
+    font-size: 0.72rem !important;
+  }
+  .mobile-header-signup-btn {
+    padding: 0.28rem 0.6rem !important;
+    font-size: 0.72rem !important;
+  }
+}
+
+/* Quran Portal Mode Buttons - Unified MP3 Section Gold/Emerald Palette & Hover Effects */
+.quran-mode-btn-container {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.quran-mode-btn {
+  padding: 0.45rem 1.1rem !important;
+  border-radius: 25px !important;
+  font-size: 0.84rem !important;
+  font-weight: 800 !important;
+  font-family: inherit !important;
+  cursor: pointer;
+  transition: all 0.25s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.quran-mode-btn.active {
+  background: linear-gradient(135deg, var(--accent-gold), #d97706) !important;
+  color: #022c22 !important;
+  border: 2px solid var(--accent-gold) !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45) !important;
+}
+
+.quran-mode-btn.active:hover {
+  background: linear-gradient(135deg, #fbbf24, var(--accent-gold)) !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.6) !important;
+  transform: translateY(-1px) !important;
+}
+
+.quran-mode-btn.inactive {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.quran-mode-btn.inactive:hover {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: var(--accent-gold) !important;
+  border-color: var(--accent-gold) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25) !important;
+}
+
+.quran-submode-btn-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.quran-submode-btn {
+  padding: 0.38rem 0.85rem !important;
+  border-radius: 18px !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  cursor: pointer;
+  transition: all 0.25s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.quran-submode-btn.active {
+  background: #ffffff !important;
+  color: var(--primary-dark) !important;
+  border: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.quran-submode-btn.active:hover {
+  background: #f8fafc !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+.quran-submode-btn.inactive {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.quran-submode-btn.inactive:hover {
+  background: rgba(245, 158, 11, 0.25) !important;
+  color: var(--accent-gold) !important;
+  border-color: var(--accent-gold) !important;
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 768px) {
+  .quran-mode-btn-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+  }
+
+  .quran-mode-btn {
+    flex: 1 !important;
+    padding: 0.38rem 0.3rem !important;
+    font-size: 0.75rem !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    text-align: center !important;
+    border-radius: 20px !important;
+    min-height: 34px !important;
+  }
+
+  .quran-submode-btn-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  .quran-submode-btn {
+    flex: 1 !important;
+    padding: 0.35rem 0.25rem !important;
+    font-size: 0.72rem !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    text-align: center !important;
+    border-radius: 16px !important;
+    min-height: 32px !important;
+  }
+
+  .qari-select-dropdown {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 

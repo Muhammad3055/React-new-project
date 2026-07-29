@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getBrahuiVerseTranslation, BRAHUI_SURAH_NAMES } from '../data/brahui_translations';
+import { fetchWithCache } from '../utils/apiCache';
 
 const ALL_114_SURAHS = [
   { number: 1, name: "Al-Fatihah", englishName: "The Opening", arabic: "الفاتحة", ayahs: 7, type: "Meccan" },
@@ -271,8 +272,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   });
 
   useEffect(() => {
-    fetch('https://api.alquran.cloud/v1/surah')
-      .then(res => res.json())
+    fetchWithCache('https://api.alquran.cloud/v1/surah')
       .then(data => {
         if (data && data.data && data.data.length === 114) {
           const formatted = data.data.map(s => ({
@@ -289,13 +289,12 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       .catch(() => {});
   }, []);
 
-  // Fetch Surah Arabic Text
+  // Fetch Surah Arabic Text with Caching
   useEffect(() => {
     setLoading(true);
     setSurahData(null);
 
-    fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}`)
-      .then(res => res.json())
+    fetchWithCache(`https://api.alquran.cloud/v1/surah/${selectedSurah}`)
       .then(data => {
         if (data && data.data) {
           setSurahData(data.data);
@@ -311,13 +310,12 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       });
   }, [selectedSurah]);
 
-  // Fetch English & Urdu Translations dynamically for selectedSurah
+  // Fetch English & Urdu Translations dynamically for selectedSurah with Caching
   useEffect(() => {
     setTranslationData({});
 
     if (translations.en) {
-      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}/en.sahih`)
-        .then(res => res.json())
+      fetchWithCache(`https://api.alquran.cloud/v1/surah/${selectedSurah}/en.sahih`)
         .then(data => {
           if (data && data.data && data.data.ayahs) {
             setTranslationData(prev => ({ ...prev, en: data.data.ayahs }));
@@ -327,8 +325,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     }
 
     if (translations.ur) {
-      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurah}/ur.jalandhry`)
-        .then(res => res.json())
+      fetchWithCache(`https://api.alquran.cloud/v1/surah/${selectedSurah}/ur.jalandhry`)
         .then(data => {
           if (data && data.data && data.data.ayahs) {
             setTranslationData(prev => ({ ...prev, ur: data.data.ayahs }));
@@ -542,125 +539,86 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     <div className="container" style={{ margin: '1.5rem auto' }}>
 
       {/* ===== TOP SECTION: MAIN MODE SELECTION BUTTONS ===== */}
-      <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1.25rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="card" style={{ padding: '1rem', marginBottom: '1.25rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
               <i className="fas fa-quran"></i> Quran Reading & Translation Portal
             </h2>
-            <p style={{ fontSize: '0.85rem', color: '#e2e8f0', marginTop: '0.2rem' }}>
+            <p style={{ fontSize: '0.82rem', color: '#e2e8f0', marginTop: '0.25rem', lineHeight: '1.4' }}>
               Choose your preferred mode: Read pure Quran Pak text or study with English, Urdu & Brahui Tarjuma/Translation.
             </p>
           </div>
 
-          {/* Main Mode Buttons */}
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {/* Main Mode Buttons - Unified Website Gold/Emerald Styling & Hover */}
+          <div className="quran-mode-btn-container">
             <button
+              className={`quran-mode-btn ${readMode === 'only_quran' ? 'active' : 'inactive'}`}
               onClick={() => setReadMode('only_quran')}
-              style={{
-                padding: '0.6rem 1.3rem',
-                borderRadius: '30px',
-                border: readMode === 'only_quran' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)',
-                background: readMode === 'only_quran' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)',
-                color: readMode === 'only_quran' ? 'var(--primary-dark)' : '#ffffff',
-                fontWeight: 800,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: readMode === 'only_quran' ? '0 0 14px rgba(245,158,11,0.5)' : 'none'
-              }}
             >
-              <i className="fas fa-book-open"></i> Only Quran Pak Text
+              <i className="fas fa-book-open"></i>
+              <span>Only Quran Pak Text</span>
             </button>
 
             <button
+              className={`quran-mode-btn ${readMode === 'with_translation' ? 'active' : 'inactive'}`}
               onClick={() => setReadMode('with_translation')}
-              style={{
-                padding: '0.6rem 1.3rem',
-                borderRadius: '30px',
-                border: readMode === 'with_translation' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)',
-                background: readMode === 'with_translation' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)',
-                color: readMode === 'with_translation' ? 'var(--primary-dark)' : '#ffffff',
-                fontWeight: 800,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: readMode === 'with_translation' ? '0 0 14px rgba(245,158,11,0.5)' : 'none'
-              }}
             >
-              <i className="fas fa-language"></i> Quran with Tarjuma / Translation
+              <i className="fas fa-language"></i>
+              <span>Quran with Tarjuma / Translation</span>
             </button>
           </div>
         </div>
 
         {/* Translation Sub-Modes (Shown when 'with_translation' is active) */}
         {readMode === 'with_translation' && (
-          <div style={{ marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.85rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)' }}>Translation Options:</span>
-              
+          <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.18)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <i className="fas fa-sliders-h"></i> Translation Options:
+            </span>
+
+            {/* Side-by-Side Option Pills - Unified Button Styling */}
+            <div className="quran-submode-btn-container">
               {/* Sub-Mode 2A: Multi-Qari Voice + Spoken Translation */}
               <button
+                className={`quran-submode-btn ${translationSubMode === 'audio_and_text' ? 'active' : 'inactive'}`}
                 onClick={() => setTranslationSubMode('audio_and_text')}
-                style={{
-                  padding: '0.4rem 1rem',
-                  borderRadius: '20px',
-                  border: 'none',
-                  background: translationSubMode === 'audio_and_text' ? '#ffffff' : 'rgba(255,255,255,0.15)',
-                  color: translationSubMode === 'audio_and_text' ? 'var(--primary-dark)' : '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '0.8rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
               >
-                <i className="fas fa-headphones-alt"></i> Multi-Qari Audio & Spoken Translation
+                <i className="fas fa-headphones-alt"></i>
+                <span>Multi-Qari Audio & Translation</span>
               </button>
 
               {/* Sub-Mode 2B: Text + Translation Only (No Audio MP3) */}
               <button
+                className={`quran-submode-btn ${translationSubMode === 'text_only_translation' ? 'active' : 'inactive'}`}
                 onClick={() => setTranslationSubMode('text_only_translation')}
-                style={{
-                  padding: '0.4rem 1rem',
-                  borderRadius: '20px',
-                  border: 'none',
-                  background: translationSubMode === 'text_only_translation' ? '#ffffff' : 'rgba(255,255,255,0.15)',
-                  color: translationSubMode === 'text_only_translation' ? 'var(--primary-dark)' : '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '0.8rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
               >
-                <i className="fas fa-file-alt"></i> Text & Translation Only (No Audio)
+                <i className="fas fa-file-alt"></i>
+                <span>Text & Translation Only</span>
               </button>
             </div>
 
-            {/* Qari Selection Bar (for Sub-Mode 2A) */}
+            {/* Qari Selection Bar (Compact Width on PC) */}
             {translationSubMode === 'audio_and_text' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e2e8f0' }}><i className="fas fa-user-circle"></i> Reciter Qari:</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#e2e8f0', whiteSpace: 'nowrap' }}>
+                  <i className="fas fa-user-circle" style={{ color: 'var(--accent-gold)' }}></i> Reciter Qari:
+                </span>
                 <select
                   value={selectedQari}
                   onChange={(e) => setSelectedQari(e.target.value)}
+                  className="qari-select-dropdown"
                   style={{
-                    padding: '0.35rem 0.75rem',
-                    borderRadius: '15px',
+                    width: 'auto',
+                    minWidth: '220px',
+                    maxWidth: '280px',
+                    padding: '0.38rem 0.75rem',
+                    borderRadius: '14px',
                     border: '1px solid var(--accent-gold)',
                     background: '#011c16',
                     color: 'var(--accent-gold)',
                     fontWeight: 700,
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     outline: 'none',
                     cursor: 'pointer'
                   }}
