@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 import { fetchWithCache } from '../utils/apiCache';
+import { useLanguage } from '../context/LanguageContext';
 
 const DEFAULT_AUDIOS = [
   { id: 1, surah_number: 1, surah_name_arabic: "الفاتحة", surah_name_english: "Al-Fatiha", reciter: "Mishary Rashid Alafasy", audio_url: "https://server8.mp3quran.net/afs/001.mp3", duration: "00:45", revelation_place: "Makki" },
@@ -79,6 +80,7 @@ const DAILY_VERSES_COLLECTION = [
 ];
 
 export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal }) {
+  const { t } = useLanguage();
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
@@ -145,8 +147,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       {/* Hero Section */}
       <section className="hero-section">
         <h2 className="arabic-font hero-arabic-title">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
-        <h1 className="hero-main-title">Discover, Listen & Learn The Holy Quran</h1>
-        <p className="hero-subtitle">Modern Full-Stack Application for Quran Audio Recitations, Interactive Reading, Tafseer Studies, PDF Books & Authentic Hadith Collections.</p>
+        <h1 className="hero-main-title">{t('quranHeroTitle')}</h1>
+        <p className="hero-subtitle">{t('quranHeroSubtitle')}</p>
         
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <a
@@ -158,7 +160,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               handleNav('read');
             }}
           >
-            <i className="fas fa-book-open"></i> Start Reading Quran
+            <i className="fas fa-book-open"></i> {t('readQuran')}
           </a>
           <a
             href="/quran"
@@ -176,7 +178,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               handleNav('quran');
             }}
           >
-            <i className="fas fa-headphones"></i> Listen Quran MP3
+            <i className="fas fa-headphones"></i> {t('mp3Audio')}
           </a>
         </div>
 

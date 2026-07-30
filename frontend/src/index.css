@@ -938,21 +938,36 @@ a {
   transform-origin: center;
 }
 
-@media (max-width: 1300px) {
-  .navbar-left-group { gap: 0.85rem; }
-  .navbar-right-group { gap: 0.5rem; }
-  .nav-links.desktop-nav { gap: 0.4rem; }
-  .nav-link { padding: 0.35rem 0.45rem; font-size: 0.78rem; }
-  .search-wrapper { width: 150px; flex-shrink: 1; }
+.desktop-auth-area {
+  display: flex !important;
+  align-items: center;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
-@media (max-width: 1150px) {
-  .nav-link-text { display: none !important; } /* Hide link label text early on laptops so Sign Up button is never pushed off screen */
-  .nav-link { padding: 0.4rem 0.55rem; font-size: 0.9rem; }
+.desktop-login-signup {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 1300px) {
+  .navbar-left-group { gap: 0.75rem; }
+  .navbar-right-group { gap: 0.45rem; }
+  .nav-links.desktop-nav { gap: 0.35rem; }
+  .nav-link { padding: 0.3rem 0.4rem; font-size: 0.78rem; }
   .search-wrapper { width: 130px; flex-shrink: 1; }
 }
 
+@media (max-width: 1150px) {
+  .nav-link { padding: 0.35rem 0.45rem; font-size: 0.82rem; }
+  .search-wrapper { width: 110px; flex-shrink: 1; }
+}
+
 @media (max-width: 768px) {
+
   .navbar { padding: 0.4rem 0.5rem !important; }
   .nav-container { padding: 0 !important; width: 100% !important; max-width: 100% !important; gap: 0.35rem !important; overflow: visible !important; }
   .navbar-left-group { gap: 0.35rem !important; flex-shrink: 1 !important; min-width: 0 !important; }

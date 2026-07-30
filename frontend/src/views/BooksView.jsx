@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithCache } from '../utils/apiCache';
+import { getAdminItems } from '../utils/adminContentStore';
 
 export default function BooksView({ openReportModal }) {
   const [books, setBooks] = useState([]);
@@ -39,18 +40,43 @@ export default function BooksView({ openReportModal }) {
       .catch(() => {});
   }, []);
 
-  // Fetch Books whenever filters change
+  // Fetch Books whenever filters change & merge client-side admin uploaded books
   useEffect(() => {
     setLoading(true);
     fetch(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&page=${page}`)
       .then(res => res.json())
       .then(data => {
-        setBooks(data.results || []);
+        const apiBooks = data.results || [];
+        const adminBooks = getAdminItems('books').map(item => ({
+          id: item.id,
+          title: item.title,
+          author: item.author || 'Admin Upload',
+          file_type: 'pdf',
+          pdf_url: item.fileUrl || item.pdf_url,
+          cover_url: item.cover_url || '',
+          language: item.language || 'Urdu / Brahui',
+          description: item.description || 'Uploaded by Administrator'
+        }));
+        setBooks([...adminBooks, ...apiBooks]);
         setTotalPages(data.total_pages || 1);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        const adminBooks = getAdminItems('books').map(item => ({
+          id: item.id,
+          title: item.title,
+          author: item.author || 'Admin Upload',
+          file_type: 'pdf',
+          pdf_url: item.fileUrl || item.pdf_url,
+          cover_url: item.cover_url || '',
+          language: item.language || 'Urdu / Brahui',
+          description: item.description || 'Uploaded by Administrator'
+        }));
+        setBooks(adminBooks);
+        setLoading(false);
+      });
   }, [debouncedQuery, selectedCategory, selectedFileType, page]);
+
 
   const getFormatBadge = (fileType) => {
     switch (fileType) {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal }) {
+  const { language, setLanguage, t } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -25,17 +27,18 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
-    { label: 'Khatam Tracker', icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },
-    { label: 'Fazail (Virtues)', icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
-    { label: '99 Names', icon: 'fas fa-star', action: () => { navigateToTab('namesOfAllah'); setShowExtrasMenu(false); } },
-    { label: 'Tasbeeh Counter', icon: 'fas fa-hand-holding-heart', action: () => { navigateToTab('tasbeeh'); setShowExtrasMenu(false); } },
-    { label: "Du'as Library", icon: 'fas fa-hands', action: () => { navigateToTab('duas'); setShowExtrasMenu(false); } },
-    { label: 'Hadith', icon: 'fas fa-scroll', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
-    { label: 'Tafseer', icon: 'fas fa-bookmark', action: () => { navigateToTab('tafseer'); setShowExtrasMenu(false); } },
-    { label: 'Books Library', icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
-    { label: 'About Us', icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
-    { label: 'Contact', icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
+    { label: t('khatam'), icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },
+    { label: t('fazail'), icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
+    { label: t('namesOfAllah'), icon: 'fas fa-star', action: () => { navigateToTab('namesOfAllah'); setShowExtrasMenu(false); } },
+    { label: t('tasbeeh'), icon: 'fas fa-hand-holding-heart', action: () => { navigateToTab('tasbeeh'); setShowExtrasMenu(false); } },
+    { label: t('duas'), icon: 'fas fa-hands', action: () => { navigateToTab('duas'); setShowExtrasMenu(false); } },
+    { label: t('hadith'), icon: 'fas fa-scroll', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
+    { label: t('tafseer'), icon: 'fas fa-bookmark', action: () => { navigateToTab('tafseer'); setShowExtrasMenu(false); } },
+    { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
+    { label: t('aboutUs'), icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
+    { label: t('contact'), icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
   ];
+
 
   const showToast = (msg) => {
     setToast(msg);
@@ -94,11 +97,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   };
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: 'fas fa-home' },
-    { id: 'read', label: 'Read Quran', icon: 'fas fa-book-open' },
-    { id: 'quran', label: 'MP3 & Taqreer', icon: 'fas fa-headphones' },
-    { id: 'fazail', label: 'Fazail', icon: 'fas fa-book' },
-    { id: 'about', label: 'About Us', icon: 'fas fa-info-circle' },
+    { id: 'home', label: t('home'), icon: 'fas fa-home' },
+    { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
+    { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
+    { id: 'about', label: t('aboutUs'), icon: 'fas fa-info-circle' },
   ];
 
   return (
@@ -114,7 +116,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         <div className="nav-container">
           <div className="navbar-left-group">
             <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
-              <span className="brand-text">Quran <span className="gold-text">Al Kareem</span></span>
+              <span className="brand-text">{t('brandName')}</span>
             </div>
 
             <ul className="nav-links desktop-nav">
@@ -140,7 +142,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               <input
                 type="text"
                 className="search-input"
-                placeholder="Search..."
+                placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
@@ -156,6 +158,34 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Global Language Selector (English, Urdu, Brahui) */}
+            <div className="header-language-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.45)' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-gold)' }} title={t('selectLanguage')}>
+                <i className="fas fa-globe"></i>
+              </span>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                style={{
+                  background: '#022c22',
+                  color: 'var(--accent-gold)',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  borderRadius: '12px'
+                }}
+                title="Select Website Language (English, Urdu, Brahui, Arabic)"
+              >
+                <option value="english">🇬🇧 English</option>
+                <option value="urdu">🇵🇰 اردو</option>
+                <option value="brahui">📜 براہوئی</option>
+                <option value="arabic">🇸🇦 العربية</option>
+              </select>
             </div>
 
             {/* Global Website Theme Selector (Light, Sepia, Black, Auto) */}
@@ -194,7 +224,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 aria-label="Open extras menu"
               >
                 <i className="fas fa-th-large"></i>
-                <span className="more-text">More</span>
+                <span className="more-text">{t('more')}</span>
               </button>
               {showExtrasMenu && (
                 <>
@@ -202,8 +232,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   <aside className="desktop-extras-sidepanel" onClick={(e) => e.stopPropagation()}>
                     <div className="desktop-extras-header">
                       <div>
-                        <p className="extras-title">Explore More</p>
-                        <p className="extras-subtitle">Hadith, Tafseer, 99 Names & more</p>
+                        <p className="extras-title">{t('exploreMore')}</p>
+                        <p className="extras-subtitle">{t('subExploreSubtitle')}</p>
                       </div>
                       <button className="extras-close-btn" onClick={() => setShowExtrasMenu(false)} aria-label="Close menu">
                         <i className="fas fa-times"></i>
@@ -231,7 +261,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 <div className="desktop-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <button
                     onClick={() => navigateToTab('dashboard')}
-                    title={`Logged in as ${user.username} - Open Dashboard`}
+                    title={`Logged in as ${user.username} - ${t('dashboard')}`}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -267,7 +297,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
                   <button
                     className="nav-action-btn logout"
-                    title="Logout"
+                    title={t('logout')}
                     onClick={handleLogout}
                     style={{ background: 'transparent', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
                   >
@@ -275,35 +305,123 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   </button>
                 </div>
               ) : (
-                <div className="desktop-login-signup">
-                  <button className="auth-btn login-btn" onClick={() => openAuthModal('login')}>
-                    <i className="fas fa-sign-in-alt"></i> <span className="auth-btn-text">Login</span>
+                <div className="desktop-login-signup" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    className="auth-btn login-btn"
+                    onClick={() => openAuthModal('login')}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.42rem 0.9rem',
+                      borderRadius: '20px',
+                      border: '1.5px solid var(--accent-gold)',
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      color: '#ffffff',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    <i className="fas fa-sign-in-alt" style={{ color: 'var(--accent-gold)' }}></i>
+                    <span className="auth-btn-text">{t('login')}</span>
                   </button>
-                  <button className="auth-btn signup-btn" onClick={() => openAuthModal('signup')}>
-                    <i className="fas fa-user-plus"></i> <span className="auth-btn-text">Sign Up</span>
+                  <button
+                    className="auth-btn signup-btn"
+                    onClick={() => openAuthModal('signup')}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.42rem 1rem',
+                      borderRadius: '20px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                      color: '#022c22',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 3px 12px rgba(245, 158, 11, 0.4)'
+                    }}
+                  >
+                    <i className="fas fa-user-plus"></i>
+                    <span className="auth-btn-text">{t('signup')}</span>
                   </button>
                 </div>
               )}
             </div>
 
             {/* Quick Mobile Auth Header Buttons (Always Visible on Mobile Header for iPhone, Samsung, Infinix, etc.) */}
-            <div className="mobile-header-auth-bar">
+            <div className="mobile-header-auth-bar" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               {user ? (
                 <button
                   className="mobile-header-user-btn"
                   onClick={() => navigateToTab('dashboard')}
                   title={`Logged in as ${user.username}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.3rem 0.65rem',
+                    borderRadius: '16px',
+                    border: '1px solid var(--accent-gold)',
+                    background: 'rgba(245, 158, 11, 0.15)',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    cursor: 'pointer'
+                  }}
                 >
-                  <i className="fas fa-user-circle"></i>
+                  <i className="fas fa-user-circle" style={{ color: 'var(--accent-gold)' }}></i>
                   <span>{user.username}</span>
                 </button>
               ) : (
                 <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-                  <button className="mobile-header-login-btn" onClick={() => openAuthModal('login')}>
-                    <i className="fas fa-sign-in-alt"></i> Login
+                  <button
+                    className="mobile-header-login-btn"
+                    onClick={() => openAuthModal('login')}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      padding: '0.3rem 0.65rem',
+                      borderRadius: '16px',
+                      border: '1px solid var(--accent-gold)',
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      color: '#ffffff',
+                      fontWeight: 800,
+                      fontSize: '0.75rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <i className="fas fa-sign-in-alt" style={{ color: 'var(--accent-gold)' }}></i>
+                    <span>{t('login')}</span>
                   </button>
-                  <button className="mobile-header-signup-btn" onClick={() => openAuthModal('signup')}>
-                    <i className="fas fa-user-plus"></i> Sign Up
+                  <button
+                    className="mobile-header-signup-btn"
+                    onClick={() => openAuthModal('signup')}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      padding: '0.3rem 0.7rem',
+                      borderRadius: '16px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                      color: '#022c22',
+                      fontWeight: 800,
+                      fontSize: '0.75rem',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)'
+                    }}
+                  >
+                    <i className="fas fa-user-plus"></i>
+                    <span>{t('signup')}</span>
                   </button>
                 </div>
               )}
@@ -360,35 +478,63 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             )}
           </div>
 
-          {/* Global Theme Selector inside Mobile Drawer */}
-          <div style={{ margin: '1rem 0', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <i className="fas fa-palette"></i> Website Theme:
-            </span>
-            <select
-              value={globalTheme}
-              onChange={(e) => setGlobalTheme(e.target.value)}
-              style={{
-                background: '#022c22',
-                color: 'var(--accent-gold)',
-                border: '1px solid var(--accent-gold)',
-                fontWeight: 700,
-                fontSize: '0.82rem',
-                outline: 'none',
-                cursor: 'pointer',
-                padding: '4px 10px',
-                borderRadius: '14px'
-              }}
-            >
-              <option value="light">☀️ Light</option>
-              <option value="sepia">📜 Sepia</option>
-              <option value="black">🌙 Black</option>
-              <option value="auto">🌓 Auto (System)</option>
-            </select>
+          {/* Global Language & Theme Selectors inside Mobile Drawer */}
+          <div style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <div style={{ padding: '0.65rem 1rem', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <i className="fas fa-globe"></i> {t('language')}:
+              </span>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                style={{
+                  background: '#022c22',
+                  color: 'var(--accent-gold)',
+                  border: '1px solid var(--accent-gold)',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  padding: '4px 10px',
+                  borderRadius: '14px'
+                }}
+              >
+                <option value="english">🇬🇧 English</option>
+                <option value="urdu">🇵🇰 اردو</option>
+                <option value="brahui">📜 براہوئی</option>
+                <option value="arabic">🇸🇦 العربية</option>
+              </select>
+            </div>
+
+            <div style={{ padding: '0.65rem 1rem', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <i className="fas fa-palette"></i> {t('theme')}:
+              </span>
+              <select
+                value={globalTheme}
+                onChange={(e) => setGlobalTheme(e.target.value)}
+                style={{
+                  background: '#022c22',
+                  color: 'var(--accent-gold)',
+                  border: '1px solid var(--accent-gold)',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  padding: '4px 10px',
+                  borderRadius: '14px'
+                }}
+              >
+                <option value="light">☀️ Light</option>
+                <option value="sepia">📜 Sepia</option>
+                <option value="black">🌙 Black</option>
+                <option value="auto">🌓 Auto</option>
+              </select>
+            </div>
           </div>
 
           {/* Main Navigation Items Grid */}
-          <div className="mobile-section-title">Main Navigation</div>
+          <div className="mobile-section-title">{t('home')} & {t('readQuran')}</div>
           <nav className="mobile-nav-grid main-nav-grid">
             {navItems.map((item) => (
               <button
@@ -403,7 +549,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           </nav>
 
           {/* Explore Features Grid */}
-          <div className="mobile-section-title">Explore Features</div>
+          <div className="mobile-section-title">{t('exploreMore')}</div>
           <nav className="mobile-nav-grid extra-nav-grid">
             {extraMenuItems.map((item) => (
               <button
@@ -422,7 +568,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 onClick={() => { navigateToTab('bookmarks'); setMobileActive(false); }}
               >
                 <i className="fas fa-star"></i>
-                <span>Bookmarks</span>
+                <span>{t('dashboard')}</span>
               </button>
             )}
 

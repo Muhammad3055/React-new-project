@@ -4,6 +4,8 @@ import Footer from './components/Footer';
 import AudioPlayer from './components/AudioPlayer';
 import ReportModal from './components/ReportModal';
 import AuthModal from './components/AuthModal';
+import AdminFloatingBar from './components/AdminFloatingBar';
+
 
 import HomeView from './views/HomeView';
 import ReadView from './views/ReadView';
@@ -257,6 +259,9 @@ export default function App() {
           setUser={setUser}
         />
       )}
+
+      {/* Floating Admin Studio Bar (Only visible when logged in as admin) */}
+      <AdminFloatingBar user={user} navigateToTab={navigateToTab} />
     </div>
   );
 }
