@@ -1,17 +1,29 @@
 // High-performance In-Memory & SessionStorage API Caching Layer
 const memoryCache = new Map();
 
+export function getApiUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('/api/') || url.startsWith('/media/')) {
+    const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+    return `${baseUrl}${url}`;
+  }
+  return url;
+}
+
 /**
  * Fetch URL with automatic caching in-memory and sessionStorage
  * @param {string} url - Target fetch URL
  * @param {object} options - Fetch options
- * @param {number} ttlMs - Time-to-live in milliseconds (default 10 mins = 600000ms)
+ * @param {number} ttlMs - Time-to-live in milliseconds (default 30 secs = 30000ms)
  * @returns {Promise<any>}
  */
-export async function fetchWithCache(url, options = {}, ttlMs = 600000) {
+export async function fetchWithCache(url, options = {}, ttlMs = 30000) {
+  const targetUrl = getApiUrl(url);
+
   // Only cache GET requests
   if (options.method && options.method.toUpperCase() !== 'GET') {
-    const res = await fetch(url, options);
+    const res = await fetch(targetUrl, options);
     return res.json();
   }
 
@@ -43,7 +55,7 @@ export async function fetchWithCache(url, options = {}, ttlMs = 600000) {
   }
 
   // 3. Network Fetch if not cached
-  const response = await fetch(url, options);
+  const response = await fetch(targetUrl, options);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }

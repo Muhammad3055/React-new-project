@@ -43,7 +43,7 @@ export default function BooksView({ openReportModal }) {
   // Fetch Books whenever filters change & merge client-side admin uploaded books
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&page=${page}`)
+    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&page=${page}`))
       .then(res => res.json())
       .then(data => {
         const apiBooks = data.results || [];
