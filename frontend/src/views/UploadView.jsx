@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function UploadView({ user }) {
   if (!user || !user.is_staff) {
@@ -10,7 +11,7 @@ export default function UploadView({ user }) {
           <p style={{ color: 'var(--text-muted)', margin: '0.85rem 0 1.5rem 0', lineHeight: '1.6' }}>
             This Content Upload & Media Portal is restricted exclusively to site administrators and staff members.
           </p>
-          <a href="http://127.0.0.1:8000/admin/" target="_blank" rel="noreferrer" className="btn-play" style={{ display: 'inline-flex', margin: '0 auto' }}>
+          <a href={getApiUrl('/admin/')} target="_blank" rel="noreferrer" className="btn-play" style={{ display: 'inline-flex', margin: '0 auto' }}>
             <i className="fas fa-user-shield"></i> Login to Django Admin Panel
           </a>
         </div>
@@ -50,7 +51,7 @@ export default function UploadView({ user }) {
       formData.append('audio_url', taqreerData.audio_url);
     }
 
-    fetch('/api/taqreer/', {
+    fetch(getApiUrl('/api/taqreer/'), {
       method: 'POST',
       body: formData
     })
@@ -82,7 +83,7 @@ export default function UploadView({ user }) {
     }
     if (bookData.cover_url) formData.append('cover_url', bookData.cover_url);
 
-    fetch('/api/books/', {
+    fetch(getApiUrl('/api/books/'), {
       method: 'POST',
       body: formData
     })
@@ -101,7 +102,7 @@ export default function UploadView({ user }) {
 
   const handleHadithSubmit = (e) => {
     e.preventDefault();
-    fetch('/api/hadith/', {
+    fetch(getApiUrl('/api/hadith/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(hadithData)
@@ -131,7 +132,7 @@ export default function UploadView({ user }) {
       formData.append('audio_url', audioData.audio_url);
     }
 
-    fetch('/api/quran/', {
+    fetch(getApiUrl('/api/quran/'), {
       method: 'POST',
       body: formData
     })

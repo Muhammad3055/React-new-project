@@ -79,6 +79,32 @@ export default function BooksView({ openReportModal }) {
       });
   }, [debouncedQuery, selectedCategory, selectedFileType, page]);
 
+  // Listen for admin content updates to refresh instantly
+  useEffect(() => {
+    const handleUpdate = () => {
+      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&page=${page}`))
+        .then(res => res.json())
+        .then(data => {
+          const apiBooks = data.results || [];
+          const adminBooks = getAdminItems('books').map(item => ({
+            id: item.id,
+            title: item.title,
+            author: item.author || 'Admin Upload',
+            file_type: 'pdf',
+            pdf_url: item.fileUrl || item.pdf_url,
+            cover_url: item.cover_url || '',
+            language: item.language || 'Urdu / Brahui',
+            description: item.description || 'Uploaded by Administrator'
+          }));
+          setBooks([...adminBooks, ...apiBooks]);
+        })
+        .catch(() => {});
+    };
+
+    window.addEventListener('admin_content_updated', handleUpdate);
+    return () => window.removeEventListener('admin_content_updated', handleUpdate);
+  }, [debouncedQuery, selectedCategory, selectedFileType, page]);
+
 
   const getFormatBadge = (fileType) => {
     switch (fileType) {

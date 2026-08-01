@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function AdminUploadModal({ onClose, onSuccess }) {
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
@@ -79,9 +80,11 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
 
     // Also attempt POST to backend API
     const apiEndpoint = contentType === 'book' ? '/api/books/' : contentType === 'audio' ? '/api/taqreer/' : '/api/upload/';
-    fetch(apiEndpoint, {
+    fetch(getApiUrl(apiEndpoint), {
       method: 'POST',
       body: formData
+    }).then(res => res.json()).then(() => {
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
     }).catch(() => {});
 
     setUploading(false);
