@@ -27,8 +27,19 @@
 
       <div class="search-wrapper">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="global-search-input" class="search-input" placeholder="Search Quran, Lectures, Books..." autocomplete="off">
+        <input type="text" id="global-search-input" class="search-input" placeholder="Search Quran, Lectures, Books..." data-i18n-placeholder="search_placeholder" autocomplete="off">
         <div id="global-search-results" class="search-results-dropdown"></div>
+      </div>
+
+      <!-- Header Language Selector -->
+      <div class="header-language-selector" style="display: flex; align-items: center; gap: 0.35rem; background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(245,158,11,0.45);">
+        <span style="font-size: 0.82rem; font-weight: 700; color: var(--accent-gold);"><i class="fas fa-globe"></i></span>
+        <select id="django-site-lang-select" style="background: #022c22; color: var(--accent-gold); border: none; font-weight: 700; font-size: 0.78rem; outline: none; cursor: pointer; padding: 2px 4px; border-radius: 12px;">
+          <option value="english">🇬🇧 English</option>
+          <option value="urdu">🇵🇰 اردو</option>
+          <option value="brahui">📜 براہوئی</option>
+          <option value="arabic">🇸🇦 العربية</option>
+        </select>
       </div>
 
       <button id="mobile-toggle-btn" class="mobile-toggle-btn" onclick="document.getElementById('nav-links').classList.toggle('mobile-active')" aria-label="Toggle Navigation">
@@ -36,11 +47,11 @@
       </button>
 
       <ul class="nav-links" id="nav-links">
-        <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fas fa-home"></i> Home</a></li>
-        <li><a href="{% url 'read' %}" class="nav-link {% if request.resolver_match.url_name == 'read' or request.resolver_match.url_name == 'read_surah' %}active{% endif %}"><i class="fas fa-book-open"></i> Read Quran</a></li>
-        <li><a href="{% url 'quran' %}" class="nav-link {% if request.resolver_match.url_name == 'quran' %}active{% endif %}"><i class="fas fa-headphones"></i> Quran MP3</a></li>
-        <li><a href="{% url 'videos' %}" class="nav-link {% if request.resolver_match.url_name == 'videos' %}active{% endif %}"><i class="fas fa-play-circle"></i> Videos</a></li>
-        <li><a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fas fa-home"></i> <span data-i18n="nav_home">Home</span></a></li>
+        <li><a href="{% url 'read' %}" class="nav-link {% if request.resolver_match.url_name == 'read' or request.resolver_match.url_name == 'read_surah' %}active{% endif %}"><i class="fas fa-book-open"></i> <span data-i18n="nav_read">Read Quran</span></a></li>
+        <li><a href="{% url 'quran' %}" class="nav-link {% if request.resolver_match.url_name == 'quran' %}active{% endif %}"><i class="fas fa-headphones"></i> <span data-i18n="nav_mp3">Quran MP3</span></a></li>
+        <li><a href="{% url 'videos' %}" class="nav-link {% if request.resolver_match.url_name == 'videos' %}active{% endif %}"><i class="fas fa-play-circle"></i> <span data-i18n="nav_videos">Videos</span></a></li>
+        <li><a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"><i class="fas fa-envelope"></i> <span data-i18n="nav_contact">Contact</span></a></li>
         
         {% if user.is_authenticated %}
           <li class="nav-user-info">
@@ -192,5 +203,71 @@
   <script src="{% static 'js/main.js' %}"></script>
   <script src="{% static 'js/player.js' %}"></script>
   {% block extra_js %}{% endblock %}
+  <!-- Live Translation Engine for Django Templates -->
+  <script>
+    (function() {
+      const djangoTranslations = {
+        english: {
+          nav_home: "Home", nav_read: "Read Quran", nav_mp3: "Quran MP3", nav_videos: "Videos", nav_contact: "Contact",
+          featured_surahs: "Featured Surahs Recitations 🔊", featured_surahs_sub: "Listen to beautiful high-definition recitations from world-renowned Qaris",
+          play_audio: "Play Audio ▶", view_all_surahs: "View All 114 Surahs Recitations",
+          pdf_books_title: "PDF Books Library 📄", pdf_books_sub: "Explore and download authentic Islamic literature, Quranic commentary, and Hadith guides",
+          search_placeholder: "Search Quran, Lectures, Books...", quick_play: "Quick Play", watch_video: "Watch Video"
+        },
+        urdu: {
+          nav_home: "صفحہ اول", nav_read: "تلاوت قرآن", nav_mp3: "صوتی تلاوت", nav_videos: "ویڈیوز", nav_contact: "رابطہ کریں",
+          featured_surahs: "منتخب تلاوت قرآن 🔊", featured_surahs_sub: "عالمی شہرت یافتہ قراء کی آواز میں دلکش تلاوتیں سنیں",
+          play_audio: "تلاوت سنیں ▶", view_all_surahs: "تمام 114 سورتوں کی تلاوت دیکھیں",
+          pdf_books_title: "اسلامی کتب خانہ (PDF) 📄", pdf_books_sub: "مستند اسلامی کتب، تفاسیر اور احادیث کے مجموعے ڈاؤن لوڈ کریں",
+          search_placeholder: "قرآن، سورتیں یا کتابیں تلاش کریں...", quick_play: "جلدی سنیں", watch_video: "ویڈیو دیکھیں"
+        },
+        brahui: {
+          nav_home: "بنیادی پنہ", nav_read: "قرآن نا تلاوت", nav_mp3: "تلاوت آک", nav_videos: "ویڈیو آک", nav_contact: "رابطہ کرو",
+          featured_surahs: "گچین تلاوت قرآن 🔊", featured_surahs_sub: "موتبر قراء آتا خبوک و زیباک تلاوت آتے بن بو",
+          play_audio: "تلاوت بن بو ▶", view_all_surahs: "گرپا 114 سورة آتا تلاوت آتے ہر بو",
+          pdf_books_title: "اسلامی کتاب آک (PDF) 📄", pdf_books_sub: "مستند اسلامی کتاب، تفسیر و حدیث آتا کتاب آتے ڈاؤن لوڈ کرو",
+          search_placeholder: "قرآن، سورة یا کتاب آتا پٹ و پول...", quick_play: "زودی بن بو", watch_video: "ویڈیو ہر بو"
+        },
+        arabic: {
+          nav_home: "الصفحة الرئيسية", nav_read: "تلاوة القرآن", nav_mp3: "القرآن الصوتي", nav_videos: "المرئيات", nav_contact: "اتصل بنا",
+          featured_surahs: "التلاوات القرآنية المختارة 🔊", featured_surahs_sub: "استمع إلى أجمل التلاوات القرآنية الخاشعة بأصوات أشهر القراء",
+          play_audio: "استمع للتلاوة ▶", view_all_surahs: "عرض تلاوات جميع سور القرآن (114 سورة)",
+          pdf_books_title: "مكتبة الكتب الإسلامية (PDF) 📄", pdf_books_sub: "تصفح وتحميل أمهات الكتب الإسلامية والتفاسير وشروح الأحاديث",
+          search_placeholder: "البحث في القرآن الكريم، التلاوات، الكتب...", quick_play: "تشغيل سريع", watch_video: "مشاهدة الفيديو"
+        }
+      };
+
+      function applyLanguage(lang) {
+        const dict = djangoTranslations[lang] || djangoTranslations.english;
+        const isRtl = lang === 'urdu' || lang === 'brahui' || lang === 'arabic';
+        document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+        document.documentElement.setAttribute('lang', lang === 'arabic' ? 'ar' : lang === 'urdu' ? 'ur' : lang === 'brahui' ? 'br' : 'en');
+        
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key]) el.textContent = dict[key];
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          if (dict[key]) el.setAttribute('placeholder', dict[key]);
+        });
+
+        try { localStorage.setItem('quran_portal_site_language', lang); } catch (e) {}
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const langSelect = document.getElementById('django-site-lang-select');
+        const savedLang = localStorage.getItem('quran_portal_site_language') || 'english';
+        if (langSelect) {
+          langSelect.value = savedLang;
+          langSelect.addEventListener('change', function(e) {
+            applyLanguage(e.target.value);
+          });
+        }
+        applyLanguage(savedLang);
+      });
+    })();
+  </script>
 </body>
 </html>
