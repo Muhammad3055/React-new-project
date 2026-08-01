@@ -36,7 +36,10 @@ def root_health_view(request):
         'total_hadith': 7000
     })
 
+from django.shortcuts import render, redirect
+
 urlpatterns = [
+    path('admin', lambda req: redirect('/admin/', permanent=True)),
     path('admin/', admin.site.urls),
     path('', root_health_view, name='root_health'),
     path('', include('core.urls')),
