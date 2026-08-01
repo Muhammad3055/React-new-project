@@ -2675,6 +2675,148 @@ body.has-audio-player footer {
   }
 }
 
+/* ==========================================================================
+   UNIVERSAL RESPONSIVE VISIBILITY & ADAPTIVE STYLES (320px to 4K & All Zooms)
+   ========================================================================== */
+
+/* 1. Universal Layout & Container Safety */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  -webkit-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+img, video, iframe, canvas, svg, object {
+  max-width: 100% !important;
+  height: auto;
+}
+
+/* 2. Responsive Touch Buttons & Interactive Elements */
+button, input, select, textarea, .btn, a.btn {
+  touch-action: manipulation;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+/* 3. Universal Flex & Grid Container Safety for Small Screens */
+.container, .main-container, .hero-section, .nav-container, .footer-container {
+  width: 100% !important;
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(0.5rem, 3vw, 1.5rem) !important;
+  padding-right: clamp(0.5rem, 3vw, 1.5rem) !important;
+}
+
+/* 4. Adaptive Navbar Layout for Tablets & Mobiles */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .nav-container {
+    gap: 0.5rem !important;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-gold) !important;
+    font-size: 1.25rem !important;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    cursor: pointer;
+  }
+}
+
+/* 5. Mobile & Small Screen Optimizations (< 768px) */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: clamp(1.4rem, 5vw, 2.2rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.85rem, 3vw, 1rem) !important;
+  }
+
+  /* Grid Layout Auto-Adjustment */
+  .grid-container, .books-grid, .audios-grid, .cards-grid, .qaris-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Button Flex wrap safety */
+  .btn-group, .actions-bar, .filter-bar, .modal-actions {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .btn-group > *, .actions-bar > * {
+    flex: 1 1 auto;
+    min-width: 100px;
+  }
+
+  /* Footer Responsive Stack */
+  .footer-content, .footer-links-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  .footer-bottom {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* 6. Ultra-Small Devices & High-Zoom Support (< 480px) */
+@media (max-width: 480px) {
+  .brand-logo span {
+    font-size: 0.95rem !important;
+  }
+
+  .brand-logo i {
+    font-size: 1.1rem !important;
+  }
+
+  .header-language-selector, .header-theme-selector {
+    padding: 2px 6px !important;
+  }
+
+  .header-language-selector select, .header-theme-selector select {
+    font-size: 0.72rem !important;
+  }
+
+  .grid-container, .books-grid, .audios-grid, .cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fixed Bottom Audio Player Safety */
+  .floating-audio-bar, .persistent-player {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+
 
 
 
