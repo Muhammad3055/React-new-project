@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function AuthModal({ initialMode, onClose, setUser }) {
   const [mode, setMode] = useState(initialMode || 'login'); // 'login' | 'signup' | 'forgot_password'
@@ -49,7 +50,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
       setSubmitting(true);
 
-      fetch('/api/auth/login/', {
+      fetch(getApiUrl('/api/auth/login/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim(), password: password.trim() })
@@ -98,7 +99,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
       setSubmitting(true);
 
-      fetch('/api/auth/send-otp/', {
+      fetch(getApiUrl('/api/auth/send-otp/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'forgot_password', email: targetInput, username: targetInput })
@@ -133,7 +134,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
       setSubmitting(true);
 
-      fetch('/api/auth/send-otp/', {
+      fetch(getApiUrl('/api/auth/send-otp/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'signup', username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
@@ -196,7 +197,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     }
 
     setSubmitting(true);
-    fetch('/api/auth/social/', {
+    fetch(getApiUrl('/api/auth/social/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider: socialProvider, email: targetEmail })
@@ -239,7 +240,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     setSubmitting(true);
     setError('');
 
-    fetch('/api/auth/verify-otp/', {
+    fetch(getApiUrl('/api/auth/verify-otp/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: otpCode.trim(), new_password: newPassword.trim() })

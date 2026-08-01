@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function UserDashboardView({ user, openAuthModal, navigateToTab, playTrack }) {
   const [dashboardData, setDashboardData] = useState(null);
@@ -15,7 +16,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
     }
 
     // Fetch user dashboard data
-    fetch('/api/user/dashboard/')
+    fetch(getApiUrl('/api/user/dashboard/'))
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -43,21 +44,21 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
 
   const handleToggleNamaz = (prayer) => {
     if (!user) return;
-    fetch('/api/user/namaz/toggle/', {
+    fetch(getApiUrl('/api/user/namaz/toggle/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prayer })
     })
       .then(res => res.json())
       .then(() => {
-        fetch('/api/user/dashboard/')
+        fetch(getApiUrl('/api/user/dashboard/'))
           .then(res => res.json())
           .then(data => setDashboardData(data));
       });
   };
 
   const handleSavePreferences = (newPrefs) => {
-    fetch('/api/user/preferences/update/', {
+    fetch(getApiUrl('/api/user/preferences/update/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...dashboardData?.preferences, ...newPrefs })
@@ -65,7 +66,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       .then(res => res.json())
       .then(data => {
         alert(data.message || 'Preferences updated!');
-        fetch('/api/user/dashboard/')
+        fetch(getApiUrl('/api/user/dashboard/'))
           .then(res => res.json())
           .then(d => setDashboardData(d));
       });

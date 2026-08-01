@@ -26,6 +26,8 @@ import KhatamTrackerView from './views/KhatamTrackerView';
 
 import UserDashboardView from './views/UserDashboardView';
 
+import { getApiUrl } from './utils/apiCache';
+
 export default function App() {
   const tabPathMap = {
     home: '/',
@@ -99,7 +101,7 @@ export default function App() {
 
   // Check auth status on mount
   useEffect(() => {
-    fetch('/api/auth/status/', { cache: 'no-store', headers: { 'Pragma': 'no-cache' } })
+    fetch(getApiUrl('/api/auth/status/'), { cache: 'no-store', headers: { 'Pragma': 'no-cache' } })
       .then(res => res.json())
       .then(data => {
         if (data && data.is_authenticated) {

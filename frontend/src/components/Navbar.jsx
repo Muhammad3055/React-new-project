@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal }) {
   const { language, setLanguage, t } = useLanguage();
@@ -47,7 +48,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   useEffect(() => {
     if (searchQuery.trim().length >= 2) {
-      fetch(`/api/search/?q=${encodeURIComponent(searchQuery)}`)
+      fetch(getApiUrl(`/api/search/?q=${encodeURIComponent(searchQuery)}`))
         .then(res => res.json())
         .then(data => {
           setSearchResults(data.results || []);
@@ -87,7 +88,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     localStorage.removeItem('quran_portal_user');
     sessionStorage.clear();
     setUser(null);
-    fetch('/api/auth/logout/', { method: 'POST', cache: 'no-store' })
+    fetch(getApiUrl('/api/auth/logout/'), { method: 'POST', cache: 'no-store' })
       .then(() => {
         window.location.reload();
       })
