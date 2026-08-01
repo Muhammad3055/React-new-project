@@ -38,6 +38,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+try:
+    import whitenoise  # pyrefly: ignore [unused-import]
+    MIDDLEWARE.insert(3, 'whitenoise.middleware.WhiteNoiseMiddleware')
+except ImportError:
+    pass
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
