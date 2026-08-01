@@ -88,12 +88,17 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     localStorage.removeItem('quran_portal_user');
     sessionStorage.clear();
     setUser(null);
+    if (navigateToTab) navigateToTab('home');
     fetch(getApiUrl('/api/auth/logout/'), { method: 'POST', cache: 'no-store' })
       .then(() => {
-        window.location.reload();
+        if (window.location.pathname !== '/') {
+          window.location.href = '/';
+        } else {
+          window.location.reload();
+        }
       })
       .catch(() => {
-        window.location.reload();
+        window.location.href = '/';
       });
   };
 
