@@ -672,16 +672,35 @@ def api_send_otp(request):
             except User.DoesNotExist:
                 target_user = None
         if target_user is None:
-            return JsonResponse({'error': 'Invalid credentials. Please check your username/email and password.'}, status=400)
+            # Check if user even exists in DB
+            user_exists = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).exists()
+            if not user_exists:
+                return JsonResponse({
+                    'error': 'No registered account found with this email/username. Please create a new account.',
+                    'no_account': True
+                }, status=400)
+            return JsonResponse({'error': 'Invalid password. Please check your password or reset it.'}, status=400)
         target_email = target_user.email or (username if '@' in username else f"{username}@gmail.com")
+
+    elif auth_type == 'forgot_password':
+        target_input = (email or username).strip()
+        if not target_input:
+            return JsonResponse({'error': 'Please enter your registered Email or Username.'}, status=400)
+        target_user = User.objects.filter(Q(username__iexact=target_input) | Q(email__iexact=target_input)).first()
+        if not target_user:
+            return JsonResponse({
+                'error': 'No registered account found with this email or username. Please create a new account.',
+                'no_account': True
+            }, status=400)
+        target_email = target_user.email or f"{target_user.username}@gmail.com"
 
     elif auth_type == 'signup':
         if not username or not password:
             return JsonResponse({'error': 'Username and Password are required.'}, status=400)
         if User.objects.filter(username__iexact=username).exists():
-            return JsonResponse({'error': 'This username is already taken. Please choose another.'}, status=400)
+            return JsonResponse({'error': 'This username is already taken. Please choose another or log in.'}, status=400)
         if email and User.objects.filter(email__iexact=email).exists():
-            return JsonResponse({'error': 'An account with this email address already exists.'}, status=400)
+            return JsonResponse({'error': 'An account with this email address already exists. Please log in.'}, status=400)
         target_email = email or f"{username}@gmail.com"
 
     elif auth_type == 'social':
@@ -722,7 +741,7 @@ def api_send_otp(request):
         f"Assalamu Alaikum,\n\n"
         f"Your 6-digit security verification code for Quran Portal is:\n\n"
         f"  ===>  {otp_code}  <===\n\n"
-        f"Please enter this 6-digit code on the website to complete your sign-in.\n\n"
+        f"Please enter this 6-digit code on the website to complete your sign-in or password reset.\n\n"
         f"If you did not request this code, please ignore this email.\n\n"
         f"BarakAllahu Feek,\n"
         f"Quran Portal Team"
@@ -741,6 +760,7 @@ def api_send_otp(request):
     return JsonResponse({
         'status': 'otp_sent',
         'email': target_email,
+        'type': auth_type,
         'message': f'A 6-digit security verification code has been sent to {target_email}.'
     })
 
@@ -752,6 +772,7 @@ def api_verify_otp(request):
     try:
         body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
         input_code = body.get('code', '').strip()
+        new_password = body.get('new_password', '').strip()
     except Exception:
         return JsonResponse({'error': 'Invalid request data'}, status=400)
 
@@ -774,6 +795,22 @@ def api_verify_otp(request):
                 pass
         if not target_user:
             target_user = authenticate(username=pending.get('username'), password=pending.get('password'))
+
+    elif auth_type == 'forgot_password':
+        user_id = pending.get('user_id')
+        if user_id:
+            try:
+                target_user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                pass
+        if not target_user and pending.get('email'):
+            target_user = User.objects.filter(email__iexact=pending.get('email')).first()
+        
+        if target_user:
+            if not new_password:
+                return JsonResponse({'error': 'New password is required.'}, status=400)
+            target_user.set_password(new_password)
+            target_user.save()
 
     elif auth_type == 'signup':
         username = pending.get('username')

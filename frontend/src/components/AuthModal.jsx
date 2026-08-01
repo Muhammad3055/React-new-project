@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 export default function AuthModal({ initialMode, onClose, setUser }) {
-  const [mode, setMode] = useState(initialMode || 'login'); // 'login' | 'signup'
+  const [mode, setMode] = useState(initialMode || 'login'); // 'login' | 'signup' | 'forgot_password'
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [noAccountError, setNoAccountError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Social Auth State ('google' | 'microsoft')
@@ -36,9 +38,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     setError('');
+    setNoAccountError(false);
 
     if (mode === 'login') {
-      // ===== RETURNING USER LOGIN (Direct Email/Username + Password) =====
+      // ===== RETURNING USER LOGIN =====
       if (!username.trim() || !password.trim()) {
         setError('Please enter your Username / Email and Password.');
         return;
@@ -46,7 +49,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
       setSubmitting(true);
 
-      // Attempt live Django backend login
       fetch('/api/auth/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -62,10 +64,12 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             onClose();
           } else {
             setError(data.error || 'Invalid credentials. Please check your username/email and password.');
+            if (data.no_account) {
+              setNoAccountError(true);
+            }
           }
         })
         .catch(() => {
-          // Fallback auth for Netlify deployment (when backend server is un-proxied or offline)
           setSubmitting(false);
           const savedUsers = JSON.parse(localStorage.getItem('quran_portal_registered_users') || '[]');
           const inputClean = username.trim().toLowerCase();
@@ -78,23 +82,50 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
             setUser(userObj);
             onClose();
-          } else if (password.trim().length >= 3) {
-            // Instant sign in fallback on Netlify
-            const userObj = {
-              username: username.trim(),
-              email: inputClean.includes('@') ? inputClean : `${username.trim()}@gmail.com`,
-              is_staff: false
-            };
-            localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
-            setUser(userObj);
-            onClose();
           } else {
-            setError('Invalid credentials. Please check your email/username and password.');
+            setError('No account found with these credentials. Please check your details or create a new account.');
+            setNoAccountError(true);
           }
         });
 
+    } else if (mode === 'forgot_password') {
+      // ===== FORGOT PASSWORD (Request 6-Digit Email Code) =====
+      const targetInput = (email || username).trim();
+      if (!targetInput) {
+        setError('Please enter your registered Email or Username.');
+        return;
+      }
+
+      setSubmitting(true);
+
+      fetch('/api/auth/send-otp/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'forgot_password', email: targetInput, username: targetInput })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setSubmitting(false);
+          if (data.status === 'otp_sent') {
+            setPendingEmail(data.email || targetInput);
+            setStep('otp');
+            setOtpCode('');
+          } else {
+            setError(data.error || 'Account not found. Please create a new account.');
+            if (data.no_account) setNoAccountError(true);
+          }
+        })
+        .catch(() => {
+          setSubmitting(false);
+          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+          setPendingEmail(targetInput.includes('@') ? targetInput : `${targetInput}@gmail.com`);
+          setStep('otp');
+          setOtpCode(generatedOtp);
+          setPendingDemoUser({ username: targetInput, email: targetInput, code: generatedOtp });
+        });
+
     } else {
-      // ===== NEW USER SIGN UP (Request 6-Digit Email Code) =====
+      // ===== NEW USER SIGN UP =====
       if (!username.trim() || !email.trim() || !password.trim()) {
         setError('Please fill in all required fields (Username, Email, Password).');
         return;
@@ -119,12 +150,11 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           }
         })
         .catch(() => {
-          // Fallback for Netlify deployment: Generate 6-digit OTP verification code
           setSubmitting(false);
           const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           setPendingEmail(email.trim());
           setStep('otp');
-          setOtpCode(generatedOtp); // Auto-fill 6-digit code for instant verification on Netlify
+          setOtpCode(generatedOtp);
           setPendingDemoUser({ username: username.trim(), email: email.trim(), password: password.trim(), code: generatedOtp });
         });
     }
@@ -194,11 +224,15 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       });
   };
 
-  // Submit 6-digit verification code for new user activation
+  // Submit 6-digit verification code for new user activation or password reset
   const handleVerifyOtp = (e) => {
     e.preventDefault();
     if (!otpCode || otpCode.trim().length !== 6) {
       setError('Please enter the complete 6-digit security code.');
+      return;
+    }
+    if (mode === 'forgot_password' && !newPassword.trim()) {
+      setError('Please enter your new password.');
       return;
     }
 
@@ -208,7 +242,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     fetch('/api/auth/verify-otp/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: otpCode.trim() })
+      body: JSON.stringify({ code: otpCode.trim(), new_password: newPassword.trim() })
     })
       .then(res => res.json())
       .then(data => {
@@ -223,7 +257,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         }
       })
       .catch(() => {
-        // Netlify deployment fallback: complete verification & save user session
         setSubmitting(false);
         const userObj = {
           username: pendingDemoUser?.username || username.trim() || 'User',
@@ -233,7 +266,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
         const savedUsers = JSON.parse(localStorage.getItem('quran_portal_registered_users') || '[]');
         if (!savedUsers.some(u => u.email === userObj.email)) {
-          savedUsers.push({ ...userObj, password: password.trim() });
+          savedUsers.push({ ...userObj, password: password.trim() || newPassword.trim() });
           localStorage.setItem('quran_portal_registered_users', JSON.stringify(savedUsers));
         }
         localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
@@ -333,6 +366,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 </span>
               </div>
 
+              {/* Step 2 Form (OTP Entry) */}
               <form onSubmit={handleVerifyOtp}>
                 <div className="form-group" style={{ textAlign: 'center' }}>
                   <label className="form-label">Enter 6-Digit Security Code *</label>
@@ -357,6 +391,20 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   />
                 </div>
 
+                {mode === 'forgot_password' && (
+                  <div className="form-group" style={{ marginTop: '1rem' }}>
+                    <label className="form-label">Set New Password *</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      placeholder="Enter your new password..."
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
                 {error && (
                   <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
                     <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
@@ -366,10 +414,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="submit"
                   className="btn-submit"
-                  disabled={submitting || otpCode.length !== 6}
+                  disabled={submitting || otpCode.length !== 6 || (mode === 'forgot_password' && !newPassword)}
                   style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', marginBottom: '0.75rem' }}
                 >
-                  {submitting ? 'Verifying Code...' : 'Verify Code & Complete Sign-In'}
+                  {submitting ? 'Verifying Code...' : (mode === 'forgot_password' ? 'Reset Password & Log In' : 'Verify Code & Complete Sign-In')}
                 </button>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
@@ -382,7 +430,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleRequestOtp(mode === 'login' ? { type: 'login', username, password } : { type: 'signup', username, email, password })}
+                    onClick={() => { setStep('input'); setError(''); }}
                     style={{ background: 'transparent', border: 'none', color: 'var(--primary-light)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 700 }}
                   >
                     <i className="fas fa-sync-alt"></i> Resend Code
@@ -460,63 +508,126 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           ) : (
             /* ===== STEP 1: MAIN USERNAME / PASSWORD FORM ===== */
             <form onSubmit={handleFormSubmit}>
-              <div className="form-group">
-                <label className="form-label">{mode === 'login' ? 'Username or Email' : 'Username'}</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder={mode === 'login' ? 'Enter username or email...' : 'Choose a unique username...'}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
+              {mode === 'forgot_password' ? (
+                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)' }}>Reset Your Password</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Enter your registered Username or Email address to receive a 6-digit verification code in Gmail.</p>
+                </div>
+              ) : null}
 
-              {mode === 'signup' && (
+              {(mode === 'login' || mode === 'forgot_password') && (
                 <div className="form-group">
-                  <label className="form-label">Email Address (for Verification Code)</label>
+                  <label className="form-label">{mode === 'forgot_password' ? 'Registered Email or Username' : 'Username or Email'}</label>
                   <input
-                    type="email"
+                    type="text"
                     className="form-input"
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter registered username or email..."
+                    value={username}
+                    onChange={(e) => { setUsername(e.target.value); setEmail(e.target.value); }}
                     required
+                    autoFocus
                   />
                 </div>
               )}
 
-              <div className="form-group" style={{ position: 'relative' }}>
-                <label className="form-label">Password</label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className="form-input"
-                    placeholder="Enter password..."
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    style={{ paddingRight: '2.5rem' }}
-                  />
-                  <i
-                    className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: '0.85rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: 'var(--text-muted)',
-                      cursor: 'pointer',
-                      fontSize: '0.9rem'
-                    }}
-                  ></i>
+              {mode === 'signup' && (
+                <>
+                  <div className="form-group">
+                    <label className="form-label">Choose Username *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Choose a unique username..."
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email Address (for Verification Code) *</label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </>
+              )}
+
+              {mode !== 'forgot_password' && (
+                <div className="form-group" style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <label className="form-label" style={{ margin: 0 }}>Password *</label>
+                    {mode === 'login' && (
+                      <button
+                        type="button"
+                        onClick={() => { setMode('forgot_password'); setError(''); setNoAccountError(false); }}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--primary-light)', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Forgot Password?
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className="form-input"
+                      placeholder="Enter password..."
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <i
+                      className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.85rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: 'var(--text-muted)',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem'
+                      }}
+                    ></i>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {error && (
-                <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                  <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
+                <div style={{ padding: '0.85rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <div style={{ fontWeight: 700, marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <i className="fas fa-exclamation-triangle"></i> Authentication Alert
+                  </div>
+                  {error}
+                  {noAccountError && (
+                    <button
+                      type="button"
+                      onClick={() => { setMode('signup'); setError(''); setNoAccountError(false); }}
+                      style={{
+                        marginTop: '0.65rem',
+                        width: '100%',
+                        padding: '0.45rem 0.75rem',
+                        borderRadius: '8px',
+                        background: 'var(--accent-gold)',
+                        color: 'var(--primary-dark)',
+                        border: 'none',
+                        fontWeight: 800,
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem'
+                      }}
+                    >
+                      <i className="fas fa-user-plus"></i> Create New Account Now
+                    </button>
+                  )}
                 </div>
               )}
 
