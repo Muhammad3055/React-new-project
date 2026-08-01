@@ -120,9 +120,9 @@ export default function BooksView({ openReportModal }) {
     }
   };
 
-  const isLocalUrl = (url) => {
-    if (!url) return true;
-    return url.includes('127.0.0.1') || url.includes('localhost') || url.startsWith('/') || !url.startsWith('http');
+  const getDocRawUrl = (doc) => {
+    if (!doc) return '';
+    return doc.document_url || doc.pdf_url || doc.fileUrl || doc.file_url || '';
   };
 
   const getCleanDocumentUrl = (url) => {
@@ -131,7 +131,7 @@ export default function BooksView({ openReportModal }) {
     clean = clean.replace(/^https?:\/\/(127\.0\.0\.1|localhost):8000\/media\//, '/media/');
     clean = clean.replace(/^https?:\/\/(127\.0\.0\.1|localhost):3000\/media\//, '/media/');
     if (clean.startsWith('/')) {
-      return `${window.location.origin}${clean}`;
+      return getApiUrl(clean);
     }
     return clean;
   };
@@ -139,14 +139,15 @@ export default function BooksView({ openReportModal }) {
   const isPdfFormat = (doc) => {
     if (!doc) return false;
     if (doc.file_type === 'pdf' || doc.file_type === 'book') return true;
-    const url = (doc.document_url || '').toLowerCase();
+    const url = getDocRawUrl(doc).toLowerCase();
     return url.endsWith('.pdf') || url.includes('.pdf');
   };
 
   const getEmbedViewerUrl = (doc) => {
-    if (!doc || !doc.document_url) return '';
+    const rawUrl = getDocRawUrl(doc);
+    if (!rawUrl) return '';
     
-    const fullUrl = getCleanDocumentUrl(doc.document_url);
+    const fullUrl = getCleanDocumentUrl(rawUrl);
 
     // For PDFs or Direct mode: browser native PDF renderer handles fullUrl directly
     if (isPdfFormat(doc) || viewerEngine === 'direct') {
@@ -168,11 +169,11 @@ export default function BooksView({ openReportModal }) {
   const handleOpenDocModal = (doc) => {
     setPreviewDoc(doc);
     setIsFullscreen(false);
-    // If PDF, use native direct viewer engine; if office doc, default to direct/office engine
+    const rawUrl = getDocRawUrl(doc);
     if (isPdfFormat(doc)) {
       setViewerEngine('direct');
     } else {
-      setViewerEngine(isLocalUrl(doc.document_url) ? 'direct' : 'office');
+      setViewerEngine(isLocalUrl(rawUrl) ? 'direct' : 'office');
     }
   };
 
@@ -599,53 +600,26 @@ export default function BooksView({ openReportModal }) {
                 <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Viewer Engine:</span>
                 <button
                   onClick={() => setViewerEngine('direct')}
-                  style={{
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    border: viewerEngine === 'direct' ? '1px solid #d97706' : '1px solid #cbd5e1',
-                    background: viewerEngine === 'direct' ? '#fffbeb' : '#ffffff',
-                    color: viewerEngine === 'direct' ? '#d97706' : '#475569',
-                    cursor: 'pointer'
-                  }}
+                  style={{ padding: '3px 10px', borderRadius: '12px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
                 >
-                  {isPdfFormat(previewDoc) ? 'Native PDF Reader' : 'Direct Embed'}
-                </button>
-                <button
-                  onClick={() => setViewerEngine('office')}
-                  style={{
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    border: viewerEngine === 'office' ? '1px solid #2563eb' : '1px solid #cbd5e1',
-                    background: viewerEngine === 'office' ? '#eff6ff' : '#ffffff',
-                    color: viewerEngine === 'office' ? '#2563eb' : '#475569',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Microsoft Office
+                  Native Reader
                 </button>
                 <button
                   onClick={() => setViewerEngine('google')}
-                  style={{
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    border: viewerEngine === 'google' ? '1px solid #16a34a' : '1px solid #cbd5e1',
-                    background: viewerEngine === 'google' ? '#f0fdf4' : '#ffffff',
-                    color: viewerEngine === 'google' ? '#16a34a' : '#475569',
-                    cursor: 'pointer'
-                  }}
+                  style={{ padding: '3px 10px', borderRadius: '12px', border: 'none', background: viewerEngine === 'google' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'google' ? '#fff' : '#475569', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
                 >
-                  Google Docs
+                  Google Viewer
+                </button>
+                <button
+                  onClick={() => setViewerEngine('office')}
+                  style={{ padding: '3px 10px', borderRadius: '12px', border: 'none', background: viewerEngine === 'office' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'office' ? '#fff' : '#475569', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Office Viewer
                 </button>
               </div>
 
               <a
-                href={previewDoc.document_url}
+                href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                 target="_blank"
                 rel="noreferrer"
                 style={{ fontSize: '0.8rem', color: 'var(--primary-dark)', fontWeight: 700, textDecoration: 'none' }}
@@ -656,7 +630,7 @@ export default function BooksView({ openReportModal }) {
 
             {/* Modal Reader Frame Area */}
             <div style={{ flex: 1, background: '#f1f5f9', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              {isLocalUrl(previewDoc.document_url) && viewerEngine !== 'direct' && (
+              {isLocalUrl(getDocRawUrl(previewDoc)) && viewerEngine !== 'direct' && (
                 <div style={{ background: '#fef3c7', color: '#92400e', borderBottom: '1px solid #fde68a', padding: '0.5rem 1.5rem', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span>
                     <i className="fas fa-info-circle" style={{ marginRight: '0.4rem' }}></i>
@@ -702,10 +676,10 @@ export default function BooksView({ openReportModal }) {
                           Click below to view this PDF directly in your browser or save it to your computer.
                         </p>
                         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-                          <a href={getCleanDocumentUrl(previewDoc.document_url)} target="_blank" rel="noreferrer" className="btn-play">
+                          <a href={getCleanDocumentUrl(getDocRawUrl(previewDoc))} target="_blank" rel="noreferrer" className="btn-play">
                             <i className="fas fa-external-link-alt"></i> Open PDF in Browser
                           </a>
-                          <a href={getCleanDocumentUrl(previewDoc.document_url)} download target="_blank" rel="noreferrer" className="btn-play" style={{ background: '#059669', borderColor: '#059669', color: '#fff' }}>
+                          <a href={getCleanDocumentUrl(getDocRawUrl(previewDoc))} download target="_blank" rel="noreferrer" className="btn-play" style={{ background: '#059669', borderColor: '#059669', color: '#fff' }}>
                             <i className="fas fa-download"></i> Save PDF
                           </a>
                         </div>
@@ -727,7 +701,7 @@ export default function BooksView({ openReportModal }) {
 
                     <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                       <a
-                        href={getCleanDocumentUrl(previewDoc.document_url)}
+                        href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                         target="_blank"
                         rel="noreferrer"
                         className="btn-play"
@@ -736,7 +710,7 @@ export default function BooksView({ openReportModal }) {
                         <i className="fas fa-external-link-alt"></i> Open Document in Browser
                       </a>
                       <a
-                        href={getCleanDocumentUrl(previewDoc.document_url)}
+                        href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                         download
                         target="_blank"
                         rel="noreferrer"
