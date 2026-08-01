@@ -27,14 +27,17 @@ export default function AdminFloatingBar({ user, navigateToTab }) {
           borderRadius: '30px',
           padding: '6px 14px',
           color: '#fff',
+          backdropFilter: 'blur(12px)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
+        <div className="admin-badge-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
           <i className="fas fa-shield-alt"></i>
-          <span>ADMIN</span>
+          <span className="admin-text-label">ADMIN STUDIO</span>
         </div>
 
         <button
+          className="admin-add-content-btn"
           onClick={() => setShowModal(true)}
           style={{
             background: 'var(--accent-gold)',
@@ -48,31 +51,35 @@ export default function AdminFloatingBar({ user, navigateToTab }) {
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
-            transition: 'transform 0.2s ease',
+            transition: 'all 0.2s ease',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
           }}
           title="Admin Upload & Add Content Studio"
         >
           <i className="fas fa-plus-circle"></i>
-          <span>+ Add Content / Books / Audio</span>
+          <span className="admin-btn-text">+ Add Content / Document / MP3</span>
         </button>
 
         <button
+          className="admin-portal-page-btn"
           onClick={() => navigateToTab && navigateToTab('upload')}
           style={{
-            background: 'rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.15)',
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.2)',
+            border: '1px solid rgba(255,255,255,0.3)',
             borderRadius: '50%',
-            width: '32px',
-            height: '32px',
+            width: '34px',
+            height: '34px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
+            transition: 'all 0.2s ease'
           }}
           title="Open Full Admin Portal Page"
         >
-          <i className="fas fa-sliders-h" style={{ fontSize: '0.85rem' }}></i>
+          <i className="fas fa-sliders-h" style={{ fontSize: '0.88rem' }}></i>
         </button>
       </div>
 
