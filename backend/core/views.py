@@ -750,7 +750,7 @@ def api_send_otp(request):
         send_mail(
             subject=subject,
             message=message,
-            from_email=None,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
             recipient_list=[target_email],
             fail_silently=True
         )
