@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithCache, getApiUrl } from '../utils/apiCache';
 import { getAdminItems } from '../utils/adminContentStore';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function BooksView({ openReportModal }) {
+  const { t } = useLanguage();
   const [books, setBooks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [query, setQuery] = useState('');
