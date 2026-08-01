@@ -101,7 +101,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
-    { id: 'about', label: t('aboutUs'), icon: 'fas fa-info-circle' },
   ];
 
   return (
