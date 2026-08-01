@@ -863,42 +863,88 @@ def api_global_search(request):
     results = []
 
     if len(q) >= 2:
+        # 1. Quran Audio Recitations
         audios = QuranAudio.objects.filter(
-            Q(surah_name_english__icontains=q) | Q(surah_name_arabic__icontains=q)
+            Q(surah_name_english__icontains=q) | Q(surah_name_arabic__icontains=q) | Q(reciter__icontains=q)
         )[:3]
         for item in audios:
             results.append({
-                'title': f"Quran: Surah {item.surah_name_english} ({item.surah_name_arabic})",
-                'type': 'Audio',
+                'title': f"Surah {item.surah_name_english} ({item.surah_name_arabic})",
+                'subtitle': f"Reciter: {item.reciter}",
+                'type': 'Quran Audio',
+                'badge_icon': 'fas fa-headphones',
                 'tab': 'quran',
                 'query': item.surah_name_english
             })
 
-        videos = VideoMedia.objects.filter(title__icontains=q)[:3]
-        for item in videos:
+        # 2. Taqreer & Voice Lectures
+        taqreers = TaqreerAudio.objects.filter(
+            Q(title__icontains=q) | Q(speaker__icontains=q) | Q(description__icontains=q)
+        )[:3]
+        for item in taqreers:
             results.append({
-                'title': f"Video: {item.title}",
-                'type': 'Video',
-                'tab': 'videos',
+                'title': item.title,
+                'subtitle': f"Speaker: {item.speaker}",
+                'type': 'Taqreer MP3',
+                'badge_icon': 'fas fa-microphone-alt',
+                'tab': 'quran',
                 'query': item.title
             })
 
-        books = BookMedia.objects.filter(title__icontains=q)[:3]
+        # 3. PDF Books & Islamic Library
+        books = BookMedia.objects.filter(
+            Q(title__icontains=q) | Q(author__icontains=q) | Q(description__icontains=q)
+        )[:3]
         for item in books:
             results.append({
-                'title': f"Book: {item.title}",
-                'type': 'Book',
+                'title': item.title,
+                'subtitle': f"Author: {item.author} • {item.file_type.upper()}",
+                'type': 'Book PDF',
+                'badge_icon': 'fas fa-book',
                 'tab': 'books',
                 'query': item.title
             })
 
-        hadiths = Hadith.objects.filter(Q(translation__icontains=q) | Q(chapter__icontains=q))[:3]
+        # 4. Hadith Collections
+        hadiths = Hadith.objects.filter(
+            Q(translation__icontains=q) | Q(chapter__icontains=q) | Q(book_name__icontains=q) | Q(narrated_by__icontains=q)
+        )[:3]
         for item in hadiths:
             results.append({
-                'title': f"Hadith: {item.book_name} #{item.hadith_number}",
+                'title': f"{item.book_name} #{item.hadith_number}",
+                'subtitle': item.chapter or item.translation[:60],
                 'type': 'Hadith',
+                'badge_icon': 'fas fa-scroll',
                 'tab': 'hadith',
                 'query': q
+            })
+
+        # 5. Tafseer Commentary
+        tafseers = Tafseer.objects.filter(
+            Q(tafseer_text__icontains=q)
+        )[:3]
+        for item in tafseers:
+            results.append({
+                'title': f"Tafseer: Surah {item.surah_number}:{item.ayah_number}",
+                'subtitle': item.tafseer_text[:60],
+                'type': 'Tafseer',
+                'badge_icon': 'fas fa-book-open',
+                'tab': 'tafseer',
+                'query': f"{item.surah_number}"
+            })
+
+        # 6. Video Media
+        videos = VideoMedia.objects.filter(
+            Q(title__icontains=q) | Q(speaker__icontains=q) | Q(description__icontains=q)
+        )[:3]
+        for item in videos:
+            results.append({
+                'title': item.title,
+                'subtitle': f"Speaker: {item.speaker}",
+                'type': 'Video Lecture',
+                'badge_icon': 'fas fa-play-circle',
+                'tab': 'videos',
+                'query': item.title
             })
 
     return JsonResponse({'results': results})

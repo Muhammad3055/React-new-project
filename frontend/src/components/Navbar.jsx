@@ -154,11 +154,27 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
               />
               {showDropdown && searchResults.length > 0 && (
-                <div className="search-results-dropdown">
+                <div className="search-results-dropdown" style={{ minWidth: '280px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid var(--accent-gold)' }}>
                   {searchResults.map((item, idx) => (
-                    <div key={idx} className="search-item" onClick={() => handleResultClick(item)}>
-                      <span>{item.title}</span>
-                      <span className="search-item-type">{item.type}</span>
+                    <div
+                      key={idx}
+                      className="search-item"
+                      onClick={() => handleResultClick(item)}
+                      style={{ padding: '0.6rem 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}
+                    >
+                      <div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <i className={item.badge_icon || 'fas fa-search'}></i> {item.title}
+                        </div>
+                        {item.subtitle && (
+                          <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                            {item.subtitle}
+                          </div>
+                        )}
+                      </div>
+                      <span className="search-item-type" style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: '8px', background: 'rgba(245,158,11,0.2)', color: 'var(--accent-gold)', fontWeight: 800 }}>
+                        {item.type}
+                      </span>
                     </div>
                   ))}
                 </div>
