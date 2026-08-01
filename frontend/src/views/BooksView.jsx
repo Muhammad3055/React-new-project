@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchWithCache } from '../utils/apiCache';
+import { fetchWithCache, getApiUrl } from '../utils/apiCache';
 import { getAdminItems } from '../utils/adminContentStore';
 
 export default function BooksView({ openReportModal }) {
