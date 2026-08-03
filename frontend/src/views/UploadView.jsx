@@ -101,9 +101,9 @@ export default function UploadView({ user }) {
 
   const handleBookSubmit = (e) => {
     e.preventDefault();
-    const finalDocUrl = bookFile ? URL.createObjectURL(bookFile) : bookData.pdf_url;
+    const tempDocUrl = bookFile ? URL.createObjectURL(bookFile) : bookData.pdf_url;
 
-    addAdminItem({
+    const newItem = {
       title: bookData.title,
       author: bookData.author,
       destination: 'books',
@@ -112,11 +112,11 @@ export default function UploadView({ user }) {
       pages_count: Number(bookData.pages_count) || 100,
       language: bookData.language,
       description: bookData.description,
-      fileUrl: finalDocUrl,
-      pdf_url: finalDocUrl,
+      fileUrl: tempDocUrl,
+      pdf_url: tempDocUrl,
       cover_url: bookData.cover_url,
       addedByAdmin: true
-    });
+    };
 
     const formData = new FormData();
     formData.append('title', bookData.title);
@@ -138,7 +138,13 @@ export default function UploadView({ user }) {
       body: formData
     })
       .then(res => res.json())
-      .then(() => {
+      .then((data) => {
+        if (data && data.document_url) {
+          newItem.fileUrl = data.document_url;
+          newItem.pdf_url = data.document_url;
+          if (data.id) newItem.id = data.id;
+        }
+        addAdminItem(newItem);
         setSubmittedMessage('Book document uploaded successfully & saved to Django database!');
         setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
         setBookFile(null);
@@ -146,6 +152,7 @@ export default function UploadView({ user }) {
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
+        addAdminItem(newItem);
         setSubmittedMessage('Book saved!');
         window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);

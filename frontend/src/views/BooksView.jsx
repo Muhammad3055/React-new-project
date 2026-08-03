@@ -55,13 +55,15 @@ export default function BooksView({ openReportModal, user }) {
           id: item.id,
           title: item.title,
           author: item.author || 'Admin Upload',
-          file_type: 'pdf',
-          pdf_url: item.fileUrl || item.pdf_url,
+          file_type: item.file_type || 'pdf',
+          pdf_url: item.fileUrl || item.pdf_url || item.document_url,
           cover_url: item.cover_url || '',
           language: item.language || 'Urdu / Brahui',
           description: item.description || 'Uploaded by Administrator'
         }));
-        setBooks(filterOutDeleted([...adminBooks, ...apiBooks]));
+        // Deduplicate local admin items if Django API already contains the item
+        const uniqueAdminBooks = adminBooks.filter(ab => !apiBooks.some(db => (db.title || '').toLowerCase().trim() === (ab.title || '').toLowerCase().trim() || String(db.id) === String(ab.id)));
+        setBooks(filterOutDeleted([...uniqueAdminBooks, ...apiBooks]));
         setTotalPages(data.total_pages || 1);
         setLoading(false);
       })
@@ -70,7 +72,7 @@ export default function BooksView({ openReportModal, user }) {
           id: item.id,
           title: item.title,
           author: item.author || 'Admin Upload',
-          file_type: 'pdf',
+          file_type: item.file_type || 'pdf',
           pdf_url: item.fileUrl || item.pdf_url,
           cover_url: item.cover_url || '',
           language: item.language || 'Urdu / Brahui',
@@ -92,20 +94,21 @@ export default function BooksView({ openReportModal, user }) {
             id: item.id,
             title: item.title,
             author: item.author || 'Admin Upload',
-            file_type: 'pdf',
-            pdf_url: item.fileUrl || item.pdf_url,
+            file_type: item.file_type || 'pdf',
+            pdf_url: item.fileUrl || item.pdf_url || item.document_url,
             cover_url: item.cover_url || '',
             language: item.language || 'Urdu / Brahui',
             description: item.description || 'Uploaded by Administrator'
           }));
-          setBooks(filterOutDeleted([...adminBooks, ...apiBooks]));
+          const uniqueAdminBooks = adminBooks.filter(ab => !apiBooks.some(db => (db.title || '').toLowerCase().trim() === (ab.title || '').toLowerCase().trim() || String(db.id) === String(ab.id)));
+          setBooks(filterOutDeleted([...uniqueAdminBooks, ...apiBooks]));
         })
         .catch(() => {
           const adminBooks = getAdminItems('books').map(item => ({
             id: item.id,
             title: item.title,
             author: item.author || 'Admin Upload',
-            file_type: 'pdf',
+            file_type: item.file_type || 'pdf',
             pdf_url: item.fileUrl || item.pdf_url,
             cover_url: item.cover_url || '',
             language: item.language || 'Urdu / Brahui',
@@ -123,12 +126,11 @@ export default function BooksView({ openReportModal, user }) {
   const getFormatBadge = (fileType) => {
     switch (fileType) {
       case 'doc':
-        return { label: 'Word DOCX', icon: 'fas fa-file-word', bg: '#eff6ff', color: '#2563eb', border: '#bfdbfe' };
+        return { label: 'Word (.docx)', icon: 'fas fa-file-word', bg: '#eff6ff', color: '#2563eb', border: '#bfdbfe' };
       case 'ppt':
-        return { label: 'PPT Presentation', icon: 'fas fa-file-powerpoint', bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
+        return { label: 'PowerPoint (.pptx)', icon: 'fas fa-file-powerpoint', bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
       case 'book':
-        return { label: 'Book (100+ Pages)', icon: 'fas fa-book', bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
-      case 'pdf':
+        return { label: 'Book (100+ pgs)', icon: 'fas fa-book', bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
       default:
         return { label: 'PDF Document', icon: 'fas fa-file-pdf', bg: '#fef2f2', color: '#dc2626', border: '#fecaca' };
     }
@@ -142,7 +144,7 @@ export default function BooksView({ openReportModal, user }) {
 
   const getDocRawUrl = (doc) => {
     if (!doc) return '';
-    return doc.document_url || doc.pdf_url || doc.fileUrl || doc.file_url || '';
+    return doc.document_url || doc.pdf_file || doc.pdf_url || doc.fileUrl || doc.file_url || '';
   };
 
   const getCleanDocumentUrl = (url) => {

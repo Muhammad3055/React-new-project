@@ -84,17 +84,32 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
       created_at: new Date().toISOString()
     };
 
-    // Save to Admin Store for instant UI update
-    addAdminItem(newItem);
-
-    // Also attempt POST to backend API to save permanently in Django DB
+    // Attempt POST to backend API to save permanently in Django DB
     const apiEndpoint = contentType === 'book' ? '/api/books/' : contentType === 'audio' ? '/api/taqreer/' : '/api/upload/';
     fetch(getApiUrl(apiEndpoint), {
       method: 'POST',
       body: formData
-    }).then(res => res.json()).then(() => {
-      window.dispatchEvent(new CustomEvent('admin_content_updated'));
-    }).catch(() => {});
+    })
+      .then(res => res.json())
+      .then((data) => {
+        if (data && (data.document_url || data.audio_url || data.id)) {
+          // Update item in local store with permanent DB URL & ID
+          addAdminItem({
+            ...newItem,
+            id: data.id || newItem.id,
+            fileUrl: data.document_url || data.audio_url || newItem.fileUrl,
+            pdf_url: data.document_url || newItem.pdf_url,
+            audio_url: data.audio_url || newItem.audio_url
+          });
+        } else {
+          addAdminItem(newItem);
+        }
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      })
+      .catch(() => {
+        addAdminItem(newItem);
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      });
 
     setUploading(false);
     setSubmitted(true);
