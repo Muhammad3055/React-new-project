@@ -151,7 +151,10 @@ export default function BooksView({ openReportModal, user }) {
     if (!url) return '';
     let clean = String(url).trim();
     clean = clean.replace(/^https?:\/\/(127\.0\.0\.1|localhost):(8000|3000)/, '');
-    if (clean.startsWith('blob:') || clean.startsWith('data:') || clean.startsWith('http://') || clean.startsWith('https://')) {
+    if (clean.startsWith('blob:') || clean.startsWith('data:')) {
+      return clean;
+    }
+    if (clean.startsWith('http://') || clean.startsWith('https://')) {
       return clean;
     }
     if (!clean.startsWith('/')) {
@@ -160,7 +163,12 @@ export default function BooksView({ openReportModal, user }) {
     if (!clean.startsWith('/media/')) {
       clean = '/media' + clean;
     }
-    return getApiUrl(clean);
+    const apiResolved = getApiUrl(clean);
+    if (apiResolved.startsWith('http://') || apiResolved.startsWith('https://')) {
+      return apiResolved;
+    }
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    return origin + apiResolved;
   };
 
   const isPdfFormat = (doc) => {
