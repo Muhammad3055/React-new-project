@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
-import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
+import { getAdminItems, addAdminItem, deleteContentItem } from '../utils/adminContentStore';
 
 export default function UploadView({ user }) {
   if (!user || !user.is_staff) {
@@ -22,6 +22,15 @@ export default function UploadView({ user }) {
 
   const [activeTab, setActiveTab] = useState('taqreer'); // 'taqreer' | 'book' | 'hadith' | 'audio'
   const [submittedMessage, setSubmittedMessage] = useState('');
+  const [dbTaqreers, setDbTaqreers] = useState([]);
+
+  // Load database Taqreers on mount and on new submission
+  useEffect(() => {
+    fetch(getApiUrl('/api/taqreer/'))
+      .then(res => res.json())
+      .then(data => setDbTaqreers(data.results || []))
+      .catch(() => {});
+  }, [submittedMessage]);
 
   // Taqreer Form State
   const [taqreerData, setTaqreerData] = useState({ title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
@@ -40,6 +49,23 @@ export default function UploadView({ user }) {
 
   const handleTaqreerSubmit = (e) => {
     e.preventDefault();
+    const finalAudioUrl = taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url;
+
+    // Save to adminContentStore for instant local UI update & deletion capability
+    addAdminItem({
+      title: taqreerData.title,
+      speaker: taqreerData.speaker,
+      author: taqreerData.speaker,
+      destination: 'taqreer',
+      contentType: 'audio',
+      language: taqreerData.language,
+      duration: taqreerData.duration,
+      description: taqreerData.description,
+      fileUrl: finalAudioUrl,
+      audio_url: finalAudioUrl,
+      addedByAdmin: true
+    });
+
     const formData = new FormData();
     formData.append('title', taqreerData.title);
     formData.append('speaker', taqreerData.speaker);
@@ -58,13 +84,15 @@ export default function UploadView({ user }) {
     })
       .then(res => res.json())
       .then((data) => {
-        setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully from laptop!');
+        setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully!');
         setTaqreerData({ title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
         setTaqreerFile(null);
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
-        setSubmittedMessage('Taqreer MP3 saved successfully!');
+        setSubmittedMessage('Taqreer MP3 saved!');
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       });
   };
@@ -441,9 +469,9 @@ export default function UploadView({ user }) {
             </span>
           </div>
 
-          {getAdminItems().length === 0 ? (
+          {getAdminItems().length === 0 && dbTaqreers.length === 0 ? (
             <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', color: '#cbd5e1', fontSize: '0.9rem' }}>
-              No custom admin uploaded items in local store. Items uploaded via forms above or Admin Studio appear here.
+              No custom admin uploaded items found. Items uploaded via forms above or Admin Studio appear here.
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -457,8 +485,36 @@ export default function UploadView({ user }) {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Database MP3 Audios / Taqreers */}
+                  {dbTaqreers.map((tq, idx) => (
+                    <tr key={`db_tq_${tq.id || idx}`} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: idx % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent' }}>
+                      <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                        <i className="fas fa-headphones" style={{ marginRight: '0.4rem', color: '#10b981' }}></i>
+                        {tq.title || 'Untitled Taqreer'}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textTransform: 'uppercase', fontSize: '0.78rem' }}>
+                        <span style={{ padding: '2px 8px', borderRadius: '10px', background: '#065f46', color: '#34d399', fontWeight: 700 }}>
+                          MP3 AUDIO ({tq.language || 'urdu'})
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{tq.speaker || '-'}</td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <button
+                          onClick={async () => {
+                            const done = await deleteContentItem(tq.id, 'audio');
+                            if (done) setDbTaqreers(prev => prev.filter(x => x.id !== tq.id));
+                          }}
+                          style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                        >
+                          <i className="fas fa-trash"></i> Delete MP3
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {/* Local Custom Admin Items */}
                   {getAdminItems().map((item, idx) => (
-                    <tr key={item.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: idx % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent' }}>
+                    <tr key={item.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: (idx + dbTaqreers.length) % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent' }}>
                       <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: 'var(--accent-gold)' }}>{item.title || 'Untitled'}</td>
                       <td style={{ padding: '0.75rem 1rem', textTransform: 'uppercase', fontSize: '0.78rem' }}>{item.destination || item.contentType || 'Custom'}</td>
                       <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{item.author || item.speaker || '-'}</td>
