@@ -120,6 +120,12 @@ export default function BooksView({ openReportModal, user }) {
     }
   };
 
+  const isLocalUrl = (url) => {
+    if (!url) return false;
+    const l = String(url).toLowerCase();
+    return l.includes('localhost') || l.includes('127.0.0.1') || l.startsWith('/') || l.startsWith('blob:') || l.startsWith('data:');
+  };
+
   const getDocRawUrl = (doc) => {
     if (!doc) return '';
     return doc.document_url || doc.pdf_url || doc.fileUrl || doc.file_url || '';
@@ -127,13 +133,18 @@ export default function BooksView({ openReportModal, user }) {
 
   const getCleanDocumentUrl = (url) => {
     if (!url) return '';
-    let clean = url;
-    clean = clean.replace(/^https?:\/\/(127\.0\.0\.1|localhost):8000\/media\//, '/media/');
-    clean = clean.replace(/^https?:\/\/(127\.0\.0\.1|localhost):3000\/media\//, '/media/');
-    if (clean.startsWith('/')) {
-      return getApiUrl(clean);
+    let clean = String(url).trim();
+    clean = clean.replace(/^https?:\/\/(127\.0\.0\.1|localhost):(8000|3000)/, '');
+    if (clean.startsWith('blob:') || clean.startsWith('data:') || clean.startsWith('http://') || clean.startsWith('https://')) {
+      return clean;
     }
-    return clean;
+    if (!clean.startsWith('/')) {
+      clean = '/' + clean;
+    }
+    if (!clean.startsWith('/media/')) {
+      clean = '/media' + clean;
+    }
+    return getApiUrl(clean);
   };
 
   const isPdfFormat = (doc) => {
@@ -149,20 +160,15 @@ export default function BooksView({ openReportModal, user }) {
     
     const fullUrl = getCleanDocumentUrl(rawUrl);
 
-    // For PDFs or Direct mode: browser native PDF renderer handles fullUrl directly
-    if (isPdfFormat(doc) || viewerEngine === 'direct') {
-      return fullUrl;
-    }
-
     if (viewerEngine === 'google') {
       return `https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`;
     }
 
-    // Default Office Web Viewer for DOC and PPT
-    if (doc.file_type === 'doc' || doc.file_type === 'ppt') {
+    if (viewerEngine === 'office') {
       return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
     }
 
+    // Default Direct Native Mode for PDF / Local files
     return fullUrl;
   };
 
@@ -170,10 +176,10 @@ export default function BooksView({ openReportModal, user }) {
     setPreviewDoc(doc);
     setIsFullscreen(false);
     const rawUrl = getDocRawUrl(doc);
-    if (isPdfFormat(doc)) {
+    if (isPdfFormat(doc) || isLocalUrl(rawUrl)) {
       setViewerEngine('direct');
     } else {
-      setViewerEngine(isLocalUrl(rawUrl) ? 'direct' : 'office');
+      setViewerEngine('office');
     }
   };
 
@@ -689,85 +695,21 @@ export default function BooksView({ openReportModal, user }) {
               )}
 
               {isPdfFormat(previewDoc) || viewerEngine === 'direct' ? (
-                isPdfFormat(previewDoc) ? (
-                  /* Multi-layer Native PDF Viewer */
-                  <object
-                    data={getEmbedViewerUrl(previewDoc)}
-                    type="application/pdf"
+                <div style={{ flex: 1, width: '100%', height: '100%', background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                  <iframe
+                    key={viewerEngine + getCleanDocumentUrl(getDocRawUrl(previewDoc))}
+                    src={getEmbedViewerUrl(previewDoc)}
+                    title={previewDoc.title}
                     width="100%"
                     height="100%"
-                    style={{ flex: 1, width: '100%', height: '100%', border: 'none', background: '#ffffff' }}
-                  >
-                    <embed
-                      src={getEmbedViewerUrl(previewDoc)}
-                      type="application/pdf"
-                      width="100%"
-                      height="100%"
-                    />
-                    <iframe
-                      src={getEmbedViewerUrl(previewDoc)}
-                      title={previewDoc.title}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 'none', flex: 1, background: '#ffffff' }}
-                      allowFullScreen
-                    >
-                      <div style={{ padding: '2.5rem', textAlign: 'center', background: '#ffffff', color: '#334155' }}>
-                        <i className="fas fa-file-pdf" style={{ fontSize: '3rem', color: '#dc2626', marginBottom: '1rem' }}></i>
-                        <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>PDF Document Ready</h3>
-                        <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-                          Click below to view this PDF directly in your browser or save it to your computer.
-                        </p>
-                        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-                          <a href={getCleanDocumentUrl(getDocRawUrl(previewDoc))} target="_blank" rel="noreferrer" className="btn-play">
-                            <i className="fas fa-external-link-alt"></i> Open PDF in Browser
-                          </a>
-                          <a href={getCleanDocumentUrl(getDocRawUrl(previewDoc))} download target="_blank" rel="noreferrer" className="btn-play" style={{ background: '#059669', borderColor: '#059669', color: '#fff' }}>
-                            <i className="fas fa-download"></i> Save PDF
-                          </a>
-                        </div>
-                      </div>
-                    </iframe>
-                  </object>
-                ) : (
-                  /* Word (DOCX/DOC) & PowerPoint (PPTX/PPT) Dedicated Interactive Reader Panel */
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 1.5rem', background: '#ffffff', textAlign: 'center' }}>
-                    <div style={{ width: '84px', height: '84px', borderRadius: '24px', background: previewDoc.file_type === 'doc' ? '#eff6ff' : '#fff7ed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', color: previewDoc.file_type === 'doc' ? '#2563eb' : '#ea580c', marginBottom: '1.25rem', boxShadow: '0 10px 25px rgba(0,0,0,0.07)', border: previewDoc.file_type === 'doc' ? '1px solid #bfdbfe' : '1px solid #fed7aa' }}>
-                      <i className={previewDoc.file_type === 'doc' ? 'fas fa-file-word' : 'fas fa-file-powerpoint'}></i>
-                    </div>
-                    <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.5rem 0' }}>
-                      {previewDoc.title}
-                    </h3>
-                    <p style={{ fontSize: '0.88rem', color: '#64748b', maxWidth: '540px', lineHeight: '1.6', marginBottom: '1.75rem' }}>
-                      This <strong>{previewDoc.file_type === 'doc' ? 'Microsoft Word (.docx / .doc)' : 'PowerPoint (.pptx / .ppt)'}</strong> document is ready for viewing and download. Open it directly in your browser or save it to your device.
-                    </p>
-
-                    <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      <a
-                        href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-play"
-                        style={{ padding: '0.75rem 1.6rem', fontSize: '0.95rem', borderRadius: '25px' }}
-                      >
-                        <i className="fas fa-external-link-alt"></i> Open Document in Browser
-                      </a>
-                      <a
-                        href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
-                        download
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-play"
-                        style={{ background: '#059669', borderColor: '#059669', color: '#ffffff', padding: '0.75rem 1.6rem', fontSize: '0.95rem', borderRadius: '25px' }}
-                      >
-                        <i className="fas fa-file-download"></i> Save & Open in Office
-                      </a>
-                    </div>
-                  </div>
-                )
+                    style={{ border: 'none', width: '100%', height: '100%', flex: 1, background: '#ffffff' }}
+                    allowFullScreen
+                  />
+                </div>
               ) : (
-                /* Cloud Viewers (Google Docs / Microsoft Office Web Viewer for Production) */
+                /* Cloud Viewers (Google Docs / Microsoft Office Web Viewer) */
                 <iframe
+                  key={viewerEngine + getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                   src={getEmbedViewerUrl(previewDoc)}
                   title={previewDoc.title}
                   width="100%"
