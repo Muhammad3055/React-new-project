@@ -269,13 +269,15 @@ def api_books_list(request):
 
     data = []
     for item in page_obj:
+        doc_url = item.get_document_url()
         data.append({
             'id': item.id,
             'title': item.title,
             'author': item.author,
             'file_type': item.file_type,
             'file_type_display': item.get_file_type_display(),
-            'document_url': item.get_document_url(),
+            'pdf_url': doc_url,
+            'document_url': doc_url,
             'cover_url': item.cover_image.url if item.cover_image else item.cover_url,
             'description': item.description,
             'pages_count': item.pages_count,

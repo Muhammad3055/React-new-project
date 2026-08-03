@@ -12,6 +12,8 @@ if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; t
     python manage.py createsuperuser --no-input || true
 fi
 
+
+ 
 if [ -f "seed_data.py" ]; then
     echo "Running seed_data.py..."
     python seed_data.py || true

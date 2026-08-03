@@ -1,0 +1,8 @@
+
+
+ssh: root
+password :quranportal
+---
+login
+id:root
+pwd:admin

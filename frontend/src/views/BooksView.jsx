@@ -362,7 +362,7 @@ export default function BooksView({ openReportModal }) {
                   </button>
 
                   <a
-                    href={bk.document_url}
+                    href={getCleanDocumentUrl(getDocRawUrl(bk))}
                     download
                     target="_blank"
                     rel="noreferrer"
@@ -438,7 +438,7 @@ export default function BooksView({ openReportModal }) {
                     <i className="fas fa-book-open" style={{ marginRight: '0.35rem' }}></i> Read Online
                   </button>
                   <a
-                    href={bk.document_url}
+                    href={getCleanDocumentUrl(getDocRawUrl(bk))}
                     download
                     target="_blank"
                     rel="noreferrer"
@@ -618,14 +618,37 @@ export default function BooksView({ openReportModal }) {
                 </button>
               </div>
 
-              <a
-                href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
-                target="_blank"
-                rel="noreferrer"
-                style={{ fontSize: '0.8rem', color: 'var(--primary-dark)', fontWeight: 700, textDecoration: 'none' }}
-              >
-                Open File in New Tab <i className="fas fa-external-link-alt" style={{ marginLeft: '0.2rem' }}></i>
-              </a>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <a
+                  href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
+                  download
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    background: '#059669',
+                    color: '#ffffff',
+                    padding: '0.35rem 0.9rem',
+                    borderRadius: '16px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    boxShadow: '0 2px 5px rgba(5,150,105,0.2)'
+                  }}
+                >
+                  <i className="fas fa-download"></i> Download File
+                </a>
+                <a
+                  href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ fontSize: '0.8rem', color: 'var(--primary-dark)', fontWeight: 700, textDecoration: 'none' }}
+                >
+                  Open in New Tab <i className="fas fa-external-link-alt" style={{ marginLeft: '0.2rem' }}></i>
+                </a>
+              </div>
             </div>
 
             {/* Modal Reader Frame Area */}
@@ -753,14 +776,27 @@ export default function BooksView({ openReportModal }) {
                 <strong>{previewDoc.title}</strong> &bull; {previewDoc.author} ({previewDoc.language})
               </span>
               <a
-                href={getCleanDocumentUrl(previewDoc.document_url)}
+                href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                 download
                 target="_blank"
                 rel="noreferrer"
-                style={{ color: '#059669', fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                style={{
+                  background: '#059669',
+                  color: '#ffffff',
+                  padding: '0.4rem 1.1rem',
+                  borderRadius: '20px',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  boxShadow: '0 2px 6px rgba(5,150,105,0.25)'
+                }}
               >
                 <i className="fas fa-file-download"></i> Save to Computer
               </a>
+
             </div>
           </div>
         </div>

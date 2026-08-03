@@ -140,6 +140,17 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = 1209600
 CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
+# CSRF Trusted Origins for VPS IP and Custom Domains
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
+    'http://169.58.117.130',
+    'https://169.58.117.130',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:5173',
+])
 
 # Email Configuration for 2FA Verification Security Codes
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
@@ -175,10 +186,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = '/assets/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    FRONTEND_DIR / 'assets',
     BASE_DIR / 'static',
 ]
 
