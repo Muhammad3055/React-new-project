@@ -19,6 +19,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
   const [coverUrl, setCoverUrl] = useState('');
   const [duration, setDuration] = useState('15:00');
   const [pagesCount, setPagesCount] = useState(100);
+  const [docFormat, setDocFormat] = useState('pdf'); // 'pdf' | 'book' | 'doc' | 'ppt'
   const [buttonLabel, setButtonLabel] = useState('Read Now');
   const [buttonIcon, setButtonIcon] = useState('fas fa-external-link-alt');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -42,12 +43,14 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
 
     setUploading(true);
 
+    const activeFileType = contentType === 'book' ? docFormat : contentType;
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('author', authorSpeaker);
     formData.append('speaker', authorSpeaker);
     formData.append('pages_count', pagesCount);
-    formData.append('file_type', contentType === 'book' ? 'pdf' : contentType);
+    formData.append('file_type', activeFileType);
     formData.append('destination', destination);
     formData.append('language', language);
     formData.append('description', description);
@@ -69,6 +72,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
       author: authorSpeaker,
       speaker: authorSpeaker,
       pages_count: Number(pagesCount) || 100,
+      file_type: activeFileType,
       destination,
       contentType,
       language,
@@ -235,6 +239,41 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                   <span>Link Button</span>
                 </button>
               </div>
+
+              {contentType === 'book' && (
+                <div style={{ marginTop: '0.85rem', paddingTop: '0.75rem', borderTop: '1px dashed rgba(255,255,255,0.15)' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--accent-gold)' }}>
+                    Choose Specific File Format:
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
+                    {[
+                      { id: 'pdf', label: '📄 PDF Document', color: '#ef4444' },
+                      { id: 'book', label: '📚 Full Book', color: '#f59e0b' },
+                      { id: 'doc', label: '📝 Word (.docx)', color: '#3b82f6' },
+                      { id: 'ppt', label: '📊 PowerPoint', color: '#f97316' },
+                    ].map(fmt => (
+                      <button
+                        key={fmt.id}
+                        type="button"
+                        onClick={() => setDocFormat(fmt.id)}
+                        style={{
+                          padding: '0.5rem 0.3rem',
+                          borderRadius: '8px',
+                          border: docFormat === fmt.id ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.15)',
+                          background: docFormat === fmt.id ? 'rgba(245,158,11,0.25)' : 'rgba(0,0,0,0.2)',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          textAlign: 'center'
+                        }}
+                      >
+                        {fmt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Form Fields */}

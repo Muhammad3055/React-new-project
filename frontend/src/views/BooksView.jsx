@@ -695,45 +695,40 @@ export default function BooksView({ openReportModal, user }) {
 
             {/* Modal Reader Frame Area */}
             <div style={{ flex: 1, background: '#f1f5f9', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              {isLocalUrl(getDocRawUrl(previewDoc)) && viewerEngine !== 'direct' && (
-                <div style={{ background: '#fef3c7', color: '#92400e', borderBottom: '1px solid #fde68a', padding: '0.5rem 1.5rem', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              {viewerEngine === 'direct' && (
+                <div style={{ background: '#f8fafc', color: '#334155', borderBottom: '1px solid #e2e8f0', padding: '0.4rem 1.25rem', fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <span>
-                    <i className="fas fa-info-circle" style={{ marginRight: '0.4rem' }}></i>
-                    <strong>Notice:</strong> Cloud viewers (Office/Google) cannot open private localhost URLs. Switched to <strong>Native Reader</strong> for seamless viewing.
+                    <i className="fas fa-eye" style={{ marginRight: '0.35rem', color: '#059669' }}></i>
+                    Viewing in <strong>Native Browser Reader</strong>. If file preview is blank or blocked, switch viewer engines:
                   </span>
-                  <button
-                    onClick={() => setViewerEngine('direct')}
-                    style={{ background: '#d97706', color: '#fff', border: 'none', padding: '0.25rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
-                  >
-                    Switch to Native Viewer
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      onClick={() => setViewerEngine('google')}
+                      style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                    >
+                      <i className="fab fa-google"></i> Google Viewer
+                    </button>
+                    <button
+                      onClick={() => setViewerEngine('office')}
+                      style={{ background: '#ea580c', color: '#fff', border: 'none', padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                    >
+                      <i className="fas fa-file-word"></i> Office Viewer
+                    </button>
+                  </div>
                 </div>
               )}
 
-              {isPdfFormat(previewDoc) || viewerEngine === 'direct' ? (
-                <div style={{ flex: 1, width: '100%', height: '100%', background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                  <iframe
-                    key={viewerEngine + getCleanDocumentUrl(getDocRawUrl(previewDoc))}
-                    src={getEmbedViewerUrl(previewDoc)}
-                    title={previewDoc.title}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 'none', width: '100%', height: '100%', flex: 1, background: '#ffffff' }}
-                    allowFullScreen
-                  />
-                </div>
-              ) : (
-                /* Cloud Viewers (Google Docs / Microsoft Office Web Viewer) */
+              <div style={{ flex: 1, width: '100%', height: '100%', background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column' }}>
                 <iframe
-                  key={viewerEngine + getCleanDocumentUrl(getDocRawUrl(previewDoc))}
+                  key={viewerEngine + '_' + getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                   src={getEmbedViewerUrl(previewDoc)}
-                  title={previewDoc.title}
+                  title={previewDoc.title || 'Document Reader'}
                   width="100%"
                   height="100%"
-                  style={{ border: 'none', flex: 1, background: '#ffffff' }}
+                  style={{ border: 'none', width: '100%', height: '100%', flex: 1, background: '#ffffff' }}
                   allowFullScreen
-                ></iframe>
-              )}
+                />
+              </div>
             </div>
 
             {/* Modal Footer Bar */}
