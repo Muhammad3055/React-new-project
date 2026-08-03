@@ -422,7 +422,7 @@ export default function BooksView({ openReportModal, user }) {
                         <i className="fas fa-edit"></i> Edit
                       </button>
                       <button
-                        onClick={() => deleteContentItem(bk.id, 'book')}
+                        onClick={() => deleteContentItem(bk.id, 'book', bk.title)}
                         style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
                         title="Delete Book as Admin"
                       >
@@ -488,7 +488,7 @@ export default function BooksView({ openReportModal, user }) {
                         <i className="fas fa-edit"></i> Edit
                       </button>
                       <button
-                        onClick={() => deleteContentItem(bk.id, 'book')}
+                        onClick={() => deleteContentItem(bk.id, 'book', bk.title)}
                         style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
                         title="Delete Book as Admin"
                       >
