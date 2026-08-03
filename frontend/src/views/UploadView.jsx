@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getApiUrl } from '../utils/apiCache';
+import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
 
 export default function UploadView({ user }) {
   if (!user || !user.is_staff) {
@@ -428,6 +429,54 @@ export default function UploadView({ user }) {
             </button>
           </form>
         )}
+
+        {/* Manage & Delete Admin Content Table */}
+        <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '2px dashed rgba(245, 158, 11, 0.4)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ margin: 0, color: 'var(--accent-gold)', fontSize: '1.25rem', fontWeight: 800 }}>
+              <i className="fas fa-tasks" style={{ marginRight: '0.5rem' }}></i> Admin Uploaded Content Manager
+            </h3>
+            <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+              Delete any document, MP3, Hadith, or post instantly
+            </span>
+          </div>
+
+          {getAdminItems().length === 0 ? (
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', color: '#cbd5e1', fontSize: '0.9rem' }}>
+              No custom admin uploaded items in local store. Items uploaded via forms above or Admin Studio appear here.
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', color: '#fff', fontSize: '0.88rem' }}>
+                <thead>
+                  <tr style={{ background: '#064e3b', borderBottom: '2px solid var(--accent-gold)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem' }}>Title</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Destination / Type</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Author / Speaker</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getAdminItems().map((item, idx) => (
+                    <tr key={item.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: idx % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent' }}>
+                      <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: 'var(--accent-gold)' }}>{item.title || 'Untitled'}</td>
+                      <td style={{ padding: '0.75rem 1rem', textTransform: 'uppercase', fontSize: '0.78rem' }}>{item.destination || item.contentType || 'Custom'}</td>
+                      <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{item.author || item.speaker || '-'}</td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <button
+                          onClick={() => deleteContentItem(item.id, item.contentType || item.destination || 'book')}
+                          style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                        >
+                          <i className="fas fa-trash"></i> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

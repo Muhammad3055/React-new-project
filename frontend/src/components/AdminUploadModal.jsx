@@ -165,32 +165,50 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
               <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
                 2. Select Content Type to Add
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
                 <button
                   type="button"
                   onClick={() => setContentType('book')}
-                  style={{ padding: '0.75rem', borderRadius: '12px', border: contentType === 'book' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'book' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}
+                  style={{ padding: '0.65rem 0.4rem', borderRadius: '10px', border: contentType === 'book' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'book' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem' }}
                 >
                   <i className="fas fa-file-pdf fa-lg" style={{ color: '#ef4444' }}></i>
-                  <span>Book / PDF</span>
+                  <span>Book/Doc</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setContentType('audio')}
-                  style={{ padding: '0.75rem', borderRadius: '12px', border: contentType === 'audio' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'audio' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}
+                  style={{ padding: '0.65rem 0.4rem', borderRadius: '10px', border: contentType === 'audio' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'audio' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem' }}
                 >
                   <i className="fas fa-headphones fa-lg" style={{ color: '#10b981' }}></i>
-                  <span>MP3 / Audio</span>
+                  <span>MP3 Audio</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setContentType('hadith')}
+                  style={{ padding: '0.65rem 0.4rem', borderRadius: '10px', border: contentType === 'hadith' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'hadith' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem' }}
+                >
+                  <i className="fas fa-scroll fa-lg" style={{ color: '#6366f1' }}></i>
+                  <span>Hadith/Text</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setContentType('post')}
+                  style={{ padding: '0.65rem 0.4rem', borderRadius: '10px', border: contentType === 'post' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'post' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem' }}
+                >
+                  <i className="fas fa-newspaper fa-lg" style={{ color: '#ec4899' }}></i>
+                  <span>Post/Article</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setContentType('button')}
-                  style={{ padding: '0.75rem', borderRadius: '12px', border: contentType === 'button' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'button' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}
+                  style={{ padding: '0.65rem 0.4rem', borderRadius: '10px', border: contentType === 'button' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'button' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem' }}
                 >
                   <i className="fas fa-link fa-lg" style={{ color: '#3b82f6' }}></i>
-                  <span>Custom URL / Link Button</span>
+                  <span>Link Button</span>
                 </button>
               </div>
             </div>

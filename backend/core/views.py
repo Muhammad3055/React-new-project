@@ -332,7 +332,24 @@ def api_tafseer_list(request):
     })
 
 
+@csrf_exempt
 def api_hadith_list(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            hd = Hadith.objects.create(
+                book_name=body.get('book_name', 'Sahih Bukhari'),
+                chapter=body.get('chapter', 'General'),
+                hadith_number=int(body.get('hadith_number', Hadith.objects.count() + 1)),
+                arabic_text=body.get('arabic_text', ''),
+                translation=body.get('translation', ''),
+                narrated_by=body.get('narrated_by', 'Abu Hurairah (R.A)'),
+                grade=body.get('grade', 'Sahih')
+            )
+            return JsonResponse({'status': 'success', 'id': hd.id, 'message': 'Hadith uploaded successfully!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
     query = request.GET.get('q', '').strip()
     book_filter = request.GET.get('book', '').strip()
     grade_filter = request.GET.get('grade', '').strip()
@@ -1215,3 +1232,48 @@ def api_save_zakat_history(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid HTTP method'}, status=405)
+
+
+@csrf_exempt
+def api_admin_delete_content(request):
+    if request.method in ['POST', 'DELETE']:
+        try:
+            body = json.loads(request.body.decode('utf-8')) if request.body else request.POST
+            content_type = body.get('content_type', '').lower()
+            item_id = body.get('id') or body.get('item_id')
+
+            if not item_id:
+                return JsonResponse({'status': 'error', 'message': 'Missing item ID'}, status=400)
+
+            deleted = False
+            if content_type in ['book', 'document', 'books']:
+                BookMedia.objects.filter(id=item_id).delete()
+                deleted = True
+            elif content_type in ['audio', 'taqreer', 'mp3']:
+                TaqreerAudio.objects.filter(id=item_id).delete()
+                deleted = True
+            elif content_type in ['quran', 'quran_audio']:
+                QuranAudio.objects.filter(id=item_id).delete()
+                deleted = True
+            elif content_type in ['hadith', 'text']:
+                Hadith.objects.filter(id=item_id).delete()
+                deleted = True
+            elif content_type in ['video']:
+                VideoMedia.objects.filter(id=item_id).delete()
+                deleted = True
+            elif content_type in ['tafseer']:
+                Tafseer.objects.filter(id=item_id).delete()
+                deleted = True
+            else:
+                # Try generic delete across models
+                for model in [BookMedia, TaqreerAudio, Hadith, QuranAudio, VideoMedia]:
+                    if model.objects.filter(id=item_id).exists():
+                        model.objects.filter(id=item_id).delete()
+                        deleted = True
+                        break
+
+            return JsonResponse({'status': 'success', 'deleted': deleted, 'message': f'Item {item_id} deleted successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+

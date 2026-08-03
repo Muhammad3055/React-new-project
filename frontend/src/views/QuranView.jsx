@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithCache } from '../utils/apiCache';
+import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
 
 const QARIS = [
   { id: 'alafasy', name: 'Mishary Rashid Alafasy', server: 'https://server8.mp3quran.net/afs/' },
@@ -244,7 +245,18 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   ];
 
   const currentTaqreerLang = subCategory.replace('taqreer_', '');
-  const activeTaqreers = taqreers.length > 0 ? taqreers : (DEFAULT_TAQREERS[currentTaqreerLang] || []);
+  const adminTaqreers = [...getAdminItems('taqreer'), ...getAdminItems('audio')].map(item => ({
+    id: item.id,
+    title: item.title,
+    speaker: item.speaker || item.author || 'Admin Upload',
+    language: item.language || currentTaqreerLang,
+    duration: item.duration || '15:00',
+    audio_url: item.fileUrl || item.audio_url,
+    description: item.description || 'Uploaded by Administrator',
+    addedByAdmin: true
+  }));
+  const baseTaqreers = taqreers.length > 0 ? taqreers : (DEFAULT_TAQREERS[currentTaqreerLang] || []);
+  const activeTaqreers = [...adminTaqreers, ...baseTaqreers];
 
   return (
     <div className="container" style={{ paddingBottom: '3rem' }}>
@@ -557,6 +569,17 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     >
                       <i className="fas fa-download"></i> Download
                     </button>
+
+                    {(user?.is_staff || user?.is_superuser || tq.addedByAdmin) && (
+                      <button
+                        className="btn-play"
+                        onClick={() => deleteContentItem(tq.id, 'audio')}
+                        style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                        title="Delete Audio as Admin"
+                      >
+                        <i className="fas fa-trash"></i> Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

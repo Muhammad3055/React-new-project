@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/bookmark/toggle/', views.toggle_bookmark, name='toggle_bookmark'),
     path('api/report/submit/', views.submit_report_view, name='submit_report'),
     path('api/contact/submit/', views.submit_contact_view, name='submit_contact'),
+    path('api/admin/content/delete/', views.api_admin_delete_content, name='api_admin_delete_content'),
 
     # Authentication & User Tracker API
     path('api/auth/status/', views.api_auth_status, name='api_auth_status'),

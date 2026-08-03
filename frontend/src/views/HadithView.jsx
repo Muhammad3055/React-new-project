@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../utils/apiCache';
+import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
 
-export default function HadithView({ openReportModal }) {
+export default function HadithView({ openReportModal, user }) {
   const [hadiths, setHadiths] = useState([]);
   const [booksList, setBooksList] = useState([]);
   const [query, setQuery] = useState('');
@@ -18,16 +20,61 @@ export default function HadithView({ openReportModal }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/hadith/?q=${encodeURIComponent(debouncedQuery)}&book=${encodeURIComponent(selectedBook)}&grade=${encodeURIComponent(selectedGrade)}&page=${page}`)
+    fetch(getApiUrl(`/api/hadith/?q=${encodeURIComponent(debouncedQuery)}&book=${encodeURIComponent(selectedBook)}&grade=${encodeURIComponent(selectedGrade)}&page=${page}`))
       .then(res => res.json())
       .then(data => {
-        setHadiths(data.results || []);
+        const apiHadiths = data.results || [];
+        const adminHadiths = getAdminItems('hadith').map(item => ({
+          id: item.id,
+          book_name: 'Admin Post',
+          hadith_number: 'Post',
+          grade: 'Authentic',
+          chapter: item.title || 'Admin Article',
+          arabic_text: item.description || '',
+          translation: item.description || item.title,
+          narrated_by: item.author || item.speaker || 'Admin',
+          addedByAdmin: true
+        }));
+        setHadiths([...adminHadiths, ...apiHadiths]);
         setBooksList(data.books_list || []);
         setTotalPages(data.total_pages || 1);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        const adminHadiths = getAdminItems('hadith').map(item => ({
+          id: item.id,
+          book_name: 'Admin Post',
+          hadith_number: 'Post',
+          grade: 'Authentic',
+          chapter: item.title || 'Admin Article',
+          arabic_text: item.description || '',
+          translation: item.description || item.title,
+          narrated_by: item.author || item.speaker || 'Admin',
+          addedByAdmin: true
+        }));
+        setHadiths(adminHadiths);
+        setLoading(false);
+      });
   }, [debouncedQuery, selectedBook, selectedGrade, page]);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const adminHadiths = getAdminItems('hadith').map(item => ({
+        id: item.id,
+        book_name: 'Admin Post',
+        hadith_number: 'Post',
+        grade: 'Authentic',
+        chapter: item.title || 'Admin Article',
+        arabic_text: item.description || '',
+        translation: item.description || item.title,
+        narrated_by: item.author || item.speaker || 'Admin',
+        addedByAdmin: true
+      }));
+      setHadiths(prev => [...adminHadiths, ...prev.filter(x => !x.addedByAdmin)]);
+    };
+    window.addEventListener('admin_content_updated', handleUpdate);
+    return () => window.removeEventListener('admin_content_updated', handleUpdate);
+  }, []);
 
   const copyHadith = (text, book, num, grade) => {
     navigator.clipboard.writeText(`"${text}" [${book} #${num} - Grade: ${grade}]`);
@@ -169,6 +216,16 @@ export default function HadithView({ openReportModal }) {
                   >
                     <i className="far fa-flag"></i>
                   </button>
+
+                  {(user?.is_staff || user?.is_superuser || h.addedByAdmin) && (
+                    <button
+                      onClick={() => deleteContentItem(h.id, 'hadith')}
+                      style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '6px 10px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                      title="Delete Hadith as Admin"
+                    >
+                      <i className="fas fa-trash"></i> Delete
+                    </button>
+                  )}
                 </div>
               </div>
 

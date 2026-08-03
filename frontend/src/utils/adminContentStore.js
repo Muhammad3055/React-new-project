@@ -1,3 +1,5 @@
+import { getApiUrl } from './apiCache';
+
 // Store for Admin Uploaded Custom Content, Books, Audios, Folders, and Buttons
 const LOCAL_STORAGE_KEY = 'quran_portal_admin_items';
 const FOLDERS_KEY = 'quran_portal_admin_folders';
@@ -72,10 +74,32 @@ export function addAdminItem(item) {
 export function removeAdminItem(itemId) {
   try {
     const existing = getAdminItems();
-    const filtered = existing.filter(item => item.id !== itemId);
+    const filtered = existing.filter(item => String(item.id) !== String(itemId));
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
     window.dispatchEvent(new CustomEvent('admin_content_updated'));
   } catch (e) {
     console.error('Error removing admin item:', e);
   }
 }
+
+export async function deleteContentItem(itemId, contentType = 'book') {
+  if (!confirm('Are you sure you want to delete this item?')) return false;
+  
+  // 1. Remove from local admin store
+  removeAdminItem(itemId);
+
+  // 2. Send request to backend API to delete from database
+  try {
+    await fetch(getApiUrl('/api/admin/content/delete/'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: itemId, content_type: contentType })
+    });
+  } catch (e) {
+    console.error('Error deleting from backend API:', e);
+  }
+
+  window.dispatchEvent(new CustomEvent('admin_content_updated'));
+  return true;
+}
+

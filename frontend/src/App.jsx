@@ -186,7 +186,7 @@ export default function App() {
         )}
 
         {activeTab === 'books' && (
-          <BooksView openReportModal={openReportModal} />
+          <BooksView openReportModal={openReportModal} user={user} />
         )}
 
         {activeTab === 'tafseer' && (
@@ -194,7 +194,7 @@ export default function App() {
         )}
 
         {activeTab === 'hadith' && (
-          <HadithView openReportModal={openReportModal} />
+          <HadithView openReportModal={openReportModal} user={user} />
         )}
 
         {activeTab === 'fazail' && (
