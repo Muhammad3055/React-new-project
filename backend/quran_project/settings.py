@@ -215,6 +215,10 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Enable 600MB File Upload Limits in Django
+DATA_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
+
 # Email SMTP Configuration for Gmail OTP Sending
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
