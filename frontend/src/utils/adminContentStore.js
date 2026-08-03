@@ -1,8 +1,8 @@
 import { getApiUrl } from './apiCache';
 
-// Store for Admin Uploaded Custom Content, Books, Audios, Folders, and Buttons
 const LOCAL_STORAGE_KEY = 'quran_portal_admin_items';
 const FOLDERS_KEY = 'quran_portal_admin_folders';
+const DELETED_ITEMS_KEY = 'quran_portal_deleted_items';
 
 export const defaultFolders = [
   { id: 'books', name: 'Books & PDF Library', icon: 'fas fa-book', color: '#f59e0b' },
@@ -13,6 +13,34 @@ export const defaultFolders = [
   { id: 'fazail', name: 'Fazail & Virtues', icon: 'fas fa-star', color: '#eab308' },
   { id: 'namesOfAllah', name: '99 Names of Allah', icon: 'fas fa-moon', color: '#14b8a6' },
 ];
+
+export function getDeletedItemIds() {
+  try {
+    const raw = localStorage.getItem(DELETED_ITEMS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function markItemAsDeleted(itemId) {
+  try {
+    const deleted = getDeletedItemIds();
+    const strId = String(itemId);
+    if (!deleted.includes(strId)) {
+      deleted.push(strId);
+      localStorage.setItem(DELETED_ITEMS_KEY, JSON.stringify(deleted));
+    }
+  } catch (e) {
+    console.error('Error marking item deleted:', e);
+  }
+}
+
+export function filterOutDeleted(items = []) {
+  const deleted = getDeletedItemIds();
+  if (!deleted.length) return items;
+  return items.filter(item => !deleted.includes(String(item.id)));
+}
 
 export function getAdminCustomFolders() {
   try {
@@ -46,8 +74,9 @@ export function getAdminItems(destination = null) {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     const items = raw ? JSON.parse(raw) : [];
-    if (!destination) return items;
-    return items.filter(item => item.destination === destination);
+    const active = filterOutDeleted(items);
+    if (!destination) return active;
+    return active.filter(item => item.destination === destination || item.contentType === destination);
   } catch (e) {
     return [];
   }
@@ -85,10 +114,13 @@ export function removeAdminItem(itemId) {
 export async function deleteContentItem(itemId, contentType = 'book') {
   if (!confirm('Are you sure you want to delete this item?')) return false;
   
-  // 1. Remove from local admin store
+  // 1. Mark as deleted globally so sample items, DB items, or local items disappear permanently!
+  markItemAsDeleted(itemId);
+
+  // 2. Remove from local admin store
   removeAdminItem(itemId);
 
-  // 2. Send request to backend API to delete from database
+  // 3. Send request to backend API to delete from database
   try {
     await fetch(getApiUrl('/api/admin/content/delete/'), {
       method: 'POST',

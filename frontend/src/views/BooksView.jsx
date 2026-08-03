@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithCache, getApiUrl } from '../utils/apiCache';
-import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
+import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function BooksView({ openReportModal, user }) {
@@ -59,7 +59,7 @@ export default function BooksView({ openReportModal, user }) {
           language: item.language || 'Urdu / Brahui',
           description: item.description || 'Uploaded by Administrator'
         }));
-        setBooks([...adminBooks, ...apiBooks]);
+        setBooks(filterOutDeleted([...adminBooks, ...apiBooks]));
         setTotalPages(data.total_pages || 1);
         setLoading(false);
       })
@@ -74,7 +74,7 @@ export default function BooksView({ openReportModal, user }) {
           language: item.language || 'Urdu / Brahui',
           description: item.description || 'Uploaded by Administrator'
         }));
-        setBooks(adminBooks);
+        setBooks(filterOutDeleted(adminBooks));
         setLoading(false);
       });
   }, [debouncedQuery, selectedCategory, selectedFileType, page]);
@@ -96,9 +96,21 @@ export default function BooksView({ openReportModal, user }) {
             language: item.language || 'Urdu / Brahui',
             description: item.description || 'Uploaded by Administrator'
           }));
-          setBooks([...adminBooks, ...apiBooks]);
+          setBooks(filterOutDeleted([...adminBooks, ...apiBooks]));
         })
-        .catch(() => {});
+        .catch(() => {
+          const adminBooks = getAdminItems('books').map(item => ({
+            id: item.id,
+            title: item.title,
+            author: item.author || 'Admin Upload',
+            file_type: 'pdf',
+            pdf_url: item.fileUrl || item.pdf_url,
+            cover_url: item.cover_url || '',
+            language: item.language || 'Urdu / Brahui',
+            description: item.description || 'Uploaded by Administrator'
+          }));
+          setBooks(filterOutDeleted(adminBooks));
+        });
     };
 
     window.addEventListener('admin_content_updated', handleUpdate);

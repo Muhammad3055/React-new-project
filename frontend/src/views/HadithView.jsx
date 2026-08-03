@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
-import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
+import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 
 export default function HadithView({ openReportModal, user }) {
   const [hadiths, setHadiths] = useState([]);
@@ -35,7 +35,7 @@ export default function HadithView({ openReportModal, user }) {
           narrated_by: item.author || item.speaker || 'Admin',
           addedByAdmin: true
         }));
-        setHadiths([...adminHadiths, ...apiHadiths]);
+        setHadiths(filterOutDeleted([...adminHadiths, ...apiHadiths]));
         setBooksList(data.books_list || []);
         setTotalPages(data.total_pages || 1);
         setLoading(false);
@@ -52,7 +52,7 @@ export default function HadithView({ openReportModal, user }) {
           narrated_by: item.author || item.speaker || 'Admin',
           addedByAdmin: true
         }));
-        setHadiths(adminHadiths);
+        setHadiths(filterOutDeleted(adminHadiths));
         setLoading(false);
       });
   }, [debouncedQuery, selectedBook, selectedGrade, page]);

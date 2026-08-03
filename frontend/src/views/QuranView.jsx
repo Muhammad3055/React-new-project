@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithCache } from '../utils/apiCache';
-import { getAdminItems, deleteContentItem } from '../utils/adminContentStore';
+import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
+import AdminUploadModal from '../components/AdminUploadModal';
 
 const QARIS = [
   { id: 'alafasy', name: 'Mishary Rashid Alafasy', server: 'https://server8.mp3quran.net/afs/' },
@@ -117,6 +118,7 @@ const DEFAULT_TAQREERS = {
 
 export default function QuranView({ playTrack, user, navigateToTab, initialSubCategory = 'quran_arabic' }) {
   const [subCategory, setSubCategory] = useState(initialSubCategory); 
+  const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
 
   useEffect(() => {
     if (initialSubCategory) {
@@ -244,8 +246,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
   ];
 
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const handleUpdate = () => setTick(t => t + 1);
+    window.addEventListener('admin_content_updated', handleUpdate);
+    return () => window.removeEventListener('admin_content_updated', handleUpdate);
+  }, []);
+
   const currentTaqreerLang = subCategory.replace('taqreer_', '');
-  const adminTaqreers = [...getAdminItems('taqreer'), ...getAdminItems('audio')].map(item => ({
+  const adminTaqreers = [...getAdminItems('taqreer'), ...getAdminItems('audio'), ...getAdminItems(subCategory)].map(item => ({
     id: item.id,
     title: item.title,
     speaker: item.speaker || item.author || 'Admin Upload',
@@ -256,7 +265,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     addedByAdmin: true
   }));
   const baseTaqreers = taqreers.length > 0 ? taqreers : (DEFAULT_TAQREERS[currentTaqreerLang] || []);
-  const activeTaqreers = [...adminTaqreers, ...baseTaqreers];
+  const activeTaqreers = filterOutDeleted([...adminTaqreers, ...baseTaqreers]);
 
   return (
     <div className="container" style={{ paddingBottom: '3rem' }}>
@@ -508,9 +517,19 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               />
             </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(2, 44, 34, 0.9)', padding: '0.4rem 0.85rem', borderRadius: '20px', border: '1px solid var(--accent-gold)' }}>
-              <i className="fas fa-microphone-alt" style={{ marginRight: '0.35rem', color: 'var(--accent-gold)' }}></i>
-              {subCategory === 'taqreer_arabic' ? 'Arabic Speeches (تقارير عربية)' : (subCategory === 'taqreer_brahui' ? 'Brahui Speeches (تقارير براہوئی)' : 'Urdu Speeches (تقارير اردو)')}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {(user?.is_staff || user?.is_superuser) && (
+                <button
+                  onClick={() => setShowAdminUploadModal(true)}
+                  style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  <i className="fas fa-plus-circle"></i> + Add MP3 Audio / Tarjuma
+                </button>
+              )}
+              <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(2, 44, 34, 0.9)', padding: '0.4rem 0.85rem', borderRadius: '20px', border: '1px solid var(--accent-gold)' }}>
+                <i className="fas fa-microphone-alt" style={{ marginRight: '0.35rem', color: 'var(--accent-gold)' }}></i>
+                {subCategory === 'taqreer_arabic' ? 'Arabic Speeches (تقارير عربية)' : (subCategory === 'taqreer_brahui' ? 'Brahui Speeches (تقارير براہوئی)' : 'Urdu Speeches (تقارير اردو)')}
+              </div>
             </div>
           </div>
 
@@ -586,6 +605,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             </div>
           )}
         </div>
+      )}
+
+      {showAdminUploadModal && (
+        <AdminUploadModal onClose={() => setShowAdminUploadModal(false)} />
       )}
     </div>
   );
