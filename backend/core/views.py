@@ -1243,40 +1243,47 @@ def api_admin_delete_content(request):
     if request.method in ['POST', 'DELETE']:
         try:
             body = json.loads(request.body.decode('utf-8')) if request.body else request.POST
-            content_type = body.get('content_type', '').lower()
-            item_id = body.get('id') or body.get('item_id')
+            content_type = str(body.get('content_type', '')).lower()
+            item_id = body.get('id') or body.get('item_id') or body.get('title')
 
             if not item_id:
-                return JsonResponse({'status': 'error', 'message': 'Missing item ID'}, status=400)
+                return JsonResponse({'status': 'error', 'message': 'Missing item ID or title'}, status=400)
 
-            deleted = False
+            deleted_count = 0
+            str_id = String(item_id) if 'String' in globals() else str(item_id)
+
+            # Models to check
+            models_to_check = []
             if content_type in ['book', 'document', 'books']:
-                BookMedia.objects.filter(id=item_id).delete()
-                deleted = True
+                models_to_check = [BookMedia]
             elif content_type in ['audio', 'taqreer', 'mp3']:
-                TaqreerAudio.objects.filter(id=item_id).delete()
-                deleted = True
+                models_to_check = [TaqreerAudio]
             elif content_type in ['quran', 'quran_audio']:
-                QuranAudio.objects.filter(id=item_id).delete()
-                deleted = True
+                models_to_check = [QuranAudio]
             elif content_type in ['hadith', 'text']:
-                Hadith.objects.filter(id=item_id).delete()
-                deleted = True
+                models_to_check = [Hadith]
             elif content_type in ['video']:
-                VideoMedia.objects.filter(id=item_id).delete()
-                deleted = True
+                models_to_check = [VideoMedia]
             elif content_type in ['tafseer']:
-                Tafseer.objects.filter(id=item_id).delete()
-                deleted = True
+                models_to_check = [Tafseer]
             else:
-                # Try generic delete across models
-                for model in [BookMedia, TaqreerAudio, Hadith, QuranAudio, VideoMedia]:
-                    if model.objects.filter(id=item_id).exists():
-                        model.objects.filter(id=item_id).delete()
-                        deleted = True
-                        break
+                models_to_check = [BookMedia, TaqreerAudio, Hadith, QuranAudio, VideoMedia, Tafseer]
 
-            return JsonResponse({'status': 'success', 'deleted': deleted, 'message': f'Item {item_id} deleted successfully.'})
+            for model in models_to_check:
+                # 1. Try delete by numeric integer ID
+                if str(item_id).isdigit():
+                    res = model.objects.filter(id=int(item_id)).delete()
+                    if res[0] > 0:
+                        deleted_count += res[0]
+                        continue
+
+                # 2. Try delete by exact or icontains title match
+                if isinstance(item_id, str) and item_id.strip():
+                    res_title = model.objects.filter(Q(title__iexact=item_id.strip()) | Q(title__icontains=item_id.strip())).delete()
+                    if res_title[0] > 0:
+                        deleted_count += res_title[0]
+
+            return JsonResponse({'status': 'success', 'deleted_count': deleted_count, 'message': f'Item {item_id} deleted successfully from Django backend database!'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)

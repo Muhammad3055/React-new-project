@@ -156,21 +156,22 @@ export async function editContentItem(itemId, updatedData = {}, contentType = 'b
   return true;
 }
 
-export async function deleteContentItem(itemId, contentType = 'book') {
+export async function deleteContentItem(itemId, contentType = 'book', title = '') {
   if (!confirm('Are you sure you want to delete this item?')) return false;
   
   // 1. Mark as deleted globally so sample items, DB items, or local items disappear permanently!
   markItemAsDeleted(itemId);
+  if (title) markItemAsDeleted(title);
 
   // 2. Remove from local admin store
   removeAdminItem(itemId);
 
-  // 3. Send request to backend API to delete from database
+  // 3. Send request to backend API to delete permanently from Django database
   try {
     await fetch(getApiUrl('/api/admin/content/delete/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: itemId, content_type: contentType })
+      body: JSON.stringify({ id: itemId, item_id: itemId, title: title, content_type: contentType })
     });
   } catch (e) {
     console.error('Error deleting from backend API:', e);
