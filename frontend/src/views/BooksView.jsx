@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchWithCache, getApiUrl } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import { useLanguage } from '../context/LanguageContext';
+import AdminEditModal from '../components/AdminEditModal';
 
 export default function BooksView({ openReportModal, user }) {
   const { t } = useLanguage();
@@ -15,6 +16,7 @@ export default function BooksView({ openReportModal, user }) {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [previewDoc, setPreviewDoc] = useState(null); // Document selected for modal viewing
+  const [editingBook, setEditingBook] = useState(null);
   const [viewerEngine, setViewerEngine] = useState('direct'); // 'direct' | 'office' | 'google'
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -401,13 +403,22 @@ export default function BooksView({ openReportModal, user }) {
                   </button>
 
                   {(user?.is_staff || user?.is_superuser || bk.addedByAdmin) && (
-                    <button
-                      onClick={() => deleteContentItem(bk.id, 'book')}
-                      style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                      title="Delete Book as Admin"
-                    >
-                      <i className="fas fa-trash"></i> Delete
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setEditingBook(bk)}
+                        style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                        title="Edit Document as Admin"
+                      >
+                        <i className="fas fa-edit"></i> Edit
+                      </button>
+                      <button
+                        onClick={() => deleteContentItem(bk.id, 'book')}
+                        style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                        title="Delete Book as Admin"
+                      >
+                        <i className="fas fa-trash"></i> Delete
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -416,44 +427,18 @@ export default function BooksView({ openReportModal, user }) {
         </div>
       ) : (
         /* COMPACT LIST VIEW */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {books.map((bk) => {
             const badge = getFormatBadge(bk.file_type);
             return (
-              <div
-                key={bk.id}
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
-                  padding: '1rem 1.25rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '1rem',
-                  flexWrap: 'wrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '280px' }}>
-                  <img
-                    src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"}
-                    alt={bk.title}
-                    style={{ width: '56px', height: '70px', borderRadius: '8px', objectFit: 'cover' }}
-                  />
+              <div key={bk.id} className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', gap: '1rem', flexWrap: 'wrap', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '240px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    <i className={badge.icon}></i>
+                  </div>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                      <span style={{ padding: '0.2rem 0.5rem', background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800 }}>
-                        <i className={badge.icon}></i> {badge.label}
-                      </span>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>
-                        {bk.pages_count} {bk.file_type === 'ppt' ? 'Slides' : 'Pages'} &bull; {bk.language}
-                      </span>
-                    </div>
-                    <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--primary-dark)', fontWeight: 700 }}>{bk.title}</h3>
-                    <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      Author: {bk.author}
-                    </p>
+                    <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{bk.title}</h4>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>By {bk.author} • {bk.pages_count || 100} Pages</span>
                   </div>
                 </div>
 
@@ -484,13 +469,22 @@ export default function BooksView({ openReportModal, user }) {
                   </button>
 
                   {(user?.is_staff || user?.is_superuser || bk.addedByAdmin) && (
-                    <button
-                      onClick={() => deleteContentItem(bk.id, 'book')}
-                      style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                      title="Delete Book as Admin"
-                    >
-                      <i className="fas fa-trash"></i> Delete
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setEditingBook(bk)}
+                        style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                        title="Edit Document as Admin"
+                      >
+                        <i className="fas fa-edit"></i> Edit
+                      </button>
+                      <button
+                        onClick={() => deleteContentItem(bk.id, 'book')}
+                        style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                        title="Delete Book as Admin"
+                      >
+                        <i className="fas fa-trash"></i> Delete
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -774,6 +768,17 @@ export default function BooksView({ openReportModal, user }) {
             </div>
           </div>
         </div>
+      )}
+
+      {editingBook && (
+        <AdminEditModal
+          item={editingBook}
+          onClose={() => setEditingBook(null)}
+          onSuccess={() => {
+            setEditingBook(null);
+            window.dispatchEvent(new CustomEvent('admin_content_updated'));
+          }}
+        />
       )}
     </div>
   );

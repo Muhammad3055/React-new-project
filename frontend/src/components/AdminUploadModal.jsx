@@ -18,6 +18,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
   const [fileUrl, setFileUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
   const [duration, setDuration] = useState('15:00');
+  const [pagesCount, setPagesCount] = useState(100);
   const [buttonLabel, setButtonLabel] = useState('Read Now');
   const [buttonIcon, setButtonIcon] = useState('fas fa-external-link-alt');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -43,15 +44,22 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
 
     const formData = new FormData();
     formData.append('title', title);
+    formData.append('author', authorSpeaker);
+    formData.append('speaker', authorSpeaker);
+    formData.append('pages_count', pagesCount);
+    formData.append('file_type', contentType === 'book' ? 'pdf' : contentType);
     formData.append('destination', destination);
     formData.append('language', language);
     formData.append('description', description);
     formData.append('content_type', contentType);
+    formData.append('pdf_url', fileUrl);
+    formData.append('cover_url', coverUrl);
 
     let finalFileUrl = fileUrl;
 
     if (selectedFile) {
       formData.append('file', selectedFile);
+      formData.append('pdf_file', selectedFile);
       // In client mode, create object URL for instant preview
       finalFileUrl = URL.createObjectURL(selectedFile);
     }
@@ -60,6 +68,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
       title,
       author: authorSpeaker,
       speaker: authorSpeaker,
+      pages_count: Number(pagesCount) || 100,
       destination,
       contentType,
       language,
@@ -78,7 +87,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
     // Save to Admin Store for instant UI update
     addAdminItem(newItem);
 
-    // Also attempt POST to backend API
+    // Also attempt POST to backend API to save permanently in Django DB
     const apiEndpoint = contentType === 'book' ? '/api/books/' : contentType === 'audio' ? '/api/taqreer/' : '/api/upload/';
     fetch(getApiUrl(apiEndpoint), {
       method: 'POST',
@@ -253,6 +262,20 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                   <option value="arabic">🇸🇦 Arabic</option>
                 </select>
               </div>
+
+              {contentType === 'book' && (
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>Pages Count</label>
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="120"
+                    value={pagesCount}
+                    onChange={(e) => setPagesCount(e.target.value)}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+              )}
 
               {contentType === 'audio' && (
                 <div>

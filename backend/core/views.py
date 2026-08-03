@@ -235,6 +235,7 @@ def api_books_list(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            file_obj = request.FILES.get('pdf_file') or request.FILES.get('file')
             bk = BookMedia.objects.create(
                 title=body.get('title', 'Untitled Document'),
                 author=body.get('author', 'Unknown Author'),
@@ -245,7 +246,10 @@ def api_books_list(request):
                 language=body.get('language', 'English / Urdu'),
                 description=body.get('description', '')
             )
-            return JsonResponse({'status': 'success', 'id': bk.id})
+            if file_obj:
+                bk.pdf_file = file_obj
+                bk.save()
+            return JsonResponse({'status': 'success', 'id': bk.id, 'document_url': bk.get_document_url()})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
@@ -1276,4 +1280,49 @@ def api_admin_delete_content(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def api_admin_edit_content(request):
+    if request.method in ['POST', 'PUT']:
+        try:
+            body = json.loads(request.body.decode('utf-8')) if (request.content_type == 'application/json' and request.body) else request.POST
+            content_type = body.get('content_type', 'book').lower()
+            item_id = body.get('id') or body.get('item_id')
+
+            file_obj = request.FILES.get('file') or request.FILES.get('pdf_file') or request.FILES.get('audio_file')
+
+            if content_type in ['book', 'document', 'books']:
+                bk = BookMedia.objects.filter(id=item_id).first()
+                if bk:
+                    if 'title' in body: bk.title = body.get('title')
+                    if 'author' in body: bk.author = body.get('author')
+                    if 'pages_count' in body and str(body.get('pages_count')).isdigit(): bk.pages_count = int(body.get('pages_count'))
+                    if 'file_type' in body: bk.file_type = body.get('file_type')
+                    if 'language' in body: bk.language = body.get('language')
+                    if 'description' in body: bk.description = body.get('description')
+                    if 'pdf_url' in body: bk.pdf_url = body.get('pdf_url')
+                    if 'cover_url' in body: bk.cover_url = body.get('cover_url')
+                    if file_obj: bk.pdf_file = file_obj
+                    bk.save()
+                    return JsonResponse({'status': 'success', 'message': 'Book updated successfully!', 'document_url': bk.get_document_url()})
+
+            elif content_type in ['audio', 'taqreer', 'mp3']:
+                tq = TaqreerAudio.objects.filter(id=item_id).first()
+                if tq:
+                    if 'title' in body: tq.title = body.get('title')
+                    if 'speaker' in body or 'author' in body: tq.speaker = body.get('speaker') or body.get('author')
+                    if 'language' in body: tq.language = body.get('language')
+                    if 'duration' in body: tq.duration = body.get('duration')
+                    if 'description' in body: tq.description = body.get('description')
+                    if 'audio_url' in body: tq.audio_url = body.get('audio_url')
+                    if file_obj: tq.audio_file = file_obj
+                    tq.save()
+                    return JsonResponse({'status': 'success', 'message': 'Audio updated successfully!', 'audio_url': tq.get_playable_url()})
+
+            return JsonResponse({'status': 'success', 'message': 'Item updated successfully!'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
 

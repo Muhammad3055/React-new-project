@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
 import { getAdminItems, addAdminItem, deleteContentItem } from '../utils/adminContentStore';
+import AdminEditModal from '../components/AdminEditModal';
 
 export default function UploadView({ user }) {
   if (!user || !user.is_staff) {
@@ -23,6 +24,7 @@ export default function UploadView({ user }) {
   const [activeTab, setActiveTab] = useState('taqreer'); // 'taqreer' | 'book' | 'hadith' | 'audio'
   const [submittedMessage, setSubmittedMessage] = useState('');
   const [dbTaqreers, setDbTaqreers] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
 
   // Load database Taqreers on mount and on new submission
   useEffect(() => {
@@ -99,14 +101,33 @@ export default function UploadView({ user }) {
 
   const handleBookSubmit = (e) => {
     e.preventDefault();
+    const finalDocUrl = bookFile ? URL.createObjectURL(bookFile) : bookData.pdf_url;
+
+    addAdminItem({
+      title: bookData.title,
+      author: bookData.author,
+      destination: 'books',
+      contentType: 'book',
+      file_type: bookData.file_type,
+      pages_count: Number(bookData.pages_count) || 100,
+      language: bookData.language,
+      description: bookData.description,
+      fileUrl: finalDocUrl,
+      pdf_url: finalDocUrl,
+      cover_url: bookData.cover_url,
+      addedByAdmin: true
+    });
+
     const formData = new FormData();
     formData.append('title', bookData.title);
     formData.append('author', bookData.author);
     formData.append('language', bookData.language);
     formData.append('file_type', bookData.file_type);
+    formData.append('pages_count', bookData.pages_count);
     formData.append('description', bookData.description);
     if (bookFile) {
       formData.append('pdf_file', bookFile);
+      formData.append('file', bookFile);
     } else {
       formData.append('pdf_url', bookData.pdf_url);
     }
@@ -118,13 +139,15 @@ export default function UploadView({ user }) {
     })
       .then(res => res.json())
       .then(() => {
-        setSubmittedMessage('Book document uploaded successfully from laptop!');
+        setSubmittedMessage('Book document uploaded successfully & saved to Django database!');
         setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
         setBookFile(null);
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
         setSubmittedMessage('Book saved!');
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       });
   };
@@ -342,6 +365,10 @@ export default function UploadView({ user }) {
                 <label className="form-label">Language</label>
                 <input type="text" className="form-input" value={bookData.language} onChange={e => setBookData({ ...bookData, language: e.target.value })} placeholder="e.g. Arabic / English / Urdu" />
               </div>
+              <div>
+                <label className="form-label">Pages Count</label>
+                <input type="number" min="1" className="form-input" value={bookData.pages_count} onChange={e => setBookData({ ...bookData, pages_count: e.target.value })} placeholder="120" />
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
@@ -498,7 +525,13 @@ export default function UploadView({ user }) {
                         </span>
                       </td>
                       <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{tq.speaker || '-'}</td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
+                      <td style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => setEditingItem({ id: tq.id, title: tq.title, speaker: tq.speaker, contentType: 'audio' })}
+                          style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                        >
+                          <i className="fas fa-edit"></i> Edit
+                        </button>
                         <button
                           onClick={async () => {
                             const done = await deleteContentItem(tq.id, 'audio');
@@ -518,7 +551,13 @@ export default function UploadView({ user }) {
                       <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: 'var(--accent-gold)' }}>{item.title || 'Untitled'}</td>
                       <td style={{ padding: '0.75rem 1rem', textTransform: 'uppercase', fontSize: '0.78rem' }}>{item.destination || item.contentType || 'Custom'}</td>
                       <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{item.author || item.speaker || '-'}</td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
+                      <td style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => setEditingItem(item)}
+                          style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                        >
+                          <i className="fas fa-edit"></i> Edit
+                        </button>
                         <button
                           onClick={() => deleteContentItem(item.id, item.contentType || item.destination || 'book')}
                           style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
@@ -534,6 +573,18 @@ export default function UploadView({ user }) {
           )}
         </div>
       </div>
+
+      {editingItem && (
+        <AdminEditModal
+          item={editingItem}
+          onClose={() => setEditingItem(null)}
+          onSuccess={() => {
+            setEditingItem(null);
+            setSubmittedMessage('Item updated successfully!');
+            setTimeout(() => setSubmittedMessage(''), 4000);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -111,6 +111,51 @@ export function removeAdminItem(itemId) {
   }
 }
 
+export function updateAdminItem(updatedItem) {
+  try {
+    const existing = getAdminItems();
+    const index = existing.findIndex(item => String(item.id) === String(updatedItem.id));
+    if (index !== -1) {
+      existing[index] = { ...existing[index], ...updatedItem };
+    } else {
+      existing.unshift(updatedItem);
+    }
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
+    window.dispatchEvent(new CustomEvent('admin_content_updated'));
+  } catch (e) {
+    console.error('Error updating admin item:', e);
+  }
+}
+
+export async function editContentItem(itemId, updatedData = {}, contentType = 'book') {
+  const itemToSave = { id: itemId, contentType, ...updatedData };
+  updateAdminItem(itemToSave);
+
+  try {
+    const formData = new FormData();
+    formData.append('id', itemId);
+    formData.append('content_type', contentType);
+
+    Object.keys(updatedData).forEach(key => {
+      if (key === 'selectedFile' && updatedData[key]) {
+        formData.append('file', updatedData[key]);
+      } else if (updatedData[key] !== undefined && updatedData[key] !== null) {
+        formData.append(key, updatedData[key]);
+      }
+    });
+
+    await fetch(getApiUrl('/api/admin/content/edit/'), {
+      method: 'POST',
+      body: formData
+    });
+  } catch (e) {
+    console.error('Error syncing edit with backend API:', e);
+  }
+
+  window.dispatchEvent(new CustomEvent('admin_content_updated'));
+  return true;
+}
+
 export async function deleteContentItem(itemId, contentType = 'book') {
   if (!confirm('Are you sure you want to delete this item?')) return false;
   
