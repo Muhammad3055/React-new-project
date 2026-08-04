@@ -130,7 +130,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         });
 
     } else {
-      // ===== NEW USER SIGN UP (CREATE ACCOUNT) =====
+      // ===== NEW USER SIGN UP (CREATE ACCOUNT & DISPATCH 6-DIGIT OTP TO GMAIL) =====
       if (!username.trim() || !email.trim() || !password.trim()) {
         setError('Please fill in all required fields (Username, Email, Password).');
         return;
@@ -138,51 +138,47 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
       setSubmitting(true);
 
-      fetch(getApiUrl('/api/auth/signup/'), {
+      fetch(getApiUrl('/api/auth/send-otp/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
+        body: JSON.stringify({ type: 'signup', username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
       })
         .then(res => res.json())
         .then(data => {
           setSubmitting(false);
-          if (data.status === 'success') {
-            const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
-            localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
-            setUser(userObj);
-            onClose();
+          if (data.status === 'otp_sent') {
+            setPendingEmail(data.email || email.trim().toLowerCase());
+            setStep('otp');
+            setOtpCode('');
           } else {
             setError(data.error || 'Registration failed. Please check your details.');
           }
         })
         .catch(() => {
           setSubmitting(false);
-          const userObj = { username: username.trim(), email: email.trim().toLowerCase(), is_staff: false };
-          const savedUsers = JSON.parse(localStorage.getItem('quran_portal_registered_users') || '[]');
-          if (!savedUsers.some(u => u.email === userObj.email)) {
-            savedUsers.push({ ...userObj, password: password.trim() });
-            localStorage.setItem('quran_portal_registered_users', JSON.stringify(savedUsers));
-          }
-          localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
-          setUser(userObj);
-          onClose();
+          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+          setPendingEmail(email.trim().toLowerCase());
+          setStep('otp');
+          setOtpCode(generatedOtp);
+          setPendingDemoUser({ username: username.trim(), email: email.trim().toLowerCase(), password: password.trim(), code: generatedOtp });
         });
     }
 
   };
 
   const handleOpenSocialModal = (provider) => {
+    // 1-Click Social Sign-In Direct Authenticate
     setSocialProvider(provider);
-    setSocialEmail('');
-    setShowCustomSocialInput(false);
     setError('');
+    const userEmail = (email || username || '').includes('@') ? (email || username) : `${username || provider}_user@gmail.com`;
+    executeSocialAuth(provider, userEmail);
   };
 
   const executeSocialAuth = (provider, email) => {
     setSubmitting(true);
     setError('');
 
-    const targetEmail = email.trim().toLowerCase();
+    const targetEmail = (email || '').trim().toLowerCase() || `${provider}_user@gmail.com`;
 
     fetch(getApiUrl('/api/auth/social/'), {
       method: 'POST',
@@ -198,18 +194,19 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           setUser(userObj);
           onClose();
         } else {
-          setError(data.error || `${provider.toUpperCase()} Sign-In failed.`);
+          setError(data.error || `${provider.toUpperCase()} Direct Sign-In failed.`);
         }
       })
       .catch(() => {
         setSubmitting(false);
-        const namePart = targetEmail.split('@')[0];
+        const namePart = targetEmail.split('@')[0] || provider;
         const userObj = { username: namePart, email: targetEmail, is_staff: false };
         localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
         setUser(userObj);
         onClose();
       });
   };
+
 
   const handleCustomSocialSubmit = (e) => {
     e.preventDefault();
