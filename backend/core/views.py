@@ -245,9 +245,17 @@ def api_books_list(request):
             cat_id = body.get('category_id') or body.get('category')
 
             pages = 1
-            raw_pages = body.get('pages_count', '1')
+            raw_pages = body.get('pages_count') or body.get('pages') or body.get('pagesCount') or '1'
             if str(raw_pages).isdigit():
                 pages = int(raw_pages)
+
+            category_obj = None
+            if cat_id:
+                if str(cat_id).isdigit():
+                    category_obj = Category.objects.filter(id=int(cat_id)).first()
+                else:
+                    from django.utils.text import slugify
+                    category_obj, _ = Category.objects.get_or_create(name=cat_id, defaults={'slug': slugify(cat_id)})
 
             bk = BookMedia.objects.create(
                 title=body.get('title', 'Untitled Document'),
@@ -258,7 +266,7 @@ def api_books_list(request):
                 pages_count=pages,
                 language=body.get('language', 'urdu'),
                 description=body.get('description', ''),
-                category_id=int(cat_id) if (cat_id and str(cat_id).isdigit()) else None
+                category=category_obj
             )
             if file_obj:
                 bk.pdf_file = file_obj
@@ -266,7 +274,22 @@ def api_books_list(request):
                 bk.cover_image = cover_file
             if file_obj or cover_file:
                 bk.save()
-            return JsonResponse({'status': 'success', 'id': bk.id, 'document_url': bk.get_document_url()})
+
+            doc_url = bk.get_document_url()
+            return JsonResponse({
+                'status': 'success',
+                'id': bk.id,
+                'title': bk.title,
+                'author': bk.author,
+                'document_url': doc_url,
+                'pdf_url': doc_url,
+                'cover_url': bk.cover_image.url if bk.cover_image else bk.cover_url,
+                'pages_count': bk.pages_count,
+                'pages': bk.pages_count,
+                'pagesCount': bk.pages_count,
+                'category_id': bk.category_id,
+                'category': bk.category.name if bk.category else None,
+            })
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
@@ -303,9 +326,12 @@ def api_books_list(request):
             'cover_url': item.cover_image.url if item.cover_image else item.cover_url,
             'description': item.description,
             'pages_count': item.pages_count,
+            'pages': item.pages_count,
+            'pagesCount': item.pages_count,
             'language': item.language,
             'category_id': item.category_id,
             'category': item.category.name if item.category else None,
+            'created_at': item.created_at.strftime('%Y-%m-%d'),
         })
 
     return JsonResponse({
@@ -314,6 +340,7 @@ def api_books_list(request):
         'total_pages': paginator.num_pages,
         'total_count': paginator.count,
     })
+
 
 
 def api_tafseer_list(request):
