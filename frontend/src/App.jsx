@@ -79,25 +79,26 @@ export default function App() {
   // Dynamic SEO Page Title update
   useEffect(() => {
     const seoTitles = {
-      home: 'Maktabat-ul-Muslim (مكتبة المسلم) - Read Quran Online (English, Urdu, Brahui / Brohi) | MP3 & Taqreer Library',
-      read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui (Brohi) Tarjuma | Maktabat-ul-Muslim',
-      quran: 'Quran & Taqreer MP3 Audio Portal - Qaris Tilawat & Scholar Lectures | Maktabat-ul-Muslim',
-      qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads | Maktabat-ul-Muslim',
-      tafseer: 'Tafseer Quran & Verse Explanations - Maktabat-ul-Muslim',
-      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan | Maktabat-ul-Muslim',
-      fazail: 'Fazail & Virtues of Quran & Good Deeds - Maktabat-ul-Muslim',
-      books: 'Maktabat-ul-Muslim - Free Islamic PDF Books & Library (Brohi / Urdu / English)',
-      namesOfAllah: '99 Names of Allah (Asma ul Husna) - Maktabat-ul-Muslim',
-      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr - Maktabat-ul-Muslim',
-      duas: 'Masnoon Duas & Supplications - Maktabat-ul-Muslim',
-      khatam: 'Khatam Quran Progress Tracker - Maktabat-ul-Muslim',
-      contact: 'Contact Us & Feedback - Maktabat-ul-Muslim (مكتبة المسلم)',
-      about: 'About Us & Portal Profile - Maktabat-ul-Muslim',
-      bookmarks: 'My Saved Bookmarks - Maktabat-ul-Muslim',
-      upload: 'Admin Upload Content Studio - Maktabat-ul-Muslim'
+      home: 'Maktaba tul Muslim (مكتبة المسلم) - Read Quran Online (English, Urdu, Brahui / Brohi) | MP3 & Taqreer Library',
+      read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui (Brohi) Tarjuma | Maktaba tul Muslim',
+      quran: 'Quran & Taqreer MP3 Audio Portal - Qaris Tilawat & Scholar Lectures | Maktaba tul Muslim',
+      qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads | Maktaba tul Muslim',
+      tafseer: 'Tafseer Quran & Verse Explanations - Maktaba tul Muslim',
+      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan | Maktaba tul Muslim',
+      fazail: 'Fazail & Virtues of Quran & Good Deeds - Maktaba tul Muslim',
+      books: 'Maktaba tul Muslim - Free Islamic PDF Books & Library (Brohi / Urdu / English)',
+      namesOfAllah: '99 Names of Allah (Asma ul Husna) - Maktaba tul Muslim',
+      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr - Maktaba tul Muslim',
+      duas: 'Masnoon Duas & Supplications - Maktaba tul Muslim',
+      khatam: 'Khatam Quran Progress Tracker - Maktaba tul Muslim',
+      contact: 'Contact Us & Feedback - Maktaba tul Muslim (مكتبة المسلم)',
+      about: 'About Us & Portal Profile - Maktaba tul Muslim',
+      bookmarks: 'My Saved Bookmarks - Maktaba tul Muslim',
+      upload: 'Admin Upload Content Studio - Maktaba tul Muslim'
     };
-    document.title = seoTitles[activeTab] || 'Maktabat-ul-Muslim (مكتبة المسلم) - Digital Islamic Library & Quran Portal';
+    document.title = seoTitles[activeTab] || 'Maktaba tul Muslim (مكتبة المسلم) - Digital Islamic Library & Quran Portal';
   }, [activeTab]);
+
 
 
   // Check auth status on mount

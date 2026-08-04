@@ -3,8 +3,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 // Comprehensive Translations Dictionary for English, Urdu, Brahui, and Arabic
 export const translations = {
   english: {
-    brandName: "Maktabat-ul-Muslim",
+    brandName: "Maktaba tul Muslim",
     searchPlaceholder: "Search Quran, Surahs, Books...",
+
 
     home: "Home",
     readQuran: "Read Quran",
