@@ -2898,6 +2898,23 @@ button, input, select, textarea, .btn, a.btn {
   }
 }
 
+/* PDF Document Reader Modal Mobile Layout Guard */
+.pdf-modal-header {
+  white-space: nowrap !important;
+}
+
+.pdf-modal-header button,
+.pdf-modal-header a {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  writing-mode: horizontal-tb !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: row !important;
+}
+
+
 
 
 

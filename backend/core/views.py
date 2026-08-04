@@ -236,22 +236,35 @@ def api_books_list(request):
         try:
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
             file_obj = request.FILES.get('pdf_file') or request.FILES.get('file')
+            cover_file = request.FILES.get('cover_image') or request.FILES.get('cover_file') or request.FILES.get('thumbnail')
+            cat_id = body.get('category_id') or body.get('category')
+
+            pages = 1
+            raw_pages = body.get('pages_count', '1')
+            if str(raw_pages).isdigit():
+                pages = int(raw_pages)
+
             bk = BookMedia.objects.create(
                 title=body.get('title', 'Untitled Document'),
                 author=body.get('author', 'Unknown Author'),
                 file_type=body.get('file_type', 'pdf'),
                 pdf_url=body.get('pdf_url', ''),
                 cover_url=body.get('cover_url', ''),
-                pages_count=int(body.get('pages_count', 1)),
-                language=body.get('language', 'English / Urdu'),
-                description=body.get('description', '')
+                pages_count=pages,
+                language=body.get('language', 'urdu'),
+                description=body.get('description', ''),
+                category_id=int(cat_id) if (cat_id and str(cat_id).isdigit()) else None
             )
             if file_obj:
                 bk.pdf_file = file_obj
+            if cover_file:
+                bk.cover_image = cover_file
+            if file_obj or cover_file:
                 bk.save()
             return JsonResponse({'status': 'success', 'id': bk.id, 'document_url': bk.get_document_url()})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
 
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '').strip()

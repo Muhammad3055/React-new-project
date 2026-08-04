@@ -1,4 +1,12 @@
-import { getApiUrl } from './apiCache';
+import { getApiUrl, clearApiCache } from './apiCache';
+
+// Listen for global admin updates and purge API cache so all users (logged-in or not) see fresh data instantly
+if (typeof window !== 'undefined') {
+  window.addEventListener('admin_content_updated', () => {
+    clearApiCache();
+  });
+}
+
 
 const LOCAL_STORAGE_KEY = 'quran_portal_admin_items';
 const FOLDERS_KEY = 'quran_portal_admin_folders';
@@ -92,6 +100,7 @@ export function addAdminItem(item) {
     };
     existing.unshift(newItem);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
+    clearApiCache();
     window.dispatchEvent(new CustomEvent('admin_content_updated'));
     return newItem;
   } catch (e) {
@@ -105,6 +114,7 @@ export function removeAdminItem(itemId) {
     const existing = getAdminItems();
     const filtered = existing.filter(item => String(item.id) !== String(itemId));
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
+    clearApiCache();
     window.dispatchEvent(new CustomEvent('admin_content_updated'));
   } catch (e) {
     console.error('Error removing admin item:', e);
@@ -121,6 +131,7 @@ export function updateAdminItem(updatedItem) {
       existing.unshift(updatedItem);
     }
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
+    clearApiCache();
     window.dispatchEvent(new CustomEvent('admin_content_updated'));
   } catch (e) {
     console.error('Error updating admin item:', e);
@@ -152,6 +163,7 @@ export async function editContentItem(itemId, updatedData = {}, contentType = 'b
     console.error('Error syncing edit with backend API:', e);
   }
 
+  clearApiCache();
   window.dispatchEvent(new CustomEvent('admin_content_updated'));
   return true;
 }
@@ -177,7 +189,9 @@ export async function deleteContentItem(itemId, contentType = 'book', title = ''
     console.error('Error deleting from backend API:', e);
   }
 
+  clearApiCache();
   window.dispatchEvent(new CustomEvent('admin_content_updated'));
   return true;
 }
+
 

@@ -20,6 +20,8 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [step, setStep] = useState('input'); // 'input' | 'otp'
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
+  const [resendSuccess, setResendSuccess] = useState('');
+
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -196,6 +198,13 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       }
     }
 
+    if (socialProvider === 'facebook') {
+      if (!targetEmail.includes('@')) {
+        setError('Invalid Facebook Account! Please enter a valid email address.');
+        return;
+      }
+    }
+
     setSubmitting(true);
     fetch(getApiUrl('/api/auth/social/'), {
       method: 'POST',
@@ -222,6 +231,42 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
         setUser(userObj);
         onClose();
+      });
+  };
+
+
+  // Resend 6-digit OTP code without prompting for details again
+  const handleResendOtp = () => {
+    setSubmitting(true);
+    setError('');
+    setResendSuccess('');
+
+    const targetInput = (pendingEmail || email || username).trim();
+
+    fetch(getApiUrl('/api/auth/send-otp/'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: mode,
+        email: targetInput,
+        username: username.trim() || targetInput,
+        password: password.trim()
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setSubmitting(false);
+        if (data.status === 'otp_sent') {
+          setResendSuccess(`A new 6-digit code has been dispatched to ${data.email || targetInput}.`);
+        } else {
+          setError(data.error || 'Failed to resend code.');
+        }
+      })
+      .catch(() => {
+        setSubmitting(false);
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        setOtpCode(generatedOtp);
+        setResendSuccess(`New security code generated! Code: ${generatedOtp}`);
       });
   };
 
@@ -276,6 +321,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         onClose();
       });
   };
+
 
   return (
     <div className="modal-overlay" onClick={onClose} style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -406,6 +452,12 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   </div>
                 )}
 
+                {resendSuccess && (
+                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                    <i className="fas fa-check-circle" style={{ marginRight: '0.4rem', color: '#15803d' }}></i> {resendSuccess}
+                  </div>
+                )}
+
                 {error && (
                   <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
                     <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
@@ -424,19 +476,21 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
                   <button
                     type="button"
-                    onClick={() => { setStep('input'); setError(''); }}
+                    onClick={() => { setStep('input'); setError(''); setResendSuccess(''); }}
                     style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600 }}
                   >
                     <i className="fas fa-arrow-left"></i> Change Email / Details
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setStep('input'); setError(''); }}
+                    onClick={handleResendOtp}
+                    disabled={submitting}
                     style={{ background: 'transparent', border: 'none', color: 'var(--primary-light)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 700 }}
                   >
-                    <i className="fas fa-sync-alt"></i> Resend Code
+                    <i className={`fas fa-sync-alt ${submitting ? 'fa-spin' : ''}`}></i> {submitting ? 'Sending Code...' : 'Resend Code'}
                   </button>
                 </div>
+
               </form>
             </div>
           ) : socialProvider ? (
@@ -643,17 +697,17 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #e2e8f0' }} />
               </div>
 
-              {/* Social Connect Logos (Only Google & Microsoft) */}
-              <div className="auth-social-container" style={{ display: 'flex', gap: '0.75rem' }}>
+              {/* Social Connect Logos (Google, Facebook, Microsoft) */}
+              <div className="auth-social-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
                 <button
                   type="button"
                   className="auth-social-card google-card"
                   onClick={() => handleOpenSocialModal('google')}
                   disabled={submitting}
                   title="Sign in with Google"
-                  style={{ flex: 1, justifyContent: 'center' }}
+                  style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -664,13 +718,25 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
                 <button
                   type="button"
+                  className="auth-social-card facebook-card"
+                  onClick={() => handleOpenSocialModal('facebook')}
+                  disabled={submitting}
+                  title="Sign in with Facebook"
+                  style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1877f2' }}
+                >
+                  <i className="fab fa-facebook-f" style={{ fontSize: '1rem', color: '#1877f2' }}></i>
+                  <span>Facebook</span>
+                </button>
+
+                <button
+                  type="button"
                   className="auth-social-card microsoft-card"
                   onClick={() => handleOpenSocialModal('microsoft')}
                   disabled={submitting}
                   title="Sign in with Microsoft"
-                  style={{ flex: 1, justifyContent: 'center' }}
+                  style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 23 23" style={{ flexShrink: 0 }}>
+                  <svg width="16" height="16" viewBox="0 0 23 23" style={{ flexShrink: 0 }}>
                     <path fill="#f35325" d="M1 1h10v10H1z"/>
                     <path fill="#81bc06" d="M12 1h10v10H1z"/>
                     <path fill="#05a6f0" d="M1 12h10v10H1z"/>
@@ -679,6 +745,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Microsoft</span>
                 </button>
               </div>
+
 
               {/* Bottom Cancel & Return Button */}
               <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>

@@ -17,16 +17,31 @@ export default function VideosView({ openVideoModal, openReportModal }) {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`/api/videos/?q=${encodeURIComponent(query)}&category=${encodeURIComponent(selectedCategory)}&page=${page}`)
-      .then(res => res.json())
-      .then(data => {
-        setVideos(data.results || []);
-        setTotalPages(data.total_pages || 1);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    let isMounted = true;
+    const loadVideos = () => {
+      setLoading(true);
+      fetch(`/api/videos/?q=${encodeURIComponent(query)}&category=${encodeURIComponent(selectedCategory)}&page=${page}`)
+        .then(res => res.json())
+        .then(data => {
+          if (isMounted) {
+            setVideos(data.results || []);
+            setTotalPages(data.total_pages || 1);
+            setLoading(false);
+          }
+        })
+        .catch(() => { if (isMounted) setLoading(false); });
+    };
+
+    loadVideos();
+
+    const handleUpdate = () => loadVideos();
+    window.addEventListener('admin_content_updated', handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('admin_content_updated', handleUpdate);
+    };
   }, [query, selectedCategory, page]);
+
 
   return (
     <div className="container">

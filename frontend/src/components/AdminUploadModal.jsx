@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
 
 export default function AdminUploadModal({ onClose, onSuccess }) {
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [contentType, setContentType] = useState('book'); // 'book' | 'audio' | 'button' | 'folder'
   const [destination, setDestination] = useState('books'); // folder id
   const [newFolderName, setNewFolderName] = useState('');
@@ -13,7 +15,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
   // Form Fields
   const [title, setTitle] = useState('');
   const [authorSpeaker, setAuthorSpeaker] = useState('');
-  const [language, setLanguage] = useState('urdu'); // 'english' | 'urdu' | 'brahui'
+  const [language, setLanguage] = useState('urdu'); // 'english' | 'urdu' | 'brahui' | 'arabic' | 'sindhi' | 'pashto' | 'balochi'
   const [description, setDescription] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
@@ -23,6 +25,32 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
   const [buttonLabel, setButtonLabel] = useState('Read Now');
   const [buttonIcon, setButtonIcon] = useState('fas fa-external-link-alt');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedCoverFile, setSelectedCoverFile] = useState(null);
+
+  const defaultCategoriesList = [
+    { id: 1, name: 'Tafseer & Quranic Studies' },
+    { id: 2, name: 'Hadith & Sunnah' },
+    { id: 3, name: 'Islamic Fiqh & Laws' },
+    { id: 4, name: 'Seerah & Islamic History' },
+    { id: 5, name: 'Duas, Azkar & Supplications' },
+    { id: 6, name: 'Video Lectures & Reminders' },
+    { id: 7, name: 'General Islamic E-Books' },
+  ];
+
+  // Fetch categories from Django API
+  useEffect(() => {
+    fetch(getApiUrl('/api/categories/'))
+      .then(res => res.json())
+      .then(data => {
+        if (data.categories && data.categories.length > 0) {
+          setCategories(data.categories);
+        } else {
+          setCategories(defaultCategoriesList);
+        }
+      })
+      .catch(() => setCategories(defaultCategoriesList));
+  }, []);
+
 
   const handleCreateFolder = (e) => {
     e.preventDefault();
@@ -57,14 +85,26 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
     formData.append('content_type', contentType);
     formData.append('pdf_url', fileUrl);
     formData.append('cover_url', coverUrl);
+    if (selectedCategory) {
+      formData.append('category_id', selectedCategory);
+      formData.append('category', selectedCategory);
+    }
 
     let finalFileUrl = fileUrl;
+    let finalCoverUrl = coverUrl;
 
     if (selectedFile) {
       formData.append('file', selectedFile);
       formData.append('pdf_file', selectedFile);
-      // In client mode, create object URL for instant preview
+      formData.append('audio_file', selectedFile);
       finalFileUrl = URL.createObjectURL(selectedFile);
+    }
+
+    if (selectedCoverFile) {
+      formData.append('cover_image', selectedCoverFile);
+      formData.append('cover_file', selectedCoverFile);
+      formData.append('thumbnail', selectedCoverFile);
+      finalCoverUrl = URL.createObjectURL(selectedCoverFile);
     }
 
     const newItem = {
@@ -77,10 +117,11 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
       contentType,
       language,
       description,
+      category_id: selectedCategory,
       fileUrl: finalFileUrl,
       pdf_url: contentType === 'book' ? finalFileUrl : undefined,
       audio_url: contentType === 'audio' ? finalFileUrl : undefined,
-      cover_url: coverUrl,
+      cover_url: finalCoverUrl,
       duration,
       buttonLabel,
       buttonIcon,
@@ -118,6 +159,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
     setUploading(false);
     setSubmitted(true);
     setTimeout(() => {
+
       if (onSuccess) onSuccess();
       if (onClose) onClose();
     }, 1500);
@@ -310,13 +352,32 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                   onChange={(e) => setLanguage(e.target.value)}
                   style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
                 >
+                  <option value="brahui">📜 Brahui / Brohi (براہوئی)</option>
                   <option value="urdu">🇵🇰 Urdu (اردو)</option>
-                  <option value="brahui">📜 Brahui (براہوئی)</option>
                   <option value="english">🇬🇧 English</option>
-                  <option value="arabic">🇸🇦 Arabic</option>
+                  <option value="arabic">🇸🇦 Arabic (عربي)</option>
+                  <option value="sindhi">🇵🇰 Sindhi (سنڌي)</option>
+                  <option value="pashto">🇵🇰 Pashto (پښتو)</option>
+                  <option value="balochi">🇵🇰 Balochi (بلوچی)</option>
                 </select>
               </div>
 
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>Category (Database)</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                >
+                  <option value="">-- Select Category --</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               {contentType === 'book' && (
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>Pages Count</label>
@@ -358,14 +419,42 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
               )}
             </div>
 
-            {/* File Upload OR Direct URL Input */}
-            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '1rem' }}>
+            {/* Cover Image Upload & Cover URL Box */}
+            <div style={{ background: 'rgba(245,158,11,0.08)', padding: '1rem', borderRadius: '12px', border: '1px dashed rgba(245,158,11,0.3)', marginBottom: '1rem' }}>
               <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
-                File Source (Upload from Laptop or Paste Direct Link)
+                🖼 Cover Image / Book Thumbnail Option
               </label>
 
               <div style={{ marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>📁 Option A: Upload File from Laptop / Mobile</span>
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>📸 Upload Cover Image File (.jpg, .png)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setSelectedCoverFile(e.target.files[0])}
+                  style={{ width: '100%', padding: '0.4rem', background: '#064e3b', borderRadius: '6px', color: '#fff' }}
+                />
+              </div>
+
+              <div>
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>🌐 OR External Cover Image URL</span>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/... or https://..."
+                  value={coverUrl}
+                  onChange={(e) => setCoverUrl(e.target.value)}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            {/* File Upload OR Direct URL Input */}
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '1rem' }}>
+              <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
+                Document / Media File Source
+              </label>
+
+              <div style={{ marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>📁 Option A: Upload PDF / Document / MP3 File</span>
                 <input
                   type="file"
                   accept={contentType === 'book' ? '.pdf,.doc,.docx,.epub' : contentType === 'audio' ? '.mp3,.wav,.m4a,.aac' : '*'}
@@ -375,7 +464,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
               </div>
 
               <div>
-                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>🌐 Option B: External URL Link (Cloudflare R2, Archive.org, Direct Link)</span>
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>🌐 Option B: External Media File URL</span>
                 <input
                   type="url"
                   placeholder="https://pub-xxxx.r2.dev/book.pdf or https://archive.org/..."
@@ -385,6 +474,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                 />
               </div>
             </div>
+
 
             {/* Description */}
             <div style={{ marginBottom: '1.5rem' }}>

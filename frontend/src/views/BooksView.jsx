@@ -529,11 +529,11 @@ export default function BooksView({ openReportModal, user }) {
             height: '100vh',
             background: 'rgba(15, 23, 42, 0.85)',
             backdropFilter: 'blur(10px)',
-            zIndex: 9999,
+            zIndex: 100000,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: isFullscreen ? '0' : '1rem'
+            padding: isFullscreen ? '0' : '0.5rem'
           }}
           onClick={() => setPreviewDoc(null)}
         >
@@ -541,9 +541,9 @@ export default function BooksView({ openReportModal, user }) {
             style={{
               width: isFullscreen ? '100vw' : '100%',
               maxWidth: isFullscreen ? '100vw' : '1150px',
-              height: isFullscreen ? '100vh' : '92vh',
+              height: isFullscreen ? '100vh' : '94vh',
               background: '#ffffff',
-              borderRadius: isFullscreen ? '0' : '16px',
+              borderRadius: isFullscreen ? '0' : '12px',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
               display: 'flex',
               flexDirection: 'column',
@@ -553,81 +553,139 @@ export default function BooksView({ openReportModal, user }) {
           >
             {/* Modal Header */}
             <div
+              className="pdf-modal-header"
               style={{
-                padding: '0.85rem 1.5rem',
+                padding: '0.5rem 0.85rem',
                 background: 'var(--primary-dark)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                borderBottom: '2px solid var(--accent-gold)'
+                borderBottom: '2px solid var(--accent-gold)',
+                flexWrap: 'nowrap',
+                gap: '0.5rem',
+                width: '100%',
+                boxSizing: 'border-box'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflow: 'hidden', minWidth: 0, flex: '1 1 auto' }}>
                 <span
                   style={{
-                    padding: '0.35rem 0.7rem',
+                    padding: '0.35rem 0.6rem',
                     background: 'rgba(255,255,255,0.15)',
-                    borderRadius: '8px',
-                    fontSize: '0.9rem'
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    flexShrink: 0,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
                   <i className={getFormatBadge(previewDoc.file_type).icon}></i>
                 </span>
-                <div style={{ overflow: 'hidden' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ overflow: 'hidden', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                  <h3
+                    style={{
+                      margin: 0,
+                      fontSize: '0.88rem',
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: '1.2'
+                    }}
+                    title={previewDoc.title}
+                  >
                     {previewDoc.title}
                   </h3>
-                  <p style={{ margin: '0.1rem 0 0 0', fontSize: '0.8rem', color: 'var(--accent-gold)' }}>
-                    Author: {previewDoc.author} &bull; {previewDoc.file_type_display || previewDoc.file_type} ({previewDoc.pages_count} {previewDoc.file_type === 'ppt' ? 'Slides' : 'Pages'})
+                  <p
+                    style={{
+                      margin: '0.1rem 0 0 0',
+                      fontSize: '0.68rem',
+                      color: 'var(--accent-gold)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: '1.1'
+                    }}
+                  >
+                    Author: {previewDoc.author} &bull; {previewDoc.file_type_display || previewDoc.file_type} ({previewDoc.pages_count} Pages)
                   </p>
                 </div>
               </div>
 
-              {/* Action Toolbar Header */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <button
-                  onClick={() => setIsFullscreen(!isFullscreen)}
-                  style={{
-                    background: 'rgba(255,255,255,0.15)',
-                    border: 'none',
-                    color: '#ffffff',
-                    padding: '0.45rem 0.75rem',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.35rem'
-                  }}
-                  title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Reader"}
-                >
-                  <i className={isFullscreen ? "fas fa-compress" : "fas fa-expand"}></i>
-                  {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                </button>
+              {/* Right Action Toolbar Column: Save File on top, Fullscreen below */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', alignItems: 'stretch' }}>
+                  {/* Top: Save File Button */}
+                  <a
+                    href={previewDoc.document_url}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      background: '#059669',
+                      border: 'none',
+                      color: '#ffffff',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '5px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.25rem',
+                      textDecoration: 'none',
+                      whiteSpace: 'nowrap',
+                      lineHeight: '1',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <i className="fas fa-download" style={{ fontSize: '0.68rem' }}></i> Save File
+                  </a>
 
-                <a
-                  href={previewDoc.document_url}
-                  download
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-play"
-                  style={{ background: '#059669', borderColor: '#059669', color: '#ffffff', fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
-                >
-                  <i className="fas fa-download"></i> Save File
-                </a>
+                  {/* Bottom: Fullscreen Button */}
+                  <button
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    style={{
+                      background: 'rgba(255,255,255,0.18)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      color: '#ffffff',
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '5px',
+                      cursor: 'pointer',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.25rem',
+                      whiteSpace: 'nowrap',
+                      lineHeight: '1'
+                    }}
+                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Reader"}
+                  >
+                    <i className={isFullscreen ? "fas fa-compress" : "fas fa-expand"} style={{ fontSize: '0.68rem' }}></i>
+                    <span style={{ fontSize: '0.7rem', whiteSpace: 'nowrap' }}>{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
+                  </button>
+                </div>
 
+                {/* Close Button */}
                 <button
                   onClick={() => setPreviewDoc(null)}
                   style={{
                     background: 'transparent',
                     border: 'none',
                     color: '#ffffff',
-                    fontSize: '1.4rem',
+                    fontSize: '1.25rem',
                     cursor: 'pointer',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '6px'
+                    padding: '0.2rem 0.35rem',
+                    borderRadius: '6px',
+                    lineHeight: '1',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                   title="Close Viewer"
                 >
@@ -636,31 +694,33 @@ export default function BooksView({ openReportModal, user }) {
               </div>
             </div>
 
+
+
             {/* Sub-Header Toolbar: Engine Switcher & External Link */}
-            <div style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', padding: '0.5rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Viewer Engine:</span>
+            <div style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', padding: '0.25rem 0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.25rem' }}>
+              <div style={{ display: 'flex', gap: '0.2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>Engine:</span>
                 <button
                   onClick={() => setViewerEngine('direct')}
-                  style={{ padding: '3px 10px', borderRadius: '12px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                 >
-                  Native Reader
+                  Native
                 </button>
                 <button
                   onClick={() => setViewerEngine('google')}
-                  style={{ padding: '3px 10px', borderRadius: '12px', border: 'none', background: viewerEngine === 'google' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'google' ? '#fff' : '#475569', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'google' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'google' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                 >
-                  Google Viewer
+                  Google
                 </button>
                 <button
                   onClick={() => setViewerEngine('office')}
-                  style={{ padding: '3px 10px', borderRadius: '12px', border: 'none', background: viewerEngine === 'office' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'office' ? '#fff' : '#475569', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'office' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'office' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                 >
-                  Office Viewer
+                  Office
                 </button>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <a
                   href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                   download
@@ -669,26 +729,26 @@ export default function BooksView({ openReportModal, user }) {
                   style={{
                     background: '#059669',
                     color: '#ffffff',
-                    padding: '0.35rem 0.9rem',
-                    borderRadius: '16px',
-                    fontSize: '0.8rem',
+                    padding: '2px 6px',
+                    borderRadius: '10px',
+                    fontSize: '0.65rem',
                     fontWeight: 700,
                     textDecoration: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.35rem',
-                    boxShadow: '0 2px 5px rgba(5,150,105,0.2)'
+                    gap: '0.2rem',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  <i className="fas fa-download"></i> Download File
+                  <i className="fas fa-download"></i> Download
                 </a>
                 <a
                   href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                   target="_blank"
                   rel="noreferrer"
-                  style={{ fontSize: '0.8rem', color: 'var(--primary-dark)', fontWeight: 700, textDecoration: 'none' }}
+                  style={{ fontSize: '0.65rem', color: 'var(--primary-dark)', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}
                 >
-                  Open in New Tab <i className="fas fa-external-link-alt" style={{ marginLeft: '0.2rem' }}></i>
+                  New Tab <i className="fas fa-external-link-alt" style={{ marginLeft: '0.1rem' }}></i>
                 </a>
               </div>
             </div>
@@ -696,27 +756,51 @@ export default function BooksView({ openReportModal, user }) {
             {/* Modal Reader Frame Area */}
             <div style={{ flex: 1, background: '#f1f5f9', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               {viewerEngine === 'direct' && (
-                <div style={{ background: '#f8fafc', color: '#334155', borderBottom: '1px solid #e2e8f0', padding: '0.4rem 1.25rem', fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ background: '#f8fafc', color: '#334155', borderBottom: '1px solid #e2e8f0', padding: '0.2rem 0.65rem', fontSize: '0.65rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.25rem', flexWrap: 'wrap' }}>
                   <span>
-                    <i className="fas fa-eye" style={{ marginRight: '0.35rem', color: '#059669' }}></i>
-                    Viewing in <strong>Native Browser Reader</strong>. If file preview is blank or blocked, switch viewer engines:
+                    <i className="fas fa-eye" style={{ marginRight: '0.2rem', color: '#059669' }}></i>
+                    Native Browser Reader:
                   </span>
-                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
                     <button
                       onClick={() => setViewerEngine('google')}
-                      style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                      style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
                     >
-                      <i className="fab fa-google"></i> Google Viewer
+                      <i className="fab fa-google"></i> Google
                     </button>
                     <button
                       onClick={() => setViewerEngine('office')}
-                      style={{ background: '#ea580c', color: '#fff', border: 'none', padding: '0.2rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                      style={{ background: '#ea580c', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
                     >
-                      <i className="fas fa-file-word"></i> Office Viewer
+                      <i className="fas fa-file-word"></i> Office
                     </button>
                   </div>
                 </div>
               )}
+
+              {viewerEngine === 'office' && (
+                <div style={{ background: '#fff7ed', color: '#9a3412', borderBottom: '1px solid #ffedd5', padding: '0.25rem 0.65rem', fontSize: '0.65rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.25rem', flexWrap: 'wrap' }}>
+                  <span>
+                    <i className="fas fa-file-word" style={{ marginRight: '0.2rem', color: '#ea580c' }}></i>
+                    Office Web Reader Mode (.docx / .pptx):
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button
+                      onClick={() => setViewerEngine('direct')}
+                      style={{ background: '#059669', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
+                    >
+                      Native Direct
+                    </button>
+                    <button
+                      onClick={() => setViewerEngine('google')}
+                      style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
+                    >
+                      Google Viewer
+                    </button>
+                  </div>
+                </div>
+              )}
+
 
               <div style={{ flex: 1, width: '100%', height: '100%', background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column' }}>
                 <iframe
@@ -734,19 +818,21 @@ export default function BooksView({ openReportModal, user }) {
             {/* Modal Footer Bar */}
             <div
               style={{
-                padding: '0.75rem 1.5rem',
+                padding: '0.35rem 0.65rem',
                 background: '#ffffff',
                 borderTop: '1px solid #e2e8f0',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '0.85rem',
-                color: '#475569'
+                fontSize: '0.7rem',
+                color: '#475569',
+                flexWrap: 'nowrap',
+                gap: '0.35rem'
               }}
             >
-              <span>
-                <i className="fas fa-book" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i>
-                <strong>{previewDoc.title}</strong> &bull; {previewDoc.author} ({previewDoc.language})
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '65%' }}>
+                <i className="fas fa-book" style={{ color: 'var(--accent-gold)', marginRight: '0.2rem' }}></i>
+                <strong>{previewDoc.title}</strong>
               </span>
               <a
                 href={getCleanDocumentUrl(getDocRawUrl(previewDoc))}
@@ -756,24 +842,24 @@ export default function BooksView({ openReportModal, user }) {
                 style={{
                   background: '#059669',
                   color: '#ffffff',
-                  padding: '0.4rem 1.1rem',
-                  borderRadius: '20px',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
                   fontWeight: 700,
-                  fontSize: '0.82rem',
+                  fontSize: '0.68rem',
                   textDecoration: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
-                  boxShadow: '0 2px 6px rgba(5,150,105,0.25)'
+                  gap: '0.2rem',
+                  whiteSpace: 'nowrap'
                 }}
               >
-                <i className="fas fa-file-download"></i> Save to Computer
+                <i className="fas fa-file-download"></i> Save File
               </a>
-
             </div>
           </div>
         </div>
       )}
+
 
       {editingBook && (
         <AdminEditModal

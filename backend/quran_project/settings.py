@@ -219,6 +219,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
 
+# Set upload permissions so Nginx (www-data) can read uploaded PDF & media files (Fixes 403 Forbidden)
+FILE_UPLOAD_PERMISSIONS = 0o644
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
+
+
 # Email SMTP Configuration for Gmail OTP Sending
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
