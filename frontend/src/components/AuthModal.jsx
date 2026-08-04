@@ -12,15 +12,17 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [noAccountError, setNoAccountError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Social Auth State ('google' | 'microsoft')
+  // Social Auth State ('google' | 'facebook' | 'microsoft')
   const [socialProvider, setSocialProvider] = useState(null);
   const [socialEmail, setSocialEmail] = useState('');
+  const [showCustomSocialInput, setShowCustomSocialInput] = useState(false);
 
   // 2FA Verification Code (OTP) State
   const [step, setStep] = useState('input'); // 'input' | 'otp'
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [resendSuccess, setResendSuccess] = useState('');
+
 
 
   // Close modal on Escape key press
@@ -163,46 +165,18 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     }
   };
 
-  const handleSocialLoginDirect = (provider) => {
+  const handleOpenSocialModal = (provider) => {
+    setSocialProvider(provider);
+    setSocialEmail('');
+    setShowCustomSocialInput(false);
+    setError('');
+  };
+
+  const executeSocialAuth = (provider, email) => {
     setSubmitting(true);
     setError('');
 
-    let promptMessage = "Sign in with Google Account:\nEnter your @gmail.com email address:";
-    if (provider === 'microsoft') {
-      promptMessage = "Sign in with Microsoft Account:\nEnter your @outlook.com or @hotmail.com email address:";
-    } else if (provider === 'facebook') {
-      promptMessage = "Sign in with Facebook Account:\nEnter your Facebook email address:";
-    }
-
-    const userInput = prompt(promptMessage);
-    if (!userInput || !userInput.trim()) {
-      setSubmitting(false);
-      return;
-    }
-
-    const targetEmail = userInput.trim().toLowerCase();
-
-    // Domain validation
-    if (provider === 'google') {
-      if (!targetEmail.includes('@gmail.com') && !targetEmail.includes('@googlemail.com')) {
-        setError('Invalid Google Account! Please enter a valid Gmail address (e.g. user@gmail.com).');
-        setSubmitting(false);
-        return;
-      }
-    } else if (provider === 'microsoft') {
-      const msDomains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.'];
-      if (!msDomains.some(d => targetEmail.includes(d))) {
-        setError('Invalid Microsoft Account! Please enter a valid Microsoft email address.');
-        setSubmitting(false);
-        return;
-      }
-    } else if (provider === 'facebook') {
-      if (!targetEmail.includes('@')) {
-        setError('Invalid Facebook Account! Please enter a valid email address.');
-        setSubmitting(false);
-        return;
-      }
-    }
+    const targetEmail = email.trim().toLowerCase();
 
     fetch(getApiUrl('/api/auth/social/'), {
       method: 'POST',
@@ -230,6 +204,16 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         onClose();
       });
   };
+
+  const handleCustomSocialSubmit = (e) => {
+    e.preventDefault();
+    if (!socialEmail || !socialEmail.includes('@')) {
+      setError(`Please enter a valid ${socialProvider.toUpperCase()} email address.`);
+      return;
+    }
+    executeSocialAuth(socialProvider, socialEmail);
+  };
+
 
 
 
@@ -492,71 +476,141 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               </form>
             </div>
           ) : socialProvider ? (
-            /* ===== STEP 1: SOCIAL AUTH PROVIDER SUB-MODAL ===== */
-            <div>
-              <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-                <i
-                  className={socialProvider === 'google' ? 'fab fa-google' : 'fab fa-microsoft'}
-                  style={{
-                    fontSize: '2.5rem',
-                    color: socialProvider === 'google' ? '#ea4335' : '#00a4ef',
-                    marginBottom: '0.5rem'
-                  }}
-                ></i>
-                <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-dark)' }}>
-                  Sign in with {socialProvider === 'google' ? 'Google' : 'Microsoft'}
-                </h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                  {socialProvider === 'google'
-                    ? 'Enter your official @gmail.com address to receive your verification code.'
-                    : 'Enter your official @outlook.com address to receive your verification code.'}
+            /* ===== STEP 1: CLAUDE / GOOGLE STYLED ACCOUNT CHOOSER ===== */
+            <div style={{ padding: '0.5rem 0.25rem' }}>
+              <div style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  {socialProvider === 'google' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                  )}
+                  {socialProvider === 'facebook' && (
+                    <i className="fab fa-facebook-square fa-2x" style={{ color: '#1877f2' }}></i>
+                  )}
+                  {socialProvider === 'microsoft' && (
+                    <svg width="30" height="30" viewBox="0 0 23 23">
+                      <path fill="#f35325" d="M1 1h10v10H1z"/>
+                      <path fill="#81bc06" d="M12 1h10v10H1z"/>
+                      <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+                      <path fill="#ffba08" d="M12 12h10v10H12z"/>
+                    </svg>
+                  )}
+                </div>
+
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-dark)', margin: '0 0 0.3rem 0' }}>
+                  Choose an account
+                </h2>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0 }}>
+                  to continue to <strong style={{ color: 'var(--primary-emerald)' }}>Quran Portal</strong>
                 </p>
               </div>
 
-              <form onSubmit={handleSocialSubmit}>
-                <div className="form-group">
-                  <label className="form-label">
-                    {socialProvider === 'google' ? 'Google / Gmail Address' : 'Microsoft Account Email'}
-                  </label>
-                  <input
-                    type="email"
-                    className="form-input"
-                    placeholder={socialProvider === 'google' ? 'yourname@gmail.com' : 'yourname@outlook.com'}
-                    value={socialEmail}
-                    onChange={(e) => setSocialEmail(e.target.value)}
-                    required
-                    autoFocus
-                  />
-                </div>
-
-                {error && (
-                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                    <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
+              {/* Saved Account Options List (Claude Style) */}
+              <div style={{ borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', margin: '1rem 0' }}>
+                
+                {/* Account Card Option */}
+                <button
+                  type="button"
+                  onClick={() => executeSocialAuth(socialProvider, socialProvider === 'google' ? 'muhammadkhidrani@gmail.com' : socialProvider === 'microsoft' ? 'muhammadkhidrani@outlook.com' : 'muhammadkhidrani@facebook.com')}
+                  disabled={submitting}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 0.5rem',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: '1px solid #f1f5f9',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.85rem',
+                    cursor: 'pointer',
+                    textAlign: 'left'
+                  }}
+                >
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #022c22)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>
+                    M
                   </div>
-                )}
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>Muhammad</div>
+                    <div style={{ fontSize: '0.82rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {socialProvider === 'google' ? 'muhammadkhidrani@gmail.com' : socialProvider === 'microsoft' ? 'muhammadkhidrani@outlook.com' : 'muhammadkhidrani@facebook.com'}
+                    </div>
+                  </div>
+                </button>
 
-                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                {/* Option 2: Use Another Account */}
+                {!showCustomSocialInput ? (
                   <button
                     type="button"
-                    className="btn-play"
-                    style={{ flex: 1, background: '#e2e8f0', color: '#334155', justifyContent: 'center' }}
-                    onClick={() => { setSocialProvider(null); setError(''); }}
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-submit"
+                    onClick={() => setShowCustomSocialInput(true)}
                     style={{
-                      flex: 2,
-                      background: socialProvider === 'google' ? '#ea4335' : '#00a4ef'
+                      width: '100%',
+                      padding: '0.85rem 0.5rem',
+                      background: 'transparent',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.85rem',
+                      cursor: 'pointer',
+                      textAlign: 'left'
                     }}
-                    disabled={submitting}
                   >
-                    {submitting ? 'Sending Code...' : `Send Code to Email`}
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #cbd5e1', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
+                      <i className="fas fa-user-circle"></i>
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#334155' }}>
+                      Use another account
+                    </div>
                   </button>
+                ) : (
+                  /* Custom Email Input for "Use another account" */
+                  <form onSubmit={handleCustomSocialSubmit} style={{ padding: '0.85rem 0.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                      Enter your {socialProvider.toUpperCase()} Email Address:
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      autoFocus
+                      placeholder={socialProvider === 'google' ? 'name@gmail.com' : socialProvider === 'microsoft' ? 'name@outlook.com' : 'name@example.com'}
+                      value={socialEmail}
+                      onChange={(e) => setSocialEmail(e.target.value)}
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1.5px solid var(--accent-gold)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', marginBottom: '0.75rem' }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="btn-submit"
+                      style={{ width: '100%', padding: '0.65rem' }}
+                    >
+                      {submitting ? 'Connecting Account...' : `Continue to Quran Portal`}
+                    </button>
+                  </form>
+                )}
+
+              </div>
+
+              {error && (
+                <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
                 </div>
-              </form>
+              )}
+
+              {/* Footer Terms Notice */}
+              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: '1.4', margin: '0.75rem 0 1rem 0' }}>
+                Before using this app, you can review Quran Portal's <strong style={{ color: 'var(--primary-emerald)' }}>Privacy Policy</strong> and <strong style={{ color: 'var(--primary-emerald)' }}>Terms of Service</strong>.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => { setSocialProvider(null); setShowCustomSocialInput(false); setError(''); }}
+                style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
+              >
+                <i className="fas fa-arrow-left" style={{ marginRight: '0.4rem' }}></i> Return to standard login
+              </button>
             </div>
           ) : (
             /* ===== STEP 1: MAIN USERNAME / PASSWORD FORM ===== */
@@ -700,7 +754,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="button"
                   className="auth-social-card google-card"
-                  onClick={() => handleSocialLoginDirect('google')}
+                  onClick={() => handleOpenSocialModal('google')}
                   disabled={submitting}
                   title="Sign in with Google Account"
                   style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
@@ -717,7 +771,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="button"
                   className="auth-social-card facebook-card"
-                  onClick={() => handleSocialLoginDirect('facebook')}
+                  onClick={() => handleOpenSocialModal('facebook')}
                   disabled={submitting}
                   title="Sign in with Facebook Account"
                   style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1877f2' }}
@@ -729,7 +783,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="button"
                   className="auth-social-card microsoft-card"
-                  onClick={() => handleSocialLoginDirect('microsoft')}
+                  onClick={() => handleOpenSocialModal('microsoft')}
                   disabled={submitting}
                   title="Sign in with Microsoft Account"
                   style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
@@ -743,6 +797,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Microsoft</span>
                 </button>
               </div>
+
 
 
 
