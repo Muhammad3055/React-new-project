@@ -356,18 +356,19 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
           {/* Logo & Portal Branding Title */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #b45309)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)' }}>
-              <i className="fas fa-quran"></i>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', boxShadow: '0 4px 15px rgba(255, 255, 255, 0.45)', border: '2px solid var(--accent-gold)', flexShrink: 0 }}>
+              <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-gold)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
                 Maktaba tul Muslim
               </h3>
-              <p style={{ margin: 0, fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)', fontWeight: 500 }}>
+              <p style={{ margin: 0, fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)', fontWeight: 500 }}>
                 مكتبة المسلم &bull; Digital Quran & Islamic Portal
               </p>
             </div>
           </div>
+
 
           {/* Modern Segmented Navigation Bar (Sign In vs Create Account) */}
           {step === 'input' && !socialProvider && (

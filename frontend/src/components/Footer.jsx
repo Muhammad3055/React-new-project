@@ -10,10 +10,13 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
         <div className="footer-grid">
           {/* Col 1: Brand & Mission */}
           <div className="footer-col brand-col">
-            <div className="brand-logo" style={{ marginBottom: '0.75rem', cursor: 'pointer' }} onClick={() => navigateToTab('home')}>
-              <i className="fas fa-quran"></i>
+            <div className="brand-logo" style={{ marginBottom: '0.75rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.55rem' }} onClick={() => navigateToTab('home')}>
+              <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', boxShadow: '0 4px 12px rgba(255, 255, 255, 0.4)', border: '1.5px solid var(--accent-gold)', flexShrink: 0 }}>
+                <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
+              </div>
               <span>{t('brandName')}</span>
             </div>
+
             <p className="footer-desc">{t('footerTagline')}</p>
             <div className="social-links">
               <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-btn" title="Facebook"><i className="fab fa-facebook-f"></i></a>
