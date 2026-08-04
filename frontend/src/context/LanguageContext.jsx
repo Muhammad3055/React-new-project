@@ -3,8 +3,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 // Comprehensive Translations Dictionary for English, Urdu, Brahui, and Arabic
 export const translations = {
   english: {
-    brandName: "Quran Al Kareem",
+    brandName: "Maktabat-ul-Muslim",
     searchPlaceholder: "Search Quran, Surahs, Books...",
+
     home: "Home",
     readQuran: "Read Quran",
     mp3Audio: "MP3 & Taqreer",
@@ -72,7 +73,7 @@ export const translations = {
     pauseAudio: "Pause",
   },
   urdu: {
-    brandName: "قرآن الکریم",
+    brandName: "مكتبة المسلم",
     searchPlaceholder: "قرآن، سورة، یا کتابیں تلاش کریں...",
     home: "صفحہ اول",
     readQuran: "تلاوت قرآن",
@@ -141,7 +142,7 @@ export const translations = {
     pauseAudio: "روکیں",
   },
   brahui: {
-    brandName: "قرآن الکریم",
+    brandName: "مكتبة المسلم",
     searchPlaceholder: "قرآن، سورة، یا کتاب آتا پٹ و پول...",
     home: "بنیادی پنہ",
     readQuran: "قرآن نا تلاوت",
