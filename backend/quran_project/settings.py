@@ -77,12 +77,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'quran_project.wsgi.application'
 
 
-# Enterprise Database & High-Concurrency PostgreSQL Configuration (1M+ Users, 500k Concurrent Users)
-POSTGRES_DB = os.environ.get('POSTGRES_DB', 'quran_db')
-POSTGRES_USER = os.environ.get('POSTGRES_USER', 'postgres')
-POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'postgres')
-POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
-POSTGRES_PORT = os.environ.get('POSTGRES_PORT', '5432')
+# Enterprise Database & High-Concurrency PostgreSQL Configuration
+raw_db = os.environ.get('POSTGRES_DB', 'quran_db').strip()
+if 'EMAIL_' in raw_db or len(raw_db) > 60:
+    POSTGRES_DB = 'quran_db'
+else:
+    POSTGRES_DB = raw_db
+
+POSTGRES_USER = os.environ.get('POSTGRES_USER', 'postgres').split('EMAIL_')[0].strip()
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'postgres').split('EMAIL_')[0].strip()
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'localhost').split('EMAIL_')[0].strip()
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT', '5432').split('EMAIL_')[0].strip()
+
 
 if os.environ.get('DATABASE_URL'):
     DATABASES = {'default': env.db('DATABASE_URL')}
