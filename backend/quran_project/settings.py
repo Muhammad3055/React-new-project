@@ -61,9 +61,10 @@ FRONTEND_DIR = BASE_DIR.parent / 'frontend' / 'dist'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [FRONTEND_DIR, BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates', FRONTEND_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
+
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
