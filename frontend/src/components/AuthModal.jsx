@@ -1014,4 +1014,3 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   );
 }
 
-}
