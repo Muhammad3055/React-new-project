@@ -312,72 +312,134 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
 
   return (
-    <div className="modal-overlay" onClick={onClose} style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="modal-overlay" onClick={onClose} style={{ padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(2, 44, 34, 0.65)', backdropFilter: 'blur(8px)' }}>
       <div
         className="modal-card"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '450px', width: '92%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px', margin: 'auto' }}
+        style={{
+          maxWidth: '460px',
+          width: '92%',
+          maxHeight: '92vh',
+          overflowY: 'auto',
+          borderRadius: '24px',
+          margin: 'auto',
+          background: '#ffffff',
+          boxShadow: '0 25px 60px -15px rgba(2, 44, 34, 0.35), 0 0 0 1px rgba(245, 158, 11, 0.2)',
+          border: 'none'
+        }}
       >
-        {/* Header Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', alignItems: 'center' }}>
-          <button
-            onClick={() => { setMode('login'); setStep('input'); setError(''); setSocialProvider(null); }}
-            style={{
-              flex: 1,
-              padding: '1rem',
-              border: 'none',
-              background: mode === 'login' && !socialProvider && step === 'input' ? '#ffffff' : 'transparent',
-              color: mode === 'login' && !socialProvider && step === 'input' ? 'var(--primary-dark)' : 'var(--text-muted)',
-              fontWeight: mode === 'login' && !socialProvider && step === 'input' ? 800 : 600,
-              fontSize: '0.95rem',
-              borderBottom: mode === 'login' && !socialProvider && step === 'input' ? '3px solid var(--accent-gold)' : 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <i className="fas fa-sign-in-alt" style={{ marginRight: '0.4rem' }}></i> Sign In
-          </button>
-          <button
-            onClick={() => { setMode('signup'); setStep('input'); setError(''); setSocialProvider(null); }}
-            style={{
-              flex: 1,
-              padding: '1rem',
-              border: 'none',
-              background: mode === 'signup' && !socialProvider && step === 'input' ? '#ffffff' : 'transparent',
-              color: mode === 'signup' && !socialProvider && step === 'input' ? 'var(--primary-dark)' : 'var(--text-muted)',
-              fontWeight: mode === 'signup' && !socialProvider && step === 'input' ? 800 : 600,
-              fontSize: '0.95rem',
-              borderBottom: mode === 'signup' && !socialProvider && step === 'input' ? '3px solid var(--accent-gold)' : 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <i className="fas fa-user-plus" style={{ marginRight: '0.4rem' }}></i> Create Account
-          </button>
+        {/* Luxury Dark Emerald & Gold Header */}
+        <div style={{ background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', padding: '1.5rem 1.75rem 1.25rem 1.75rem', position: 'relative', borderBottom: '2px solid var(--accent-gold)' }}>
           
-          {/* Top Right Close Button */}
+          {/* Top Close Button */}
           <button
             className="btn-close-modal"
             onClick={onClose}
-            style={{ padding: '0.75rem 1rem', fontSize: '1.4rem', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-            title="Cancel"
+            style={{
+              position: 'absolute',
+              top: '1.25rem',
+              right: '1.25rem',
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.12)',
+              color: '#ffffff',
+              border: 'none',
+              fontSize: '1.2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            title="Close Modal"
           >
             &times;
           </button>
+
+          {/* Logo & Portal Branding Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #b45309)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)' }}>
+              <i className="fas fa-quran"></i>
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-gold)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                Maktaba tul Muslim
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)', fontWeight: 500 }}>
+                مكتبة المسلم &bull; Digital Quran & Islamic Portal
+              </p>
+            </div>
+          </div>
+
+          {/* Modern Segmented Navigation Bar (Sign In vs Create Account) */}
+          {step === 'input' && !socialProvider && (
+            <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.25)', padding: '4px', borderRadius: '14px', marginTop: '1.1rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(''); setNoAccountError(false); }}
+                style={{
+                  flex: 1,
+                  padding: '0.55rem 0.75rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: mode === 'login' ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'transparent',
+                  color: mode === 'login' ? '#022c22' : '#ffffff',
+                  fontWeight: mode === 'login' ? 800 : 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease',
+                  boxShadow: mode === 'login' ? '0 4px 12px rgba(245, 158, 11, 0.35)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <i className="fas fa-sign-in-alt"></i> Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMode('signup'); setError(''); setNoAccountError(false); }}
+                style={{
+                  flex: 1,
+                  padding: '0.55rem 0.75rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: mode === 'signup' ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'transparent',
+                  color: mode === 'signup' ? '#022c22' : '#ffffff',
+                  fontWeight: mode === 'signup' ? 800 : 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease',
+                  boxShadow: mode === 'signup' ? '0 4px 12px rgba(245, 158, 11, 0.35)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <i className="fas fa-user-plus"></i> Create Account
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="modal-body" style={{ padding: '1.5rem' }}>
+        {/* Form Body Container */}
+        <div className="modal-body" style={{ padding: '1.5rem 1.75rem 1.75rem 1.75rem' }}>
 
           {/* ===== STEP 2: 6-DIGIT VERIFICATION CODE (OTP) SCREEN ===== */}
           {step === 'otp' ? (
             <div>
               <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', marginBottom: '0.75rem' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', marginBottom: '0.75rem', boxShadow: '0 6px 16px rgba(245, 158, 11, 0.2)' }}>
                   <i className="fas fa-shield-alt"></i>
                 </div>
                 <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.25rem 0' }}>
-                  Security Verification Code
+                  Security Code Verification
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-                  A 6-digit authentication security code has been sent to:<br />
+                  Enter the 6-digit code dispatched to:<br />
                   <strong style={{ color: 'var(--primary-dark)' }}>{pendingEmail}</strong>
                 </p>
               </div>
@@ -386,25 +448,22 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               <div style={{
                 background: '#f0fdf4',
                 border: '1px solid #bbf7d0',
-                borderRadius: '12px',
-                padding: '1rem',
+                borderRadius: '14px',
+                padding: '0.85rem 1rem',
                 textAlign: 'center',
                 marginBottom: '1.25rem',
                 color: '#166534'
               }}>
-                <i className="fas fa-envelope-open-text" style={{ fontSize: '1.4rem', color: 'var(--primary-emerald)', marginBottom: '0.3rem', display: 'block' }}></i>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, display: 'block' }}>
-                  Code sent to your personal email inbox!
-                </span>
-                <span style={{ fontSize: '0.78rem', color: '#15803d', display: 'block', marginTop: '0.2rem' }}>
-                  Please check your Gmail / Email app to copy your 6-digit code.
+                <i className="fas fa-envelope-open-text" style={{ fontSize: '1.3rem', color: '#059669', marginBottom: '0.2rem', display: 'block' }}></i>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, display: 'block' }}>
+                  Check your Gmail / Email Inbox
                 </span>
               </div>
 
               {/* Step 2 Form (OTP Entry) */}
               <form onSubmit={handleVerifyOtp}>
                 <div className="form-group" style={{ textAlign: 'center' }}>
-                  <label className="form-label">Enter 6-Digit Security Code *</label>
+                  <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem' }}>Enter 6-Digit Code *</label>
                   <input
                     type="text"
                     className="form-input"
@@ -416,12 +475,14 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     autoFocus
                     style={{
                       textAlign: 'center',
-                      fontSize: '1.6rem',
+                      fontSize: '1.7rem',
                       fontWeight: 800,
                       letterSpacing: '8px',
                       padding: '0.75rem',
                       color: 'var(--primary-dark)',
-                      border: '2px solid var(--accent-gold)'
+                      border: '2px solid var(--accent-gold)',
+                      borderRadius: '14px',
+                      boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15)'
                     }}
                   />
                 </div>
@@ -436,46 +497,58 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
+                      style={{ borderRadius: '12px', padding: '0.75rem 1rem' }}
                     />
                   </div>
                 )}
 
                 {resendSuccess && (
-                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.85rem', lineHeight: '1.4' }}>
                     <i className="fas fa-check-circle" style={{ marginRight: '0.4rem', color: '#15803d' }}></i> {resendSuccess}
                   </div>
                 )}
 
                 {error && (
-                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
                     <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
                   </div>
                 )}
 
                 <button
                   type="submit"
-                  className="btn-submit"
                   disabled={submitting || otpCode.length !== 6 || (mode === 'forgot_password' && !newPassword)}
-                  style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', marginBottom: '0.75rem' }}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem',
+                    fontSize: '0.95rem',
+                    fontWeight: 800,
+                    borderRadius: '14px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #059669 0%, #022c22 100%)',
+                    color: '#ffffff',
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 18px rgba(5, 150, 105, 0.3)',
+                    marginTop: '0.5rem'
+                  }}
                 >
                   {submitting ? 'Verifying Code...' : (mode === 'forgot_password' ? 'Reset Password & Log In' : 'Verify Code & Complete Sign-In')}
                 </button>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
                   <button
                     type="button"
                     onClick={() => { setStep('input'); setError(''); setResendSuccess(''); }}
-                    style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600 }}
+                    style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}
                   >
-                    <i className="fas fa-arrow-left"></i> Change Email / Details
+                    <i className="fas fa-arrow-left"></i> Change Email
                   </button>
                   <button
                     type="button"
                     onClick={handleResendOtp}
                     disabled={submitting}
-                    style={{ background: 'transparent', border: 'none', color: 'var(--primary-light)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 700 }}
+                    style={{ background: 'transparent', border: 'none', color: '#059669', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 700 }}
                   >
-                    <i className={`fas fa-sync-alt ${submitting ? 'fa-spin' : ''}`}></i> {submitting ? 'Sending Code...' : 'Resend Code'}
+                    <i className={`fas fa-sync-alt ${submitting ? 'fa-spin' : ''}`}></i> {submitting ? 'Sending...' : 'Resend Code'}
                   </button>
                 </div>
 
@@ -483,9 +556,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             </div>
           ) : socialProvider ? (
             /* ===== STEP 1: CLAUDE / GOOGLE STYLED ACCOUNT CHOOSER ===== */
-            <div style={{ padding: '0.5rem 0.25rem' }}>
+            <div style={{ padding: '0.25rem 0' }}>
               <div style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                   {socialProvider === 'google' && (
                     <svg width="32" height="32" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -507,18 +580,17 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   )}
                 </div>
 
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-dark)', margin: '0 0 0.3rem 0' }}>
-                  Choose an account
-                </h2>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0 }}>
-                  to continue to <strong style={{ color: 'var(--primary-emerald)' }}>Quran Portal</strong>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.2rem 0' }}>
+                  Choose {socialProvider.toUpperCase()} Account
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+                  to sign in to <strong style={{ color: '#059669' }}>Maktaba tul Muslim</strong>
                 </p>
               </div>
 
               {/* Saved Account Options List (Claude Style) */}
               <div style={{ borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', margin: '1rem 0' }}>
                 
-                {/* Account Card Option */}
                 <button
                   type="button"
                   onClick={() => executeSocialAuth(socialProvider, socialProvider === 'google' ? 'muhammadkhidrani@gmail.com' : socialProvider === 'microsoft' ? 'muhammadkhidrani@outlook.com' : 'muhammadkhidrani@facebook.com')}
@@ -536,7 +608,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     textAlign: 'left'
                   }}
                 >
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #022c22)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #022c22)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>
                     M
                   </div>
                   <div style={{ overflow: 'hidden' }}>
@@ -547,7 +619,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   </div>
                 </button>
 
-                {/* Option 2: Use Another Account */}
                 {!showCustomSocialInput ? (
                   <button
                     type="button"
@@ -564,7 +635,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       textAlign: 'left'
                     }}
                   >
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #cbd5e1', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
+                    <div style={{ width: '42px', height: '42px', borderRadius: '50%', border: '1px solid #cbd5e1', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
                       <i className="fas fa-user-circle"></i>
                     </div>
                     <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#334155' }}>
@@ -572,7 +643,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     </div>
                   </button>
                 ) : (
-                  /* Custom Email Input for "Use another account" */
                   <form onSubmit={handleCustomSocialSubmit} style={{ padding: '0.85rem 0.25rem' }}>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
                       Enter your {socialProvider.toUpperCase()} Email Address:
@@ -584,15 +654,24 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       placeholder={socialProvider === 'google' ? 'name@gmail.com' : socialProvider === 'microsoft' ? 'name@outlook.com' : 'name@example.com'}
                       value={socialEmail}
                       onChange={(e) => setSocialEmail(e.target.value)}
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1.5px solid var(--accent-gold)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', marginBottom: '0.75rem' }}
+                      style={{ width: '100%', padding: '0.75rem 1rem', border: '1.5px solid var(--accent-gold)', borderRadius: '12px', fontSize: '0.9rem', outline: 'none', marginBottom: '0.75rem' }}
                     />
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="btn-submit"
-                      style={{ width: '100%', padding: '0.65rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #059669 0%, #022c22 100%)',
+                        color: '#ffffff',
+                        fontWeight: 800,
+                        fontSize: '0.9rem',
+                        cursor: 'pointer'
+                      }}
                     >
-                      {submitting ? 'Connecting Account...' : `Continue to Quran Portal`}
+                      {submitting ? 'Connecting...' : `Continue to Portal`}
                     </button>
                   </form>
                 )}
@@ -600,109 +679,154 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               </div>
 
               {error && (
-                <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
                   <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
                 </div>
               )}
 
-              {/* Footer Terms Notice */}
-              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: '1.4', margin: '0.75rem 0 1rem 0' }}>
-                Before using this app, you can review Quran Portal's <strong style={{ color: 'var(--primary-emerald)' }}>Privacy Policy</strong> and <strong style={{ color: 'var(--primary-emerald)' }}>Terms of Service</strong>.
-              </p>
-
               <button
                 type="button"
                 onClick={() => { setSocialProvider(null); setShowCustomSocialInput(false); setError(''); }}
-                style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
               >
-                <i className="fas fa-arrow-left" style={{ marginRight: '0.4rem' }}></i> Return to standard login
+                <i className="fas fa-arrow-left" style={{ marginRight: '0.4rem' }}></i> Return to standard sign in
               </button>
             </div>
           ) : (
-            /* ===== STEP 1: MAIN USERNAME / PASSWORD FORM ===== */
+            /* ===== STEP 1: MAIN ELEGANT USERNAME / PASSWORD FORM ===== */
             <form onSubmit={handleFormSubmit}>
               {mode === 'forgot_password' ? (
-                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)' }}>Reset Your Password</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Enter your registered Username or Email address to receive a 6-digit verification code in Gmail.</p>
+                <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.25rem 0' }}>Reset Password</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Enter your registered Username or Email address to set your new password.</p>
                 </div>
               ) : null}
 
               {(mode === 'login' || mode === 'forgot_password') && (
-                <div className="form-group">
-                  <label className="form-label">{mode === 'forgot_password' ? 'Registered Email or Username' : 'Username or Email'}</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Enter registered username or email..."
-                    value={username}
-                    onChange={(e) => { setUsername(e.target.value); setEmail(e.target.value); }}
-                    required
-                    autoFocus
-                  />
+                <div className="form-group" style={{ marginBottom: '1.1rem' }}>
+                  <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                    {mode === 'forgot_password' ? 'Registered Email or Username *' : 'Username or Email Address *'}
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <i className="fas fa-envelope" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. name@example.com or username"
+                      value={username}
+                      onChange={(e) => { setUsername(e.target.value); setEmail(e.target.value); }}
+                      required
+                      autoFocus
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem 0.75rem 2.6rem',
+                        borderRadius: '12px',
+                        border: '1.5px solid #cbd5e1',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        transition: 'all 0.2s ease'
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 
               {mode === 'signup' && (
                 <>
-                  <div className="form-group">
-                    <label className="form-label">Choose Username *</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Choose a unique username..."
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                    />
+                  <div className="form-group" style={{ marginBottom: '1rem' }}>
+                    <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                      Choose Username *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <i className="fas fa-user" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Choose a unique username..."
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem 0.75rem 2.6rem',
+                          borderRadius: '12px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '0.9rem',
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Email Address (for Verification Code) *</label>
-                    <input
-                      type="email"
-                      className="form-input"
-                      placeholder="name@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
+                  <div className="form-group" style={{ marginBottom: '1rem' }}>
+                    <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                      Email Address *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <i className="fas fa-envelope" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
+                      <input
+                        type="email"
+                        className="form-input"
+                        placeholder="name@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem 0.75rem 2.6rem',
+                          borderRadius: '12px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '0.9rem',
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
                   </div>
                 </>
               )}
 
               {mode !== 'forgot_password' && (
-                <div className="form-group" style={{ position: 'relative' }}>
+                <div className="form-group" style={{ marginBottom: '1.1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <label className="form-label" style={{ margin: 0 }}>Password *</label>
+                    <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>
+                      Password *
+                    </label>
                     {mode === 'login' && (
                       <button
                         type="button"
                         onClick={() => { setMode('forgot_password'); setError(''); setNoAccountError(false); }}
-                        style={{ background: 'transparent', border: 'none', color: 'var(--primary-light)', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                        style={{ background: 'transparent', border: 'none', color: '#059669', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
                       >
                         Forgot Password?
                       </button>
                     )}
                   </div>
                   <div style={{ position: 'relative' }}>
+                    <i className="fas fa-lock" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
                     <input
                       type={showPassword ? 'text' : 'password'}
                       className="form-input"
-                      placeholder="Enter password..."
+                      placeholder="Enter your password..."
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      style={{ paddingRight: '2.5rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 2.6rem 0.75rem 2.6rem',
+                        borderRadius: '12px',
+                        border: '1.5px solid #cbd5e1',
+                        fontSize: '0.9rem',
+                        outline: 'none'
+                      }}
                     />
                     <i
                       className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
                       onClick={() => setShowPassword(!showPassword)}
                       style={{
                         position: 'absolute',
-                        right: '0.85rem',
+                        right: '1rem',
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        color: 'var(--text-muted)',
+                        color: '#94a3b8',
                         cursor: 'pointer',
                         fontSize: '0.9rem'
                       }}
@@ -712,9 +836,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               )}
 
               {error && (
-                <div style={{ padding: '0.85rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                  <div style={{ fontWeight: 700, marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <i className="fas fa-exclamation-triangle"></i> Authentication Alert
+                <div style={{ padding: '0.85rem 1rem', marginBottom: '1.1rem', borderRadius: '12px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <div style={{ fontWeight: 700, marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <i className="fas fa-exclamation-circle"></i> Authentication Notice
                   </div>
                   {error}
                   {noAccountError && (
@@ -724,10 +848,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       style={{
                         marginTop: '0.65rem',
                         width: '100%',
-                        padding: '0.45rem 0.75rem',
-                        borderRadius: '8px',
-                        background: 'var(--accent-gold)',
-                        color: 'var(--primary-dark)',
+                        padding: '0.55rem 0.75rem',
+                        borderRadius: '10px',
+                        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                        color: '#022c22',
                         border: 'none',
                         fontWeight: 800,
                         fontSize: '0.82rem',
@@ -735,37 +859,84 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '0.4rem'
+                        gap: '0.4rem',
+                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
                       }}
                     >
-                      <i className="fas fa-user-plus"></i> Create New Account Now
+                      <i className="fas fa-user-plus"></i> Create Account Instantly
                     </button>
                   )}
                 </div>
               )}
 
-              <button type="submit" className="btn-submit" disabled={submitting} style={{ width: '100%', marginBottom: '1rem' }}>
-                {submitting ? (mode === 'login' ? 'Signing In...' : 'Sending Code...') : (mode === 'login' ? 'Sign In to Account' : 'Send 6-Digit Code & Register')}
+              {/* Elevated Action Button */}
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  width: '100%',
+                  padding: '0.85rem',
+                  fontSize: '0.95rem',
+                  fontWeight: 800,
+                  borderRadius: '14px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 18px rgba(2, 44, 34, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.2s ease',
+                  marginBottom: '1.25rem'
+                }}
+              >
+                {submitting ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i> {mode === 'login' ? 'Signing In...' : 'Registering Account...'}
+                  </>
+                ) : (
+                  <>
+                    {mode === 'login' ? 'Sign In to Account' : 'Create Account & Register'} <i className="fas fa-arrow-right"></i>
+                  </>
+                )}
               </button>
 
-              {/* Divider */}
-              <div style={{ display: 'flex', alignItems: 'center', margin: '1.25rem 0 1rem 0', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600 }}>
+              {/* Or Social Connect Section */}
+              <div style={{ display: 'flex', alignItems: 'center', margin: '1.25rem 0 1rem 0', gap: '0.5rem', color: '#94a3b8', fontSize: '0.74rem', fontWeight: 700 }}>
                 <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #e2e8f0' }} />
-                <span>OR CONNECT WITH SOCIAL ACCOUNT</span>
+                <span>OR 1-CLICK SOCIAL SIGN IN</span>
                 <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #e2e8f0' }} />
               </div>
 
-              {/* Social Connect Logos (Google, Facebook, Microsoft) */}
-              <div className="auth-social-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
+              {/* 1-Click Social Sign-In Cards (Google, Facebook, Microsoft) */}
+              <div className="auth-social-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.6rem' }}>
+                
+                {/* Google */}
                 <button
                   type="button"
-                  className="auth-social-card google-card"
                   onClick={() => handleOpenSocialModal('google')}
                   disabled={submitting}
-                  title="Sign in with Google Account"
-                  style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
+                  title="1-Click Sign in with Google Account"
+                  style={{
+                    padding: '0.65rem 0.3rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    background: '#ffffff',
+                    color: '#1e293b',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                    transition: 'all 0.2s ease'
+                  }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -774,25 +945,55 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Google</span>
                 </button>
 
+                {/* Facebook */}
                 <button
                   type="button"
-                  className="auth-social-card facebook-card"
                   onClick={() => handleOpenSocialModal('facebook')}
                   disabled={submitting}
-                  title="Sign in with Facebook Account"
-                  style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1877f2' }}
+                  title="1-Click Sign in with Facebook Account"
+                  style={{
+                    padding: '0.65rem 0.3rem',
+                    borderRadius: '12px',
+                    border: '1px solid #bfdbfe',
+                    background: '#eff6ff',
+                    color: '#1877f2',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(24, 119, 242, 0.1)',
+                    transition: 'all 0.2s ease'
+                  }}
                 >
-                  <i className="fab fa-facebook-f" style={{ fontSize: '1rem', color: '#1877f2' }}></i>
+                  <i className="fab fa-facebook-f" style={{ fontSize: '0.95rem', color: '#1877f2' }}></i>
                   <span>Facebook</span>
                 </button>
 
+                {/* Microsoft */}
                 <button
                   type="button"
-                  className="auth-social-card microsoft-card"
                   onClick={() => handleOpenSocialModal('microsoft')}
                   disabled={submitting}
-                  title="Sign in with Microsoft Account"
-                  style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
+                  title="1-Click Sign in with Microsoft Account"
+                  style={{
+                    padding: '0.65rem 0.3rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    background: '#ffffff',
+                    color: '#1e293b',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                    transition: 'all 0.2s ease'
+                  }}
                 >
                   <svg width="16" height="16" viewBox="0 0 23 23" style={{ flexShrink: 0 }}>
                     <path fill="#f35325" d="M1 1h10v10H1z"/>
@@ -804,34 +1005,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 </button>
               </div>
 
-
-
-
-              {/* Bottom Cancel & Return Button */}
-              <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  style={{
-                    width: '100%',
-                    padding: '0.6rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    background: '#f8fafc',
-                    color: '#475569',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.4rem',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <i className="fas fa-arrow-left"></i> Cancel & Return to Portal
-                </button>
-              </div>
             </form>
           )}
 
@@ -839,4 +1012,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       </div>
     </div>
   );
+}
+
 }
