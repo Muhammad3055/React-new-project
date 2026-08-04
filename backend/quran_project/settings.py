@@ -240,5 +240,14 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'Maktaba tul Muslim  <no-reply@digitaloasisit.com>')
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://maktabatulmuslim.com',
+    'https://www.maktabatulmuslim.com',
+    'http://maktabatulmuslim.com',
+    'http://www.maktabatulmuslim.com',
+    'http://169.58.117.130'
+]
+
+
 
 
