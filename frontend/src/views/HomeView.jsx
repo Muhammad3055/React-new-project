@@ -147,13 +147,12 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       {/* Hero Section */}
       <section className="hero-section">
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', padding: '6px 18px', background: 'rgba(255, 255, 255, 0.12)', borderRadius: '30px', border: '1.5px solid var(--accent-gold)', marginBottom: '1.25rem', backdropFilter: 'blur(8px)', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.05rem', boxShadow: '0 4px 12px rgba(255, 255, 255, 0.4)', border: '1.5px solid var(--accent-gold)', flexShrink: 0 }}>
-            <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
-          </div>
+          <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '36px', height: '36px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.5)', flexShrink: 0 }} />
           <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>
             MAKTABA TUL MUSLIM &bull; مكتبة المسلم
           </span>
         </div>
+
 
         <h2 className="arabic-font hero-arabic-title">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
 

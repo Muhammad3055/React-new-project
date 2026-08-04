@@ -120,12 +120,11 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
       <header className="navbar">
         <div className="nav-container">
           <div className="navbar-left-group">
-            <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer' }}>
-              <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', boxShadow: '0 4px 12px rgba(255, 255, 255, 0.4)', border: '1.5px solid var(--accent-gold)', flexShrink: 0 }}>
-                <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
-              </div>
+            <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}>
+              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
               <span className="brand-text">{t('brandName')}</span>
             </div>
+
 
 
             <ul className="nav-links desktop-nav">

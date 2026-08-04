@@ -172,9 +172,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', boxShadow: '0 4px 15px rgba(255, 255, 255, 0.45)', border: '2px solid var(--accent-gold)', flexShrink: 0 }}>
-              <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
-            </div>
+            <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '42px', height: '42px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.5)', flexShrink: 0 }} />
             <div>
               <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-gold)' }}>Admin Content & Upload Studio</h3>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Add Books, MP3s, Custom Links & Folders Anywhere</p>
@@ -184,6 +182,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
             <i className="fas fa-times"></i>
           </button>
         </div>
+
 
 
         {submitted ? (

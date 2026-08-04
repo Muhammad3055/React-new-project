@@ -32,11 +32,10 @@ export default function AdminFloatingBar({ user, navigateToTab }) {
         }}
       >
         <div className="admin-badge-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
-          <div style={{ width: '26px', height: '26px', borderRadius: '8px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', border: '1px solid var(--accent-gold)', flexShrink: 0 }}>
-            <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
-          </div>
+          <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '28px', height: '28px', borderRadius: '6px', boxShadow: '0 2px 8px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
           <span className="admin-text-label">ADMIN STUDIO</span>
         </div>
+
 
 
         <button
