@@ -166,8 +166,10 @@ def api_videos_list(request):
             'thumbnail_url': item.thumbnail.url if item.thumbnail else item.thumbnail_url,
             'description': item.description,
             'category_id': item.category_id,
+            'category': item.category.name if item.category else None,
             'created_at': item.created_at.strftime('%Y-%m-%d'),
         })
+
 
     return JsonResponse({
         'results': data,
@@ -218,9 +220,12 @@ def api_taqreer_list(request):
             'language': item.language,
             'audio_url': item.get_playable_url(),
             'duration': item.duration,
+            'category_id': item.category_id,
+            'category': item.category.name if item.category else None,
             'description': item.description,
             'created_at': item.created_at.strftime('%Y-%m-%d'),
         })
+
 
     return JsonResponse({
         'results': data,
@@ -299,6 +304,8 @@ def api_books_list(request):
             'description': item.description,
             'pages_count': item.pages_count,
             'language': item.language,
+            'category_id': item.category_id,
+            'category': item.category.name if item.category else None,
         })
 
     return JsonResponse({
@@ -414,11 +421,25 @@ def api_hadith_list(request):
 def api_categories_list(request):
     cats = cache.get('categories_list')
     if not cats:
+        if Category.objects.count() == 0:
+            default_names = [
+                'Holy Quran Translation',
+                'Islamic Books & PDF',
+                'Tafseer & Commentary',
+                'Hadith & Sunnah',
+                'Taqreer & Lectures',
+                'Fiqh & Islamic Rulings',
+                'Islamic History & Seerah'
+            ]
+            for name in default_names:
+                from django.utils.text import slugify
+                Category.objects.get_or_create(name=name, defaults={'slug': slugify(name)})
         cats = list(Category.objects.values('id', 'name', 'slug'))
-        cache.set('categories_list', cats, 600)
+        cache.set('categories_list', cats, 300)
     res = JsonResponse({'categories': cats})
-    res.headers['Cache-Control'] = 'public, max-age=300'
+    res.headers['Cache-Control'] = 'public, max-age=60'
     return res
+
 
 
 def api_qaris_list(request):
