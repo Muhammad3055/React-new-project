@@ -130,7 +130,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         });
 
     } else {
-      // ===== NEW USER SIGN UP =====
+      // ===== NEW USER SIGN UP (CREATE ACCOUNT) =====
       if (!username.trim() || !email.trim() || !password.trim()) {
         setError('Please fill in all required fields (Username, Email, Password).');
         return;
@@ -138,31 +138,37 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
       setSubmitting(true);
 
-      fetch(getApiUrl('/api/auth/send-otp/'), {
+      fetch(getApiUrl('/api/auth/signup/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'signup', username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
+        body: JSON.stringify({ username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
       })
         .then(res => res.json())
         .then(data => {
           setSubmitting(false);
-          if (data.status === 'otp_sent') {
-            setPendingEmail(data.email || email.trim());
-            setStep('otp');
-            setOtpCode('');
+          if (data.status === 'success') {
+            const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
+            localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
+            setUser(userObj);
+            onClose();
           } else {
             setError(data.error || 'Registration failed. Please check your details.');
           }
         })
         .catch(() => {
           setSubmitting(false);
-          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-          setPendingEmail(email.trim());
-          setStep('otp');
-          setOtpCode(generatedOtp);
-          setPendingDemoUser({ username: username.trim(), email: email.trim(), password: password.trim(), code: generatedOtp });
+          const userObj = { username: username.trim(), email: email.trim().toLowerCase(), is_staff: false };
+          const savedUsers = JSON.parse(localStorage.getItem('quran_portal_registered_users') || '[]');
+          if (!savedUsers.some(u => u.email === userObj.email)) {
+            savedUsers.push({ ...userObj, password: password.trim() });
+            localStorage.setItem('quran_portal_registered_users', JSON.stringify(savedUsers));
+          }
+          localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
+          setUser(userObj);
+          onClose();
         });
     }
+
   };
 
   const handleOpenSocialModal = (provider) => {
