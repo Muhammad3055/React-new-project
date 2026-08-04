@@ -31,10 +31,13 @@ export default function AdminFloatingBar({ user, navigateToTab }) {
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        <div className="admin-badge-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
-          <i className="fas fa-shield-alt"></i>
+        <div className="admin-badge-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
+          <div style={{ width: '26px', height: '26px', borderRadius: '8px', background: '#ffffff', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', border: '1px solid var(--accent-gold)', flexShrink: 0 }}>
+            <i className="fas fa-book-quran" style={{ color: '#022c22' }}></i>
+          </div>
           <span className="admin-text-label">ADMIN STUDIO</span>
         </div>
+
 
         <button
           className="admin-add-content-btn"
