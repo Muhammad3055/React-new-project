@@ -588,95 +588,55 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 </p>
               </div>
 
-              {/* Saved Account Options List (Claude Style) */}
-              <div style={{ borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', margin: '1rem 0' }}>
-                
+              {/* Account Email Input Form */}
+              <form onSubmit={handleCustomSocialSubmit} style={{ padding: '0.5rem 0' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+                  Enter your {socialProvider.toUpperCase()} Email Address:
+                </label>
+                <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                  <i className="fas fa-envelope" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    placeholder={socialProvider === 'google' ? 'e.g. name@gmail.com' : socialProvider === 'microsoft' ? 'e.g. name@outlook.com' : 'e.g. name@facebook.com'}
+                    value={socialEmail || email || ''}
+                    onChange={(e) => setSocialEmail(e.target.value)}
+                    style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.6rem', border: '1.5px solid var(--accent-gold)', borderRadius: '12px', fontSize: '0.92rem', outline: 'none', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15)' }}
+                  />
+                </div>
                 <button
-                  type="button"
-                  onClick={() => executeSocialAuth(socialProvider, socialProvider === 'google' ? 'muhammadkhidrani@gmail.com' : socialProvider === 'microsoft' ? 'muhammadkhidrani@outlook.com' : 'muhammadkhidrani@facebook.com')}
+                  type="submit"
                   disabled={submitting}
                   style={{
                     width: '100%',
-                    padding: '0.85rem 0.5rem',
-                    background: 'transparent',
+                    padding: '0.85rem',
+                    borderRadius: '14px',
                     border: 'none',
-                    borderBottom: '1px solid #f1f5f9',
+                    background: 'linear-gradient(135deg, #059669 0%, #022c22 100%)',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 18px rgba(5, 150, 105, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.85rem',
-                    cursor: 'pointer',
-                    textAlign: 'left'
+                    justifyContent: 'center',
+                    gap: '0.5rem'
                   }}
                 >
-                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #022c22)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0 }}>
-                    M
-                  </div>
-                  <div style={{ overflow: 'hidden' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>Muhammad</div>
-                    <div style={{ fontSize: '0.82rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {socialProvider === 'google' ? 'muhammadkhidrani@gmail.com' : socialProvider === 'microsoft' ? 'muhammadkhidrani@outlook.com' : 'muhammadkhidrani@facebook.com'}
-                    </div>
-                  </div>
+                  {submitting ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i> Authenticating...
+                    </>
+                  ) : (
+                    <>
+                      Sign In with {socialProvider.toUpperCase()} <i className="fas fa-arrow-right"></i>
+                    </>
+                  )}
                 </button>
+              </form>
 
-                {!showCustomSocialInput ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowCustomSocialInput(true)}
-                    style={{
-                      width: '100%',
-                      padding: '0.85rem 0.5rem',
-                      background: 'transparent',
-                      border: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.85rem',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                  >
-                    <div style={{ width: '42px', height: '42px', borderRadius: '50%', border: '1px solid #cbd5e1', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
-                      <i className="fas fa-user-circle"></i>
-                    </div>
-                    <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#334155' }}>
-                      Use another account
-                    </div>
-                  </button>
-                ) : (
-                  <form onSubmit={handleCustomSocialSubmit} style={{ padding: '0.85rem 0.25rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                      Enter your {socialProvider.toUpperCase()} Email Address:
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      autoFocus
-                      placeholder={socialProvider === 'google' ? 'name@gmail.com' : socialProvider === 'microsoft' ? 'name@outlook.com' : 'name@example.com'}
-                      value={socialEmail}
-                      onChange={(e) => setSocialEmail(e.target.value)}
-                      style={{ width: '100%', padding: '0.75rem 1rem', border: '1.5px solid var(--accent-gold)', borderRadius: '12px', fontSize: '0.9rem', outline: 'none', marginBottom: '0.75rem' }}
-                    />
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        borderRadius: '12px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #059669 0%, #022c22 100%)',
-                        color: '#ffffff',
-                        fontWeight: 800,
-                        fontSize: '0.9rem',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {submitting ? 'Connecting...' : `Continue to Portal`}
-                    </button>
-                  </form>
-                )}
-
-              </div>
 
               {error && (
                 <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
