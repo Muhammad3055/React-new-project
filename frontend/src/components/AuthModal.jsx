@@ -163,53 +163,51 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     }
   };
 
-  const handleOpenSocialModal = (provider) => {
-    setSocialProvider(provider);
-    setSocialEmail('');
+  const handleSocialLoginDirect = (provider) => {
+    setSubmitting(true);
     setError('');
-  };
 
-  const handleSocialSubmit = (e) => {
-    e.preventDefault();
-    const targetEmail = socialEmail.trim().toLowerCase();
+    let promptMessage = "Sign in with Google Account:\nEnter your @gmail.com email address:";
+    if (provider === 'microsoft') {
+      promptMessage = "Sign in with Microsoft Account:\nEnter your @outlook.com or @hotmail.com email address:";
+    } else if (provider === 'facebook') {
+      promptMessage = "Sign in with Facebook Account:\nEnter your Facebook email address:";
+    }
 
-    // Client-side domain validation
-    if (socialProvider === 'google') {
-      const msDomains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.'];
-      if (msDomains.some(dom => targetEmail.includes(dom))) {
-        setError('Invalid Google Account! Outlook/Hotmail addresses cannot be used for Google Sign-In.');
-        return;
-      }
+    const userInput = prompt(promptMessage);
+    if (!userInput || !userInput.trim()) {
+      setSubmitting(false);
+      return;
+    }
+
+    const targetEmail = userInput.trim().toLowerCase();
+
+    // Domain validation
+    if (provider === 'google') {
       if (!targetEmail.includes('@gmail.com') && !targetEmail.includes('@googlemail.com')) {
-        setError('Invalid Google Account! Please enter a valid Gmail address.');
+        setError('Invalid Google Account! Please enter a valid Gmail address (e.g. user@gmail.com).');
+        setSubmitting(false);
         return;
       }
-    }
-
-    if (socialProvider === 'microsoft') {
-      if (targetEmail.includes('@gmail.com') || targetEmail.includes('@googlemail.com')) {
-        setError('Invalid Microsoft Account! Gmail addresses cannot be used for Microsoft Sign-In.');
+    } else if (provider === 'microsoft') {
+      const msDomains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.'];
+      if (!msDomains.some(d => targetEmail.includes(d))) {
+        setError('Invalid Microsoft Account! Please enter a valid Microsoft email address.');
+        setSubmitting(false);
         return;
       }
-      const validMs = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.'];
-      if (!validMs.some(dom => targetEmail.includes(dom))) {
-        setError('Invalid Microsoft Account! Please enter a valid Microsoft email.');
-        return;
-      }
-    }
-
-    if (socialProvider === 'facebook') {
+    } else if (provider === 'facebook') {
       if (!targetEmail.includes('@')) {
         setError('Invalid Facebook Account! Please enter a valid email address.');
+        setSubmitting(false);
         return;
       }
     }
 
-    setSubmitting(true);
     fetch(getApiUrl('/api/auth/social/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider: socialProvider, email: targetEmail })
+      body: JSON.stringify({ provider, email: targetEmail })
     })
       .then(res => res.json())
       .then(data => {
@@ -220,11 +218,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           setUser(userObj);
           onClose();
         } else {
-          setError(data.error || 'Social sign-in failed.');
+          setError(data.error || `${provider.toUpperCase()} Sign-In failed.`);
         }
       })
       .catch(() => {
-        // Fallback for Netlify deployment
         setSubmitting(false);
         const namePart = targetEmail.split('@')[0];
         const userObj = { username: namePart, email: targetEmail, is_staff: false };
@@ -233,6 +230,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         onClose();
       });
   };
+
 
 
   // Resend 6-digit OTP code without prompting for details again
@@ -702,9 +700,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="button"
                   className="auth-social-card google-card"
-                  onClick={() => handleOpenSocialModal('google')}
+                  onClick={() => handleSocialLoginDirect('google')}
                   disabled={submitting}
-                  title="Sign in with Google"
+                  title="Sign in with Google Account"
                   style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -719,9 +717,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="button"
                   className="auth-social-card facebook-card"
-                  onClick={() => handleOpenSocialModal('facebook')}
+                  onClick={() => handleSocialLoginDirect('facebook')}
                   disabled={submitting}
-                  title="Sign in with Facebook"
+                  title="Sign in with Facebook Account"
                   style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1877f2' }}
                 >
                   <i className="fab fa-facebook-f" style={{ fontSize: '1rem', color: '#1877f2' }}></i>
@@ -731,9 +729,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <button
                   type="button"
                   className="auth-social-card microsoft-card"
-                  onClick={() => handleOpenSocialModal('microsoft')}
+                  onClick={() => handleSocialLoginDirect('microsoft')}
                   disabled={submitting}
-                  title="Sign in with Microsoft"
+                  title="Sign in with Microsoft Account"
                   style={{ padding: '0.6rem 0.3rem', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 }}
                 >
                   <svg width="16" height="16" viewBox="0 0 23 23" style={{ flexShrink: 0 }}>
@@ -745,6 +743,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <span>Microsoft</span>
                 </button>
               </div>
+
 
 
               {/* Bottom Cancel & Return Button */}
