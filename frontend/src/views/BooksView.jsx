@@ -621,7 +621,8 @@ export default function BooksView({ openReportModal, user }) {
                       lineHeight: '1.1'
                     }}
                   >
-                    Author: {previewDoc.author} &bull; {previewDoc.file_type_display || previewDoc.file_type} ({previewDoc.pages_count} Pages)
+                    Author: {previewDoc.author || 'Islamic Scholar'} &bull; {previewDoc.file_type_display || previewDoc.file_type || 'PDF'} ({previewDoc.pages_count || previewDoc.pages || 1} Pages)
+
                   </p>
                 </div>
               </div>
