@@ -70,10 +70,16 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
 
         <div className="footer-bottom">
           <p className="arabic-font calligraphy-footer">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-          <p className="copyright-text">&copy; {new Date().getFullYear()} {t('brandName')}. {t('rightsReserved')}</p>
+          <p className="copyright-text">&copy; {new Date().getFullYear()} {t('brandName')} (مكتبة المسلم). {t('rightsReserved')}</p>
+
+          {/* Search Engine Optimization (SEO) Keywords Block */}
+          <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', lineHeight: '1.5', textAlign: 'center' }}>
+            <span><strong>Maktabat-ul-Muslim (مكتبة المسلم)</strong> &bull; Muslim Maktaba &bull; Makatab Muslim &bull; Quran &bull; Brohi / Brahui Tarjuma Quran &bull; Urdu Quran &bull; Islam Library &bull; Islamic PDF Books</span>
+          </div>
         </div>
       </div>
     </footer>
+
   );
 }
 

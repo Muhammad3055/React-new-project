@@ -79,25 +79,26 @@ export default function App() {
   // Dynamic SEO Page Title update
   useEffect(() => {
     const seoTitles = {
-      home: 'Quran Portal - Read Quran Online in English, Urdu & Brahui | MP3 Recitations & Taqreers',
-      read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui Translations',
-      quran: 'Quran & Taqreer MP3 Audio Portal - Listen to Qaris & Lectures in Arabic, Brahui & Urdu',
-      qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads',
-      tafseer: 'Tafseer Quran - Detailed Verse Explanations & Commentary',
-      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan',
-      fazail: 'Fazail & Virtues of Quran & Good Deeds',
-      books: 'Islamic PDF Books & Library - Free Digital Islamic Literature & E-Books',
-      namesOfAllah: '99 Names of Allah (Asma ul Husna)',
-      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr',
-      duas: 'Masnoon Duas & Supplications',
-      khatam: 'Khatam Quran 30-Day Progress Tracker & Schedule Planner',
-      contact: 'Contact Us & Feedback - Quran Portal',
-      about: 'About Us & Developer Profile - Quran Al Kareem',
-      bookmarks: 'My Bookmarks - Quran Portal',
-      upload: 'Admin Upload Content - Quran Portal'
+      home: 'Maktabat-ul-Muslim (مكتبة المسلم) - Read Quran Online (English, Urdu, Brahui / Brohi) | MP3 & Taqreer Library',
+      read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui (Brohi) Tarjuma | Maktabat-ul-Muslim',
+      quran: 'Quran & Taqreer MP3 Audio Portal - Qaris Tilawat & Scholar Lectures | Maktabat-ul-Muslim',
+      qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads | Maktabat-ul-Muslim',
+      tafseer: 'Tafseer Quran & Verse Explanations - Maktabat-ul-Muslim',
+      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan | Maktabat-ul-Muslim',
+      fazail: 'Fazail & Virtues of Quran & Good Deeds - Maktabat-ul-Muslim',
+      books: 'Maktabat-ul-Muslim - Free Islamic PDF Books & Library (Brohi / Urdu / English)',
+      namesOfAllah: '99 Names of Allah (Asma ul Husna) - Maktabat-ul-Muslim',
+      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr - Maktabat-ul-Muslim',
+      duas: 'Masnoon Duas & Supplications - Maktabat-ul-Muslim',
+      khatam: 'Khatam Quran Progress Tracker - Maktabat-ul-Muslim',
+      contact: 'Contact Us & Feedback - Maktabat-ul-Muslim (مكتبة المسلم)',
+      about: 'About Us & Portal Profile - Maktabat-ul-Muslim',
+      bookmarks: 'My Saved Bookmarks - Maktabat-ul-Muslim',
+      upload: 'Admin Upload Content Studio - Maktabat-ul-Muslim'
     };
-    document.title = seoTitles[activeTab] || 'Quran Portal - Read Quran & MP3 Taqreers';
+    document.title = seoTitles[activeTab] || 'Maktabat-ul-Muslim (مكتبة المسلم) - Digital Islamic Library & Quran Portal';
   }, [activeTab]);
+
 
   // Check auth status on mount
   useEffect(() => {
