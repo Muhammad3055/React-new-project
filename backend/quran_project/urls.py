@@ -40,12 +40,15 @@ from django.shortcuts import render, redirect
 
 urlpatterns = [
     path('favicon.ico', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon.svg', lambda req: redirect('/static/favicon.svg', permanent=True)),
     path('admin', lambda req: redirect('/admin/', permanent=True)),
     path('admin/', admin.site.urls),
     path('', root_health_view, name='root_health'),
     path('', include('core.urls')),
     re_path(r'^.*$', root_health_view, name='spa_catchall'),
 ]
+
 
 
 if settings.DEBUG:
