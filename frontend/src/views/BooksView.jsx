@@ -188,6 +188,10 @@ export default function BooksView({ openReportModal, user }) {
       return `https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`;
     }
 
+    if (viewerEngine === 'pdfjs') {
+      return `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(fullUrl)}`;
+    }
+
     if (viewerEngine === 'office') {
       return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
     }
@@ -200,12 +204,18 @@ export default function BooksView({ openReportModal, user }) {
     setPreviewDoc(doc);
     setIsFullscreen(false);
     const rawUrl = getDocRawUrl(doc);
-    if (isPdfFormat(doc) || isLocalUrl(rawUrl)) {
+    const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile && isPdfFormat(doc)) {
+      // Mobile browsers cannot embed raw PDFs natively in iframes - auto-route to Google PDF viewer
+      setViewerEngine('google');
+    } else if (isPdfFormat(doc) || isLocalUrl(rawUrl)) {
       setViewerEngine('direct');
     } else {
       setViewerEngine('office');
     }
   };
+
 
   return (
     <div className="container" style={{ paddingBottom: '3rem' }}>
@@ -701,16 +711,22 @@ export default function BooksView({ openReportModal, user }) {
               <div style={{ display: 'flex', gap: '0.2rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>Engine:</span>
                 <button
-                  onClick={() => setViewerEngine('direct')}
-                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                >
-                  Native
-                </button>
-                <button
                   onClick={() => setViewerEngine('google')}
                   style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'google' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'google' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                 >
                   Google
+                </button>
+                <button
+                  onClick={() => setViewerEngine('pdfjs')}
+                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'pdfjs' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'pdfjs' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  PDF.js
+                </button>
+                <button
+                  onClick={() => setViewerEngine('direct')}
+                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  Native
                 </button>
                 <button
                   onClick={() => setViewerEngine('office')}
@@ -719,6 +735,7 @@ export default function BooksView({ openReportModal, user }) {
                   Office
                 </button>
               </div>
+
 
               <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <a
