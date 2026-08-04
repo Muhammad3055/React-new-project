@@ -207,14 +207,15 @@ export default function BooksView({ openReportModal, user }) {
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (isMobile && isPdfFormat(doc)) {
-      // Mobile browsers cannot embed raw PDFs natively in iframes - auto-route to Google PDF viewer
       setViewerEngine('google');
     } else if (isPdfFormat(doc) || isLocalUrl(rawUrl)) {
-      setViewerEngine('direct');
+      // Default to Mozilla PDF.js viewer engine for 100% reliable PDF page rendering across all OS & browsers
+      setViewerEngine('pdfjs');
     } else {
       setViewerEngine('office');
     }
   };
+
 
 
   return (
