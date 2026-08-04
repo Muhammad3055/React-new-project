@@ -7,16 +7,16 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 # Customize the admin interface
-admin.site.site_header = "Islamic Zikr"
-admin.site.site_title = "Admin Portal"
-admin.site.index_title = "Welcome to the Islamic Dashboard"
+admin.site.site_header = "Maktaba tul Muslim — Admin Studio"
+admin.site.site_title = "Maktaba tul Muslim"
+admin.site.index_title = "Maktaba tul Muslim Content & Library Management"
 
 def root_health_view(request):
     # If requested by API client or format=json, return JSON
     if 'application/json' in request.headers.get('Accept', '') or request.GET.get('format') == 'json':
         return JsonResponse({
             "status": "online",
-            "service": "Quran Portal API Backend",
+            "service": "Maktaba tul Muslim API Backend",
             "version": "1.0.0",
             "admin_panel": "/admin/",
             "api_endpoints": {
@@ -39,12 +39,14 @@ def root_health_view(request):
 from django.shortcuts import render, redirect
 
 urlpatterns = [
+    path('favicon.ico', lambda req: redirect('/static/favicon.svg', permanent=True)),
     path('admin', lambda req: redirect('/admin/', permanent=True)),
     path('admin/', admin.site.urls),
     path('', root_health_view, name='root_health'),
     path('', include('core.urls')),
     re_path(r'^.*$', root_health_view, name='spa_catchall'),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
