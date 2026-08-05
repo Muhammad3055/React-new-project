@@ -1,113 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getApiUrl } from '../utils/apiCache';
-
-// Language Strings Dictionary for English, Urdu, and Arabic
-const i18n = {
-  en: {
-    portalTitle: "Maktaba tul Muslim",
-    portalSubtitle: "Digital Quran & Islamic Portal",
-    signIn: "Sign In",
-    createAccount: "Create Account",
-    forgotPassword: "Forgot Password?",
-    resetPassword: "Reset Password",
-    guestMode: "Continue as Guest",
-    fullName: "Full Name",
-    username: "Username",
-    email: "Email Address",
-    password: "Password",
-    confirmPassword: "Confirm Password",
-    rememberMe: "Remember Me",
-    agreeTerms: "I agree to the Terms & Privacy Policy",
-    nextStep: "Next: Password & Security",
-    backStep: "Back",
-    enterOtp: "Enter Verification Code",
-    otpDispatched: "Enter the 6-digit code sent to:",
-    resendOtp: "Resend Code",
-    resendIn: "Resend in",
-    verifyAccount: "Verify Account",
-    verifyAndReset: "Verify & Reset Password",
-    signingIn: "Signing in...",
-    sendingCode: "Sending verification code...",
-    verifying: "Verifying...",
-    accountCreated: "✅ Account Created Successfully",
-    passwordWeak: "Weak",
-    passwordFair: "Medium",
-    passwordStrong: "Strong",
-    passwordExcellent: "Excellent",
-    orSocial: "OR CONTINUE WITH",
-  },
-  ur: {
-    portalTitle: "مكتبة المسلم",
-    portalSubtitle: "ڈیجیٹل قرآن و اسلامی پورٹل",
-    signIn: "سائن ان کریں",
-    createAccount: "نیا اکاؤنٹ بنائیں",
-    forgotPassword: "پاس ورڈ بھول گئے؟",
-    resetPassword: "پاس ورڈ ری سیٹ کریں",
-    guestMode: "مہمان کے طور پر جاری رکھیں",
-    fullName: "مکمل نام",
-    username: "یوزر نیم",
-    email: "ای میل ایڈریس",
-    password: "پاس ورڈ",
-    confirmPassword: "پاس ورڈ کی تصدیق کریں",
-    rememberMe: "مجھے یاد رکھیں",
-    agreeTerms: "میں شرائط اور راز داری کی پالیسی سے متفق ہوں",
-    nextStep: "اگلا قدم: پاس ورڈ اور سیکیورٹی",
-    backStep: "پیچھے",
-    enterOtp: "تصدیقی کوڈ درج کریں",
-    otpDispatched: "6 ہندسوں کا کوڈ اس ای میل پر بھیجا گیا ہے:",
-    resendOtp: "کوڈ دوبارہ بھیجیں",
-    resendIn: "دوبارہ بھیجیں",
-    verifyAccount: "اکاؤنٹ کی تصدیق کریں",
-    verifyAndReset: "تصدیق اور پاس ورڈ ری سیٹ کریں",
-    signingIn: "سائن ان ہو رہا ہے...",
-    sendingCode: "کوڈ بھیجا جا رہا ہے...",
-    verifying: "تصدیق ہو رہی ہے...",
-    accountCreated: "✅ اکاؤنٹ کامیابی سے بن گیا!",
-    passwordWeak: "کمزور",
-    passwordFair: "مناسب",
-    passwordStrong: "مضبوط",
-    passwordExcellent: "بہترین",
-    orSocial: "یا سوشل اکاؤنٹ سے داخل ہوں",
-  },
-  ar: {
-    portalTitle: "مكتبة المسلم",
-    portalSubtitle: "البوابة القرآنية والإسلامية الرقمية",
-    signIn: "تسجيل الدخول",
-    createAccount: "إنشاء حساب جدید",
-    forgotPassword: "نسيت كلمة المرور؟",
-    resetPassword: "إعادة ضبط كلمة المرور",
-    guestMode: "المتابعة كزائر",
-    fullName: "الاسم الكامل",
-    username: "اسم المستخدم",
-    email: "البريد الإلكتروني",
-    password: "كلمة المرور",
-    confirmPassword: "تأكيد كلمة المرور",
-    rememberMe: "تذكرني",
-    agreeTerms: "أوافق على الشروط وسياسة الخصوصية",
-    nextStep: "التالي: كلمة المرور والأمان",
-    backStep: "رجوع",
-    enterOtp: "أدخل رمز التحقق",
-    otpDispatched: "تم إرسال رمز مكون من 6 أرقام إلى:",
-    resendOtp: "إعادة إرسال الرمز",
-    resendIn: "إعادة الإرسال خلال",
-    verifyAccount: "تأكيد الحساب",
-    verifyAndReset: "تأكيد وإعادة ضبط كلمة المرور",
-    signingIn: "جاري تسجيل الدخول...",
-    sendingCode: "جاري إرسال الرمز...",
-    verifying: "جاري التحقق...",
-    accountCreated: "✅ تم إنشاء الحساب بنجاح!",
-    passwordWeak: "ضعيف",
-    passwordFair: "متوسط",
-    passwordStrong: "قوي",
-    passwordExcellent: "ممتاز",
-    orSocial: "أو المتابعة باستخدام",
-  }
-};
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AuthModal({ initialMode, onClose, setUser }) {
-  const [lang, setLang] = useState('en');
+  const { lang, setLang, t } = useLanguage();
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const t = i18n[lang] || i18n.en;
 
   const [mode, setMode] = useState(initialMode || 'login'); // 'login' | 'signup' | 'forgot_password'
   const [regStep, setRegStep] = useState(1); // Registration sub-step (1: Info, 2: Security)
@@ -612,7 +509,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           {/* Top Bar: Language Selector & Theme Toggle & Close */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
             <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)', padding: '3px', borderRadius: '10px' }}>
-              {['en', 'ur', 'ar'].map((l) => (
+              {['en', 'ur', 'br', 'ar'].map((l) => (
                 <button
                   key={l}
                   type="button"

@@ -1,333 +1,72 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-// Comprehensive Translations Dictionary for English, Urdu, Brahui, and Arabic
-export const translations = {
-  english: {
-    brandName: "Maktaba tul Muslim",
-    searchPlaceholder: "Search Quran, Surahs, Books...",
-
-
-    home: "Home",
-    readQuran: "Read Quran",
-    mp3Audio: "MP3 & Taqreer",
-    fazail: "Fazail (Virtues)",
-    aboutUs: "About Us",
-    more: "More",
-    qaris: "Reciters / Qaris",
-    books: "Books Library",
-    tafseer: "Tafseer Quran",
-    hadith: "Hadith Collection",
-    namesOfAllah: "99 Names of Allah",
-    tasbeeh: "Tasbeeh Counter",
-    duas: "Du'as Library",
-    khatam: "Khatam Tracker",
-    contact: "Contact Us",
-    login: "Login",
-    signup: "Sign Up",
-    logout: "Logout",
-    dashboard: "Dashboard",
-    exploreMore: "Explore More",
-    subExploreSubtitle: "Hadith, Tafseer, 99 Names & more",
-    theme: "Theme",
-    language: "Language",
-    arabicTranslationLabel: "Arabic Original Text",
-    brahuiTranslationLabel: "Brahui Translation",
-    urduTranslationLabel: "Urdu Translation",
-    englishTranslationLabel: "English Translation",
-    selectLanguage: "Language / اللغة",
-    quranHeroTitle: "The Holy Quran Portal",
-    quranHeroSubtitle: "Read, Listen, and Study Quran with English, Urdu & Brahui Translations",
-    quickStatsSurahs: "114 Surahs",
-    quickStatsJuz: "30 Juz",
-    quickStatsVerses: "6,236 Verses",
-    viewAllBooks: "View All PDF Books",
-    footerTagline: "Serving the Muslim Ummah with Quran, Hadith, and Islamic Literature in English, Urdu, Brahui and Arabic.",
-    rightsReserved: "All rights reserved.",
-    readNow: "Read Now",
-    listenAudio: "Listen Audio",
-    downloadPdf: "Download PDF",
-    share: "Share",
-    bookmark: "Bookmark",
-    details: "View Details",
-    author: "Author",
-    speaker: "Reciter / Speaker",
-    surah: "Surah",
-    juz: "Juz",
-    verse: "Verse",
-    category: "Category",
-    allFormats: "All Formats",
-    searchBooksPlaceholder: "Search books, authors, topics...",
-    previewPdf: "Preview PDF",
-    bookmarked: "Bookmarked",
-    reportIssue: "Report Issue",
-    close: "Close",
-    previous: "Previous",
-    next: "Next",
-    page: "Page",
-    of: "of",
-    filterBy: "Filter",
-    noResultsFound: "No items found matching your criteria.",
-    allCategories: "All Categories",
-    pages: "Pages",
-    languageLabel: "Language",
-    playAudio: "Play Audio",
-    pauseAudio: "Pause",
-  },
-  urdu: {
-    brandName: "مكتبة المسلم",
-    searchPlaceholder: "قرآن، سورة، یا کتابیں تلاش کریں...",
-    home: "صفحہ اول",
-    readQuran: "تلاوت قرآن",
-    mp3Audio: "صوتی تلاوت و تقریر",
-    fazail: "فضائل و برکات",
-    aboutUs: "ہمارے بارے میں",
-    more: "مزید",
-    qaris: "قراء و نعت خواں",
-    books: "اسلامی کتب خانہ",
-    tafseer: "تفسیر قرآن",
-    hadith: "حدیث مبارکہ",
-    namesOfAllah: "أسماء الحسنى (99 نام)",
-    tasbeeh: "تسبیح کاؤنٹر",
-    duas: "مسنون دعائیں",
-    khatam: "ختم قرآن ٹریکر",
-    contact: "رابطہ کریں",
-    login: "لاگ ان",
-    signup: "سائن اپ",
-    logout: "لاگ آؤٹ",
-    dashboard: "ڈیش بورڈ",
-    exploreMore: "مزید دریافت کریں",
-    subExploreSubtitle: "حدیث، تفسیر، أسماء الحسنى و دیگر",
-    theme: "تھیم",
-    language: "زبان",
-    arabicTranslationLabel: "عربی اصل متن",
-    brahuiTranslationLabel: "براہوئی ترجمہ",
-    urduTranslationLabel: "اردو ترجمہ",
-    englishTranslationLabel: "انگلش ترجمہ",
-    selectLanguage: "زبان / Language",
-    quranHeroTitle: "قرآن مجید پورٹل",
-    quranHeroSubtitle: "اردو، انگریزی اور براہوئی ترجمہ و تفسیر کے ساتھ قرآن پڑھیں اور سنیں",
-    quickStatsSurahs: "114 سورتیں",
-    quickStatsJuz: "30 پارے",
-    quickStatsVerses: "6,236 آیات",
-    viewAllBooks: "تمام اسلامی کتب دیکھیں",
-    footerTagline: "عربی، انگریزی، اردو اور براہوئی زبان میں قرآن، حدیث اور اسلامی کتب کی خدمت۔",
-    rightsReserved: "جملہ حقوق محفوظ ہیں۔",
-    readNow: "پڑھیں",
-    listenAudio: "سنیں",
-    downloadPdf: "ڈاؤن لوڈ PDF",
-    share: "شیئر",
-    bookmark: "بک مارک",
-    details: "تفصیلات",
-    author: "مصنف",
-    speaker: "مقرر / قاری",
-    surah: "سورة",
-    juz: "پارہ",
-    verse: "آیت",
-    category: "کیٹیگری",
-    allFormats: "تمام فارمیٹس",
-    searchBooksPlaceholder: "کتابیں، مصنفین یا مضامین تلاش کریں...",
-    previewPdf: "آن لائن دیکھیں PDF",
-    bookmarked: "بک مارک شدہ",
-    reportIssue: "رپورٹ کریں",
-    close: "بند کریں",
-    previous: "پچھلا",
-    next: "اگلا",
-    page: "صفحہ",
-    of: "سے",
-    filterBy: "فلٹر",
-    noResultsFound: "کوئی مواد نہیں ملا۔",
-    allCategories: "تمام کیٹیگریز",
-    pages: "صفحات",
-    languageLabel: "زبان",
-    playAudio: "آڈیو چلائیں",
-    pauseAudio: "روکیں",
-  },
-  brahui: {
-    brandName: "مكتبة المسلم",
-    searchPlaceholder: "قرآن، سورة، یا کتاب آتا پٹ و پول...",
-    home: "بنیادی پنہ",
-    readQuran: "قرآن نا تلاوت",
-    mp3Audio: "تلاوت و تقریر آک",
-    fazail: "فضائل و برکات",
-    aboutUs: "ننا باری ٹی",
-    more: "پین",
-    qaris: "قراء و نعت خواں آک",
-    books: "اسلامی کتاب آک",
-    tafseer: "قرآن نا تفسیر",
-    hadith: "حدیث مبارک",
-    namesOfAllah: "أسماء الحسنى (99 پن)",
-    tasbeeh: "تسبیح شمار",
-    duas: "مسنون دعا آک",
-    khatam: "ختم قرآن ٹریکر",
-    contact: "رابطہ کرو",
-    login: "لاگ ان",
-    signup: "رجسٹر",
-    logout: "لائیور",
-    dashboard: "ڈیش بورڈ",
-    exploreMore: "پین پٹ و پول کرو",
-    subExploreSubtitle: "حدیث، تفسیر، أسماء الحسنى و پین",
-    theme: "تھیم",
-    language: "زبلی / زبان",
-    arabicTranslationLabel: "عربی متن",
-    brahuiTranslationLabel: "براہوئی وٹول",
-    urduTranslationLabel: "اردو وٹول",
-    englishTranslationLabel: "انگریزی وٹول",
-    selectLanguage: "زبلی / Language",
-    quranHeroTitle: "قرآن مجید پورٹل",
-    quranHeroSubtitle: "براہوئی، اردو و انگریزی وٹول نا سوب اٹ قرآن خوانوکا و بنوکا",
-    quickStatsSurahs: "114 سورة آک",
-    quickStatsJuz: "30 پارہ آک",
-    quickStatsVerses: "6,236 آیت آک",
-    viewAllBooks: "گرپا اسلامی کتاب آتے ہر بو",
-    footerTagline: "براہوئی، اردو، انگریزی و عربی اٹ قرآن، حدیث و اسلامی ادب نا خزمت۔",
-    rightsReserved: "غُصہ حق آک برجا ءُ۔",
-    readNow: "خوان بو",
-    listenAudio: "بن بو",
-    downloadPdf: "ڈاؤن لوڈ PDF",
-    share: "شیئر",
-    bookmark: "بک مارک",
-    details: "تفصیل آک",
-    author: "مؤلف",
-    speaker: "مقرر / قاری",
-    surah: "سورة",
-    juz: "پارہ",
-    verse: "آیت",
-    category: "کیٹیگری",
-    allFormats: "غُصہ فارمیٹ آک",
-    searchBooksPlaceholder: "کتاب، مؤلفین یا موضوع آتا پٹ و پول...",
-    previewPdf: "آن لائن ہر بو PDF",
-    bookmarked: "بک مارک مروکا",
-    reportIssue: "رپورٹ کرو",
-    close: "بند کرو",
-    previous: "مست پیش",
-    next: "مست مونا",
-    page: "پنہ",
-    of: "نا",
-    filterBy: "پٹ",
-    noResultsFound: "ہیچ مواد رسینگتو۔",
-    allCategories: "غُصہ کیٹیگری آک",
-    pages: "پنہ آک",
-    languageLabel: "زبلی",
-    playAudio: "صدا بن بو",
-    pauseAudio: "سل بو",
-  },
-  arabic: {
-    brandName: "القرآن الكريم",
-    searchPlaceholder: "البحث في القرآن، السور، الكتب...",
-    home: "الصفحة الرئيسية",
-    readQuran: "تلاوة القرآن الكريم",
-    mp3Audio: "التلاوات والخطب الصوتية",
-    fazail: "فضائل القرآن والأعمال",
-    aboutUs: "عن البوابة",
-    more: "المزيد",
-    qaris: "القراء والمقرئون",
-    books: "المكتبة الإسلامية",
-    tafseer: "تفسير القرآن الكريم",
-    hadith: "الأحاديث النبوية الشريفة",
-    namesOfAllah: "أسماء الله الحسنى (99 اسماً)",
-    tasbeeh: "العداد الإلكتروني (المسبحة)",
-    duas: "الأدعية والأذكار المسنونة",
-    khatam: "متابع ختم القرآن",
-    contact: "اتصل بنا",
-    login: "تسجيل الدخول",
-    signup: "إنشاء حساب",
-    logout: "تسجيل الخروج",
-    dashboard: "لوحة التحكم",
-    exploreMore: "استكشف المزيد",
-    subExploreSubtitle: "الأحاديث، التفسير، أسماء الله الحسنى وغيرها",
-    theme: "المظهر",
-    language: "اللغة",
-    arabicTranslationLabel: "النص العربي الأصلي",
-    brahuiTranslationLabel: "الترجمة البراهوية",
-    urduTranslationLabel: "الترجمة الأردية",
-    englishTranslationLabel: "الترجمة الإنجليزية",
-    selectLanguage: "اللغة / Language",
-    quranHeroTitle: "بوابة القرآن الكريم الشاملة",
-    quranHeroSubtitle: "اقرأ واستمع وتدبر القرآن الكريم باللغة العربية مع التراجم الإنجليزية والأردية والبراهوية",
-    quickStatsSurahs: "114 سورة",
-    quickStatsJuz: "30 جزءاً",
-    quickStatsVerses: "6,236 آية",
-    viewAllBooks: "عرض جميع الكتب الإسلامية (PDF)",
-    footerTagline: "خدمة الأمة الإسلامية بنشر القرآن الكريم والأحاديث النبوية والكتب باللغات العربية والإنجليزي والأردية والبراهوية.",
-    rightsReserved: "جميع الحقوق محفوظة.",
-    readNow: "اقرأ الآن",
-    listenAudio: "استمع للصوت",
-    downloadPdf: "تحميل PDF",
-    share: "مشاركة",
-    bookmark: "حفظ بالمفضلة",
-    details: "التفاصيل",
-    author: "المؤلف",
-    speaker: "القارئ / الشيخ",
-    surah: "سورة",
-    juz: "جزء",
-    verse: "آية",
-    category: "التصنيف",
-    allFormats: "جميع الصيغ",
-    searchBooksPlaceholder: "البحث في الكتب، المؤلفين...",
-    previewPdf: "معاينة PDF",
-    bookmarked: "محفوظ بالمفضلة",
-    reportIssue: "إبلاغ",
-    close: "إغلاق",
-    previous: "السابق",
-    next: "التالي",
-    page: "صفحة",
-    of: "من",
-    filterBy: "تصفية",
-    noResultsFound: "لم يتم العثور على نتائج.",
-    allCategories: "جميع التصنيفات",
-    pages: "صفحات",
-    languageLabel: "اللغة",
-    playAudio: "تشغيل الصوت",
-    pauseAudio: "إيقاف",
-  }
-};
+import { translations } from '../utils/i18n';
 
 const LanguageContext = createContext();
 
-export const LanguageProvider = ({ children }) => {
-  const [language, setLanguageState] = useState(() => {
-    try {
-      return localStorage.getItem('quran_portal_site_language') || 'english';
-    } catch (e) {
-      return 'english';
-    }
+export function LanguageProvider({ children }) {
+  // Get language from localStorage or URL parameter or fallback to 'en'
+  const [lang, setLangState] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    if (urlLang && translations[urlLang]) return urlLang;
+    const saved = localStorage.getItem('quran_portal_lang');
+    if (saved && translations[saved]) return saved;
+    return 'en';
   });
 
-  const setLanguage = (lang) => {
-    setLanguageState(lang);
-    try {
-      localStorage.setItem('quran_portal_site_language', lang);
-    } catch (e) {}
-  };
+  const isRtl = lang === 'ur' || lang === 'br' || lang === 'ar';
+  const dir = isRtl ? 'rtl' : 'ltr';
 
   useEffect(() => {
-    // Automatically set page text direction (RTL for Urdu, Brahui, Arabic; LTR for English)
-    const isRtl = language === 'urdu' || language === 'brahui' || language === 'arabic';
-    document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
-    document.documentElement.setAttribute('lang', language === 'arabic' ? 'ar' : language === 'urdu' ? 'ur' : language === 'brahui' ? 'br' : 'en');
-    document.documentElement.setAttribute('data-site-lang', language);
-  }, [language]);
+    localStorage.setItem('quran_portal_lang', lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = dir;
 
-  // Helper translation function
-  const t = (key) => {
-    if (translations[language] && translations[language][key]) {
-      return translations[language][key];
+    // Apply font-family overrides based on language
+    if (lang === 'ur' || lang === 'br') {
+      document.body.style.fontFamily = "'Amiri', 'Jameel Noori Nastaleeq', 'Outfit', sans-serif";
+    } else if (lang === 'ar') {
+      document.body.style.fontFamily = "'Amiri', 'Traditional Arabic', serif";
+    } else {
+      document.body.style.fontFamily = "'Outfit', -apple-system, BlinkMacSystemFont, sans-serif";
     }
-    // Fallback to English if key missing
-    return translations.english[key] || key;
+  }, [lang, dir]);
+
+  const setLang = (newLang) => {
+    if (translations[newLang]) {
+      setLangState(newLang);
+    }
+  };
+
+  // Translation helper with English fallback
+  const t = (key, fallback = '') => {
+    const dict = translations[lang] || translations.en;
+    if (dict && dict[key] !== undefined) return dict[key];
+    const enDict = translations.en;
+    if (enDict && enDict[key] !== undefined) return enDict[key];
+    return fallback || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
-      {children}
+    <LanguageContext.Provider value={{ lang, setLang, dir, isRtl, t }}>
+      <div dir={dir} className={isRtl ? 'rtl-layout' : 'ltr-layout'}>
+        {children}
+      </div>
     </LanguageContext.Provider>
   );
-};
+}
 
-export const useLanguage = () => {
+export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    // Fallback if not wrapped in provider
+    return {
+      lang: 'en',
+      setLang: () => {},
+      dir: 'ltr',
+      isRtl: false,
+      t: (key, fallback = '') => translations.en[key] || fallback || key
+    };
   }
   return context;
-};
+}

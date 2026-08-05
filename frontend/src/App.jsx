@@ -28,7 +28,17 @@ import UserDashboardView from './views/UserDashboardView';
 
 import { getApiUrl } from './utils/apiCache';
 
+import { LanguageProvider } from './context/LanguageContext';
+
 export default function App() {
+  return (
+    <LanguageProvider>
+      <MainAppContent />
+    </LanguageProvider>
+  );
+}
+
+function MainAppContent() {
   const tabPathMap = {
     home: '/',
     read: '/read',

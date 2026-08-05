@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
 
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal }) {
-  const { language, setLanguage, t } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -190,8 +190,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 <i className="fas fa-globe"></i>
               </span>
               <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
                 style={{
                   background: '#022c22',
                   color: 'var(--accent-gold)',
@@ -205,10 +205,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 }}
                 title="Select Website Language (English, Urdu, Brahui, Arabic)"
               >
-                <option value="english">🇬🇧 English</option>
-                <option value="urdu">🇵🇰 اردو</option>
-                <option value="brahui">📜 براہوئی</option>
-                <option value="arabic">🇸🇦 العربية</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="ur">🇵🇰 اردو</option>
+                <option value="br">📜 براہوئی</option>
+                <option value="ar">🇸🇦 العربية</option>
               </select>
             </div>
 
@@ -509,8 +509,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 <i className="fas fa-globe"></i> {t('language')}:
               </span>
               <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
                 style={{
                   background: '#022c22',
                   color: 'var(--accent-gold)',
@@ -523,10 +523,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   borderRadius: '14px'
                 }}
               >
-                <option value="english">🇬🇧 English</option>
-                <option value="urdu">🇵🇰 اردو</option>
-                <option value="brahui">📜 براہوئی</option>
-                <option value="arabic">🇸🇦 العربية</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="ur">🇵🇰 اردو</option>
+                <option value="br">📜 براہوئی</option>
+                <option value="ar">🇸🇦 العربية</option>
               </select>
             </div>
 
