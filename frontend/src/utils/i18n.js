@@ -94,7 +94,7 @@ export const translations = {
 
   ur: {
     // Portal Brand & Navigation
-    portalTitle: "مكتبة المسلم",
+    portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "ڈیجیٹل قرآن و اسلامی پورٹل",
     home: "ہوم پیج",
     quran: "قرآن مجید",
@@ -185,7 +185,7 @@ export const translations = {
 
   br: {
     // Portal Brand & Navigation
-    portalTitle: "مكتبة المسلم",
+    portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "براہوئی ڈیجیٹل قرآن و اسلامی پورٹل",
     home: "باغ (ہوم)",
     quran: "قرآن پاک",
@@ -276,7 +276,7 @@ export const translations = {
 
   ar: {
     // Portal Brand & Navigation
-    portalTitle: "مكتبة المسلم",
+    portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "البوابة القرآنية والإسلامية الرقمية",
     home: "الرئيسية",
     quran: "القرآن الكريم",
