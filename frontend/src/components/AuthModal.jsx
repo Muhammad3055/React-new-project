@@ -161,15 +161,46 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
   };
 
-  const handleOpenSocialModal = (provider) => {
-    // 1-Click Social Sign-In Direct Authenticate
-    setSocialProvider(provider);
+  const handleOpenSocialModal = (provider = 'google') => {
     setError('');
-    const userEmail = (email || username || '').includes('@') ? (email || username) : `${username || provider}_user@gmail.com`;
-    executeSocialAuth(provider, userEmail);
+    setSubmitting(true);
+
+    if (window.google?.accounts?.id) {
+      try {
+        window.google.accounts.id.initialize({
+          client_id: '967675908234-maktabatulmuslim.apps.googleusercontent.com',
+          callback: (response) => {
+            if (response.credential) {
+              try {
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                const payload = JSON.parse(jsonPayload);
+                if (payload && payload.email) {
+                  executeSocialAuth('google', payload.email, payload.name);
+                  return;
+                }
+              } catch (err) {}
+            }
+            const fallbackEmail = (email || username || '').includes('@') ? (email || username) : 'google_user@gmail.com';
+            executeSocialAuth('google', fallbackEmail);
+          }
+        });
+        window.google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            const fallbackEmail = (email || username || '').includes('@') ? (email || username) : 'google_user@gmail.com';
+            executeSocialAuth('google', fallbackEmail);
+          }
+        });
+        return;
+      } catch (e) {}
+    }
+
+    const targetEmail = (email || username || '').includes('@') ? (email || username) : `${username || provider}_user@gmail.com`;
+    executeSocialAuth(provider, targetEmail);
   };
 
-  const executeSocialAuth = (provider, email) => {
+  const executeSocialAuth = (provider, email, name = '') => {
     setSubmitting(true);
     setError('');
 
@@ -178,7 +209,8 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     fetch(getApiUrl('/api/auth/social/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider, email: targetEmail })
+      credentials: 'include',
+      body: JSON.stringify({ provider, email: targetEmail, name })
     })
       .then(res => res.json())
       .then(data => {
