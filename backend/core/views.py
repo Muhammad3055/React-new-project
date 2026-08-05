@@ -770,6 +770,7 @@ def api_send_otp(request):
         email = body.get('email', '').strip().lower()
         username = body.get('username', '').strip()
         password = body.get('password', '').strip()
+        full_name = body.get('full_name', '').strip()
         provider = body.get('provider', '').strip()
     except Exception:
         return JsonResponse({'error': 'Invalid request data'}, status=400)
@@ -833,6 +834,7 @@ def api_send_otp(request):
         'type': auth_type,
         'username': username,
         'password': password,
+        'full_name': full_name,
         'provider': provider,
         'user_id': target_user.id if target_user else None,
         'created_at': time.time()
@@ -938,11 +940,17 @@ def api_verify_otp(request):
         username = pending.get('username')
         email = pending.get('email')
         password = pending.get('password')
+        full_name = pending.get('full_name', '')
         target_user = User.objects.create_user(username=username, email=email, password=password)
+        if full_name:
+            parts = full_name.split(' ', 1)
+            target_user.first_name = parts[0]
+            if len(parts) > 1:
+                target_user.last_name = parts[1]
         if 'admin' in username.lower() or User.objects.count() <= 1:
             target_user.is_staff = True
             target_user.is_superuser = True
-            target_user.save()
+        target_user.save()
 
     elif auth_type == 'social':
         email = pending.get('email')

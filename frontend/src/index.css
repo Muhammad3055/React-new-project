@@ -1,10 +1,10 @@
 :root {
   --primary-dark: #022c22;
-  --primary-emerald: #064e3b;
-  --primary-light: #047857;
-  --accent-gold: #f59e0b;
-  --accent-gold-dark: #d97706;
-  --accent-gold-light: #fef3c7;
+  --primary-emerald: #0B5D4A;
+  --primary-light: #059669;
+  --accent-gold: #D4AF37;
+  --accent-gold-dark: #b59127;
+  --accent-gold-light: #fef9c3;
   --bg-cream: #fafaf9;
   --bg-card: #ffffff;
   --text-main: #1f2937;
@@ -16,6 +16,27 @@
   --radius-lg: 16px;
   --radius-md: 10px;
   --radius-sm: 6px;
+}
+
+/* Auth Modal Animation Classes */
+@keyframes authModalFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.auth-modal-card {
+  animation: authModalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.auth-input-focus:focus {
+  border-color: #0B5D4A !important;
+  box-shadow: 0 0 0 3.5px rgba(11, 93, 74, 0.18) !important;
+}
+
+.otp-digit-box:focus {
+  border-color: #D4AF37 !important;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25) !important;
+  transform: translateY(-2px);
 }
 
 /* GLOBAL WEBSITE THEME MODES (Light, Sepia, Black, Auto) */
