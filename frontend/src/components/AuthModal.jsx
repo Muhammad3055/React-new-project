@@ -57,6 +57,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       fetch(getApiUrl('/api/auth/login/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ username: username.trim(), password: password.trim() })
       })
         .then(res => res.json())
@@ -106,6 +107,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       fetch(getApiUrl('/api/auth/send-otp/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ type: 'forgot_password', email: targetInput, username: targetInput })
       })
         .then(res => res.json())
@@ -130,37 +132,48 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         });
 
     } else {
-      // ===== NEW USER SIGN UP (CREATE ACCOUNT & DISPATCH 6-DIGIT OTP TO GMAIL) =====
-      if (!username.trim() || !email.trim() || !password.trim()) {
-        setError('Please fill in all required fields (Username, Email, Password).');
+      // ===== NEW USER SIGN UP (DIRECT REGISTER / OTP) =====
+      if (!username.trim() || !password.trim()) {
+        setError('Please fill in all required fields (Username, Password).');
         return;
       }
 
       setSubmitting(true);
 
-      fetch(getApiUrl('/api/auth/send-otp/'), {
+      // Attempt direct sign up first for instant user activation
+      fetch(getApiUrl('/api/auth/signup/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'signup', username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
+        credentials: 'include',
+        body: JSON.stringify({ username: username.trim(), email: email.trim().toLowerCase(), password: password.trim() })
       })
         .then(res => res.json())
         .then(data => {
           setSubmitting(false);
-          if (data.status === 'otp_sent') {
-            setPendingEmail(data.email || email.trim().toLowerCase());
-            setStep('otp');
-            setOtpCode('');
+          if (data.status === 'success') {
+            const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
+            localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
+            setUser(userObj);
+            onClose();
           } else {
             setError(data.error || 'Registration failed. Please check your details.');
           }
         })
         .catch(() => {
           setSubmitting(false);
-          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-          setPendingEmail(email.trim().toLowerCase());
-          setStep('otp');
-          setOtpCode(generatedOtp);
-          setPendingDemoUser({ username: username.trim(), email: email.trim().toLowerCase(), password: password.trim(), code: generatedOtp });
+          const userObj = {
+            username: username.trim(),
+            email: email.trim().toLowerCase() || `${username.trim()}@gmail.com`,
+            is_staff: false
+          };
+          const savedUsers = JSON.parse(localStorage.getItem('quran_portal_registered_users') || '[]');
+          if (!savedUsers.some(u => u.username.toLowerCase() === username.trim().toLowerCase())) {
+            savedUsers.push({ ...userObj, password: password.trim() });
+            localStorage.setItem('quran_portal_registered_users', JSON.stringify(savedUsers));
+          }
+          localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
+          setUser(userObj);
+          onClose();
         });
     }
 
@@ -661,13 +674,16 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
               {(mode === 'login' || mode === 'forgot_password') && (
                 <div className="form-group" style={{ marginBottom: '1.1rem' }}>
-                  <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                  <label htmlFor="auth-username-input" className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
                     {mode === 'forgot_password' ? 'Registered Email or Username *' : 'Username or Email Address *'}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <i className="fas fa-envelope" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
                     <input
+                      id="auth-username-input"
+                      name="username"
                       type="text"
+                      autoComplete="username"
                       className="form-input"
                       placeholder="e.g. name@example.com or username"
                       value={username}
@@ -691,13 +707,16 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               {mode === 'signup' && (
                 <>
                   <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                    <label htmlFor="auth-signup-username" className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
                       Choose Username *
                     </label>
                     <div style={{ position: 'relative' }}>
                       <i className="fas fa-user" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
                       <input
+                        id="auth-signup-username"
+                        name="username"
                         type="text"
+                        autoComplete="username"
                         className="form-input"
                         placeholder="Choose a unique username..."
                         value={username}
@@ -715,13 +734,16 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     </div>
                   </div>
                   <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                    <label htmlFor="auth-signup-email" className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
                       Email Address *
                     </label>
                     <div style={{ position: 'relative' }}>
                       <i className="fas fa-envelope" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
                       <input
+                        id="auth-signup-email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
                         className="form-input"
                         placeholder="name@example.com"
                         value={email}
@@ -744,7 +766,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               {mode !== 'forgot_password' && (
                 <div className="form-group" style={{ marginBottom: '1.1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>
+                    <label htmlFor="auth-password-input" className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>
                       Password *
                     </label>
                     {mode === 'login' && (
@@ -760,7 +782,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   <div style={{ position: 'relative' }}>
                     <i className="fas fa-lock" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
                     <input
+                      id="auth-password-input"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                       className="form-input"
                       placeholder="Enter your password..."
                       value={password}

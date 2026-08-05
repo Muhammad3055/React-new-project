@@ -594,20 +594,30 @@ def api_login(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
     try:
-        body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+        body = json.loads(request.body) if (request.content_type == 'application/json' and request.body) else request.POST
         username_input = body.get('username', '').strip()
         password = body.get('password', '').strip()
     except Exception:
-        return JsonResponse({'error': 'Invalid request data'}, status=400)
+        return JsonResponse({'error': 'Invalid request data format'}, status=400)
 
     if not username_input or not password:
-        return JsonResponse({'error': 'Username/Email and Password are required.'}, status=400)
+        return JsonResponse({'error': 'Please enter both your Username/Email and Password.'}, status=400)
 
-    # Support login with email as well as username
+    # 1. Try standard Django authentication
     user = authenticate(username=username_input, password=password)
+
+    # 2. Try case-insensitive lookup by email
     if user is None and '@' in username_input:
         try:
             u_obj = User.objects.get(email__iexact=username_input)
+            user = authenticate(username=u_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
+
+    # 3. Try case-insensitive lookup by username
+    if user is None and not '@' in username_input:
+        try:
+            u_obj = User.objects.get(username__iexact=username_input)
             user = authenticate(username=u_obj.username, password=password)
         except User.DoesNotExist:
             user = None
@@ -621,7 +631,16 @@ def api_login(request):
             'email': user.email,
             'is_staff': user.is_staff
         })
-    return JsonResponse({'error': 'Invalid credentials. Please check your username/email and password.'}, status=400)
+
+    # Detailed feedback if account does not exist vs wrong password
+    user_exists = User.objects.filter(Q(username__iexact=username_input) | Q(email__iexact=username_input)).exists()
+    if not user_exists:
+        return JsonResponse({
+            'error': 'No registered account found with these credentials. Would you like to create a new account?',
+            'no_account': True
+        }, status=400)
+
+    return JsonResponse({'error': 'Incorrect password. Please check your password or use "Forgot Password" to reset it.'}, status=400)
 
 
 @csrf_exempt
@@ -629,24 +648,27 @@ def api_signup(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
     try:
-        body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+        body = json.loads(request.body) if (request.content_type == 'application/json' and request.body) else request.POST
         username = body.get('username', '').strip()
-        email = body.get('email', '').strip()
+        email = body.get('email', '').strip().lower()
         password = body.get('password', '').strip()
     except Exception:
-        return JsonResponse({'error': 'Invalid request data'}, status=400)
+        return JsonResponse({'error': 'Invalid request data format'}, status=400)
 
     if not username or not password:
-        return JsonResponse({'error': 'Username and Password are required.'}, status=400)
+        return JsonResponse({'error': 'Username and Password are required fields.'}, status=400)
+
+    if len(password) < 4:
+        return JsonResponse({'error': 'Password must be at least 4 characters long.'}, status=400)
 
     if User.objects.filter(username__iexact=username).exists():
-        return JsonResponse({'error': 'This username is already taken. Please choose another one.'}, status=400)
+        return JsonResponse({'error': 'This username is already taken. Please choose another username or Sign In.'}, status=400)
 
     if email and User.objects.filter(email__iexact=email).exists():
-        return JsonResponse({'error': 'An account with this email address already exists.'}, status=400)
+        return JsonResponse({'error': 'An account with this email address already exists. Please Sign In instead.'}, status=400)
 
     try:
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(username=username, email=email or f"{username}@gmail.com", password=password)
         login(request, user)
         request.session.modified = True
         return JsonResponse({
@@ -657,6 +679,7 @@ def api_signup(request):
         })
     except Exception as e:
         return JsonResponse({'error': f'Failed to create account: {str(e)}'}, status=400)
+
 
 
 @csrf_exempt
