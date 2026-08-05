@@ -826,7 +826,7 @@ def api_send_otp(request):
         f"Maktaba tul Muslim Team\n"
         f"https://maktabatulmuslim.com/"
     )
-    from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabatulmuslim@gmail.com>')
+    from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabtulmuslim26@gmail.com>')
     
     email_sent = False
     try:
