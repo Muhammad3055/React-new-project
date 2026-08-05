@@ -6,6 +6,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [accountCreatedSuccess, setAccountCreatedSuccess] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -129,8 +132,18 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
     } else {
       // ===== NEW USER SIGN UP (DISPATCH REAL 6-DIGIT OTP CODE TO EMAIL INBOX) =====
-      if (!username.trim() || !email.trim() || !password.trim()) {
-        setError('Please fill in all required fields (Username, Email, Password).');
+      if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+        setError('Please fill in all required fields (Username, Email, Password, Confirm Password).');
+        return;
+      }
+
+      if (password.trim() !== confirmPassword.trim()) {
+        setError('Passwords do not match. Please make sure Password and Confirm Password match.');
+        return;
+      }
+
+      if (!agreedToTerms) {
+        setError('You must agree to the Terms & Privacy Policy to create an account.');
         return;
       }
 
@@ -288,9 +301,15 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       setError('Please enter the complete 6-digit security code.');
       return;
     }
-    if (mode === 'forgot_password' && !newPassword.trim()) {
-      setError('Please enter your new password.');
-      return;
+    if (mode === 'forgot_password') {
+      if (!newPassword.trim() || !confirmPassword.trim()) {
+        setError('Please enter and confirm your new password.');
+        return;
+      }
+      if (newPassword.trim() !== confirmPassword.trim()) {
+        setError('New passwords do not match. Please ensure both fields are identical.');
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -305,10 +324,13 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       .then(data => {
         setSubmitting(false);
         if (data.status === 'success') {
+          setAccountCreatedSuccess(true);
           const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
           localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
-          setUser(userObj);
-          onClose();
+          setTimeout(() => {
+            setUser(userObj);
+            onClose();
+          }, 1200);
         } else {
           setError(data.error || 'Invalid 6-digit verification code.');
         }
@@ -454,128 +476,190 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           {/* ===== STEP 2: 6-DIGIT VERIFICATION CODE (OTP) SCREEN ===== */}
           {step === 'otp' ? (
             <div>
-              <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', marginBottom: '0.75rem', boxShadow: '0 6px 16px rgba(245, 158, 11, 0.2)' }}>
-                  <i className="fas fa-shield-alt"></i>
+              {accountCreatedSuccess ? (
+                <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#dcfce7', color: '#15803d', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', marginBottom: '1rem', boxShadow: '0 8px 24px rgba(22, 101, 52, 0.2)' }}>
+                    <i className="fas fa-check-circle"></i>
+                  </div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#166534', margin: '0 0 0.5rem 0' }}>
+                    ✅ Account Created Successfully
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', color: '#374151' }}>
+                    Welcome to Maktaba tul Muslim! Signing you in...
+                  </p>
                 </div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.25rem 0' }}>
-                  Security Code Verification
-                </h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-                  Enter the 6-digit code dispatched to:<br />
-                  <strong style={{ color: 'var(--primary-dark)' }}>{pendingEmail}</strong>
-                </p>
-              </div>
-
-              {/* Email Sent Notice Box */}
-              <div style={{
-                background: '#f0fdf4',
-                border: '1px solid #bbf7d0',
-                borderRadius: '14px',
-                padding: '0.85rem 1rem',
-                textAlign: 'center',
-                marginBottom: '1.25rem',
-                color: '#166534'
-              }}>
-                <i className="fas fa-envelope-open-text" style={{ fontSize: '1.3rem', color: '#059669', marginBottom: '0.2rem', display: 'block' }}></i>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, display: 'block' }}>
-                  Check your Gmail / Email Inbox
-                </span>
-              </div>
-
-              {/* Step 2 Form (OTP Entry) */}
-              <form onSubmit={handleVerifyOtp}>
-                <div className="form-group" style={{ textAlign: 'center' }}>
-                  <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem' }}>Enter 6-Digit Code *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. 749201"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    maxLength={6}
-                    required
-                    autoFocus
-                    style={{
-                      textAlign: 'center',
-                      fontSize: '1.7rem',
-                      fontWeight: 800,
-                      letterSpacing: '8px',
-                      padding: '0.75rem',
-                      color: 'var(--primary-dark)',
-                      border: '2px solid var(--accent-gold)',
-                      borderRadius: '14px',
-                      boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15)'
-                    }}
-                  />
-                </div>
-
-                {mode === 'forgot_password' && (
-                  <div className="form-group" style={{ marginTop: '1rem' }}>
-                    <label className="form-label">Set New Password *</label>
-                    <input
-                      type="password"
-                      className="form-input"
-                      placeholder="Enter your new password..."
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                      style={{ borderRadius: '12px', padding: '0.75rem 1rem' }}
-                    />
+              ) : (
+                <>
+                  <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', marginBottom: '0.75rem', boxShadow: '0 6px 16px rgba(245, 158, 11, 0.2)' }}>
+                      <i className="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 0.25rem 0' }}>
+                      Enter Verification Code
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                      Enter the 6-digit code dispatched to:<br />
+                      <strong style={{ color: 'var(--primary-dark)' }}>{pendingEmail}</strong>
+                    </p>
                   </div>
-                )}
 
-                {resendSuccess && (
-                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                    <i className="fas fa-check-circle" style={{ marginRight: '0.4rem', color: '#15803d' }}></i> {resendSuccess}
-                  </div>
-                )}
-
-                {error && (
-                  <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                    <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={submitting || otpCode.length !== 6 || (mode === 'forgot_password' && !newPassword)}
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem',
-                    fontSize: '0.95rem',
-                    fontWeight: 800,
+                  {/* Email Sent Notice Box */}
+                  <div style={{
+                    background: '#f0fdf4',
+                    border: '1px solid #bbf7d0',
                     borderRadius: '14px',
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #059669 0%, #022c22 100%)',
-                    color: '#ffffff',
-                    cursor: 'pointer',
-                    boxShadow: '0 6px 18px rgba(5, 150, 105, 0.3)',
-                    marginTop: '0.5rem'
-                  }}
-                >
-                  {submitting ? 'Verifying Code...' : (mode === 'forgot_password' ? 'Reset Password & Log In' : 'Verify Code & Complete Sign-In')}
-                </button>
+                    padding: '0.85rem 1rem',
+                    textAlign: 'center',
+                    marginBottom: '1.25rem',
+                    color: '#166534'
+                  }}>
+                    <i className="fas fa-envelope-open-text" style={{ fontSize: '1.3rem', color: '#059669', marginBottom: '0.2rem', display: 'block' }}></i>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700, display: 'block' }}>
+                      Check your Gmail / Email Inbox
+                    </span>
+                  </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-                  <button
-                    type="button"
-                    onClick={() => { setStep('input'); setError(''); setResendSuccess(''); }}
-                    style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}
-                  >
-                    <i className="fas fa-arrow-left"></i> Change Email
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    disabled={submitting}
-                    style={{ background: 'transparent', border: 'none', color: '#059669', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 700 }}
-                  >
-                    <i className={`fas fa-sync-alt ${submitting ? 'fa-spin' : ''}`}></i> {submitting ? 'Sending...' : 'Resend Code'}
-                  </button>
-                </div>
+                  {/* Step 2 Form (OTP Entry) */}
+                  <form onSubmit={handleVerifyOtp}>
+                    <div className="form-group" style={{ textAlign: 'center' }}>
+                      <label className="form-label" style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem', display: 'block' }}>Enter Verification Code</label>
+                      
+                      {/* Styled 6-Digit Box UI [_][_][_][_][_][_] */}
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '0.6rem 0 1rem 0' }}>
+                        {[0, 1, 2, 3, 4, 5].map((idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              width: '44px',
+                              height: '50px',
+                              borderRadius: '12px',
+                              border: '2px solid ' + (otpCode[idx] ? '#059669' : '#cbd5e1'),
+                              background: otpCode[idx] ? '#f0fdf4' : '#ffffff',
+                              color: '#022c22',
+                              fontSize: '1.5rem',
+                              fontWeight: 800,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: otpCode[idx] ? '0 4px 12px rgba(5, 150, 105, 0.2)' : 'none',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            {otpCode[idx] || '_'}
+                          </div>
+                        ))}
+                      </div>
 
-              </form>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Type 6-digit code..."
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        maxLength={6}
+                        required
+                        autoFocus
+                        style={{
+                          textAlign: 'center',
+                          fontSize: '1.2rem',
+                          fontWeight: 800,
+                          letterSpacing: '4px',
+                          padding: '0.65rem',
+                          color: 'var(--primary-dark)',
+                          border: '1.5px solid var(--accent-gold)',
+                          borderRadius: '12px'
+                        }}
+                      />
+                    </div>
+
+                    {mode === 'forgot_password' && (
+                      <>
+                        <div className="form-group" style={{ marginTop: '1rem' }}>
+                          <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>New Password *</label>
+                          <input
+                            type="password"
+                            className="form-input"
+                            placeholder="Enter your new password..."
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                            style={{ borderRadius: '12px', padding: '0.75rem 1rem' }}
+                          />
+                        </div>
+                        <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                          <label className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>Confirm Password *</label>
+                          <input
+                            type="password"
+                            className="form-input"
+                            placeholder="Confirm your new password..."
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            style={{ borderRadius: '12px', padding: '0.75rem 1rem' }}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {resendSuccess && (
+                      <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                        <i className="fas fa-check-circle" style={{ marginRight: '0.4rem', color: '#15803d' }}></i> {resendSuccess}
+                      </div>
+                    )}
+
+                    {error && (
+                      <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                        <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.4rem' }}></i> {error}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={submitting || otpCode.length !== 6 || (mode === 'forgot_password' && (!newPassword || !confirmPassword))}
+                      style={{
+                        width: '100%',
+                        padding: '0.85rem',
+                        fontSize: '0.95rem',
+                        fontWeight: 800,
+                        borderRadius: '14px',
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #059669 0%, #022c22 100%)',
+                        color: '#ffffff',
+                        cursor: 'pointer',
+                        boxShadow: '0 6px 18px rgba(5, 150, 105, 0.3)',
+                        marginTop: '0.5rem'
+                      }}
+                    >
+                      {submitting ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin"></i> Verifying...
+                        </>
+                      ) : (
+                        mode === 'forgot_password' ? 'Reset Password' : 'Verify Account'
+                      )}
+                    </button>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => { setStep('input'); setError(''); setResendSuccess(''); }}
+                        style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}
+                      >
+                        <i className="fas fa-arrow-left"></i> Change Email
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={submitting}
+                        style={{ background: 'transparent', border: 'none', color: '#059669', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 700 }}
+                      >
+                        <i className={`fas fa-sync-alt ${submitting ? 'fa-spin' : ''}`}></i> {submitting ? 'Sending...' : 'Resend Code'}
+                      </button>
+                    </div>
+
+                  </form>
+                </>
+              )}
             </div>
           ) : socialProvider ? (
             /* ===== STEP 1: CLAUDE / GOOGLE STYLED ACCOUNT CHOOSER ===== */
@@ -721,7 +805,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <>
                   <div className="form-group" style={{ marginBottom: '1rem' }}>
                     <label htmlFor="auth-signup-username" className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
-                      Choose Username *
+                      Username *
                     </label>
                     <div style={{ position: 'relative' }}>
                       <i className="fas fa-user" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
@@ -731,7 +815,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         type="text"
                         autoComplete="username"
                         className="form-input"
-                        placeholder="Choose a unique username..."
+                        placeholder="Choose a username..."
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
@@ -748,7 +832,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   </div>
                   <div className="form-group" style={{ marginBottom: '1rem' }}>
                     <label htmlFor="auth-signup-email" className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
-                      Email Address *
+                      Email *
                     </label>
                     <div style={{ position: 'relative' }}>
                       <i className="fas fa-envelope" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
@@ -777,57 +861,104 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               )}
 
               {mode !== 'forgot_password' && (
-                <div className="form-group" style={{ marginBottom: '1.1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <label htmlFor="auth-password-input" className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>
-                      Password *
-                    </label>
-                    {mode === 'login' && (
-                      <button
-                        type="button"
-                        onClick={() => { setMode('forgot_password'); setError(''); setNoAccountError(false); }}
-                        style={{ background: 'transparent', border: 'none', color: '#059669', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
-                      >
-                        Forgot Password?
-                      </button>
-                    )}
+                <>
+                  <div className="form-group" style={{ marginBottom: '1.1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label htmlFor="auth-password-input" className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>
+                        Password *
+                      </label>
+                      {mode === 'login' && (
+                        <button
+                          type="button"
+                          onClick={() => { setMode('forgot_password'); setError(''); setNoAccountError(false); }}
+                          style={{ background: 'transparent', border: 'none', color: '#059669', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Forgot Password?
+                        </button>
+                      )}
+                    </div>
+                    <div style={{ position: 'relative' }}>
+                      <i className="fas fa-lock" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
+                      <input
+                        id="auth-password-input"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                        className="form-input"
+                        placeholder="Enter your password..."
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 2.6rem 0.75rem 2.6rem',
+                          borderRadius: '12px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '0.9rem',
+                          outline: 'none'
+                        }}
+                      />
+                      <i
+                        className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: 'absolute',
+                          right: '1rem',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: '#94a3b8',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem'
+                        }}
+                      ></i>
+                    </div>
                   </div>
-                  <div style={{ position: 'relative' }}>
-                    <i className="fas fa-lock" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
-                    <input
-                      id="auth-password-input"
-                      name="password"
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                      className="form-input"
-                      placeholder="Enter your password..."
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 2.6rem 0.75rem 2.6rem',
-                        borderRadius: '12px',
-                        border: '1.5px solid #cbd5e1',
-                        fontSize: '0.9rem',
-                        outline: 'none'
-                      }}
-                    />
-                    <i
-                      className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '1rem',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: '#94a3b8',
-                        cursor: 'pointer',
-                        fontSize: '0.9rem'
-                      }}
-                    ></i>
-                  </div>
-                </div>
+
+                  {mode === 'signup' && (
+                    <div className="form-group" style={{ marginBottom: '1.1rem' }}>
+                      <label htmlFor="auth-confirm-password" className="form-label" style={{ fontWeight: 700, fontSize: '0.82rem', color: '#334155', marginBottom: '0.35rem', display: 'block' }}>
+                        Confirm Password *
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <i className="fas fa-lock" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.9rem' }}></i>
+                        <input
+                          id="auth-confirm-password"
+                          name="confirmPassword"
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="new-password"
+                          className="form-input"
+                          placeholder="Confirm your password..."
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          style={{
+                            width: '100%',
+                            padding: '0.75rem 2.6rem 0.75rem 2.6rem',
+                            borderRadius: '12px',
+                            border: '1.5px solid #cbd5e1',
+                            fontSize: '0.9rem',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {mode === 'signup' && (
+                    <div style={{ marginBottom: '1.1rem', display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+                      <input
+                        type="checkbox"
+                        id="terms-checkbox"
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        style={{ marginTop: '0.2rem', accentColor: '#059669', width: '16px', height: '16px', cursor: 'pointer' }}
+                      />
+                      <label htmlFor="terms-checkbox" style={{ fontSize: '0.82rem', color: '#475569', lineHeight: '1.4', cursor: 'pointer' }}>
+                        I agree to the <strong style={{ color: '#022c22' }}>Terms & Privacy Policy</strong>
+                      </label>
+                    </div>
+                  )}
+                </>
               )}
 
               {error && (
@@ -889,11 +1020,11 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               >
                 {submitting ? (
                   <>
-                    <i className="fas fa-spinner fa-spin"></i> {mode === 'login' ? 'Signing In...' : 'Registering Account...'}
+                    <i className="fas fa-spinner fa-spin"></i> {mode === 'login' ? 'Signing in...' : mode === 'forgot_password' ? 'Sending verification code...' : 'Sending verification code...'}
                   </>
                 ) : (
                   <>
-                    {mode === 'login' ? 'Sign In to Account' : 'Create Account & Register'} <i className="fas fa-arrow-right"></i>
+                    {mode === 'login' ? 'Sign In to Account' : mode === 'forgot_password' ? 'Send OTP' : 'Create Account'} <i className="fas fa-arrow-right"></i>
                   </>
                 )}
               </button>

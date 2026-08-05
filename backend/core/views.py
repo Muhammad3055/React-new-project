@@ -724,6 +724,43 @@ def api_social_auth(request):
 
 
 @csrf_exempt
+def api_test_email(request):
+    recipient = request.GET.get('email') or request.POST.get('email') or getattr(settings, 'EMAIL_HOST_USER', 'maktabtulmuslim26@gmail.com')
+    subject = "Hello World - Test Email from Maktaba tul Muslim"
+    message = "Hello World! This is a test email sent from Maktaba tul Muslim using Gmail SMTP configuration."
+    from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabtulmuslim26@gmail.com>')
+    
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_addr,
+            recipient_list=[recipient],
+            fail_silently=False
+        )
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Test email sent successfully to {recipient}!',
+            'from_email': from_addr,
+            'host': settings.EMAIL_HOST,
+            'port': settings.EMAIL_PORT
+        })
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"[Test Email Error] {e}")
+        print(error_trace)
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e),
+            'traceback': error_trace,
+            'host': settings.EMAIL_HOST,
+            'port': settings.EMAIL_PORT,
+            'host_user': settings.EMAIL_HOST_USER
+        }, status=500)
+
+
+@csrf_exempt
 def api_send_otp(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
@@ -751,7 +788,6 @@ def api_send_otp(request):
             except User.DoesNotExist:
                 target_user = None
         if target_user is None:
-            # Check if user even exists in DB
             user_exists = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).exists()
             if not user_exists:
                 return JsonResponse({
@@ -785,24 +821,12 @@ def api_send_otp(request):
     elif auth_type == 'social':
         if not email:
             return JsonResponse({'error': f'Please enter your {provider.capitalize()} email.'}, status=400)
-        if provider == 'google':
-            ms_domains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.']
-            if any(d in email for d in ms_domains):
-                return JsonResponse({'error': 'Invalid Google Account! Outlook/Hotmail addresses cannot be used for Google Sign-In.'}, status=400)
-            if '@gmail.com' not in email and '@googlemail.com' not in email:
-                return JsonResponse({'error': 'Invalid Google Account! Please enter a valid Gmail address.'}, status=400)
-        elif provider == 'microsoft':
-            if '@gmail.com' in email or '@googlemail.com' in email:
-                return JsonResponse({'error': 'Invalid Microsoft Account! Gmail addresses cannot be used for Microsoft Sign-In.'}, status=400)
-            valid_ms = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.']
-            if not any(d in email for d in valid_ms):
-                return JsonResponse({'error': 'Invalid Microsoft Account! Please enter a valid Microsoft email.'}, status=400)
         target_email = email
 
-    # Generate 6-digit random verification security code
+    import time
     otp_code = f"{random.randint(100000, 999999)}"
 
-    # Save pending OTP payload to Django Session
+    # Save pending OTP payload to Django Session with 5-minute (300s) creation timestamp
     request.session['pending_otp'] = {
         'code': otp_code,
         'email': target_email,
@@ -810,17 +834,18 @@ def api_send_otp(request):
         'username': username,
         'password': password,
         'provider': provider,
-        'user_id': target_user.id if target_user else None
+        'user_id': target_user.id if target_user else None,
+        'created_at': time.time()
     }
     request.session.modified = True
 
-    # Send 6-digit verification code to user's real Gmail / email inbox
-    subject = f"Maktaba tul Muslim (maktabatulmuslim.com) - Security Verification Code: {otp_code}"
+    subject = f"Maktaba tul Muslim (maktabatulmuslim.com) - Your OTP is: {otp_code}"
     message = (
         f"Assalamu Alaikum,\n\n"
-        f"Your 6-digit security verification code for Maktaba tul Muslim (https://maktabatulmuslim.com) is:\n\n"
+        f"Your OTP is:\n\n"
         f"  ===>  {otp_code}  <===\n\n"
-        f"Please enter this 6-digit code on https://maktabatulmuslim.com to complete your verification.\n\n"
+        f"This verification code will expire in 5 minutes.\n"
+        f"Please enter this code on https://maktabatulmuslim.com to complete your verification.\n\n"
         f"If you did not request this code, please ignore this email.\n\n"
         f"BarakAllahu Feek,\n"
         f"Maktaba tul Muslim (https://maktabatulmuslim.com)\n"
@@ -828,6 +853,7 @@ def api_send_otp(request):
     from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabtulmuslim26@gmail.com>')
     
     email_sent = False
+    smtp_error = ""
     try:
         send_mail(
             subject=subject,
@@ -839,16 +865,18 @@ def api_send_otp(request):
         email_sent = True
     except Exception as e:
         import traceback
+        smtp_error = str(e)
         print(f"[SMTP Error] Failed to deliver OTP email to {target_email}: {e}")
         traceback.print_exc()
 
-    msg = f'A 6-digit security verification code has been dispatched to {target_email}. Check your inbox.' if email_sent else f'Security code generated for {target_email}. (SMTP Delivery Pending - check backend log/configuration).'
+    msg = f'Your 6-digit verification code has been sent to {target_email}. Check your inbox.' if email_sent else f'Could not send email: {smtp_error or "Check SMTP configuration"}'
 
     return JsonResponse({
         'status': 'otp_sent',
         'email': target_email,
         'type': auth_type,
         'email_sent': email_sent,
+        'smtp_error': smtp_error,
         'message': msg
     })
 
@@ -864,9 +892,15 @@ def api_verify_otp(request):
     except Exception:
         return JsonResponse({'error': 'Invalid request data'}, status=400)
 
+    import time
     pending = request.session.get('pending_otp')
     if not pending:
         return JsonResponse({'error': 'Verification session expired. Please request a new code.'}, status=400)
+
+    # Check 5-minute (300s) expiry
+    created_at = pending.get('created_at', 0)
+    if time.time() - created_at > 300:
+        return JsonResponse({'error': 'Verification code expired after 5 minutes. Please request a new code.'}, status=400)
 
     if input_code != pending.get('code'):
         return JsonResponse({'error': 'Invalid 6-digit verification code. Please check your email and try again.'}, status=400)
