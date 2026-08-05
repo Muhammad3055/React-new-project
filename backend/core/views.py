@@ -577,14 +577,19 @@ def submit_report_view(request):
 
 @csrf_exempt
 def api_auth_status(request):
+    google_client_id = getattr(settings, 'GOOGLE_OAUTH_CLIENT_ID', '')
     if request.user.is_authenticated:
         return JsonResponse({
             'is_authenticated': True,
             'username': request.user.username,
             'email': request.user.email,
             'is_staff': request.user.is_staff,
+            'google_client_id': google_client_id
         })
-    response = JsonResponse({'is_authenticated': False})
+    response = JsonResponse({
+        'is_authenticated': False,
+        'google_client_id': google_client_id
+    })
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return response
 
