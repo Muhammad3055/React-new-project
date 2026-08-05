@@ -815,16 +815,15 @@ def api_send_otp(request):
     request.session.modified = True
 
     # Send 6-digit verification code to user's real Gmail / email inbox
-    subject = f"Maktaba tul Muslim - Your 6-Digit Security Code: {otp_code}"
+    subject = f"Maktaba tul Muslim (maktabatulmuslim.com) - Security Verification Code: {otp_code}"
     message = (
         f"Assalamu Alaikum,\n\n"
-        f"Your 6-digit security verification code for Maktaba tul Muslim is:\n\n"
+        f"Your 6-digit security verification code for Maktaba tul Muslim (https://maktabatulmuslim.com) is:\n\n"
         f"  ===>  {otp_code}  <===\n\n"
-        f"Please enter this 6-digit code on the website to verify your account or reset your password.\n\n"
+        f"Please enter this 6-digit code on https://maktabatulmuslim.com to complete your verification.\n\n"
         f"If you did not request this code, please ignore this email.\n\n"
         f"BarakAllahu Feek,\n"
-        f"Maktaba tul Muslim Team\n"
-        f"https://maktabatulmuslim.com/"
+        f"Maktaba tul Muslim (https://maktabatulmuslim.com)\n"
     )
     from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabtulmuslim26@gmail.com>')
     
@@ -839,14 +838,18 @@ def api_send_otp(request):
         )
         email_sent = True
     except Exception as e:
-        print(f"SMTP Dispatch Notice for {target_email}: {e}")
+        import traceback
+        print(f"[SMTP Error] Failed to deliver OTP email to {target_email}: {e}")
+        traceback.print_exc()
+
+    msg = f'A 6-digit security verification code has been dispatched to {target_email}. Check your inbox.' if email_sent else f'Security code generated for {target_email}. (SMTP Delivery Pending - check backend log/configuration).'
 
     return JsonResponse({
         'status': 'otp_sent',
         'email': target_email,
         'type': auth_type,
         'email_sent': email_sent,
-        'message': f'A 6-digit security verification code has been dispatched to {target_email}. Check your inbox.'
+        'message': msg
     })
 
 
