@@ -181,7 +181,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.maktabatulmuslim.com',
 ]
 
-# Email Configuration for Password Resets & Notifications
+# Email Configuration for Password Resets & 6-Digit Verification Codes
 EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = env.int('EMAIL_PORT', default=587)
