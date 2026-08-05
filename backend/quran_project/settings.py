@@ -61,7 +61,7 @@ FRONTEND_DIR = BASE_DIR.parent / 'frontend' / 'dist'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates', FRONTEND_DIR],
+        'DIRS': [FRONTEND_DIR, BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
 
@@ -150,14 +150,36 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
-# CSRF Trusted Origins for VPS IP and Custom Domains
+# CSRF Trusted Origins for Local Dev, VPS IP and Custom Domains
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
-    'http://169.58.117.130',
-    'https://169.58.117.130',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'http://localhost:5173',
+    'http://169.58.117.130',
+    'https://169.58.117.130',
+    'http://maktabatulmuslim.com',
+    'https://maktabatulmuslim.com',
+    'http://www.maktabatulmuslim.com',
+    'https://www.maktabatulmuslim.com',
 ])
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://169.58.117.130',
+    'https://169.58.117.130',
+    'http://maktabatulmuslim.com',
+    'https://maktabatulmuslim.com',
+    'http://www.maktabatulmuslim.com',
+    'https://www.maktabatulmuslim.com',
+]
 
 # Email Configuration for 2FA Verification Security Codes
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
@@ -166,7 +188,7 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Quran Portal <noreply@quranportal.org>')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <no-reply@maktabatulmuslim.com>')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -231,23 +253,6 @@ FILE_UPLOAD_PERMISSIONS = 0o744
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
 
 
-# Email SMTP Configuration for Gmail OTP Sending
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <no-reply@maktabatulmuslim.com>')
-
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://maktabatulmuslim.com',
-    'https://www.maktabatulmuslim.com',
-    'http://maktabatulmuslim.com',
-    'http://www.maktabatulmuslim.com',
-    'http://169.58.117.130'
-]
 
 
 

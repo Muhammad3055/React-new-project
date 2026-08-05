@@ -44,7 +44,23 @@ urlpatterns = [
     path('favicon.svg', lambda req: redirect('/static/favicon.svg', permanent=True)),
     path('admin', lambda req: redirect('/admin/', permanent=True)),
     path('admin/', admin.site.urls),
-    path('', root_health_view, name='root_health'),
+    
+    # Primary & SPA Named URL patterns for HTML template rendering
+    path('', root_health_view, name='home'),
+    path('health/', root_health_view, name='root_health'),
+    path('read/', root_health_view, name='read'),
+    path('quran/', root_health_view, name='quran'),
+    path('videos/', root_health_view, name='videos'),
+    path('books/', root_health_view, name='books'),
+    path('tafseer/', root_health_view, name='tafseer'),
+    path('hadith/', root_health_view, name='hadith'),
+    path('qaris/', root_health_view, name='qaris'),
+    path('contact/', root_health_view, name='contact'),
+    path('upload/', root_health_view, name='upload'),
+    path('login/', root_health_view, name='login'),
+    path('signup/', root_health_view, name='signup'),
+    path('logout/', root_health_view, name='logout'),
+
     path('', include('core.urls')),
     re_path(r'^.*$', root_health_view, name='spa_catchall'),
 ]
