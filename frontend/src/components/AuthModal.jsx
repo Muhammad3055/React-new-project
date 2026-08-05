@@ -504,8 +504,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           });
           window.google.accounts.id.prompt((notification) => {
             if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-              // Fallback to OAuth popup
-              setSubmitting(false);
               executeSocialAuth('google', '', '', email || username);
             }
           });
