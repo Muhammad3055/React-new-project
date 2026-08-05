@@ -492,7 +492,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       if (window.google?.accounts?.id) {
         try {
           window.google.accounts.id.initialize({
-            client_id: '967675908234-maktabatulmuslim.apps.googleusercontent.com',
+            client_id: window.GOOGLE_OAUTH_CLIENT_ID || '737764543282-iirc07mgk8du29h55p7s4mbs97h2d86g.apps.googleusercontent.com',
             callback: (response) => {
               if (response && response.credential) {
                 executeSocialAuth('google', response.credential);
