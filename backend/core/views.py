@@ -687,7 +687,7 @@ def api_social_auth(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
     try:
-        body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+        body = json.loads(request.body) if (request.content_type == 'application/json' and request.body) else request.POST
         provider = body.get('provider', 'google').lower().strip()
         email = body.get('email', '').strip().lower()
         name = body.get('name', '').strip()
@@ -695,36 +695,7 @@ def api_social_auth(request):
         return JsonResponse({'error': 'Invalid request data'}, status=400)
 
     if not email:
-        return JsonResponse({'error': f'Please enter your {provider.capitalize()} account email address.'}, status=400)
-
-    # Provider Domain Validations
-    if provider == 'google':
-        microsoft_domains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.']
-        if any(dom in email for dom in microsoft_domains):
-            return JsonResponse({
-                'error': 'Invalid Google Account! Outlook/Hotmail addresses cannot be used for Google Sign-In. Please enter a valid @gmail.com address.'
-            }, status=400)
-        if '@gmail.com' not in email and '@googlemail.com' not in email:
-            return JsonResponse({
-                'error': 'Invalid Google Account! Please enter a valid Gmail address (e.g. user@gmail.com).'
-            }, status=400)
-
-    elif provider == 'microsoft':
-        if '@gmail.com' in email or '@googlemail.com' in email:
-            return JsonResponse({
-                'error': 'Invalid Microsoft Account! Gmail addresses cannot be used for Microsoft Sign-In. Please use an @outlook.com or @hotmail.com account.'
-            }, status=400)
-        valid_ms_domains = ['@outlook.', '@hotmail.', '@live.', '@msn.', '@microsoft.']
-        if not any(dom in email for dom in valid_ms_domains):
-            return JsonResponse({
-                'error': 'Invalid Microsoft Account! Please enter a valid Microsoft email address (e.g. user@outlook.com or user@hotmail.com).'
-            }, status=400)
-
-    elif provider in ['facebook', 'instagram']:
-        if '@' not in email:
-            return JsonResponse({
-                'error': f'Invalid {provider.capitalize()} Account! Please enter a valid email address.'
-            }, status=400)
+        email = f"{provider}_user@maktabatulmuslim.com"
 
     username_base = email.split('@')[0].replace('.', '_').replace('-', '_').lower() if email else f"{provider}_user"
     username = username_base
@@ -749,6 +720,7 @@ def api_social_auth(request):
         'is_staff': user.is_staff,
         'provider': provider
     })
+
 
 
 @csrf_exempt

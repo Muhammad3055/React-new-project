@@ -11,4 +11,4 @@ pwd:admin
 
 in mohd@gmail peronal/app /
 quran_portal
-acts dxlf rbhl sfth
+actsdxlfrbhlsfth
