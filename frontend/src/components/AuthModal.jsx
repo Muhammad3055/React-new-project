@@ -124,11 +124,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         })
         .catch(() => {
           setSubmitting(false);
-          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-          setPendingEmail(targetInput.includes('@') ? targetInput : `${targetInput}@gmail.com`);
-          setStep('otp');
-          setOtpCode(generatedOtp);
-          setPendingDemoUser({ username: targetInput, email: targetInput, code: generatedOtp });
+          setError('Failed to dispatch email. Please check your internet connection or email address.');
         });
 
     } else {
@@ -159,11 +155,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         })
         .catch(() => {
           setSubmitting(false);
-          const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-          setPendingEmail(email.trim().toLowerCase());
-          setStep('otp');
-          setOtpCode(generatedOtp);
-          setPendingDemoUser({ username: username.trim(), email: email.trim().toLowerCase(), password: password.trim(), code: generatedOtp });
+          setError('Failed to send verification code. Please check your email address and try again.');
         });
     }
 
@@ -245,16 +237,15 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       .then(data => {
         setSubmitting(false);
         if (data.status === 'otp_sent') {
-          setResendSuccess(`A new 6-digit code has been dispatched to ${data.email || targetInput}.`);
+          setResendSuccess(`A new 6-digit code has been dispatched to ${data.email || targetInput}. Check your Gmail inbox.`);
+          setOtpCode('');
         } else {
           setError(data.error || 'Failed to resend code.');
         }
       })
       .catch(() => {
         setSubmitting(false);
-        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        setOtpCode(generatedOtp);
-        setResendSuccess(`New security code generated! Code: ${generatedOtp}`);
+        setError('Failed to resend verification code. Please try again.');
       });
   };
 
