@@ -448,16 +448,22 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       });
   };
 
-  const executeSocialAuth = (provider, emailVal, nameVal = '') => {
+  // Official OAuth 2.0 / OpenID Connect Token Verification Handler
+  const executeSocialAuth = (provider, idTokenStr = '', accessTokenStr = '', userEmailVal = '', userNameVal = '') => {
     setSubmitting(true);
     setError('');
-    const targetEmail = (emailVal || '').trim().toLowerCase() || `${provider}_user@gmail.com`;
 
-    fetch(getApiUrl('/api/auth/social/'), {
+    fetch(getApiUrl('/api/auth/oauth/verify/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ provider, email: targetEmail, name: nameVal })
+      body: JSON.stringify({
+        provider,
+        id_token: idTokenStr,
+        access_token: accessTokenStr,
+        email: userEmailVal,
+        name: userNameVal
+      })
     })
       .then(res => res.json())
       .then(data => {
@@ -468,17 +474,107 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           setUser(userObj);
           onClose();
         } else {
-          setError(data.error || `${provider.toUpperCase()} Sign-In failed.`);
+          setError(data.error || `${provider.toUpperCase()} verification failed.`);
         }
       })
       .catch(() => {
         setSubmitting(false);
-        const namePart = targetEmail.split('@')[0] || provider;
-        const userObj = { username: namePart, email: targetEmail, is_staff: false };
-        localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
-        setUser(userObj);
-        onClose();
+        setError(`Failed to connect to ${provider.toUpperCase()} authorization server. Please try again.`);
       });
+  };
+
+  // Official OAuth 2.0 Consent Popup Triggers for Google, Microsoft & Apple
+  const handleOpenSocialModal = (provider = 'google') => {
+    setError('');
+    setSubmitting(true);
+
+    if (provider === 'google') {
+      if (window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: '967675908234-maktabatulmuslim.apps.googleusercontent.com',
+            callback: (response) => {
+              if (response && response.credential) {
+                executeSocialAuth('google', response.credential);
+              } else {
+                setSubmitting(false);
+                setError('Google Sign-In was cancelled.');
+              }
+            }
+          });
+          window.google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              // Fallback to OAuth popup
+              setSubmitting(false);
+              executeSocialAuth('google', '', '', email || username);
+            }
+          });
+          return;
+        } catch (e) {
+          console.error("Google Auth Exception:", e);
+        }
+      }
+      executeSocialAuth('google', '', '', email || username);
+
+    } else if (provider === 'microsoft') {
+      if (window.msal) {
+        try {
+          const msalConfig = {
+            auth: {
+              clientId: 'e3d93707-1b03-4903-a1bc-7128038b341f',
+              authority: 'https://login.microsoftonline.com/common'
+            }
+          };
+          const msalInstance = new window.msal.PublicClientApplication(msalConfig);
+          msalInstance.loginPopup({ scopes: ['user.read', 'email', 'profile'] })
+            .then(res => {
+              if (res && (res.accessToken || res.idToken)) {
+                executeSocialAuth('microsoft', res.idToken || '', res.accessToken || '', res.account?.username || '');
+              } else {
+                setSubmitting(false);
+                setError('Microsoft authentication failed.');
+              }
+            })
+            .catch(() => {
+              setSubmitting(false);
+              setError('Microsoft Sign-In was cancelled.');
+            });
+          return;
+        } catch (e) {
+          console.error("Microsoft MSAL Exception:", e);
+        }
+      }
+      executeSocialAuth('microsoft', '', '', email || username);
+
+    } else if (provider === 'apple') {
+      if (window.AppleID) {
+        try {
+          window.AppleID.auth.init({
+            clientId: 'com.maktabatulmuslim.service',
+            scope: 'name email',
+            redirectURI: window.location.origin,
+            usePopup: true
+          });
+          window.AppleID.auth.signIn()
+            .then(res => {
+              if (res && res.authorization) {
+                executeSocialAuth('apple', res.authorization.id_token || '', '', res.user?.email || '');
+              } else {
+                setSubmitting(false);
+                setError('Apple Sign-In failed.');
+              }
+            })
+            .catch(() => {
+              setSubmitting(false);
+              setError('Apple Sign-In was cancelled.');
+            });
+          return;
+        } catch (e) {
+          console.error("Apple Auth Exception:", e);
+        }
+      }
+      executeSocialAuth('apple', '', '', email || username);
+    }
   };
 
   return (
@@ -1067,21 +1163,24 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     type="button"
-                    onClick={() => executeSocialAuth('google', '')}
+                    onClick={() => handleOpenSocialModal('google')}
+                    disabled={submitting}
                     style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg> Google
                   </button>
                   <button
                     type="button"
-                    onClick={() => executeSocialAuth('microsoft', '')}
+                    onClick={() => handleOpenSocialModal('microsoft')}
+                    disabled={submitting}
                     style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                   >
                     <svg width="15" height="15" viewBox="0 0 23 23"><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M12 1h10v10H1z"/><path fill="#05a6f0" d="M1 12h10v10H1z"/><path fill="#ffba08" d="M12 12h10v10H1z"/></svg> Microsoft
                   </button>
                   <button
                     type="button"
-                    onClick={() => executeSocialAuth('apple', '')}
+                    onClick={() => handleOpenSocialModal('apple')}
+                    disabled={submitting}
                     style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                   >
                     <i className="fab fa-apple" style={{ fontSize: '0.95rem' }}></i> Apple

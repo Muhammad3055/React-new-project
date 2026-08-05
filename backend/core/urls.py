@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/auth/login/', views.api_login, name='api_login'),
     path('api/auth/signup/', views.api_signup, name='api_signup'),
     path('api/auth/social/', views.api_social_auth, name='api_social_auth'),
+    path('api/auth/oauth/verify/', views.api_oauth_verify, name='api_oauth_verify'),
     path('api/auth/test-email/', views.api_test_email, name='api_test_email'),
     path('test-email/', views.api_test_email, name='test_email'),
     path('api/auth/send-otp/', views.api_send_otp, name='api_send_otp'),

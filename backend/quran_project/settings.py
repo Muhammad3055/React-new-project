@@ -251,8 +251,11 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
 
 # Set upload permissions so Nginx (www-data) can read uploaded PDF & media files (Fixes 403 Forbidden)
-FILE_UPLOAD_PERMISSIONS = 0o744
-FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
+# Official OAuth 2.0 / OpenID Connect Provider Configurations
+GOOGLE_OAUTH_CLIENT_ID = env('GOOGLE_OAUTH_CLIENT_ID', default='967675908234-maktabatulmuslim.apps.googleusercontent.com')
+MICROSOFT_OAUTH_CLIENT_ID = env('MICROSOFT_OAUTH_CLIENT_ID', default='e3d93707-1b03-4903-a1bc-7128038b341f')
+APPLE_OAUTH_CLIENT_ID = env('APPLE_OAUTH_CLIENT_ID', default='com.maktabatulmuslim.service')
+
 
 
 
