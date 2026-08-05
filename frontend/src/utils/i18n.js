@@ -3,19 +3,35 @@
 export const translations = {
   en: {
     // Portal Brand & Navigation
+    brandName: "Maktaba tul Muslim",
     portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "Digital Quran & Islamic Portal",
     home: "Home",
     quran: "Holy Quran",
+    readQuran: "Read Quran",
+    mp3Audio: "MP3 Recitations",
     reciters: "Famous Reciters",
     books: "Islamic Books",
     prayers: "Prayer Times",
     qibla: "Qibla Direction",
     dashboard: "My Dashboard",
     signIn: "Sign In",
+    login: "Sign In",
     createAccount: "Create Account",
+    signup: "Create Account",
     logout: "Log Out",
     guestMode: "Continue as Guest",
+    more: "More",
+    exploreMore: "Explore More",
+    subExploreSubtitle: "Islamic Books, Hadith, Tafseer & Tools",
+    language: "Language",
+    theme: "Theme",
+    aboutUs: "About Us",
+    contact: "Contact",
+
+    // Hero Section
+    quranHeroTitle: "Read, Listen & Explore The Holy Quran",
+    quranHeroSubtitle: "Authentic Multi-Language Quran Translations, 20 World-Renowned Qari Audio Recitations, Hadith, Tafseer & Islamic Books Library.",
 
     // Search & Filter
     searchPlaceholder: "Search Surah by name or number (e.g. Al-Fatiha, 18)...",
@@ -56,6 +72,15 @@ export const translations = {
     isha: "Isha",
     nextPrayer: "Next Prayer",
 
+    // Extra Views
+    khatam: "Khatam Tracker",
+    fazail: "Fazail e Quran",
+    namesOfAllah: "99 Names of Allah",
+    tasbeeh: "Digital Tasbeeh",
+    duas: "Masnoon Duas",
+    hadith: "Sahih Hadith",
+    tafseer: "Tafseer Ibn Kathir",
+
     // Authentication & OTP Modal
     authModalTitle: "Sign In / Register",
     fullName: "Full Name",
@@ -94,19 +119,35 @@ export const translations = {
 
   ur: {
     // Portal Brand & Navigation
+    brandName: "Maktaba tul Muslim",
     portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "ڈیجیٹل قرآن و اسلامی پورٹل",
     home: "ہوم پیج",
     quran: "قرآن مجید",
+    readQuran: "قرآن پڑھیں",
+    mp3Audio: "صوتی تلاوت",
     reciters: "قراء کرام",
     books: "اسلامی کتب خانہ",
     prayers: "اوقات نماز",
     qibla: "قبلہ رخ",
     dashboard: "میرا ڈیش بورڈ",
     signIn: "سائن ان کریں",
+    login: "سائن ان کریں",
     createAccount: "نیا اکاؤنٹ بنائیں",
+    signup: "نیا اکاؤنٹ بنائیں",
     logout: "لاگ آؤٹ",
     guestMode: "مہمان کے طور پر جاری رکھیں",
+    more: "مزید",
+    exploreMore: "مزید دریافت کریں",
+    subExploreSubtitle: "اسلامی کتب، احادیث، تفاسیر اور دیگر",
+    language: "زبان",
+    theme: "تھیم",
+    aboutUs: "ہمارے بارے میں",
+    contact: "رابطہ کریں",
+
+    // Hero Section
+    quranHeroTitle: "قرآن مجید پڑھیں، سنیں اور تدبر کریں",
+    quranHeroSubtitle: "مختلف زبانوں میں ترجمہ قرآن، 20 مشہور قراء کی صوتی تلاوت، تفاسیر و اسلامی کتب خانہ",
 
     // Search & Filter
     searchPlaceholder: "سورة تلاش کریں (مثلاً الفاتحة یا سورة 18)...",
@@ -147,6 +188,15 @@ export const translations = {
     isha: "عشاء",
     nextPrayer: "اگلی نماز",
 
+    // Extra Views
+    khatam: "ختم قرآن ٹریکر",
+    fazail: "فضائل قرآن",
+    namesOfAllah: "أسماء الله الحسنى",
+    tasbeeh: "ڈیجیٹل تسبیح",
+    duas: "مسنون دعائیں",
+    hadith: "صحیح احادیث",
+    tafseer: "تفسیر ابن کثیر",
+
     // Authentication & OTP Modal
     authModalTitle: "سائن ان / رجسٹریشن",
     fullName: "مکمل نام",
@@ -185,19 +235,35 @@ export const translations = {
 
   br: {
     // Portal Brand & Navigation
+    brandName: "Maktaba tul Muslim",
     portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "براہوئی ڈیجیٹل قرآن و اسلامی پورٹل",
     home: "باغ (ہوم)",
     quran: "قرآن پاک",
+    readQuran: "قرآن خوان بو",
+    mp3Audio: "تلاوت بکن بو",
     reciters: "قاری گاک",
     books: "اسلامی کتاب آک",
     prayers: "نماز نا وقت آک",
     qibla: "قبلہ نا رخ",
     dashboard: "کنا ڈیش بورڈ",
     signIn: "سائن ان ببو",
+    login: "سائن ان ببو",
     createAccount: "پوشکن اکاؤنٹ جوڑ کے",
+    signup: "پوشکن اکاؤنٹ جوڑ کے",
     logout: "لاگ آؤٹ",
     guestMode: "مہمان نا وڑٹ برجا تخو",
+    more: "مستی",
+    exploreMore: "مستی پٹ بو",
+    subExploreSubtitle: "اسلامی کتاب، حدیث و تفاسیر",
+    language: "بولی",
+    theme: "تھیم",
+    aboutUs: "کنانا بارہ ئٹ",
+    contact: "رابطہ بکن بو",
+
+    // Hero Section
+    quranHeroTitle: "قرآن پاک ءِ خوان بو، بکن بو و تدبر بکن بو",
+    quranHeroSubtitle: "براہوئی و مختلف بولی تتٹ قرآن نا ترجمہ و 20 مشہور قاری گاک نا تلاوت",
 
     // Search & Filter
     searchPlaceholder: "سورت ءِ پٹ بو (مثلاً الفاتحة یا 18)...",
@@ -238,6 +304,15 @@ export const translations = {
     isha: "کفتن",
     nextPrayer: "مستی نا نماز",
 
+    // Extra Views
+    khatam: "ختم قرآن ٹریکر",
+    fazail: "فضائل قرآن",
+    namesOfAllah: "أسماء الله الحسنى",
+    tasbeeh: "ڈیجیٹل تسبیح",
+    duas: "مسنون دعائیں",
+    hadith: "صحیح احادیث",
+    tafseer: "تفسیر ابن کثیر",
+
     // Authentication & OTP Modal
     authModalTitle: "سائن ان / دفتری پن تروک",
     fullName: "پوروا پن",
@@ -276,19 +351,35 @@ export const translations = {
 
   ar: {
     // Portal Brand & Navigation
+    brandName: "Maktaba tul Muslim",
     portalTitle: "Maktaba tul Muslim",
     portalSubtitle: "البوابة القرآنية والإسلامية الرقمية",
     home: "الرئيسية",
     quran: "القرآن الكريم",
+    readQuran: "قراءة القرآن",
+    mp3Audio: "التلاوات الصوتية",
     reciters: "كبار القراء",
     books: "المكتبة الإسلامية",
     prayers: "مواقيت الصلاة",
     qibla: "اتجاه القبلة",
     dashboard: "لوحة التحكم",
     signIn: "تسجيل الدخول",
+    login: "تسجيل الدخول",
     createAccount: "إنشاء حساب جدید",
+    signup: "إنشاء حساب جدید",
     logout: "تسجيل الخروج",
     guestMode: "المتابعة كزائر",
+    more: "المزيد",
+    exploreMore: "استكشف المزيد",
+    subExploreSubtitle: "الكتب الإسلامية والأحاديث والتفاسير",
+    language: "اللغة",
+    theme: "المظهر",
+    aboutUs: "من نحن",
+    contact: "اتصل بنا",
+
+    // Hero Section
+    quranHeroTitle: "اقرأ واستمع وتدبر القرآن الكريم",
+    quranHeroSubtitle: "ترجمات متعددة للقرآن الكريم، 20 قارئاً من كبار القراء، مكتبة التفاسير والأحاديث",
 
     // Search & Filter
     searchPlaceholder: "ابحث عن سورة بالاسم أو الرقم (مثل الفاتحة، 18)...",
@@ -328,6 +419,15 @@ export const translations = {
     maghrib: "المغرب",
     isha: "العشاء",
     nextPrayer: "الصلاة القادمة",
+
+    // Extra Views
+    khatam: "متابع ختم القرآن",
+    fazail: "فضائل القرآن",
+    namesOfAllah: "أسماء الله الحسنى",
+    tasbeeh: "السبحة الإلكترونية",
+    duas: "الأدعية المأثورة",
+    hadith: "الأحاديث الصحيحة",
+    tafseer: "تفسير ابن كثير",
 
     // Authentication & OTP Modal
     authModalTitle: "تسجيل الدخول / إنشاء حساب",
