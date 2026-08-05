@@ -814,33 +814,39 @@ def api_send_otp(request):
     }
     request.session.modified = True
 
-    # Send verification email to user's personal Gmail / email address
-    subject = f"Quran Portal - Your 6-Digit Security Code: {otp_code}"
+    # Send 6-digit verification code to user's real Gmail / email inbox
+    subject = f"Maktaba tul Muslim - Your 6-Digit Security Code: {otp_code}"
     message = (
         f"Assalamu Alaikum,\n\n"
-        f"Your 6-digit security verification code for Quran Portal is:\n\n"
+        f"Your 6-digit security verification code for Maktaba tul Muslim is:\n\n"
         f"  ===>  {otp_code}  <===\n\n"
-        f"Please enter this 6-digit code on the website to complete your sign-in or password reset.\n\n"
+        f"Please enter this 6-digit code on the website to verify your account or reset your password.\n\n"
         f"If you did not request this code, please ignore this email.\n\n"
         f"BarakAllahu Feek,\n"
-        f"Quran Portal Team"
+        f"Maktaba tul Muslim Team\n"
+        f"https://maktabatulmuslim.com/"
     )
+    from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabatulmuslim@gmail.com>')
+    
+    email_sent = False
     try:
         send_mail(
             subject=subject,
             message=message,
-            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
+            from_email=from_addr,
             recipient_list=[target_email],
-            fail_silently=True
+            fail_silently=False
         )
+        email_sent = True
     except Exception as e:
-        print(f"Email dispatch log: {e}")
+        print(f"SMTP Dispatch Notice for {target_email}: {e}")
 
     return JsonResponse({
         'status': 'otp_sent',
         'email': target_email,
         'type': auth_type,
-        'message': f'A 6-digit security verification code has been sent to {target_email}.'
+        'email_sent': email_sent,
+        'message': f'A 6-digit security verification code has been dispatched to {target_email}. Check your inbox.'
     })
 
 
