@@ -152,6 +152,8 @@ sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl restart gunicorn_quran
 
-echo "✅ Deployment Successful! Your website is live on your VPS IP address!"
-echo "📍 Access Backend Admin: http://YOUR_VPS_IP/admin/ (user: admin / pass: AdminPass123!)"
-echo "🔒 To add free SSL certificate (HTTPS), run: sudo certbot --nginx -d yourdomain.com"
+echo "=================================================="
+echo "🎉 DEPLOYMENT SUCCESSFUL! MAKTABA TUL MUSLIM IS LIVE!"
+echo "🌐 Website Domain: https://maktabatulmuslim.com"
+echo "⚙️ Backend Admin: https://maktabatulmuslim.com/admin/"
+echo "=================================================="
