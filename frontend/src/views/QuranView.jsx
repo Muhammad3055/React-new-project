@@ -269,7 +269,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   return (
     <div className="container" style={{ paddingBottom: '3rem' }}>
-      <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
+      <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
         <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
           <i className="fas fa-headphones-alt"></i> Audio MP3 Portal & Recitations
         </h1>
@@ -294,7 +294,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 padding: '0.6rem 0.85rem',
                 borderRadius: '16px',
                 border: isActive ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)',
-                background: isActive ? 'linear-gradient(135deg, var(--accent-gold), #d97706)' : 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+                background: isActive ? 'linear-gradient(135deg, var(--accent-gold), #d97706)' : 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
                 color: isActive ? '#022c22' : '#ffffff',
                 boxShadow: isActive ? '0 4px 14px rgba(245,158,11,0.45)' : '0 2px 8px rgba(0,0,0,0.15)',
                 cursor: 'pointer',
@@ -361,7 +361,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               {displayedSurahs.map((surah) => {
                 const qariAudioUrl = getQariAudioUrl(surah.number, activeQariObj);
                 return (
-                  <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
+                  <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
                     <div>
                       <div className="card-header-badge" style={{ marginBottom: '0.5rem', background: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                         <span className="surah-number-badge" style={{ background: 'var(--accent-gold)', color: '#022c22' }}>{surah.number}</span>
@@ -445,7 +445,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               const reciterLabel = dbAudio ? dbAudio.reciter : (subCategory === 'quran_brahui' ? 'مولانا عبد الغفور براہوئی (Brahui Translation)' : 'فتح محمد جالندھری (Urdu Tarjuma)');
 
               return (
-                <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
+                <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
                   <div>
                     <div className="card-header-badge" style={{ marginBottom: '0.5rem', background: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <span className="surah-number-badge" style={{ background: 'var(--accent-gold)', color: '#022c22' }}>{surah.number}</span>
@@ -544,7 +544,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               ))}
             </div>
           ) : activeTaqreers.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', borderRadius: '16px', border: '1px solid var(--accent-gold)' }}>
+            <div style={{ textAlign: 'center', padding: '3rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', borderRadius: '16px', border: '1px solid var(--accent-gold)' }}>
               <i className="fas fa-microphone-slash fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
               <h3 style={{ color: 'var(--accent-gold)' }}>No MP3 Taqreer audio found</h3>
               <p style={{ color: '#e2e8f0' }}>Use the Admin Upload section to add Taqreers in this language category!</p>
@@ -552,7 +552,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           ) : (
             <div className="grid-2">
               {activeTaqreers.map((tq) => (
-                <div key={tq.id || tq.title} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.2rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
+                <div key={tq.id || tq.title} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.2rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '16px' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#022c22', background: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>

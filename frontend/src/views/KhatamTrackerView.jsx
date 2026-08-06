@@ -45,7 +45,7 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
     <div className="container" style={{ margin: '1.5rem auto' }}>
 
       {/* ===== HERO BANNER ===== */}
-      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#ffffff', border: '1px solid var(--accent-gold)' }}>
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#ffffff', border: '1px solid var(--accent-gold)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
             <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', tracking: '1px', fontWeight: 800, background: 'rgba(245,158,11,0.2)', color: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '14px', border: '1px solid var(--accent-gold)' }}>

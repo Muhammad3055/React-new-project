@@ -475,7 +475,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           </button>
 
           <div className="mobile-menu-brand" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
-            <span>Quran <span style={{ color: 'var(--accent-gold)' }}>Al Kareem</span></span>
+            <span>Maktaba <span style={{ color: 'var(--accent-gold)' }}>Tul Muslim</span></span>
           </div>
 
           {/* Top Auth Section inside Mobile Drawer */}

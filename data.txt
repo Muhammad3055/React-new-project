@@ -1,7 +1,7 @@
 
 
 
-ssh: root
+ssh: root@ip.address
 password :quranportal
 ---
 login

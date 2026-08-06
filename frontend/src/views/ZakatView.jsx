@@ -158,7 +158,7 @@ export default function ZakatView({ user, openAuthModal, navigateToTab }) {
       {/* Hero Banner Header */}
       <section
         style={{
-          background: 'linear-gradient(135deg, #022c22 0%, #064e3b 50%, #047857 100%)',
+          background: 'linear-gradient(135deg, #09090b 0%, #121215 50%, #18181b 100%)',
           color: '#ffffff',
           borderRadius: '24px',
           padding: '2.5rem 1.5rem',
@@ -559,7 +559,7 @@ export default function ZakatView({ user, openAuthModal, navigateToTab }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div
               style={{
-                background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+                background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
                 color: '#ffffff',
                 borderRadius: '20px',
                 padding: '1.75rem',
@@ -820,7 +820,7 @@ export default function ZakatView({ user, openAuthModal, navigateToTab }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div
             style={{
-              background: 'linear-gradient(135deg, #022c22, #064e3b)',
+              background: 'linear-gradient(135deg, #09090b, #18181b)',
               padding: '1.5rem',
               borderRadius: '20px',
               color: '#ffffff',

@@ -539,7 +539,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
     <div className="container" style={{ margin: '1.5rem auto' }}>
 
       {/* ===== TOP SECTION: MAIN MODE SELECTION BUTTONS ===== */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1.25rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
+      <div className="card" style={{ padding: '1rem', marginBottom: '1.25rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>

@@ -14,7 +14,7 @@ urlpatterns = [
     path('api/stats/', views.api_home_stats, name='api_home_stats'),
     path('api/search/', views.api_global_search, name='api_global_search'),
     
-    # Bookmarks, Reports & Contact
+    # Bookmarks, Reports & Contact 
     path('api/bookmarks/', views.user_bookmarks_json, name='user_bookmarks_json'),
     path('api/bookmark/toggle/', views.toggle_bookmark, name='toggle_bookmark'),
     path('api/report/submit/', views.submit_report_view, name='submit_report'),

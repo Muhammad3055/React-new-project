@@ -154,7 +154,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
   return (
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       {/* Welcome Header */}
-      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff', border: '1px solid var(--accent-gold)', borderRadius: '16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold)', margin: 0 }}>

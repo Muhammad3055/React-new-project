@@ -156,8 +156,6 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
         <h2 className="arabic-font hero-arabic-title">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
 
-        <h1 className="hero-main-title">{t('quranHeroTitle')}</h1>
-        <p className="hero-subtitle">{t('quranHeroSubtitle')}</p>
         
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <a
@@ -219,7 +217,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           <section className="container" style={{ marginTop: '2rem' }}>
             <div
               style={{
-                background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+                background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
                 border: '2px solid var(--accent-gold)',
                 borderRadius: '16px',
                 padding: '2rem 1.75rem',

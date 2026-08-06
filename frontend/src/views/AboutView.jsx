@@ -14,7 +14,7 @@ export default function AboutView({ navigateToTab }) {
     <div style={{ minHeight: '100vh', background: 'var(--bg-cream)' }}>
       {/* Hero Header Banner */}
       <section style={{
-        background: 'linear-gradient(135deg, #011c16 0%, #022c22 50%, #064e3b 100%)',
+        background: 'linear-gradient(135deg, #000000 0%, #09090b 50%, #18181b 100%)',
         color: '#ffffff',
         padding: '4rem 1.5rem',
         textAlign: 'center',
@@ -43,7 +43,7 @@ export default function AboutView({ navigateToTab }) {
         </span>
 
         <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0.5rem 0 1rem 0', letterSpacing: '-0.5px' }}>
-          Quran Al Kareem
+          Maktaba Tul Muslim
         </h1>
         <p style={{ color: '#e2e8f0', maxWidth: '800px', margin: '0 auto', fontSize: '1.15rem', lineHeight: '1.8' }}>
           A modern, ad-free Islamic digital portal dedicated to facilitating the study, recitation, and understanding of the Holy Quran, authentic Hadiths, Tafseer, and Islamic literature worldwide.
@@ -90,7 +90,7 @@ export default function AboutView({ navigateToTab }) {
         <section style={{ marginBottom: '4rem' }}>
           <div className="section-header" style={{ textAlign: 'center', justifyContent: 'center', flexDirection: 'column', gap: '0.5rem', marginBottom: '2.5rem' }}>
             <h2 className="section-title" style={{ fontSize: '2rem', justifyContent: 'center' }}>
-              <i className="fas fa-cubes" style={{ color: 'var(--accent-gold)' }}></i> Core Features of Quran Al Kareem
+              <i className="fas fa-cubes" style={{ color: 'var(--accent-gold)' }}></i> Core Features of Maktaba Tul Muslim
             </h2>
             <div style={{ width: '80px', height: '4px', background: 'var(--accent-gold)', borderRadius: '2px' }}></div>
           </div>
@@ -111,7 +111,7 @@ export default function AboutView({ navigateToTab }) {
         {/* Pure Spiritual Dedication Showcase Card */}
         <section style={{ marginBottom: '4rem' }}>
           <div className="card" style={{
-            background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+            background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
             color: '#ffffff',
             borderRadius: '24px',
             padding: '3rem 2.5rem',
@@ -126,7 +126,7 @@ export default function AboutView({ navigateToTab }) {
                 Dedicated to Serving the Global Ummah
               </h2>
               <p style={{ color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '1.5rem' }}>
-                Quran Al Kareem was created with sincere devotion to provide a clean, peaceful, and respectful online space for reading the Word of Allah, listening to authentic recitations, and learning Islamic knowledge.
+                Maktaba Tul Muslim was created with sincere devotion to provide a clean, peaceful, and respectful online space for reading the Word of Allah, listening to authentic recitations, and learning Islamic knowledge.
               </p>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', background: 'rgba(255,255,255,0.08)', padding: '0.75rem 1.75rem', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.3)' }}>
                 <i className="fas fa-heart" style={{ color: 'var(--accent-gold)', fontSize: '1.2rem' }}></i>

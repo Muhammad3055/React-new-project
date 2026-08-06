@@ -21,7 +21,7 @@ export default function AdminFloatingBar({ user, navigateToTab }) {
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
-          background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+          background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
           border: '2px solid var(--accent-gold)',
           boxShadow: '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(245, 158, 11, 0.4)',
           borderRadius: '30px',
