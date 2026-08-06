@@ -142,8 +142,12 @@ EOT
 
 sudo ln -sf /etc/nginx/sites-available/quran_portal /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
+sudo ufw allow 80/tcp || true
+sudo ufw allow 443/tcp || true
+sudo ufw allow 'Nginx Full' || true
 sudo nginx -t
 sudo systemctl restart nginx
+sudo systemctl restart gunicorn_quran
 
 echo "✅ Deployment Successful! Your website is live on your VPS IP address!"
 echo "📍 Access Backend Admin: http://YOUR_VPS_IP/admin/ (user: admin / pass: AdminPass123!)"
