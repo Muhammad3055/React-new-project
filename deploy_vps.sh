@@ -48,10 +48,13 @@ git pull origin main
 # 4. Django Backend Environment & Dependencies
 echo "🐍 Setting up Python Virtual Environment..."
 cd $PROJECT_DIR/backend
-python3 -m venv venv
-source venv/bin/venv/activate || source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+if [ ! -f "venv/bin/activate" ]; then
+    rm -rf venv
+    python3 -m venv venv
+fi
+source venv/bin/activate
+pip install --upgrade pip || true
+pip install --break-system-packages -r requirements.txt || pip install -r requirements.txt
 
 # Create .env for Backend
 cat <<EOT > .env
