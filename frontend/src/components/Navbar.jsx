@@ -28,6 +28,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },
     { label: t('khatam'), icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },
     { label: t('fazail'), icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
     { label: t('namesOfAllah'), icon: 'fas fa-star', action: () => { navigateToTab('namesOfAllah'); setShowExtrasMenu(false); } },

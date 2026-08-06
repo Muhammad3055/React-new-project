@@ -7,6 +7,8 @@ import AuthModal from './components/AuthModal';
 import AdminFloatingBar from './components/AdminFloatingBar';
 
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 import HomeView from './views/HomeView';
 import ReadView from './views/ReadView';
 import QuranView from './views/QuranView';
@@ -14,6 +16,7 @@ import QarisView from './views/QarisView';
 import BooksView from './views/BooksView';
 import TafseerView from './views/TafseerView';
 import HadithView from './views/HadithView';
+import QiblaView from './views/QiblaView';
 import BookmarksView from './views/BookmarksView';
 import UploadView from './views/UploadView';
 import ContactView from './views/ContactView';
@@ -32,9 +35,11 @@ import { LanguageProvider } from './context/LanguageContext';
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <MainAppContent />
-    </LanguageProvider>
+    <ErrorBoundary>
+      <LanguageProvider>
+        <MainAppContent />
+      </LanguageProvider>
+    </ErrorBoundary>
   );
 }
 
@@ -47,6 +52,7 @@ function MainAppContent() {
     books: '/books',
     tafseer: '/tafseer',
     hadith: '/hadith',
+    qibla: '/qibla',
     fazail: '/fazail',
     namesOfAllah: '/names-of-allah',
     tasbeeh: '/tasbeeh',
@@ -207,6 +213,10 @@ function MainAppContent() {
 
         {activeTab === 'hadith' && (
           <HadithView openReportModal={openReportModal} user={user} />
+        )}
+
+        {activeTab === 'qibla' && (
+          <QiblaView />
         )}
 
         {activeTab === 'fazail' && (

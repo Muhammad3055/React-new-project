@@ -110,6 +110,15 @@ export const translations = {
     passwordExcellent: "Excellent",
     orSocial: "OR CONTINUE WITH",
 
+    // Qibla Direction
+    qiblaFinderTitle: "Qibla Direction Compass",
+    qiblaFinderSubtitle: "Accurate live Qibla bearing towards the Holy Kaaba in Makkah Mukarramah",
+    qiblaAngleFromNorth: "Qibla Angle from True North",
+    liveCompassActive: "Live Phone Compass Active",
+    yourLocation: "Your Current Location",
+    selectCity: "Select City Manually",
+    customCoordinates: "Enter Custom Latitude & Longitude",
+
     // Footer
     quickLinks: "Quick Links",
     aboutPortal: "About Maktaba tul Muslim",
@@ -187,6 +196,15 @@ export const translations = {
     maghrib: "مغرب",
     isha: "عشاء",
     nextPrayer: "اگلی نماز",
+
+    // Qibla Direction
+    qiblaFinderTitle: "قبلہ نما کٹپاس (رخ قبلہ)",
+    qiblaFinderSubtitle: "مکہ مکرمہ میں خانہ کعبہ کی سمت کا درست ترین قبلہ رخ",
+    qiblaAngleFromNorth: "شمال سے قبلہ کا زاویہ",
+    liveCompassActive: "موبائل کا لائیو قطب نما فعال ہے",
+    yourLocation: "آپ کا موجودہ مقام",
+    selectCity: "شہر کا انتخاب کریں",
+    customCoordinates: "مخصوص عرض البلد اور طول البلد درج کریں",
 
     // Extra Views
     khatam: "ختم قرآن ٹریکر",
@@ -304,6 +322,15 @@ export const translations = {
     isha: "کفتن",
     nextPrayer: "مستی نا نماز",
 
+    // Qibla Direction
+    qiblaFinderTitle: "قبلہ نا رخ نا کمپاس",
+    qiblaFinderSubtitle: "مکہ مکرمہ ئیٹ خانہ کعبہ نا درست رخ",
+    qiblaAngleFromNorth: "قبلہ نا زاویہ",
+    liveCompassActive: "لائیو کمپاس چالو اس",
+    yourLocation: "نی ہراڑے اس",
+    selectCity: "شہر ءِ گچیں بکن بو",
+    customCoordinates: "عرض البلد و طول البلد داخل بکن بو",
+
     // Extra Views
     khatam: "ختم قرآن ٹریکر",
     fazail: "فضائل قرآن",
@@ -419,6 +446,15 @@ export const translations = {
     maghrib: "المغرب",
     isha: "العشاء",
     nextPrayer: "الصلاة القادمة",
+
+    // Qibla Direction
+    qiblaFinderTitle: "بوصلة اتجاه القبلة",
+    qiblaFinderSubtitle: "تحديد اتجاه القبلة نحو الكعبة المشرفة في مكة المكرمة بدقة عالية",
+    qiblaAngleFromNorth: "زاوية القبلة من الشمال الحقيقي",
+    liveCompassActive: "بوصلة الهاتف التفاعلية نشطة",
+    yourLocation: "موقعك الحالي",
+    selectCity: "اختر المدينة يدوياً",
+    customCoordinates: "أدخل خط العرض وخط الطول المخصص",
 
     // Extra Views
     khatam: "متابع ختم القرآن",
