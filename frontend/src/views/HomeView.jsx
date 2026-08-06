@@ -445,7 +445,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 e.preventDefault();
                 handleNav('read');
               }}
-              style={{ background: 'var(--primary-dark)', padding: '0.6rem 1.4rem', textDecoration: 'none' }}
+              style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800, padding: '0.6rem 1.4rem', textDecoration: 'none', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
             >
               <i className="fas fa-arrow-right"></i> Continue Reading
             </a>
@@ -484,7 +484,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 <button
                   className="btn-play"
                   onClick={() => playTrack(item.audio_url, `Surah ${item.surah_name_english}`, item.reciter)}
-                  style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
+                  style={{ width: '100%', justifyContent: 'center', padding: '0.6rem 1rem', background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}
                 >
                   <i className="fas fa-play"></i> Play Audio
                 </button>
@@ -505,8 +505,11 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               display: 'inline-flex',
               padding: '0.7rem 2rem',
               fontSize: '0.95rem',
-              background: 'var(--primary-dark)',
+              background: '#ffffff',
               color: 'var(--accent-gold)',
+              border: '2px solid var(--accent-gold)',
+              fontWeight: 800,
+              boxShadow: '0 4px 14px rgba(180,83,9,0.15)',
               textDecoration: 'none'
             }}
           >
@@ -552,9 +555,14 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                     alignItems: 'center',
                     gap: '0.5rem',
                     width: '100%',
-                    padding: '0.6rem 1rem',
-                    fontSize: '0.85rem',
-                    background: 'var(--primary-emerald)',
+                    padding: '0.65rem 1rem',
+                    fontSize: '0.88rem',
+                    fontWeight: 800,
+                    background: '#ffffff',
+                    color: 'var(--accent-gold)',
+                    border: '2px solid var(--accent-gold)',
+                    borderRadius: '20px',
+                    boxShadow: '0 3px 10px rgba(180,83,9,0.15)',
                     textDecoration: 'none'
                   }}
                 >
@@ -577,8 +585,11 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               display: 'inline-flex',
               padding: '0.7rem 2rem',
               fontSize: '0.95rem',
-              background: 'var(--primary-dark)',
+              background: '#ffffff',
               color: 'var(--accent-gold)',
+              border: '2px solid var(--accent-gold)',
+              fontWeight: 800,
+              boxShadow: '0 4px 14px rgba(180,83,9,0.15)',
               textDecoration: 'none'
             }}
           >
