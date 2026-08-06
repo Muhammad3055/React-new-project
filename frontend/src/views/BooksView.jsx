@@ -396,6 +396,8 @@ export default function BooksView({ openReportModal, user }) {
                     src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"}
                     alt={bk.title}
                     className="media-cover-img"
+                    loading="lazy"
+                    decoding="async"
                     style={{ objectFit: 'cover', width: '100%', height: '100%', opacity: 0.9 }}
                   />
                   {/* Format Badge Overlay */}

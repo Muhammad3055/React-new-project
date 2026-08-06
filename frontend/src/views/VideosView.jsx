@@ -86,7 +86,7 @@ export default function VideosView({ openVideoModal, openReportModal }) {
           {videos.map((vid) => (
             <div key={vid.id} className="card">
               <div className="media-cover-wrapper">
-                <img src={vid.thumbnail_url || "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=500&q=80"} alt={vid.title} className="media-cover-img" />
+                <img src={vid.thumbnail_url || "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=500&q=80"} alt={vid.title} className="media-cover-img" loading="lazy" decoding="async" />
                 <div className="media-play-overlay" onClick={() => openVideoModal(vid.title, vid.video_url)}>
                   <button className="play-icon-lg"><i className="fas fa-play"></i></button>
                 </div>
