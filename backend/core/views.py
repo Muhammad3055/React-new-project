@@ -298,6 +298,7 @@ def api_books_list(request):
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '').strip()
     file_type_filter = request.GET.get('file_type', '').strip()
+    language_filter = request.GET.get('language', '').strip()
     page_number = request.GET.get('page', 1)
     
     books = BookMedia.objects.all()
@@ -309,6 +310,8 @@ def api_books_list(request):
         books = books.filter(category_id=category_id)
     if file_type_filter:
         books = books.filter(file_type=file_type_filter)
+    if language_filter:
+        books = books.filter(language=language_filter)
 
     paginator = Paginator(books, 25)
     page_obj = paginator.get_page(page_number)

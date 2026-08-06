@@ -12,6 +12,7 @@ export default function BooksView({ openReportModal, user }) {
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedFileType, setSelectedFileType] = useState(''); // '' | 'pdf' | 'doc' | 'ppt' | 'book'
+  const [selectedLanguage, setSelectedLanguage] = useState(''); // '' | 'en' | 'ur' | 'ar' | 'br'
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,14 @@ export default function BooksView({ openReportModal, user }) {
     { id: 'pdf', label: 'PDF Documents', icon: 'fas fa-file-pdf', color: '#dc2626' },
     { id: 'doc', label: 'Word Documents', icon: 'fas fa-file-word', color: '#2563eb' },
     { id: 'ppt', label: 'PPT Presentations', icon: 'fas fa-file-powerpoint', color: '#ea580c' },
+  ];
+
+  const languageOptions = [
+    { id: '', label: 'All Languages', icon: 'fas fa-globe', color: 'var(--primary-dark)' },
+    { id: 'en', label: 'English', icon: 'fas fa-language', color: '#0ea5e9' },
+    { id: 'ur', label: 'Urdu', icon: 'fas fa-language', color: '#10b981' },
+    { id: 'ar', label: 'Arabic', icon: 'fas fa-language', color: '#8b5cf6' },
+    { id: 'br', label: 'Brahui', icon: 'fas fa-language', color: '#f59e0b' },
   ];
 
   // Debounce search query to prevent excessive backend API calls
@@ -47,7 +56,7 @@ export default function BooksView({ openReportModal, user }) {
   // Fetch Books whenever filters change & merge client-side admin uploaded books
   useEffect(() => {
     setLoading(true);
-    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&page=${page}`))
+    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&language=${encodeURIComponent(selectedLanguage)}&page=${page}`))
       .then(res => res.json())
       .then(data => {
         const apiBooks = data.results || [];
@@ -86,7 +95,7 @@ export default function BooksView({ openReportModal, user }) {
   // Listen for admin content updates to refresh instantly
   useEffect(() => {
     const handleUpdate = () => {
-      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&page=${page}`))
+      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&language=${encodeURIComponent(selectedLanguage)}&page=${page}`))
         .then(res => res.json())
         .then(data => {
           const apiBooks = data.results || [];
@@ -120,7 +129,7 @@ export default function BooksView({ openReportModal, user }) {
 
     window.addEventListener('admin_content_updated', handleUpdate);
     return () => window.removeEventListener('admin_content_updated', handleUpdate);
-  }, [debouncedQuery, selectedCategory, selectedFileType, page]);
+  }, [debouncedQuery, selectedCategory, selectedFileType, selectedLanguage, page]);
 
 
   const getFormatBadge = (fileType) => {
@@ -230,6 +239,37 @@ export default function BooksView({ openReportModal, user }) {
         </p>
       </div>
 
+      {/* Language Toggle Pill Bar */}
+      <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1rem', justifyContent: 'center' }}>
+        {languageOptions.map((opt) => {
+          const isActive = selectedLanguage === opt.id;
+          return (
+            <button
+              key={opt.id}
+              className="filter-pill-btn"
+              onClick={() => { setSelectedLanguage(opt.id); setPage(1); }}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '30px',
+                border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
+                background: isActive ? opt.color : '#ffffff',
+                color: isActive ? '#ffffff' : '#334155',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                transition: 'all 0.2s ease',
+                boxShadow: isActive ? `0 4px 12px ${opt.color}40` : 'none',
+              }}
+            >
+              <i className={opt.icon}></i> {opt.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Format Toggle Pill Bar */}
       <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.5rem', justifyContent: 'center' }}>
         {fileTypeOptions.map((opt) => {
@@ -237,6 +277,7 @@ export default function BooksView({ openReportModal, user }) {
           return (
             <button
               key={opt.id}
+              className="filter-pill-btn"
               onClick={() => { setSelectedFileType(opt.id); setPage(1); }}
               style={{
                 padding: '0.65rem 1.25rem',

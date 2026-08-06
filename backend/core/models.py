@@ -107,17 +107,24 @@ class BookMedia(models.Model):
         ('book', 'Printed / E-Book'),
     ]
 
+    LANGUAGE_CHOICES = [
+        ('en', 'English'),
+        ('ur', 'Urdu'),
+        ('ar', 'Arabic'),
+        ('br', 'Brahui'),
+    ]
+
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=150, default="Unknown Author")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="books")
     file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='pdf', db_index=True)
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default='ur', db_index=True)
     pdf_file = models.FileField(upload_to="books/", blank=True, null=True)
     pdf_url = models.URLField(max_length=500, blank=True, help_text="Direct Document URL")
     cover_image = models.ImageField(upload_to="covers/", blank=True, null=True)
     cover_url = models.URLField(max_length=500, blank=True)
     description = models.TextField(blank=True)
     pages_count = models.PositiveIntegerField(default=1, blank=True)
-    language = models.CharField(max_length=50, default="Arabic / English")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

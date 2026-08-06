@@ -3063,10 +3063,44 @@ button, input, select, textarea, .btn, a.btn {
   flex-direction: row !important;
 }
 
+/* =========================================================
+   GLOBAL BUTTON OVERRIDE (White Background, Black Text)
+   As requested by user for Home, MP3, Books, Sidebar, etc.
+========================================================= */
+button:not(.filter-pill-btn), 
+.btn:not(.filter-pill-btn), 
+.btn-primary:not(.filter-pill-btn), 
+.btn-play:not(.filter-pill-btn), 
+.btn-outline:not(.filter-pill-btn), 
+.sidebar-btn, 
+.action-btn, 
+.quran-surah-btn, 
+.nav-link.active,
+.pdf-modal-header button,
+.pdf-modal-header a,
+a.btn-play,
+.format-pill {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
 
+button:not(.filter-pill-btn) i, 
+.btn:not(.filter-pill-btn) i, 
+.sidebar-btn i, 
+.action-btn i, 
+.btn-play:not(.filter-pill-btn) i {
+    color: #000000 !important;
+}
 
-
-
-
-
-
+button:not(.filter-pill-btn):hover, 
+.btn:not(.filter-pill-btn):hover, 
+.sidebar-btn:hover, 
+.action-btn:hover,
+a.btn-play:hover {
+    background-color: #f3f4f6 !important;
+    background: #f3f4f6 !important;
+    color: #000000 !important;
+}
