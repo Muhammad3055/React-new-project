@@ -77,8 +77,23 @@ export default function HadithView({ openReportModal, user }) {
   }, []);
 
   const copyHadith = (text, book, num, grade) => {
-    navigator.clipboard.writeText(`"${text}" [${book} #${num} - Grade: ${grade}]`);
+    const fullText = `"${text}"\n[${book} #${num} - Grade: ${grade}]\nShared via Maktaba Tul Muslim (https://maktabatulmuslim.com)`;
+    navigator.clipboard.writeText(fullText);
     alert("Hadith copied to clipboard!");
+  };
+
+  const shareHadith = (text, book, num, grade) => {
+    const fullText = `"${text}"\n[${book} #${num} - Grade: ${grade}]\nVia Maktaba Tul Muslim: https://maktabatulmuslim.com`;
+    if (navigator.share) {
+      navigator.share({
+        title: `${book} Hadith #${num}`,
+        text: fullText,
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(fullText);
+      alert("Hadith link copied to clipboard!");
+    }
   };
 
   const renderGradeBadge = (grade = '') => {
@@ -207,6 +222,14 @@ export default function HadithView({ openReportModal, user }) {
                     style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
                   >
                     <i className="far fa-copy"></i>
+                  </button>
+                  <button
+                    className="verse-btn"
+                    title="Share Hadith"
+                    onClick={() => shareHadith(h.translation, h.book_name, h.hadith_number, h.grade)}
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <i className="fas fa-share-alt"></i>
                   </button>
                   <button
                     className="verse-btn"

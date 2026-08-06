@@ -403,10 +403,28 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       });
   };
 
-  const copyVerse = (arabicText, ayahNumber) => {
-    const fullText = `${arabicText} [Surah ${selectedSurah}:${ayahNumber}]`;
+  const copyVerse = (arabicText, ayahNumber, ayahIndex = 0) => {
+    const engText = getEnglishTranslationText(ayahIndex);
+    const urdText = getUrduTranslationText(ayahIndex);
+    const fullText = `Surah ${activeSurahMeta.name} [Ayah ${selectedSurah}:${ayahNumber}]\n\n${arabicText}\n\nEnglish: ${engText}\nUrdu: ${urdText}\n\nRead on Maktaba Tul Muslim: https://maktabatulmuslim.com`;
     navigator.clipboard.writeText(fullText);
-    alert("Verse copied to clipboard!");
+    alert(`Surah ${activeSurahMeta.name} Verse ${ayahNumber} copied to clipboard!`);
+  };
+
+  const shareVerse = (arabicText, ayahNumber, ayahIndex = 0) => {
+    const engText = getEnglishTranslationText(ayahIndex);
+    const urdText = getUrduTranslationText(ayahIndex);
+    const fullText = `Surah ${activeSurahMeta.name} [Ayah ${selectedSurah}:${ayahNumber}]\n\n${arabicText}\n\nEnglish: ${engText}\nUrdu: ${urdText}\n\nRead on Maktaba Tul Muslim: https://maktabatulmuslim.com`;
+    if (navigator.share) {
+      navigator.share({
+        title: `Surah ${activeSurahMeta.name} Verse ${ayahNumber}`,
+        text: fullText,
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(fullText);
+      alert(`Surah ${activeSurahMeta.name} Verse ${ayahNumber} copied to clipboard!`);
+    }
   };
 
   const speakTranslationText = (text, langCode = 'en-US') => {
@@ -965,10 +983,18 @@ export default function ReadView({ user, playTrack, openReportModal }) {
 
                             <button
                               className="verse-btn"
-                              title="Copy Verse"
-                              onClick={() => copyVerse(ayah.text, ayah.numberInSurah)}
+                              title="Copy Ayah & Translation"
+                              onClick={() => copyVerse(ayah.text, ayah.numberInSurah, index)}
                             >
                               <i className="far fa-copy"></i>
+                            </button>
+
+                            <button
+                              className="verse-btn"
+                              title="Share Ayah & Translation"
+                              onClick={() => shareVerse(ayah.text, ayah.numberInSurah, index)}
+                            >
+                              <i className="fas fa-share-alt"></i>
                             </button>
 
                             {/* Play MP3 Ayah & Spoken Translation (Only shown in Audio Translation Mode) */}

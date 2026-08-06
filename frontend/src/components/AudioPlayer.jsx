@@ -100,6 +100,21 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
     return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  const handleShareAudio = () => {
+    if (!currentTrack) return;
+    const shareText = `Listen to ${currentTrack.title} (${currentTrack.reciter}) on Maktaba Tul Muslim:\nhttps://maktabatulmuslim.com`;
+    if (navigator.share) {
+      navigator.share({
+        title: currentTrack.title,
+        text: shareText,
+        url: currentTrack.url || window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(`${shareText}\nAudio Direct Link: ${currentTrack.url}`);
+      alert(`Audio link for ${currentTrack.title} copied to clipboard!`);
+    }
+  };
+
   if (!currentTrack) return null;
 
   return (
@@ -160,6 +175,15 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               className={`player-loop-btn ${isLooping ? 'active' : ''}`}
             >
               <i className="fas fa-redo"></i>
+            </button>
+
+            <button
+              onClick={handleShareAudio}
+              title="Share this MP3 Audio"
+              className="player-loop-btn"
+              style={{ color: 'var(--accent-gold)' }}
+            >
+              <i className="fas fa-share-alt"></i>
             </button>
 
             <button

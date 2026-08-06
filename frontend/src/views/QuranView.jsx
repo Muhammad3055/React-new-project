@@ -141,7 +141,19 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const [taqreerQuery, setTaqreerQuery] = useState('');
   const [loadingTaqreers, setLoadingTaqreers] = useState(false);
 
-  const itemsPerPage = 12;
+  const handleShareMp3 = (surahTitle, audioUrl) => {
+    const shareText = `Listen to Surah ${surahTitle} MP3 Tilawat on Maktaba Tul Muslim:\nhttps://maktabatulmuslim.com`;
+    if (navigator.share) {
+      navigator.share({
+        title: `Surah ${surahTitle} MP3 Tilawat`,
+        text: shareText,
+        url: audioUrl || window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(`${shareText}\nAudio Link: ${audioUrl}`);
+      alert(`Surah ${surahTitle} MP3 link copied to clipboard!`);
+    }
+  };
 
   useEffect(() => {
     // Load Quran Surahs with caching
@@ -385,6 +397,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         onClick={() => playTrack(qariAudioUrl, `Surah ${surah.englishName} (${surah.name})`, activeQariObj.name)}
                       >
                         <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tilawat
+                      </button>
+
+                      <button
+                        className="btn-play"
+                        title="Share MP3 Audio"
+                        onClick={() => handleShareMp3(surah.englishName, qariAudioUrl)}
+                        style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', fontWeight: 800 }}
+                      >
+                        <i className="fas fa-share-alt"></i>
                       </button>
 
                       <button
