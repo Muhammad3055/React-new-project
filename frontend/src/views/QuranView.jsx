@@ -156,12 +156,20 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   };
 
   useEffect(() => {
-    // Load Quran Surahs with caching
+    // Load Quran Surahs with caching and fallback
     fetchWithCache('https://api.alquran.cloud/v1/surah')
       .then(data => {
-        if (data && data.data) setSurahsList(data.data);
+        if (data && data.data && data.data.length === 114) {
+          setSurahsList(data.data);
+        } else if (surahsList.length === 0) {
+          setSurahsList(ALL_114_SURAHS);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (surahsList.length === 0) {
+          setSurahsList(ALL_114_SURAHS);
+        }
+      });
 
     // Sync preferred Qari if logged in
     if (user) {

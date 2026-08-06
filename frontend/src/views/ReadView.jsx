@@ -292,20 +292,21 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   // Fetch Surah Arabic Text with Caching
   useEffect(() => {
     setLoading(true);
-    setSurahData(null);
 
     fetchWithCache(`https://api.alquran.cloud/v1/surah/${selectedSurah}`)
       .then(data => {
-        if (data && data.data) {
+        if (data && data.data && data.data.ayahs && data.data.ayahs.length > 0) {
           setSurahData(data.data);
-        } else {
+        } else if (!surahData) {
           setSurahData(FALLBACK_FATIHAH);
         }
         setLoading(false);
       })
       .catch(() => {
-        setSurahData(FALLBACK_FATIHAH);
-        setTranslationData(prev => ({ ...prev, en: FALLBACK_ENGLISH_FATIHAH }));
+        if (!surahData) {
+          setSurahData(FALLBACK_FATIHAH);
+          setTranslationData(prev => ({ ...prev, en: FALLBACK_ENGLISH_FATIHAH }));
+        }
         setLoading(false);
       });
   }, [selectedSurah]);
