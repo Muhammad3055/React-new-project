@@ -839,7 +839,7 @@ def api_send_otp(request):
     otp_code = f"{random.randint(100000, 999999)}"
 
     # Save pending OTP payload to Django Session with 5-minute (300s) creation timestamp
-    request.session['pending_otp'] = {
+    otp_payload = {
         'code': otp_code,
         'email': target_email,
         'type': auth_type,
@@ -850,7 +850,11 @@ def api_send_otp(request):
         'user_id': target_user.id if target_user else None,
         'created_at': time.time()
     }
-    request.session.modified = True
+    try:
+        request.session['pending_otp'] = otp_payload
+        request.session.modified = True
+    except Exception as session_err:
+        print(f"[Session Warning] Could not save OTP to session: {session_err}")
 
     subject = f"Maktaba tul Muslim (maktabatulmuslim.com) - Your OTP is: {otp_code}"
     message = (
