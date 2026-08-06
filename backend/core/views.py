@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.core.cache import cache
+from django.conf import settings
 
 from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
