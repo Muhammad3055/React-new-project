@@ -380,8 +380,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               )}
             </div>
 
-            {/* Quick Mobile Auth Header Buttons (Always Visible on Mobile Header for iPhone, Samsung, Infinix, etc.) */}
-            <div className="mobile-header-auth-bar" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            {/* Mobile Header Quick Profile Button */}
+            <div className="mobile-header-auth-bar" style={{ display: 'flex', alignItems: 'center' }}>
               {user ? (
                 <button
                   className="mobile-header-user-btn"
@@ -390,64 +390,41 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.35rem',
-                    padding: '0.3rem 0.65rem',
+                    gap: '0.3rem',
+                    padding: '0.3rem 0.6rem',
                     borderRadius: '16px',
-                    border: '1px solid var(--accent-gold)',
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.78rem',
+                    border: '1.5px solid var(--accent-gold)',
+                    background: '#ffffff',
+                    color: 'var(--accent-gold)',
+                    fontWeight: 800,
+                    fontSize: '0.75rem',
                     cursor: 'pointer'
                   }}
                 >
-                  <i className="fas fa-user-circle" style={{ color: 'var(--accent-gold)' }}></i>
+                  <i className="fas fa-user-circle"></i>
                   <span>{user.username}</span>
                 </button>
               ) : (
-                <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-                  <button
-                    className="mobile-header-login-btn"
-                    onClick={() => openAuthModal('login')}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                      padding: '0.3rem 0.65rem',
-                      borderRadius: '16px',
-                      border: '1px solid var(--accent-gold)',
-                      background: 'rgba(245, 158, 11, 0.15)',
-                      color: '#ffffff',
-                      fontWeight: 800,
-                      fontSize: '0.75rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <i className="fas fa-sign-in-alt" style={{ color: 'var(--accent-gold)' }}></i>
-                    <span>{t('login')}</span>
-                  </button>
-                  <button
-                    className="mobile-header-signup-btn"
-                    onClick={() => openAuthModal('signup')}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                      padding: '0.3rem 0.7rem',
-                      borderRadius: '16px',
-                      border: 'none',
-                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                      color: '#022c22',
-                      fontWeight: 800,
-                      fontSize: '0.75rem',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)'
-                    }}
-                  >
-                    <i className="fas fa-user-plus"></i>
-                    <span>{t('signup')}</span>
-                  </button>
-                </div>
+                <button
+                  className="mobile-header-login-btn"
+                  onClick={() => openAuthModal('login')}
+                  title="Sign In / Register"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                    padding: '0.3rem 0.6rem',
+                    borderRadius: '16px',
+                    border: '1.5px solid var(--accent-gold)',
+                    background: '#ffffff',
+                    color: 'var(--accent-gold)',
+                    fontWeight: 800,
+                    fontSize: '0.75rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <i className="fas fa-user"></i>
+                </button>
               )}
             </div>
 
@@ -478,7 +455,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             <span style={{ color: 'var(--text-main)', fontWeight: 800 }}>Maktaba <span style={{ color: 'var(--accent-gold)' }}>Tul Muslim</span></span>
           </div>
 
-          {/* Top Auth Section inside Mobile Drawer */}
+          {/* Top Auth Section inside Mobile Drawer (Stacked: Create Account on Top, Sign In Below) */}
           <div className="mobile-auth-area">
             {user ? (
               <div className="mobile-user-card">
@@ -492,11 +469,11 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </div>
             ) : (
               <div className="mobile-auth-grid">
-                <button className="mobile-auth-btn mobile-login-btn" onClick={() => { openAuthModal('login'); setMobileActive(false); }}>
-                  <i className="fas fa-sign-in-alt"></i> Login
-                </button>
                 <button className="mobile-auth-btn mobile-signup-btn" onClick={() => { openAuthModal('signup'); setMobileActive(false); }}>
-                  <i className="fas fa-user-plus"></i> Sign Up
+                  <i className="fas fa-user-plus"></i> {t('signup')}
+                </button>
+                <button className="mobile-auth-btn mobile-login-btn" onClick={() => { openAuthModal('login'); setMobileActive(false); }}>
+                  <i className="fas fa-sign-in-alt"></i> {t('login')}
                 </button>
               </div>
             )}

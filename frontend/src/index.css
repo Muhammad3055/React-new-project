@@ -218,20 +218,24 @@ a {
 
 .search-wrapper {
   position: relative;
-  width: 200px;
+  width: 140px;
   flex-shrink: 1;
-  min-width: 120px;
+  min-width: 100px;
   transition: all 0.3s ease;
+}
+
+.search-wrapper:focus-within {
+  width: 180px;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.4rem 0.75rem 0.4rem 2rem;
+  padding: 0.35rem 0.65rem 0.35rem 1.8rem;
   border-radius: 20px;
   border: 1.5px solid var(--border-color);
   background: var(--bg-card);
   color: var(--text-main);
-  font-size: 0.825rem;
+  font-size: 0.8rem;
   outline: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -823,9 +827,10 @@ a {
 }
 
 .mobile-auth-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
 }
 
 .mobile-user-card {
@@ -949,18 +954,32 @@ a {
 }
 
 .auth-btn.signup-btn {
-  background: linear-gradient(135deg, var(--accent-gold), #d97706) !important;
-  color: #022c22 !important;
+  background: #ffffff !important;
+  color: var(--accent-gold) !important;
+  border: 2px solid var(--accent-gold) !important;
   font-weight: 800 !important;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 3px 10px rgba(180, 83, 9, 0.15) !important;
   flex-shrink: 0 !important;
   display: inline-flex !important;
 }
 
 .auth-btn.signup-btn:hover {
-  background: linear-gradient(135deg, #fbbf24, var(--accent-gold)) !important;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6) !important;
+  background: #fef3c7 !important;
   transform: translateY(-1px) !important;
+}
+
+.auth-btn.login-btn {
+  background: #ffffff !important;
+  color: var(--accent-gold) !important;
+  border: 2px solid var(--accent-gold) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+}
+
+.auth-btn.login-btn:hover {
+  background: #fef3c7 !important;
 }
 
 .auth-btn-text {
