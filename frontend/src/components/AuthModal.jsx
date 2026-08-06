@@ -503,12 +503,12 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           direction: lang === 'ur' || lang === 'ar' ? 'rtl' : 'ltr'
         }}
       >
-        {/* Glassmorphism Header with Emerald (#0B5D4A) & Gold (#D4AF37) branding */}
-        <div style={{ background: isDarkMode ? 'linear-gradient(135deg, #1c1917 0%, #292524 100%)' : 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', padding: '1.4rem 1.5rem 1.2rem 1.5rem', position: 'relative', borderBottom: '2.5px solid var(--accent-gold)' }}>
+        {/* Clean Light Header with Gold branding */}
+        <div style={{ background: '#fdfbf7', padding: '1.4rem 1.5rem 1.2rem 1.5rem', position: 'relative', borderBottom: '1.5px solid #e7e5e4' }}>
           
           {/* Top Bar: Language Selector & Theme Toggle & Close */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
-            <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)', padding: '3px', borderRadius: '10px' }}>
+            <div style={{ display: 'flex', gap: '6px', background: '#f5f5f4', padding: '3px', borderRadius: '10px', border: '1px solid #e7e5e4' }}>
               {['en', 'ur', 'br', 'ar'].map((l) => (
                 <button
                   key={l}
@@ -517,7 +517,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   style={{
                     border: 'none',
                     background: lang === l ? 'var(--accent-gold)' : 'transparent',
-                    color: lang === l ? '#022c22' : '#ffffff',
+                    color: lang === l ? '#ffffff' : '#44403c',
                     fontWeight: lang === l ? 800 : 600,
                     fontSize: '0.72rem',
                     padding: '3px 8px',
@@ -536,9 +536,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 type="button"
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
+                  background: '#f5f5f4',
                   color: 'var(--accent-gold)',
-                  border: 'none',
+                  border: '1px solid #e7e5e4',
                   borderRadius: '50%',
                   width: '32px',
                   height: '32px',
@@ -556,9 +556,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 type="button"
                 onClick={onClose}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  color: '#ffffff',
-                  border: 'none',
+                  background: '#f5f5f4',
+                  color: '#1c1917',
+                  border: '1px solid #e7e5e4',
                   borderRadius: '50%',
                   width: '32px',
                   height: '32px',
@@ -577,62 +577,62 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
           {/* Logo & Title */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <img src="/favicon.svg" alt="Maktaba tul Muslim" style={{ width: '42px', height: '42px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(212, 175, 55, 0.4)' }} />
+            <img src="/favicon.svg" alt="Maktaba tul Muslim" style={{ width: '42px', height: '42px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(180, 83, 9, 0.2)' }} />
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-gold)', letterSpacing: '-0.01em' }}>
-                {t.portalTitle}
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1c1917', letterSpacing: '-0.01em' }}>
+                Maktaba <span style={{ color: 'var(--accent-gold)' }}>Tul Muslim</span>
               </h3>
-              <p style={{ margin: 0, fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>
-                {t.portalSubtitle}
+              <p style={{ margin: 0, fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                Welcome to your authentic Islamic portal
               </p>
             </div>
           </div>
 
           {/* Segmented Sign In / Create Account Navigation */}
           {step === 'input' && !socialProvider && (
-            <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.25)', padding: '4px', borderRadius: '12px', marginTop: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <div style={{ display: 'flex', background: '#f5f5f4', padding: '4px', borderRadius: '12px', marginTop: '1rem', border: '1px solid #e7e5e4' }}>
               <button
                 type="button"
                 onClick={() => { setMode('login'); setError(''); setNoAccountError(false); setRegStep(1); }}
                 style={{
                   flex: 1,
-                  padding: '0.5rem',
+                  padding: '0.55rem',
                   borderRadius: '9px',
-                  border: 'none',
-                  background: mode === 'login' ? 'linear-gradient(135deg, #D4AF37 0%, #b59127 100%)' : 'transparent',
-                  color: mode === 'login' ? '#022c22' : '#ffffff',
+                  border: mode === 'login' ? '2px solid var(--accent-gold)' : 'none',
+                  background: mode === 'login' ? '#ffffff' : 'transparent',
+                  color: mode === 'login' ? 'var(--accent-gold)' : '#78716c',
                   fontWeight: mode === 'login' ? 800 : 600,
                   fontSize: '0.84rem',
                   cursor: 'pointer',
                   transition: 'all 0.25s ease'
                 }}
               >
-                {t.signIn}
+                Sign In / لاگ ان
               </button>
               <button
                 type="button"
                 onClick={() => { setMode('signup'); setError(''); setNoAccountError(false); setRegStep(1); }}
                 style={{
                   flex: 1,
-                  padding: '0.5rem',
+                  padding: '0.55rem',
                   borderRadius: '9px',
-                  border: 'none',
-                  background: mode === 'signup' ? 'linear-gradient(135deg, #D4AF37 0%, #b59127 100%)' : 'transparent',
-                  color: mode === 'signup' ? '#022c22' : '#ffffff',
+                  border: mode === 'signup' ? '2px solid var(--accent-gold)' : 'none',
+                  background: mode === 'signup' ? '#ffffff' : 'transparent',
+                  color: mode === 'signup' ? 'var(--accent-gold)' : '#78716c',
                   fontWeight: mode === 'signup' ? 800 : 600,
                   fontSize: '0.84rem',
                   cursor: 'pointer',
                   transition: 'all 0.25s ease'
                 }}
               >
-                {t.createAccount}
+                Create Account / رجسٹر
               </button>
             </div>
           )}
         </div>
 
         {/* Modal Body */}
-        <div style={{ padding: '1.4rem 1.5rem' }}>
+        <div style={{ padding: '1.4rem 1.5rem', background: '#ffffff', color: '#1c1917' }}>
 
           {/* ===== OTP VERIFICATION SCREEN ===== */}
           {step === 'otp' ? (
@@ -643,24 +643,24 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     <i className="fas fa-check-circle"></i>
                   </div>
                   <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#059669', margin: '0 0 0.4rem 0' }}>
-                    {t.accountCreated}
+                    Account Created Successfully!
                   </h3>
-                  <p style={{ fontSize: '0.85rem', color: isDarkMode ? '#cbd5e1' : '#4b5563' }}>
+                  <p style={{ fontSize: '0.85rem', color: '#4b5563' }}>
                     Welcome to Maktaba tul Muslim! Redirecting...
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleVerifyOtp}>
                   <div style={{ textAlign: 'center', marginBottom: '1.1rem' }}>
-                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', marginBottom: '0.5rem' }}>
+                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#fef3c7', color: 'var(--accent-gold)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', marginBottom: '0.5rem' }}>
                       <i className="fas fa-shield-alt"></i>
                     </div>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 0.2rem 0' }}>
-                      {t.enterOtp}
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 0.2rem 0', color: '#1c1917' }}>
+                      Enter Verification Code
                     </h3>
-                    <p style={{ fontSize: '0.82rem', color: isDarkMode ? '#94a3b8' : '#64748b', margin: 0 }}>
-                      {t.otpDispatched}<br />
-                      <strong style={{ color: '#0B5D4A' }}>{pendingEmail}</strong>
+                    <p style={{ fontSize: '0.82rem', color: '#78716c', margin: 0 }}>
+                      We sent a 6-digit verification code to<br />
+                      <strong style={{ color: 'var(--accent-gold)' }}>{pendingEmail}</strong>
                     </p>
                   </div>
 
@@ -682,9 +682,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                           width: '42px',
                           height: '48px',
                           borderRadius: '12px',
-                          border: `2px solid ${otpDigits[idx] ? '#0B5D4A' : isDarkMode ? '#334155' : '#cbd5e1'}`,
-                          background: otpDigits[idx] ? (isDarkMode ? '#052e24' : '#f0fdf4') : (isDarkMode ? '#1e293b' : '#ffffff'),
-                          color: isDarkMode ? '#ffffff' : '#022c22',
+                          border: `2px solid ${otpDigits[idx] ? 'var(--accent-gold)' : '#cbd5e1'}`,
+                          background: otpDigits[idx] ? '#fef3c7' : '#ffffff',
+                          color: '#1c1917',
                           fontSize: '1.4rem',
                           fontWeight: 800,
                           textAlign: 'center',
@@ -698,25 +698,25 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   {mode === 'forgot_password' && (
                     <>
                       <div style={{ marginBottom: '0.85rem' }}>
-                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.3rem' }}>{t.password} *</label>
+                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.3rem', color: '#1c1917' }}>New Password *</label>
                         <input
                           type="password"
                           required
                           placeholder="New password..."
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem' }}
+                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', background: '#ffffff', color: '#1c1917' }}
                         />
                       </div>
                       <div style={{ marginBottom: '0.85rem' }}>
-                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.3rem' }}>{t.confirmPassword} *</label>
+                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.3rem', color: '#1c1917' }}>Confirm New Password *</label>
                         <input
                           type="password"
                           required
                           placeholder="Confirm new password..."
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem' }}
+                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', background: '#ffffff', color: '#1c1917' }}
                         />
                       </div>
                     </>
@@ -741,19 +741,19 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       width: '100%',
                       padding: '0.8rem',
                       borderRadius: '12px',
-                      border: 'none',
-                      background: 'linear-gradient(135deg, #b45309 0%, #92400e 100%)',
-                      color: '#ffffff',
+                      border: '2px solid var(--accent-gold)',
+                      background: '#ffffff',
+                      color: 'var(--accent-gold)',
                       fontWeight: 800,
-                      fontSize: '0.92rem',
+                      fontSize: '0.95rem',
                       cursor: 'pointer',
-                      boxShadow: '0 4px 14px rgba(11, 93, 74, 0.3)'
+                      boxShadow: '0 4px 14px rgba(180, 83, 9, 0.15)'
                     }}
                   >
                     {submitting ? (
-                      <><i className="fas fa-spinner fa-spin"></i> {t.verifying}</>
+                      <><i className="fas fa-spinner fa-spin"></i> Verifying...</>
                     ) : (
-                      mode === 'forgot_password' ? t.verifyAndReset : t.verifyAccount
+                      mode === 'forgot_password' ? 'Verify & Reset Password' : 'Verify Account'
                     )}
                   </button>
 
@@ -761,17 +761,17 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     <button
                       type="button"
                       onClick={() => { setStep('input'); setError(''); }}
-                      style={{ background: 'transparent', border: 'none', color: isDarkMode ? '#94a3b8' : '#64748b', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ background: 'transparent', border: 'none', color: '#78716c', cursor: 'pointer', fontWeight: 600 }}
                     >
-                      <i className="fas fa-arrow-left"></i> {t.backStep}
+                      <i className="fas fa-arrow-left"></i> Back
                     </button>
                     <button
                       type="button"
                       onClick={handleResendOtp}
                       disabled={countdown > 0 || submitting}
-                      style={{ background: 'transparent', border: 'none', color: countdown > 0 ? '#94a3b8' : '#0B5D4A', cursor: countdown > 0 ? 'default' : 'pointer', fontWeight: 700 }}
+                      style={{ background: 'transparent', border: 'none', color: countdown > 0 ? '#94a3b8' : 'var(--accent-gold)', cursor: countdown > 0 ? 'default' : 'pointer', fontWeight: 700 }}
                     >
-                      {countdown > 0 ? `${t.resendIn} ${countdown}s` : t.resendOtp}
+                      {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
                     </button>
                   </div>
                 </form>
@@ -785,56 +785,53 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               {mode === 'signup' && regStep === 1 && (
                 <>
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151', marginBottom: '0.3rem' }}>
-                      {t.fullName} *
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      Full Name / مکمل نام *
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-user-circle" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                      <i className="fas fa-user-circle" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                       <input
                         type="text"
                         required
                         autoFocus
-                        className="auth-input-focus"
                         placeholder="e.g. Muhammad Ali"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        style={{ width: '100%', padding: '0.7rem 1rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
                     </div>
                   </div>
 
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151', marginBottom: '0.3rem' }}>
-                      {t.username} *
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      Username / صارف نام *
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-at" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                      <i className="fas fa-at" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                       <input
                         type="text"
                         required
-                        className="auth-input-focus"
                         placeholder="Choose a username..."
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        style={{ width: '100%', padding: '0.7rem 1rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
                     </div>
                   </div>
 
                   <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151', marginBottom: '0.3rem' }}>
-                      {t.email} *
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      Email Address / ای میل *
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-envelope" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                      <i className="fas fa-envelope" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                       <input
                         type="email"
                         required
-                        className="auth-input-focus"
                         placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={{ width: '100%', padding: '0.7rem 1rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -845,20 +842,19 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               {mode === 'signup' && regStep === 2 && (
                 <>
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151', marginBottom: '0.3rem' }}>
-                      {t.password} *
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      Password / پاسورڈ *
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-lock" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                      <i className="fas fa-lock" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         autoFocus
-                        className="auth-input-focus"
                         placeholder="Create a password..."
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        style={{ width: '100%', padding: '0.7rem 2.4rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
                       <i
                         className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
@@ -882,19 +878,18 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   </div>
 
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151', marginBottom: '0.3rem' }}>
-                      {t.confirmPassword} *
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      Confirm Password / تصدیق کریں *
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-lock" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                      <i className="fas fa-lock" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
-                        className="auth-input-focus"
                         placeholder="Confirm password..."
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        style={{ width: '100%', padding: '0.7rem 2.4rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -905,10 +900,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       id="terms-check"
                       checked={agreedToTerms}
                       onChange={(e) => setAgreedToTerms(e.target.checked)}
-                      style={{ marginTop: '0.2rem', accentColor: '#0B5D4A', width: '15px', height: '15px', cursor: 'pointer' }}
+                      style={{ marginTop: '0.2rem', accentColor: 'var(--accent-gold)', width: '16px', height: '16px', cursor: 'pointer' }}
                     />
-                    <label htmlFor="terms-check" style={{ fontSize: '0.78rem', color: isDarkMode ? '#cbd5e1' : '#4b5563', cursor: 'pointer' }}>
-                      {t.agreeTerms}
+                    <label htmlFor="terms-check" style={{ fontSize: '0.8rem', color: '#4b5563', cursor: 'pointer' }}>
+                      I agree to the Terms of Service & Privacy Policy
                     </label>
                   </div>
                 </>
@@ -917,47 +912,45 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
               {/* ===== LOGIN & FORGOT PASSWORD FIELDS ===== */}
               {mode !== 'signup' && (
                 <>
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151', marginBottom: '0.3rem' }}>
-                      {mode === 'forgot_password' ? t.email : `${t.username} / ${t.email}`} *
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      {mode === 'forgot_password' ? 'Email Address / ای میل' : 'Username or Email Address / نام یا ای میل'} *
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-envelope" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                      <i className="fas fa-envelope" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                       <input
                         type="text"
                         required
                         autoFocus
-                        className="auth-input-focus"
                         placeholder="e.g. name@example.com or username"
                         value={username}
                         onChange={(e) => { setUsername(e.target.value); setEmail(e.target.value); }}
-                        style={{ width: '100%', padding: '0.7rem 1rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
                     </div>
                   </div>
 
                   {mode === 'login' && (
                     <div style={{ marginBottom: '0.85rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-                        <label style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: isDarkMode ? '#cbd5e1' : '#374151' }}>{t.password} *</label>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                        <label style={{ margin: 0, fontSize: '0.82rem', fontWeight: 800, color: '#1c1917' }}>Password / پاسورڈ *</label>
                         <button
                           type="button"
                           onClick={() => { setMode('forgot_password'); setError(''); setNoAccountError(false); }}
-                          style={{ background: 'transparent', border: 'none', color: '#0B5D4A', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
+                          style={{ background: 'transparent', border: 'none', color: 'var(--accent-gold)', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
                         >
-                          {t.forgotPassword}
+                          Forgot Password?
                         </button>
                       </div>
                       <div style={{ position: 'relative' }}>
-                        <i className="fas fa-lock" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}></i>
+                        <i className="fas fa-lock" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
-                          className="auth-input-focus"
                           placeholder="Password..."
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          style={{ width: '100%', padding: '0.7rem 2.4rem 0.7rem 2.4rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', outline: 'none', background: isDarkMode ? '#1e293b' : '#ffffff', color: 'inherit' }}
+                          style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                         />
                         <i
                           className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
@@ -975,10 +968,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         id="remember-me"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        style={{ accentColor: '#0B5D4A', cursor: 'pointer' }}
+                        style={{ accentColor: 'var(--accent-gold)', cursor: 'pointer' }}
                       />
-                      <label htmlFor="remember-me" style={{ fontSize: '0.78rem', color: isDarkMode ? '#cbd5e1' : '#4b5563', cursor: 'pointer' }}>
-                        {t.rememberMe}
+                      <label htmlFor="remember-me" style={{ fontSize: '0.8rem', color: '#4b5563', cursor: 'pointer' }}>
+                        Remember Me
                       </label>
                     </div>
                   )}
@@ -1001,14 +994,14 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       padding: '0.75rem 1rem',
                       borderRadius: '12px',
                       border: '1.5px solid #cbd5e1',
-                      background: 'transparent',
-                      color: 'inherit',
+                      background: '#ffffff',
+                      color: '#1c1917',
                       fontWeight: 700,
                       fontSize: '0.85rem',
                       cursor: 'pointer'
                     }}
                   >
-                    {t.backStep}
+                    Back
                   </button>
                 )}
                 <button
@@ -1018,13 +1011,13 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     flex: 1,
                     padding: '0.8rem',
                     borderRadius: '12px',
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #b45309 0%, #92400e 100%)',
-                    color: '#ffffff',
+                    border: '2px solid var(--accent-gold)',
+                    background: '#ffffff',
+                    color: 'var(--accent-gold)',
                     fontWeight: 800,
-                    fontSize: '0.92rem',
+                    fontSize: '0.95rem',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(11, 93, 74, 0.3)',
+                    boxShadow: '0 4px 14px rgba(180, 83, 9, 0.15)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1032,16 +1025,16 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   }}
                 >
                   {submitting ? (
-                    <><i className="fas fa-spinner fa-spin"></i> {mode === 'login' ? t.signingIn : t.sendingCode}</>
+                    <><i className="fas fa-spinner fa-spin"></i> {mode === 'login' ? 'Signing In...' : 'Sending Code...'}</>
                   ) : (
                     mode === 'signup' && regStep === 1 ? (
-                      <>{t.nextStep} <i className="fas fa-arrow-right"></i></>
+                      <>Next Step <i className="fas fa-arrow-right"></i></>
                     ) : mode === 'signup' ? (
-                      <>{t.createAccount} <i className="fas fa-arrow-right"></i></>
+                      <>Create Account <i className="fas fa-arrow-right"></i></>
                     ) : mode === 'forgot_password' ? (
-                      <>{t.resendOtp} <i className="fas fa-paper-plane"></i></>
+                      <>Send OTP <i className="fas fa-paper-plane"></i></>
                     ) : (
-                      <>{t.signIn} <i className="fas fa-arrow-right"></i></>
+                      <>Sign In <i className="fas fa-arrow-right"></i></>
                     )
                   )}
                 </button>
