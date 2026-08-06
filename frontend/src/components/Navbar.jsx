@@ -337,17 +337,17 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.4rem',
-                      padding: '0.42rem 0.9rem',
+                      padding: '0.42rem 0.95rem',
                       borderRadius: '20px',
-                      border: '1.5px solid var(--accent-gold)',
-                      background: 'rgba(245, 158, 11, 0.15)',
-                      color: '#ffffff',
+                      border: '2px solid var(--accent-gold)',
+                      background: '#ffffff',
+                      color: 'var(--accent-gold)',
                       fontWeight: 800,
                       fontSize: '0.82rem',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.2s ease',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
                     }}
                   >
                     <i className="fas fa-sign-in-alt" style={{ color: 'var(--accent-gold)' }}></i>
@@ -362,18 +362,18 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                       gap: '0.4rem',
                       padding: '0.42rem 1rem',
                       borderRadius: '20px',
-                      border: 'none',
-                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                      color: '#022c22',
+                      border: '2px solid var(--accent-gold)',
+                      background: '#ffffff',
+                      color: 'var(--accent-gold)',
                       fontWeight: 800,
                       fontSize: '0.82rem',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.2s ease',
-                      boxShadow: '0 3px 12px rgba(245, 158, 11, 0.4)'
+                      boxShadow: '0 3px 12px rgba(180, 83, 9, 0.15)'
                     }}
                   >
-                    <i className="fas fa-user-plus"></i>
+                    <i className="fas fa-user-plus" style={{ color: 'var(--accent-gold)' }}></i>
                     <span className="auth-btn-text">{t('signup')}</span>
                   </button>
                 </div>

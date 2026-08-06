@@ -250,7 +250,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <button
                 className="btn-play"
-                style={{ padding: '0.8rem 2rem', fontSize: '1rem', borderRadius: '30px', background: 'linear-gradient(135deg, var(--accent-gold), #92400e)', color: '#ffffff', fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(180, 83, 9, 0.4)' }}
+                style={{ padding: '0.8rem 2rem', fontSize: '1rem', borderRadius: '30px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', cursor: 'pointer', boxShadow: '0 6px 20px rgba(180, 83, 9, 0.25)' }}
                 onClick={() => handleNav(slide.tab)}
               >
                 <i className={slide.btnIcon} style={{ marginRight: '0.4rem' }}></i> {slide.btnText}
