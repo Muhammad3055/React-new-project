@@ -248,6 +248,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     document.body.removeChild(link);
   };
 
+  const itemsPerPage = 12;
+
   const filteredSurahs = surahsList.filter(s =>
     s.englishName.toLowerCase().includes(quranQuery.toLowerCase()) ||
     s.englishNameTranslation.toLowerCase().includes(quranQuery.toLowerCase()) ||
