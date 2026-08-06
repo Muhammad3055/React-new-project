@@ -185,7 +185,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             </div>
 
             {/* Global Language Selector (English, Urdu, Brahui) */}
-            <div className="header-language-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.45)' }}>
+            <div className="header-language-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-card)', padding: '4px 10px', borderRadius: '20px', border: '1.5px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-gold)' }} title={t('selectLanguage')}>
                 <i className="fas fa-globe"></i>
               </span>
@@ -193,8 +193,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
                 style={{
-                  background: '#022c22',
-                  color: 'var(--accent-gold)',
+                  background: 'transparent',
+                  color: 'var(--text-main)',
                   border: 'none',
                   fontWeight: 700,
                   fontSize: '0.78rem',
@@ -205,15 +205,15 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 }}
                 title="Select Website Language (English, Urdu, Brahui, Arabic)"
               >
-                <option value="en">🇬🇧 English</option>
-                <option value="ur">🇵🇰 اردو</option>
-                <option value="br">📜 براہوئی</option>
-                <option value="ar">🇸🇦 العربية</option>
+                <option value="en" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇬🇧 English</option>
+                <option value="ur" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇵🇰 اردو</option>
+                <option value="br" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>📜 براہوئی</option>
+                <option value="ar" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇸🇦 العربية</option>
               </select>
             </div>
 
             {/* Global Website Theme Selector (Light, Sepia, Black, Auto) */}
-            <div className="header-theme-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.35)' }}>
+            <div className="header-theme-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-card)', padding: '4px 10px', borderRadius: '20px', border: '1.5px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-gold)' }} title="Website Theme">
                 <i className="fas fa-palette"></i>
               </span>
@@ -221,8 +221,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 value={globalTheme}
                 onChange={(e) => setGlobalTheme(e.target.value)}
                 style={{
-                  background: '#022c22',
-                  color: 'var(--accent-gold)',
+                  background: 'transparent',
+                  color: 'var(--text-main)',
                   border: 'none',
                   fontWeight: 700,
                   fontSize: '0.78rem',
@@ -233,10 +233,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 }}
                 title="Select Website Theme (Light, Sepia, Black, Auto)"
               >
-                <option value="light">☀️ Light</option>
-                <option value="sepia">📜 Sepia</option>
-                <option value="black">🌙 Black</option>
-                <option value="auto">🌓 Auto</option>
+                <option value="light" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>☀️ Light</option>
+                <option value="sepia" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>📜 Sepia</option>
+                <option value="black" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🌙 Black</option>
+                <option value="auto" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🌓 Auto</option>
               </select>
             </div>
 
@@ -512,9 +512,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
                 style={{
-                  background: '#022c22',
-                  color: 'var(--accent-gold)',
-                  border: '1px solid var(--accent-gold)',
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-main)',
+                  border: '1px solid var(--border-color)',
                   fontWeight: 700,
                   fontSize: '0.82rem',
                   outline: 'none',
@@ -538,9 +538,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 value={globalTheme}
                 onChange={(e) => setGlobalTheme(e.target.value)}
                 style={{
-                  background: '#022c22',
-                  color: 'var(--accent-gold)',
-                  border: '1px solid var(--accent-gold)',
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-main)',
+                  border: '1px solid var(--border-color)',
                   fontWeight: 700,
                   fontSize: '0.82rem',
                   outline: 'none',
