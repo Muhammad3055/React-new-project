@@ -882,15 +882,20 @@ def api_send_otp(request):
         print(f"[SMTP Error] Failed to deliver OTP email to {target_email}: {e}")
         traceback.print_exc()
 
-    msg = f'Your 6-digit verification code has been sent to {target_email}. Check your inbox.' if email_sent else f'Could not send email: {smtp_error or "Check SMTP configuration"}'
+    if not email_sent:
+        # Return a real error so the frontend can show a meaningful message
+        return JsonResponse({
+            'status': 'error',
+            'error': f'Failed to send verification email to {target_email}. Please check your email address or try again later. (SMTP: {smtp_error or "Unknown error"})',
+            'smtp_error': smtp_error,
+        }, status=503)
 
     return JsonResponse({
         'status': 'otp_sent',
         'email': target_email,
         'type': auth_type,
-        'email_sent': email_sent,
-        'smtp_error': smtp_error,
-        'message': msg
+        'email_sent': True,
+        'message': f'Your 6-digit verification code has been sent to {target_email}. Check your inbox.'
     })
 
 
