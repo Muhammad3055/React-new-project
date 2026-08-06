@@ -142,67 +142,168 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       .catch(() => {});
   }, []);
 
+  const CAROUSEL_SLIDES = [
+    {
+      badge: "114 SURAHS & MULTI-LANGUAGE TARJUMA",
+      title: "Read The Holy Quran",
+      subtitle: "Complete 114 Surahs with English, Urdu & Brahui (براہوئی) translations, Tafseer commentary, and verse reflection notes.",
+      btnText: t('readQuran') || "Start Reading Quran",
+      btnIcon: "fas fa-book-open",
+      tab: "read",
+      arabic: "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ"
+    },
+    {
+      badge: "20 WORLD-RENOWNED RECITERS MP3",
+      title: "High-Quality Qari Recitations",
+      subtitle: "Listen to & download MP3 Tilawat by Qari Sudais, Mishary Rashid Alafasy, Saud Al-Shuraim, Abdul Basit, and Brahui Taqreers.",
+      btnText: t('mp3Audio') || "Listen to MP3 Audio",
+      btnIcon: "fas fa-headphones",
+      tab: "quran",
+      arabic: "وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا"
+    },
+    {
+      badge: "AUTHENTIC ISLAMIC PDF KUTUB KHANA",
+      title: "Islamic PDF Books & Tafseer Library",
+      subtitle: "Download authentic PDF books, Sahih Hadith collections, and Tafseer Ibn Kathir completely free of charge.",
+      btnText: "Explore Books Library",
+      btnIcon: "fas fa-book",
+      tab: "books",
+      arabic: "وَقُل رَّبِّ زِدْنِي عِلْمًا"
+    },
+    {
+      badge: "DAILY SPIRITUAL TOOLS & NIMAZ",
+      title: "Prayer Times & Daily Tracker",
+      subtitle: "Accurate daily prayer times, Qibla direction, 30-Day Khatam Quran Tracker, Masnoon Duas, and Digital Tasbeeh Counter.",
+      btnText: "View Daily Tools",
+      btnIcon: "fas fa-clock",
+      tab: "prayers",
+      arabic: "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا"
+    }
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % CAROUSEL_SLIDES.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const slide = CAROUSEL_SLIDES[currentSlide];
+
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', padding: '6px 18px', background: 'rgba(255, 255, 255, 0.12)', borderRadius: '30px', border: '1.5px solid var(--accent-gold)', marginBottom: '1.25rem', backdropFilter: 'blur(8px)', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
-          <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '36px', height: '36px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.5)', flexShrink: 0 }} />
-          <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>
-            MAKTABA TUL MUSLIM &bull; مكتبة المسلم
-          </span>
+    <div style={{ background: '#fdfbf7', minHeight: '100vh', paddingBottom: '3rem' }}>
+      {/* Hero Carousel Banner Section */}
+      <section className="container" style={{ paddingTop: '1.5rem' }}>
+        <div
+          className="hero-carousel-container"
+          style={{
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #1c1917 0%, #292524 50%, #44403c 100%)',
+            color: '#ffffff',
+            boxShadow: '0 16px 36px rgba(28, 25, 23, 0.2)',
+            border: '2px solid var(--accent-gold)'
+          }}
+        >
+          {/* Slide Content */}
+          <div className="hero-carousel-slide" style={{ padding: '3.5rem 2rem 3.5rem 2rem', textCenter: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', padding: '6px 18px', background: 'rgba(255, 255, 255, 0.12)', borderRadius: '30px', border: '1.5px solid var(--accent-gold)', marginBottom: '1.25rem', backdropFilter: 'blur(8px)' }}>
+              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '34px', height: '34px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(180, 83, 9, 0.5)', flexShrink: 0 }} />
+              <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>
+                MAKTABA TUL MUSLIM &bull; {slide.badge}
+              </span>
+            </div>
+
+            <h2 className="arabic-font" style={{ fontSize: 'clamp(2rem, 4.5vw, 2.8rem)', color: 'var(--accent-gold)', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+              {slide.arabic}
+            </h2>
+
+            <h1 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', fontWeight: 800, color: '#ffffff', marginBottom: '0.75rem', letterSpacing: '-0.5px' }}>
+              {slide.title}
+            </h1>
+
+            <p style={{ fontSize: '1.05rem', color: '#e7e5e4', maxWidth: '750px', margin: '0 auto 1.75rem auto', lineHeight: '1.7' }}>
+              {slide.subtitle}
+            </p>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <button
+                className="btn-play"
+                style={{ padding: '0.8rem 2rem', fontSize: '1rem', borderRadius: '30px', background: 'linear-gradient(135deg, var(--accent-gold), #92400e)', color: '#ffffff', fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(180, 83, 9, 0.4)' }}
+                onClick={() => handleNav(slide.tab)}
+              >
+                <i className={slide.btnIcon} style={{ marginRight: '0.4rem' }}></i> {slide.btnText}
+              </button>
+
+              <button
+                className="btn-play"
+                style={{
+                  padding: '0.8rem 1.8rem',
+                  fontSize: '1rem',
+                  borderRadius: '30px',
+                  background: 'rgba(255,255,255,0.12)',
+                  color: '#ffffff',
+                  border: '1.5px solid rgba(255,255,255,0.3)',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleNav('read')}
+              >
+                <i className="fas fa-book-reader" style={{ marginRight: '0.4rem' }}></i> Explore Portal
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation Arrows */}
+          <button
+            aria-label="Previous Slide"
+            className="hero-carousel-nav-btn"
+            style={{ left: '15px' }}
+            onClick={() => setCurrentSlide((currentSlide - 1 + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length)}
+          >
+            <i className="fas fa-chevron-left" style={{ fontSize: '1.1rem' }}></i>
+          </button>
+
+          <button
+            aria-label="Next Slide"
+            className="hero-carousel-nav-btn"
+            style={{ right: '15px' }}
+            onClick={() => setCurrentSlide((currentSlide + 1) % CAROUSEL_SLIDES.length)}
+          >
+            <i className="fas fa-chevron-right" style={{ fontSize: '1.1rem' }}></i>
+          </button>
+
+          {/* Indicator Dots */}
+          <div className="hero-carousel-dots">
+            {CAROUSEL_SLIDES.map((_, idx) => (
+              <span
+                key={idx}
+                className={`hero-carousel-dot ${idx === currentSlide ? 'active' : ''}`}
+                onClick={() => setCurrentSlide(idx)}
+              ></span>
+            ))}
+          </div>
         </div>
 
-
-        <h2 className="arabic-font hero-arabic-title">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</h2>
-
-        
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <a
-            href="/read"
-            className="btn-play"
-            style={{ padding: '0.75rem 1.8rem', fontSize: '1rem', textDecoration: 'none' }}
-            onClick={(e) => {
-              e.preventDefault();
-              handleNav('read');
-            }}
-          >
-            <i className="fas fa-book-open"></i> {t('readQuran')}
-          </a>
-          <a
-            href="/quran"
-            className="btn-play"
-            style={{
-              padding: '0.75rem 1.8rem',
-              fontSize: '1rem',
-              background: 'rgba(255,255,255,0.15)',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.3)',
-              textDecoration: 'none'
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              handleNav('quran');
-            }}
-          >
-            <i className="fas fa-headphones"></i> {t('mp3Audio')}
-          </a>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="container" style={{ margin: '3rem auto 0 auto', padding: 0 }}>
+        {/* Live Portal Stats Grid (Option 4 Styled) */}
+        <div style={{ margin: '1.5rem 0' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
-            <div style={{ background: 'rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.8rem', color: '#f59e0b' }}>{stats.total_audios}</h3>
-              <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Quran Recitations</p>
+            <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
+              <i className="fas fa-headphones" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_audios}</h3>
+              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>Quran Recitations</p>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.8rem', color: '#f59e0b' }}>{stats.total_books}</h3>
-              <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>PDF Books Library</p>
+            <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
+              <i className="fas fa-book" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_books}</h3>
+              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>PDF Books Library</p>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <h3 style={{ fontSize: '1.8rem', color: '#f59e0b' }}>{stats.total_hadiths}</h3>
-              <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Hadith Collections</p>
+            <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
+              <i className="fas fa-star" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_hadiths}</h3>
+              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>Hadith Collections</p>
             </div>
           </div>
         </div>
