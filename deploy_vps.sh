@@ -47,14 +47,16 @@ git pull origin main
 
 # 4. Django Backend Environment & Dependencies
 echo "🐍 Setting up Python Virtual Environment..."
-cd $PROJECT_DIR/backend
-if [ ! -f "venv/bin/activate" ]; then
+PYTHON_BIN="$PROJECT_DIR/backend/venv/bin/python"
+PIP_BIN="$PROJECT_DIR/backend/venv/bin/pip"
+
+if [ ! -f "$PYTHON_BIN" ]; then
     rm -rf venv
     python3 -m venv venv
 fi
-source venv/bin/activate
-pip install --upgrade pip || true
-pip install --break-system-packages -r requirements.txt || pip install -r requirements.txt
+
+$PIP_BIN install --upgrade pip || true
+$PIP_BIN install -r requirements.txt || pip install --break-system-packages -r requirements.txt
 
 # Create .env for Backend
 cat <<EOT > .env
@@ -66,12 +68,12 @@ EOT
 
 # Run Migrations, Collectstatic, and Seed Data
 echo "⚙️ Running Database Migrations & Static Files Collection..."
-python manage.py migrate --noinput
-python manage.py collectstatic --noinput
-python manage.py seed_data || true
+$PYTHON_BIN manage.py migrate --noinput
+$PYTHON_BIN manage.py collectstatic --noinput
+$PYTHON_BIN manage.py seed_data || true
 
 # Create Admin Superuser if needed
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'AdminPass123!')" | python manage.py shell
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'AdminPass123!')" | $PYTHON_BIN manage.py shell
 
 # 5. Build React Frontend
 echo "⚛️ Building React Frontend Static Assets..."
