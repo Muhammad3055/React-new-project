@@ -40,7 +40,7 @@ export default function ContactView() {
       <div className="grid-2" style={{ alignItems: 'start', gap: '2rem' }}>
         {/* Left Side: Contact Info */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', color: '#fff' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '20px' }}>
             <h2 className="arabic-font" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}>وَقُل رَّبِّ زِدْنِي عِلْمًا</h2>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>Get in Touch with Portal Admins</h3>
             <p style={{ fontSize: '0.9rem', color: '#e2e8f0', lineHeight: '1.6' }}>

@@ -145,7 +145,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const CAROUSEL_SLIDES = [
     {
       badge: "114 SURAHS & MULTI-LANGUAGE TARJUMA",
-      title: "Read The Holy Quran",
+      title: "Read The Holy Quran Online",
       subtitle: "Complete 114 Surahs with English, Urdu & Brahui (براہوئی) translations, Tafseer commentary, and verse reflection notes.",
       btnText: t('readQuran') || "Start Reading Quran",
       btnIcon: "fas fa-book-open",
@@ -172,12 +172,30 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     },
     {
       badge: "DAILY SPIRITUAL TOOLS & NIMAZ",
-      title: "Prayer Times & Daily Tracker",
-      subtitle: "Accurate daily prayer times, Qibla direction, 30-Day Khatam Quran Tracker, Masnoon Duas, and Digital Tasbeeh Counter.",
+      title: "Prayer Times & Qibla Compass",
+      subtitle: "Accurate daily prayer times, Qibla direction compass, 30-Day Khatam Quran Tracker, Masnoon Duas, and Digital Tasbeeh Counter.",
       btnText: "View Daily Tools",
       btnIcon: "fas fa-clock",
       tab: "prayers",
       arabic: "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا"
+    },
+    {
+      badge: "SAHIH HADITH COLLECTIONS",
+      title: "Authentic Prophetic Traditions",
+      subtitle: "Browse Sahih Bukhari, Sahih Muslim, Riyad As-Salihin, and 40 Hadith Nawawi with full Arabic & Urdu text.",
+      btnText: "Browse Hadith Library",
+      btnIcon: "fas fa-star",
+      tab: "hadith",
+      arabic: "مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ"
+    },
+    {
+      badge: "KHATAM QURAN & TASBEEH COUNTER",
+      title: "Spiritual Goal Tracker & Zikr",
+      subtitle: "Track your 30-day Quran completion progress, log daily read Juz, and use the built-in digital Tasbeeh counter.",
+      btnText: "Open Khatam Tracker",
+      btnIcon: "fas fa-chart-line",
+      tab: "khatam",
+      arabic: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ"
     }
   ];
 
@@ -318,12 +336,12 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           <section className="container" style={{ marginTop: '2rem' }}>
             <div
               style={{
-                background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
+                background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
                 border: '2px solid var(--accent-gold)',
-                borderRadius: '16px',
+                borderRadius: '20px',
                 padding: '2rem 1.75rem',
                 color: '#ffffff',
-                boxShadow: '0 12px 32px rgba(2, 44, 34, 0.25)',
+                boxShadow: '0 12px 32px rgba(28, 25, 23, 0.25)',
                 position: 'relative',
                 overflow: 'hidden'
               }}

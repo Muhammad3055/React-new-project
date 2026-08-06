@@ -504,7 +504,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         }}
       >
         {/* Glassmorphism Header with Emerald (#0B5D4A) & Gold (#D4AF37) branding */}
-        <div style={{ background: isDarkMode ? 'linear-gradient(135deg, #000000 0%, #09090b 100%)' : 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', padding: '1.4rem 1.5rem 1.2rem 1.5rem', position: 'relative', borderBottom: '2px solid var(--accent-gold)' }}>
+        <div style={{ background: isDarkMode ? 'linear-gradient(135deg, #1c1917 0%, #292524 100%)' : 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', padding: '1.4rem 1.5rem 1.2rem 1.5rem', position: 'relative', borderBottom: '2.5px solid var(--accent-gold)' }}>
           
           {/* Top Bar: Language Selector & Theme Toggle & Close */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
@@ -742,7 +742,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       padding: '0.8rem',
                       borderRadius: '12px',
                       border: 'none',
-                      background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
+                      background: 'linear-gradient(135deg, #b45309 0%, #92400e 100%)',
                       color: '#ffffff',
                       fontWeight: 800,
                       fontSize: '0.92rem',
@@ -1019,7 +1019,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     padding: '0.8rem',
                     borderRadius: '12px',
                     border: 'none',
-                    background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)',
+                    background: 'linear-gradient(135deg, #b45309 0%, #92400e 100%)',
                     color: '#ffffff',
                     fontWeight: 800,
                     fontSize: '0.92rem',
