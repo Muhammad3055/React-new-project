@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
+import UserProfileModal from './UserProfileModal';
 
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal }) {
   const { lang, setLang, t } = useLanguage();
@@ -9,6 +10,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showExtrasMenu, setShowExtrasMenu] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [toast, setToast] = useState(null);
 
   // Global Website Theme Modes ('light' | 'sepia' | 'black' | 'auto')
@@ -285,15 +287,16 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               {user ? (
                 <div className="desktop-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <button
-                    onClick={() => navigateToTab('dashboard')}
-                    title={`Logged in as ${user.username} - ${t('dashboard')}`}
+                    className="nav-user-pill"
+                    onClick={() => setShowProfileModal(true)}
+                    title="User Account & Profile Settings"
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.45rem',
                       padding: '0.35rem 0.75rem',
                       borderRadius: '25px',
-                      border: '1.5px solid var(--accent-gold)',
+                      border: user?.frame ? (user.frame === 'emerald' ? '2px solid #10b981' : user.frame === 'royal' ? '2px solid #6366f1' : user.frame === 'noor' ? '2px solid #ec4899' : '2px solid var(--accent-gold)') : '1.5px solid var(--accent-gold)',
                       background: 'rgba(245, 158, 11, 0.15)',
                       color: '#ffffff',
                       cursor: 'pointer',
@@ -304,9 +307,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                     }}
                   >
                     <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>
-                      {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                      {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
                     </div>
-                    <span style={{ color: '#ffffff', fontWeight: 700 }}>{user.username}</span>
+                    <span style={{ color: '#ffffff', fontWeight: 700 }}>{user.full_name || user.username}</span>
                   </button>
 
                   {user.is_staff && (
@@ -584,6 +587,15 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </button>
             )}
           </nav>
+
+          {/* User Profile Settings Modal */}
+          {showProfileModal && user && (
+            <UserProfileModal
+              user={user}
+              onClose={() => setShowProfileModal(false)}
+              onUpdateUser={(updated) => setUser(updated)}
+            />
+          )}
 
           {/* Arabic calligraphy decoration */}
           <p className="mobile-menu-calligraphy">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
