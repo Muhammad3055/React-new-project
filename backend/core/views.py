@@ -367,7 +367,24 @@ def api_books_list(request):
 
 
 
+@csrf_exempt
 def api_tafseer_list(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            tf = Tafseer.objects.create(
+                surah_number=int(body.get('surah_number', 1)),
+                surah_name=body.get('surah_name', 'Al-Fatihah'),
+                ayah_number=int(body.get('ayah_number', 1)),
+                arabic_text=body.get('arabic_text', ''),
+                translation=body.get('translation', ''),
+                tafseer_text=body.get('tafseer_text', ''),
+                scholar_name=body.get('scholar_name', 'Ibn Kathir')
+            )
+            return JsonResponse({'status': 'success', 'id': tf.id, 'message': 'Tafseer commentary added successfully!'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
     query = request.GET.get('q', '').strip()
     surah_num = request.GET.get('surah', '').strip()
     page_number = request.GET.get('page', 1)

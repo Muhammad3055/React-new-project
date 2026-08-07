@@ -21,7 +21,7 @@ export default function UploadView({ user }) {
     );
   }
 
-  const [activeTab, setActiveTab] = useState('taqreer'); // 'taqreer' | 'book' | 'hadith' | 'audio'
+  const [activeTab, setActiveTab] = useState('taqreer'); // 'taqreer' | 'book' | 'hadith' | 'tafseer' | 'link' | 'audio'
   const [submittedMessage, setSubmittedMessage] = useState('');
   const [dbTaqreers, setDbTaqreers] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
@@ -42,10 +42,16 @@ export default function UploadView({ user }) {
   const [bookData, setBookData] = useState({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'ur', description: '' });
   const [bookFile, setBookFile] = useState(null);
 
-  // Hadith Form State
+  // Hadith Form State (Direct Text)
   const [hadithData, setHadithData] = useState({ book_name: 'Sahih Bukhari', hadith_number: 1, chapter: '', arabic_text: '', translation: '', narrated_by: '', grade: 'Sahih' });
 
-  // Audio Form State
+  // Tafseer Form State (Direct Text)
+  const [tafseerData, setTafseerData] = useState({ surah_number: 1, surah_name: 'Al-Fatihah', ayah_number: 1, arabic_text: '', translation: '', tafseer_text: '', scholar_name: 'Ibn Kathir' });
+
+  // External Link Form State
+  const [linkData, setLinkData] = useState({ title: '', link_url: '', button_label: 'Open Link', icon: 'fas fa-external-link-alt', description: '' });
+
+  // Audio Recitation Form State
   const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
   const [audioFile, setAudioFile] = useState(null);
 
@@ -53,7 +59,6 @@ export default function UploadView({ user }) {
     e.preventDefault();
     const finalAudioUrl = taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url;
 
-    // Save to adminContentStore for instant local UI update & deletion capability
     addAdminItem({
       title: taqreerData.title,
       speaker: taqreerData.speaker,
@@ -146,7 +151,7 @@ export default function UploadView({ user }) {
         }
         addAdminItem(newItem);
         setSubmittedMessage('Book document uploaded successfully & saved to Django database!');
-        setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
+        setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'ur', description: '' });
         setBookFile(null);
         window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
@@ -161,6 +166,17 @@ export default function UploadView({ user }) {
 
   const handleHadithSubmit = (e) => {
     e.preventDefault();
+    addAdminItem({
+      title: `${hadithData.book_name} #${hadithData.hadith_number}`,
+      destination: 'hadith',
+      contentType: 'hadith',
+      arabic_text: hadithData.arabic_text,
+      translation: hadithData.translation,
+      author: hadithData.narrated_by,
+      description: hadithData.translation,
+      addedByAdmin: true
+    });
+
     fetch(getApiUrl('/api/hadith/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -170,12 +186,66 @@ export default function UploadView({ user }) {
       .then(() => {
         setSubmittedMessage('Hadith entry added successfully!');
         setHadithData({ book_name: 'Sahih Bukhari', hadith_number: 1, chapter: '', arabic_text: '', translation: '', narrated_by: '', grade: 'Sahih' });
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
       .catch(() => {
         setSubmittedMessage('Hadith saved!');
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       });
+  };
+
+  const handleTafseerSubmit = (e) => {
+    e.preventDefault();
+    addAdminItem({
+      title: `Tafseer ${tafseerData.surah_name} (${tafseerData.surah_number}:${tafseerData.ayah_number})`,
+      destination: 'tafseer',
+      contentType: 'tafseer',
+      arabic_text: tafseerData.arabic_text,
+      translation: tafseerData.translation,
+      tafseer_text: tafseerData.tafseer_text,
+      author: tafseerData.scholar_name,
+      description: tafseerData.tafseer_text,
+      addedByAdmin: true
+    });
+
+    fetch(getApiUrl('/api/tafseer/'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tafseerData)
+    })
+      .then(res => res.json())
+      .then(() => {
+        setSubmittedMessage('Tafseer entry added successfully!');
+        setTafseerData({ surah_number: 1, surah_name: 'Al-Fatihah', ayah_number: 1, arabic_text: '', translation: '', tafseer_text: '', scholar_name: 'Ibn Kathir' });
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
+        setTimeout(() => setSubmittedMessage(''), 4000);
+      })
+      .catch(() => {
+        setSubmittedMessage('Tafseer commentary saved!');
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
+        setTimeout(() => setSubmittedMessage(''), 4000);
+      });
+  };
+
+  const handleLinkSubmit = (e) => {
+    e.preventDefault();
+    addAdminItem({
+      title: linkData.title,
+      destination: 'books',
+      contentType: 'button',
+      fileUrl: linkData.link_url,
+      link_url: linkData.link_url,
+      buttonLabel: linkData.button_label,
+      buttonIcon: linkData.icon,
+      description: linkData.description,
+      addedByAdmin: true
+    });
+    setSubmittedMessage('External Web Link added successfully!');
+    setLinkData({ title: '', link_url: '', button_label: 'Open Link', icon: 'fas fa-external-link-alt', description: '' });
+    window.dispatchEvent(new CustomEvent('admin_content_updated'));
+    setTimeout(() => setSubmittedMessage(''), 4000);
   };
 
   const handleAudioSubmit = (e) => {
@@ -197,7 +267,7 @@ export default function UploadView({ user }) {
     })
       .then(res => res.json())
       .then(() => {
-        setSubmittedMessage('Quran Audio recitation uploaded successfully from laptop!');
+        setSubmittedMessage('Quran Audio recitation uploaded successfully!');
         setAudioData({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
         setAudioFile(null);
         setTimeout(() => setSubmittedMessage(''), 4000);
@@ -215,7 +285,7 @@ export default function UploadView({ user }) {
           <i className="fas fa-cloud-upload-alt" style={{ color: 'var(--accent-gold)' }}></i> Admin Content Upload & Portal
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
-          Upload MP3 Taqreer voice notes, PDF books, Word (.docx), PowerPoint (.pptx), and Quran recitations directly from your laptop.
+          Upload MP3 Taqreer voice notes, PDF books, Hadith Text, Tafseer Commentary & External Links directly to the library.
         </p>
       </div>
 
@@ -226,7 +296,7 @@ export default function UploadView({ user }) {
       )}
 
       {/* Tabs Header */}
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         <button
           onClick={() => setActiveTab('taqreer')}
           style={{
@@ -242,7 +312,7 @@ export default function UploadView({ user }) {
             gap: '0.4rem'
           }}
         >
-          <i className="fas fa-bullhorn"></i> Taqreer Audio MP3
+          <i className="fas fa-headphones" style={{ color: '#10b981' }}></i> Taqreer MP3 Audio
         </button>
 
         <button
@@ -260,7 +330,7 @@ export default function UploadView({ user }) {
             gap: '0.4rem'
           }}
         >
-          <i className="fas fa-book"></i> PDF / Word / PPT Documents
+          <i className="fas fa-book" style={{ color: '#ef4444' }}></i> PDF / Books / Docs
         </button>
 
         <button
@@ -278,7 +348,43 @@ export default function UploadView({ user }) {
             gap: '0.4rem'
           }}
         >
-          <i className="fas fa-scroll"></i> Hadiths
+          <i className="fas fa-scroll" style={{ color: '#6366f1' }}></i> Hadith (Direct Text)
+        </button>
+
+        <button
+          onClick={() => setActiveTab('tafseer')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            borderRadius: '25px',
+            border: 'none',
+            background: activeTab === 'tafseer' ? 'var(--primary-dark)' : '#e2e8f0',
+            color: activeTab === 'tafseer' ? 'var(--accent-gold)' : '#334155',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <i className="fas fa-bookmark" style={{ color: '#ec4899' }}></i> Tafseer (Direct Text)
+        </button>
+
+        <button
+          onClick={() => setActiveTab('link')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            borderRadius: '25px',
+            border: 'none',
+            background: activeTab === 'link' ? 'var(--primary-dark)' : '#e2e8f0',
+            color: activeTab === 'link' ? 'var(--accent-gold)' : '#334155',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <i className="fas fa-link" style={{ color: '#3b82f6' }}></i> Web Links & Buttons
         </button>
 
         <button
@@ -296,12 +402,13 @@ export default function UploadView({ user }) {
             gap: '0.4rem'
           }}
         >
-          <i className="fas fa-headphones"></i> Quran Tilawat Audio
+          <i className="fas fa-headphones"></i> Quran Tilawat
         </button>
       </div>
 
       {/* Upload Form Cards */}
       <div className="card" style={{ padding: '2rem' }}>
+        {/* --- TAB 1: TAQREER MP3 AUDIO --- */}
         {activeTab === 'taqreer' && (
           <form onSubmit={handleTaqreerSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3><i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> Add New Taqreer MP3 Audio</h3>
@@ -312,7 +419,7 @@ export default function UploadView({ user }) {
               </div>
               <div>
                 <label className="form-label">Speaker / Scholar *</label>
-                <input type="text" className="form-input" required value={taqreerData.speaker} onChange={e => setTaqreerData({ ...taqreerData, speaker: e.target.value })} placeholder="e.g. Maulana Abdul Ghafoor Brahui / Mufti Taqi Usmani" />
+                <input type="text" className="form-input" required value={taqreerData.speaker} onChange={e => setTaqreerData({ ...taqreerData, speaker: e.target.value })} placeholder="e.g. Maulana Abdul Ghafoor Brahui" />
               </div>
             </div>
 
@@ -330,7 +437,7 @@ export default function UploadView({ user }) {
                 <input
                   type="file"
                   className="form-input"
-                  accept="audio/*,.mp3"
+                  accept="audio/*,.mp3,.m4a"
                   onChange={e => setTaqreerFile(e.target.files[0])}
                   style={{ padding: '0.4rem' }}
                 />
@@ -356,6 +463,7 @@ export default function UploadView({ user }) {
           </form>
         )}
 
+        {/* --- TAB 2: BOOK / PDF DOCUMENT --- */}
         {activeTab === 'book' && (
           <form onSubmit={handleBookSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Add New PDF, Word (.docx), or PPT (.pptx) Document</h3>
@@ -389,7 +497,7 @@ export default function UploadView({ user }) {
                 <input
                   type="file"
                   className="form-input"
-                  accept=".pdf,.docx,.doc,.pptx,.ppt"
+                  accept=".pdf,.docx,.doc,.pptx,.ppt,.png,.jpg"
                   onChange={e => setBookFile(e.target.files[0])}
                   style={{ padding: '0.4rem' }}
                 />
@@ -406,9 +514,10 @@ export default function UploadView({ user }) {
           </form>
         )}
 
+        {/* --- TAB 3: HADITH DIRECT TEXT --- */}
         {activeTab === 'hadith' && (
           <form onSubmit={handleHadithSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3><i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Add Hadith Entry</h3>
+            <h3><i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Add Hadith Direct Text Entry</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div>
                 <label className="form-label">Book Collection *</label>
@@ -428,26 +537,112 @@ export default function UploadView({ user }) {
               </div>
               <div>
                 <label className="form-label">Grade</label>
-                <input type="text" className="form-input" value={hadithData.grade} onChange={e => setHadithData({ ...hadithData, grade: e.target.value })} placeholder="Sahih / Hasan" />
+                <select className="form-select" value={hadithData.grade} onChange={e => setHadithData({ ...hadithData, grade: e.target.value })}>
+                  <option value="Sahih">Sahih (صحيح)</option>
+                  <option value="Hasan">Hasan (حسن)</option>
+                  <option value="Muttafaq Alayh">Muttafaq Alayh (متفق عليه)</option>
+                </select>
               </div>
             </div>
 
             <div>
-              <label className="form-label">Arabic Text *</label>
+              <label className="form-label">Arabic Text (الحديث الشريف) *</label>
               <textarea className="form-textarea arabic-font" rows="3" required value={hadithData.arabic_text} onChange={e => setHadithData({ ...hadithData, arabic_text: e.target.value })} placeholder="أدخل نص الحديث الشريف باللغة العربية..."></textarea>
             </div>
 
             <div>
-              <label className="form-label">Translation *</label>
-              <textarea className="form-textarea" rows="3" required value={hadithData.translation} onChange={e => setHadithData({ ...hadithData, translation: e.target.value })} placeholder="English / Urdu translation of the Hadith..."></textarea>
+              <label className="form-label">Translation & Explanation *</label>
+              <textarea className="form-textarea" rows="4" required value={hadithData.translation} onChange={e => setHadithData({ ...hadithData, translation: e.target.value })} placeholder="English / Urdu / Brahui translation of the Hadith..."></textarea>
             </div>
 
             <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-plus"></i> Save Hadith
+              <i className="fas fa-plus"></i> Save Hadith Text Entry
             </button>
           </form>
         )}
 
+        {/* --- TAB 4: TAFSEER DIRECT TEXT --- */}
+        {activeTab === 'tafseer' && (
+          <form onSubmit={handleTafseerSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3><i className="fas fa-bookmark" style={{ color: 'var(--accent-gold)' }}></i> Add Tafseer & Quran Commentary Text</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+              <div>
+                <label className="form-label">Surah Number *</label>
+                <input type="number" min="1" max="114" className="form-input" required value={tafseerData.surah_number} onChange={e => setTafseerData({ ...tafseerData, surah_number: e.target.value })} />
+              </div>
+              <div>
+                <label className="form-label">Surah Name *</label>
+                <input type="text" className="form-input" required value={tafseerData.surah_name} onChange={e => setTafseerData({ ...tafseerData, surah_name: e.target.value })} placeholder="Al-Fatihah" />
+              </div>
+              <div>
+                <label className="form-label">Ayah Number *</label>
+                <input type="number" min="1" className="form-input" required value={tafseerData.ayah_number} onChange={e => setTafseerData({ ...tafseerData, ayah_number: e.target.value })} />
+              </div>
+              <div>
+                <label className="form-label">Mufassir / Scholar</label>
+                <input type="text" className="form-input" value={tafseerData.scholar_name} onChange={e => setTafseerData({ ...tafseerData, scholar_name: e.target.value })} placeholder="Ibn Kathir" />
+              </div>
+            </div>
+
+            <div>
+              <label className="form-label">Ayah Arabic Text</label>
+              <textarea className="form-textarea arabic-font" rows="2" value={tafseerData.arabic_text} onChange={e => setTafseerData({ ...tafseerData, arabic_text: e.target.value })} placeholder="آية القرآن الكريم..."></textarea>
+            </div>
+
+            <div>
+              <label className="form-label">Tafseer Commentary Text *</label>
+              <textarea className="form-textarea" rows="5" required value={tafseerData.tafseer_text} onChange={e => setTafseerData({ ...tafseerData, tafseer_text: e.target.value })} placeholder="Write full Tafseer explanation text content..."></textarea>
+            </div>
+
+            <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
+              <i className="fas fa-plus"></i> Save Tafseer Text Entry
+            </button>
+          </form>
+        )}
+
+        {/* --- TAB 5: EXTERNAL WEB LINK --- */}
+        {activeTab === 'link' && (
+          <form onSubmit={handleLinkSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3><i className="fas fa-link" style={{ color: 'var(--accent-gold)' }}></i> Add External Web Link & Button Shortcut</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              <div>
+                <label className="form-label">Link Title *</label>
+                <input type="text" className="form-input" required value={linkData.title} onChange={e => setLinkData({ ...linkData, title: e.target.value })} placeholder="e.g. Official Quran Audio Library" />
+              </div>
+              <div>
+                <label className="form-label">Target Web URL (http/https) *</label>
+                <input type="url" className="form-input" required value={linkData.link_url} onChange={e => setLinkData({ ...linkData, link_url: e.target.value })} placeholder="https://example.com/item" />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+              <div>
+                <label className="form-label">Button Action Label</label>
+                <input type="text" className="form-input" value={linkData.button_label} onChange={e => setLinkData({ ...linkData, button_label: e.target.value })} placeholder="Read Article / Open Link" />
+              </div>
+              <div>
+                <label className="form-label">Button Icon</label>
+                <select className="form-select" value={linkData.icon} onChange={e => setLinkData({ ...linkData, icon: e.target.value })}>
+                  <option value="fas fa-external-link-alt">🔗 External Link</option>
+                  <option value="fas fa-download">📥 Download</option>
+                  <option value="fas fa-book">📚 Read</option>
+                  <option value="fas fa-headphones">🎧 Listen</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="form-label">Notes / Description</label>
+              <textarea className="form-textarea" rows="2" value={linkData.description} onChange={e => setLinkData({ ...linkData, description: e.target.value })} placeholder="Brief summary for this link..."></textarea>
+            </div>
+
+            <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
+              <i className="fas fa-plus"></i> Save Web Link Button
+            </button>
+          </form>
+        )}
+
+        {/* --- TAB 6: QURAN AUDIO --- */}
         {activeTab === 'audio' && (
           <form onSubmit={handleAudioSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3><i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Add Quran Audio Recitation</h3>
@@ -470,7 +665,7 @@ export default function UploadView({ user }) {
               </div>
               <div>
                 <label className="form-label">Qari / Scholar Name *</label>
-                <input type="text" className="form-input" required value={audioData.reciter} onChange={e => setAudioData({ ...audioData, reciter: e.target.value })} placeholder="e.g. Mishary Alafasy / Scholar Name" />
+                <input type="text" className="form-input" required value={audioData.reciter} onChange={e => setAudioData({ ...audioData, reciter: e.target.value })} placeholder="e.g. Mishary Alafasy" />
               </div>
             </div>
 
@@ -504,7 +699,7 @@ export default function UploadView({ user }) {
               <i className="fas fa-tasks" style={{ marginRight: '0.5rem' }}></i> Admin Uploaded Content Manager
             </h3>
             <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-              Delete any document, MP3, Hadith, or post instantly
+              Delete any document, MP3, Hadith, Tafseer, or link instantly
             </span>
           </div>
 
@@ -518,7 +713,7 @@ export default function UploadView({ user }) {
                 <thead>
                   <tr style={{ background: '#064e3b', borderBottom: '2px solid var(--accent-gold)', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Title</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Destination / Type</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Type / Destination</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Author / Speaker</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Actions</th>
                   </tr>
