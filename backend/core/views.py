@@ -51,6 +51,7 @@ def api_quran_list(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
             qa = QuranAudio.objects.create(
                 surah_number=int(body.get('surah_number', 1)),
                 surah_name_english=body.get('surah_name_english', 'Surah'),
@@ -60,7 +61,10 @@ def api_quran_list(request):
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00')
             )
-            return JsonResponse({'status': 'success', 'id': qa.id, 'message': 'Quran Audio uploaded successfully!'})
+            if audio_file:
+                qa.audio_file = audio_file
+                qa.save()
+            return JsonResponse({'status': 'success', 'id': qa.id, 'audio_url': qa.get_playable_url(), 'message': 'Quran Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 

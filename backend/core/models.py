@@ -22,6 +22,10 @@ class QuranAudio(models.Model):
         ('arabic', 'Arabic Recitation (تلاوت)'),
         ('brahui', 'Brahui Translation MP3 (براہوئی ترجمہ)'),
         ('urdu', 'Urdu Translation MP3 (اردو ترجمہ)'),
+        ('english', 'English Translation MP3'),
+        ('sindhi', 'Sindhi Translation MP3 (سنڌي ترجمو)'),
+        ('pashto', 'Pashto Translation MP3 (پښتو ژباړه)'),
+        ('balochi', 'Balochi Translation MP3 (بلوچی گپ)'),
     ]
 
     surah_number = models.PositiveIntegerField(db_index=True)
@@ -55,6 +59,10 @@ class TaqreerAudio(models.Model):
         ('arabic', 'Arabic (عربي)'),
         ('brahui', 'Brahui (براہوئی)'),
         ('urdu', 'Urdu (اردو)'),
+        ('english', 'English'),
+        ('sindhi', 'Sindhi (سنڌي)'),
+        ('pashto', 'Pashto (پښتو)'),
+        ('balochi', 'Balochi (بلوچی)'),
     ]
 
     title = models.CharField(max_length=255)

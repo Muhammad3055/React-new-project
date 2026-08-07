@@ -263,9 +263,17 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
     { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
     { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
+    { id: 'quran_english', label: 'English Tarjuma MP3', sub: 'English Translation', icon: 'fas fa-globe' },
+    { id: 'quran_sindhi', label: 'Sindhi Tarjuma MP3', sub: 'سنڌي قرآن ترجمو', icon: 'fas fa-microphone' },
+    { id: 'quran_pashto', label: 'Pashto Tarjuma MP3', sub: 'پښتو قرآن ژباړه', icon: 'fas fa-volume-up' },
+    { id: 'quran_balochi', label: 'Balochi Tarjuma MP3', sub: 'بلوچی قرآن ترجمه', icon: 'fas fa-headphones' },
     { id: 'taqreer_arabic', label: 'Arabic Taqreers', sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
     { id: 'taqreer_brahui', label: 'Brahui Taqreers', sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
     { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
+    { id: 'taqreer_english', label: 'English Lectures', sub: 'English Speeches', icon: 'fas fa-[#3b82f6]' },
+    { id: 'taqreer_sindhi', label: 'Sindhi Taqreers', sub: 'سنڌي تقريرون', icon: 'fas fa-bullhorn' },
+    { id: 'taqreer_pashto', label: 'Pashto Taqreers', sub: 'پښتو تقريرونه', icon: 'fas fa-podcast' },
+    { id: 'taqreer_balochi', label: 'Balochi Taqreers', sub: 'بلوچی گپ', icon: 'fas fa-microphone' },
   ];
 
   const [, setTick] = useState(0);
