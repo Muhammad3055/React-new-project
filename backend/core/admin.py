@@ -28,11 +28,20 @@ class VideoMediaAdmin(admin.ModelAdmin):
     search_fields = ('title', 'speaker', 'description')
 
 
+from django.utils.html import format_html
+
 @admin.register(BookMedia)
 class BookMediaAdmin(admin.ModelAdmin):
-    list_display = ('title', 'file_type', 'author', 'category', 'pages_count', 'language', 'created_at')
+    list_display = ('title', 'file_type', 'author', 'category', 'pages_count', 'language', 'open_document_link', 'created_at')
     list_filter = ('file_type', 'category', 'language')
     search_fields = ('title', 'author', 'description')
+
+    def open_document_link(self, obj):
+        url = obj.get_document_url()
+        if url and url != '#':
+            return format_html('<a href="{}" target="_blank" style="padding: 4px 10px; background: #059669; color: #ffffff; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 12px; display: inline-block;">📄 Open File</a>', url)
+        return format_html('<span style="color:#9ca3af; font-size:12px;">No File</span>')
+    open_document_link.short_description = "View / Open File"
 
 
 @admin.register(Tafseer)

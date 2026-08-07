@@ -309,9 +309,29 @@ def api_books_list(request):
     if category_id:
         books = books.filter(category_id=category_id)
     if file_type_filter:
-        books = books.filter(file_type=file_type_filter)
+        ft_list = [ft.strip().lower() for ft in file_type_filter.split(',') if ft.strip()]
+        if ft_list:
+            books = books.filter(file_type__in=ft_list)
     if language_filter:
-        books = books.filter(language=language_filter)
+        lang_raw_list = [l.strip().lower() for l in language_filter.split(',') if l.strip()]
+        lang_matches = set()
+        lang_map = {
+            'br': ['br', 'brahui'],
+            'brahui': ['br', 'brahui'],
+            'ur': ['ur', 'urdu'],
+            'urdu': ['ur', 'urdu'],
+            'en': ['en', 'english'],
+            'english': ['en', 'english'],
+            'ar': ['ar', 'arabic'],
+            'arabic': ['ar', 'arabic'],
+        }
+        for l in lang_raw_list:
+            if l in lang_map:
+                lang_matches.update(lang_map[l])
+            else:
+                lang_matches.add(l)
+        if lang_matches:
+            books = books.filter(language__in=list(lang_matches))
 
     paginator = Paginator(books, 25)
     page_obj = paginator.get_page(page_number)

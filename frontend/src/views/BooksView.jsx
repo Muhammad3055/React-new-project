@@ -11,8 +11,8 @@ export default function BooksView({ openReportModal, user }) {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedFileType, setSelectedFileType] = useState(''); // '' | 'pdf' | 'doc' | 'ppt' | 'book'
-  const [selectedLanguage, setSelectedLanguage] = useState(''); // '' | 'en' | 'ur' | 'ar' | 'br'
+  const [selectedFileTypes, setSelectedFileTypes] = useState([]); // ['pdf', 'doc', 'ppt', 'book']
+  const [selectedLanguages, setSelectedLanguages] = useState([]); // ['en', 'ur', 'ar', 'br']
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -23,20 +23,58 @@ export default function BooksView({ openReportModal, user }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const fileTypeOptions = [
-    { id: '', label: 'All Formats', icon: 'fas fa-layer-group', color: 'var(--primary-dark)' },
+    { id: '', label: 'All Formats', icon: 'fas fa-layer-group', color: '#475569' },
+    { id: 'pdf', label: 'PDF Document', icon: 'fas fa-file-pdf', color: '#dc2626' },
+    { id: 'doc', label: 'Word Document (.docx)', icon: 'fas fa-file-word', color: '#2563eb' },
+    { id: 'ppt', label: 'PPT Presentation (.pptx)', icon: 'fas fa-file-powerpoint', color: '#ea580c' },
     { id: 'book', label: 'Books (100+ Pages)', icon: 'fas fa-book', color: '#d97706' },
-    { id: 'pdf', label: 'PDF Documents', icon: 'fas fa-file-pdf', color: '#dc2626' },
-    { id: 'doc', label: 'Word Documents', icon: 'fas fa-file-word', color: '#2563eb' },
-    { id: 'ppt', label: 'PPT Presentations', icon: 'fas fa-file-powerpoint', color: '#ea580c' },
   ];
 
   const languageOptions = [
-    { id: '', label: 'All Languages', icon: 'fas fa-globe', color: 'var(--primary-dark)' },
+    { id: '', label: 'All Languages', icon: 'fas fa-globe', color: '#6366f1' },
+    { id: 'br', label: 'Brahui (براہوئی)', icon: 'fas fa-language', color: '#f59e0b' },
+    { id: 'ur', label: 'Urdu (اردو)', icon: 'fas fa-language', color: '#10b981' },
     { id: 'en', label: 'English', icon: 'fas fa-language', color: '#0ea5e9' },
-    { id: 'ur', label: 'Urdu', icon: 'fas fa-language', color: '#10b981' },
-    { id: 'ar', label: 'Arabic', icon: 'fas fa-language', color: '#8b5cf6' },
-    { id: 'br', label: 'Brahui', icon: 'fas fa-language', color: '#f59e0b' },
+    { id: 'ar', label: 'Arabic (عربي)', icon: 'fas fa-language', color: '#8b5cf6' },
   ];
+
+  const toggleLanguage = (langId) => {
+    setPage(1);
+    if (!langId) {
+      setSelectedLanguages([]);
+      return;
+    }
+    setSelectedLanguages(prev => {
+      if (prev.includes(langId)) {
+        return prev.filter(item => item !== langId);
+      } else {
+        return [...prev, langId];
+      }
+    });
+  };
+
+  const toggleFileType = (typeId) => {
+    setPage(1);
+    if (!typeId) {
+      setSelectedFileTypes([]);
+      return;
+    }
+    setSelectedFileTypes(prev => {
+      if (prev.includes(typeId)) {
+        return prev.filter(item => item !== typeId);
+      } else {
+        return [...prev, typeId];
+      }
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSelectedLanguages([]);
+    setSelectedFileTypes([]);
+    setSelectedCategory('');
+    setQuery('');
+    setPage(1);
+  };
 
   // Debounce search query to prevent excessive backend API calls
   useEffect(() => {
@@ -56,7 +94,10 @@ export default function BooksView({ openReportModal, user }) {
   // Fetch Books whenever filters change & merge client-side admin uploaded books
   useEffect(() => {
     setLoading(true);
-    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&language=${encodeURIComponent(selectedLanguage)}&page=${page}`))
+    const langStr = selectedLanguages.join(',');
+    const fileTypeStr = selectedFileTypes.join(',');
+
+    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${page}`))
       .then(res => res.json())
       .then(data => {
         const apiBooks = data.results || [];
@@ -67,11 +108,28 @@ export default function BooksView({ openReportModal, user }) {
           file_type: item.file_type || 'pdf',
           pdf_url: item.fileUrl || item.pdf_url || item.document_url,
           cover_url: item.cover_url || '',
-          language: item.language || 'Urdu / Brahui',
+          language: item.language || 'ur',
           description: item.description || 'Uploaded by Administrator'
         }));
+
+        const filteredAdminBooks = adminBooks.filter(ab => {
+          if (selectedFileTypes.length > 0 && !selectedFileTypes.includes(ab.file_type)) return false;
+          if (selectedLanguages.length > 0) {
+            const abLang = (ab.language || '').toLowerCase();
+            const matches = selectedLanguages.some(l =>
+              abLang.includes(l) ||
+              (l === 'br' && abLang.includes('brahui')) ||
+              (l === 'ur' && abLang.includes('urdu')) ||
+              (l === 'en' && abLang.includes('english')) ||
+              (l === 'ar' && abLang.includes('arabic'))
+            );
+            if (!matches) return false;
+          }
+          return true;
+        });
+
         // Deduplicate local admin items if Django API already contains the item
-        const uniqueAdminBooks = adminBooks.filter(ab => !apiBooks.some(db => (db.title || '').toLowerCase().trim() === (ab.title || '').toLowerCase().trim() || String(db.id) === String(ab.id)));
+        const uniqueAdminBooks = filteredAdminBooks.filter(ab => !apiBooks.some(db => (db.title || '').toLowerCase().trim() === (ab.title || '').toLowerCase().trim() || String(db.id) === String(ab.id)));
         setBooks(filterOutDeleted([...uniqueAdminBooks, ...apiBooks]));
         setTotalPages(data.total_pages || 1);
         setLoading(false);
@@ -84,18 +142,21 @@ export default function BooksView({ openReportModal, user }) {
           file_type: item.file_type || 'pdf',
           pdf_url: item.fileUrl || item.pdf_url,
           cover_url: item.cover_url || '',
-          language: item.language || 'Urdu / Brahui',
+          language: item.language || 'ur',
           description: item.description || 'Uploaded by Administrator'
         }));
         setBooks(filterOutDeleted(adminBooks));
         setLoading(false);
       });
-  }, [debouncedQuery, selectedCategory, selectedFileType, page]);
+  }, [debouncedQuery, selectedCategory, selectedFileTypes, selectedLanguages, page]);
 
   // Listen for admin content updates to refresh instantly
   useEffect(() => {
     const handleUpdate = () => {
-      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(selectedFileType)}&language=${encodeURIComponent(selectedLanguage)}&page=${page}`))
+      const langStr = selectedLanguages.join(',');
+      const fileTypeStr = selectedFileTypes.join(',');
+
+      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${page}`))
         .then(res => res.json())
         .then(data => {
           const apiBooks = data.results || [];
@@ -106,7 +167,7 @@ export default function BooksView({ openReportModal, user }) {
             file_type: item.file_type || 'pdf',
             pdf_url: item.fileUrl || item.pdf_url || item.document_url,
             cover_url: item.cover_url || '',
-            language: item.language || 'Urdu / Brahui',
+            language: item.language || 'ur',
             description: item.description || 'Uploaded by Administrator'
           }));
           const uniqueAdminBooks = adminBooks.filter(ab => !apiBooks.some(db => (db.title || '').toLowerCase().trim() === (ab.title || '').toLowerCase().trim() || String(db.id) === String(ab.id)));
@@ -120,7 +181,7 @@ export default function BooksView({ openReportModal, user }) {
             file_type: item.file_type || 'pdf',
             pdf_url: item.fileUrl || item.pdf_url,
             cover_url: item.cover_url || '',
-            language: item.language || 'Urdu / Brahui',
+            language: item.language || 'ur',
             description: item.description || 'Uploaded by Administrator'
           }));
           setBooks(filterOutDeleted(adminBooks));
@@ -129,7 +190,7 @@ export default function BooksView({ openReportModal, user }) {
 
     window.addEventListener('admin_content_updated', handleUpdate);
     return () => window.removeEventListener('admin_content_updated', handleUpdate);
-  }, [debouncedQuery, selectedCategory, selectedFileType, selectedLanguage, page]);
+  }, [debouncedQuery, selectedCategory, selectedFileTypes, selectedLanguages, page]);
 
 
   const getFormatBadge = (fileType) => {
@@ -239,68 +300,106 @@ export default function BooksView({ openReportModal, user }) {
         </p>
       </div>
 
-      {/* Language Toggle Pill Bar */}
-      <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1rem', justifyContent: 'center' }}>
-        {languageOptions.map((opt) => {
-          const isActive = selectedLanguage === opt.id;
-          return (
-            <button
-              key={opt.id}
-              className="filter-pill-btn"
-              onClick={() => { setSelectedLanguage(opt.id); setPage(1); }}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '30px',
-                border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
-                background: isActive ? opt.color : '#ffffff',
-                color: isActive ? '#ffffff' : '#334155',
-                fontWeight: 600,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                transition: 'all 0.2s ease',
-                boxShadow: isActive ? `0 4px 12px ${opt.color}40` : 'none',
-              }}
-            >
-              <i className={opt.icon}></i> {opt.label}
-            </button>
-          );
-        })}
+      {/* Language Multi-Select Toggle Pill Bar */}
+      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <i className="fas fa-language" style={{ color: '#0284c7' }}></i> Filter by Language (Select single or multiple):
+        </div>
+        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          {languageOptions.map((opt) => {
+            const isAll = opt.id === '';
+            const isActive = isAll ? selectedLanguages.length === 0 : selectedLanguages.includes(opt.id);
+            return (
+              <button
+                key={opt.id || 'all-lang'}
+                className="filter-pill-btn"
+                onClick={() => toggleLanguage(opt.id)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '30px',
+                  border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
+                  background: isActive ? opt.color : '#ffffff',
+                  color: isActive ? '#ffffff' : '#334155',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isActive ? `0 4px 12px ${opt.color}40` : 'none',
+                }}
+              >
+                <i className={isActive && !isAll ? 'fas fa-check-circle' : opt.icon}></i> {opt.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Format Toggle Pill Bar */}
-      <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.5rem', justifyContent: 'center' }}>
-        {fileTypeOptions.map((opt) => {
-          const isActive = selectedFileType === opt.id;
-          return (
-            <button
-              key={opt.id}
-              className="filter-pill-btn"
-              onClick={() => { setSelectedFileType(opt.id); setPage(1); }}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '30px',
-                border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
-                background: isActive ? opt.color : '#ffffff',
-                color: isActive ? '#ffffff' : '#334155',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
-                transition: 'all 0.2s ease-in-out'
-              }}
-            >
-              <i className={opt.icon} style={{ color: isActive ? '#ffffff' : opt.color }}></i>
-              {opt.label}
-            </button>
-          );
-        })}
+      {/* Format Multi-Select Toggle Pill Bar */}
+      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <i className="fas fa-file-alt" style={{ color: '#059669' }}></i> Filter by Document Format (PDF, Word, PPT, Book):
+        </div>
+        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          {fileTypeOptions.map((opt) => {
+            const isAll = opt.id === '';
+            const isActive = isAll ? selectedFileTypes.length === 0 : selectedFileTypes.includes(opt.id);
+            return (
+              <button
+                key={opt.id || 'all-format'}
+                className="filter-pill-btn"
+                onClick={() => toggleFileType(opt.id)}
+                style={{
+                  padding: '0.55rem 1.15rem',
+                  borderRadius: '30px',
+                  border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
+                  background: isActive ? opt.color : '#ffffff',
+                  color: isActive ? '#ffffff' : '#334155',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+              >
+                <i className={isActive && !isAll ? 'fas fa-check-circle' : opt.icon} style={{ color: isActive ? '#ffffff' : opt.color }}></i>
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      {/* Active Selection Summary Banner */}
+      {(selectedLanguages.length > 0 || selectedFileTypes.length > 0 || selectedCategory || query) && (
+        <div style={{ background: '#e0f2fe', border: '1px solid #7dd3fc', padding: '0.65rem 1.25rem', borderRadius: '10px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ fontSize: '0.85rem', color: '#0369a1', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <i className="fas fa-filter"></i>
+            <span>Active Filters:</span>
+            {selectedLanguages.length > 0 && (
+              <span style={{ background: '#ffffff', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
+                Languages: {selectedLanguages.map(l => languageOptions.find(o => o.id === l)?.label || l).join(', ')}
+              </span>
+            )}
+            {selectedFileTypes.length > 0 && (
+              <span style={{ background: '#ffffff', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
+                Formats: {selectedFileTypes.map(f => fileTypeOptions.find(o => o.id === f)?.label || f).join(', ')}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={clearAllFilters}
+            style={{ background: '#0284c7', color: '#ffffff', border: 'none', padding: '0.35rem 0.85rem', borderRadius: '6px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
+          >
+            <i className="fas fa-times-circle"></i> Clear All Filters
+          </button>
+        </div>
+      )}
 
       {/* Search & Filter Bar + View Mode Switcher */}
       <div className="filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>

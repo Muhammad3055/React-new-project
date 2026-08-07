@@ -39,7 +39,7 @@ export default function UploadView({ user }) {
   const [taqreerFile, setTaqreerFile] = useState(null);
 
   // Book Form State
-  const [bookData, setBookData] = useState({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'English / Urdu', description: '' });
+  const [bookData, setBookData] = useState({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'ur', description: '' });
   const [bookFile, setBookFile] = useState(null);
 
   // Hadith Form State
@@ -369,8 +369,13 @@ export default function UploadView({ user }) {
                 <input type="text" className="form-input" required value={bookData.author} onChange={e => setBookData({ ...bookData, author: e.target.value })} placeholder="e.g. Hafiz Ibn Kathir" />
               </div>
               <div>
-                <label className="form-label">Language</label>
-                <input type="text" className="form-input" value={bookData.language} onChange={e => setBookData({ ...bookData, language: e.target.value })} placeholder="e.g. Arabic / English / Urdu" />
+                <label className="form-label">Language *</label>
+                <select className="form-select" value={bookData.language} onChange={e => setBookData({ ...bookData, language: e.target.value })}>
+                  <option value="br">Brahui (براہوئی)</option>
+                  <option value="ur">Urdu (اردو)</option>
+                  <option value="en">English</option>
+                  <option value="ar">Arabic (عربي)</option>
+                </select>
               </div>
               <div>
                 <label className="form-label">Pages Count</label>
