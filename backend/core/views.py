@@ -760,10 +760,10 @@ def api_oauth_verify(request):
 
 @csrf_exempt
 def api_test_email(request):
-    recipient = request.GET.get('email') or request.POST.get('email') or getattr(settings, 'EMAIL_HOST_USER', 'maktabtulmuslim26@gmail.com')
+    recipient = request.GET.get('email') or request.POST.get('email') or 'notification@maktabatulmuslim.com'
     subject = "Hello World - Test Email from Maktaba tul Muslim"
-    message = "Hello World! This is a test email sent from Maktaba tul Muslim using Gmail SMTP configuration."
-    from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <maktabtulmuslim26@gmail.com>')
+    message = "Hello World! This is a test email sent from Maktaba tul Muslim using Brevo SMTP configuration."
+    from_addr = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Maktaba tul Muslim <notification@maktabatulmuslim.com>')
     
     try:
         send_mail(
@@ -1435,7 +1435,7 @@ def api_admin_delete_content(request):
 
             # Models to check
             models_to_check = []
-            if content_type in ['book', 'document', 'books']:
+            if content_type in ['book', 'document', 'books', 'image', 'photo']:
                 models_to_check = [BookMedia]
             elif content_type in ['audio', 'taqreer', 'mp3']:
                 models_to_check = [TaqreerAudio]
@@ -1480,7 +1480,7 @@ def api_admin_edit_content(request):
 
             file_obj = request.FILES.get('file') or request.FILES.get('pdf_file') or request.FILES.get('audio_file')
 
-            if content_type in ['book', 'document', 'books']:
+            if content_type in ['book', 'document', 'books', 'image', 'photo']:
                 bk = BookMedia.objects.filter(id=item_id).first()
                 if bk:
                     if 'title' in body: bk.title = body.get('title')

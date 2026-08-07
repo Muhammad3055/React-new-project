@@ -105,6 +105,7 @@ class BookMedia(models.Model):
         ('doc', 'Word Document (.docx)'),
         ('ppt', 'PPT Presentation (.pptx)'),
         ('book', 'Printed / E-Book'),
+        ('image', 'Image Resource (PNG/JPG/etc.)'),
     ]
 
     LANGUAGE_CHOICES = [
@@ -199,6 +200,10 @@ class BookMedia(models.Model):
                         pass
                     self.pdf_file.seek(0)
                     self.file_type = 'ppt'
+
+                elif filename.endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif', '.tiff', '.bmp')):
+                    self.pages_count = 1
+                    self.file_type = 'image'
             except Exception:
                 pass
 
