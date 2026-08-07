@@ -1487,10 +1487,26 @@ def api_admin_edit_content(request):
                     if 'author' in body: bk.author = body.get('author')
                     if 'pages_count' in body and str(body.get('pages_count')).isdigit(): bk.pages_count = int(body.get('pages_count'))
                     if 'file_type' in body: bk.file_type = body.get('file_type')
-                    if 'language' in body: bk.language = body.get('language')
+                    if 'language' in body:
+                        lang = body.get('language')
+                        lang_normalized_map = {'brahui': 'br', 'urdu': 'ur', 'english': 'en', 'arabic': 'ar'}
+                        bk.language = lang_normalized_map.get(str(lang).lower(), lang)
                     if 'description' in body: bk.description = body.get('description')
                     if 'pdf_url' in body: bk.pdf_url = body.get('pdf_url')
                     if 'cover_url' in body: bk.cover_url = body.get('cover_url')
+                    
+                    # Handle category update
+                    cat_id = body.get('category_id') or body.get('category')
+                    if cat_id is not None:
+                        if not cat_id or str(cat_id).strip() == '':
+                            bk.category = None
+                        elif str(cat_id).isdigit():
+                            bk.category = Category.objects.filter(id=int(cat_id)).first()
+                        else:
+                            from django.utils.text import slugify
+                            cat_obj, _ = Category.objects.get_or_create(name=cat_id, defaults={'slug': slugify(cat_id)})
+                            bk.category = cat_obj
+
                     if file_obj: bk.pdf_file = file_obj
                     bk.save()
                     return JsonResponse({'status': 'success', 'message': 'Book updated successfully!', 'document_url': bk.get_document_url()})
@@ -1500,10 +1516,26 @@ def api_admin_edit_content(request):
                 if tq:
                     if 'title' in body: tq.title = body.get('title')
                     if 'speaker' in body or 'author' in body: tq.speaker = body.get('speaker') or body.get('author')
-                    if 'language' in body: tq.language = body.get('language')
+                    if 'language' in body:
+                        lang = body.get('language')
+                        lang_normalized_map = {'brahui': 'brahui', 'br': 'brahui', 'urdu': 'urdu', 'ur': 'urdu', 'arabic': 'arabic', 'ar': 'arabic'}
+                        tq.language = lang_normalized_map.get(str(lang).lower(), lang)
                     if 'duration' in body: tq.duration = body.get('duration')
                     if 'description' in body: tq.description = body.get('description')
                     if 'audio_url' in body: tq.audio_url = body.get('audio_url')
+                    
+                    # Handle category update
+                    cat_id = body.get('category_id') or body.get('category')
+                    if cat_id is not None:
+                        if not cat_id or str(cat_id).strip() == '':
+                            tq.category = None
+                        elif str(cat_id).isdigit():
+                            tq.category = Category.objects.filter(id=int(cat_id)).first()
+                        else:
+                            from django.utils.text import slugify
+                            cat_obj, _ = Category.objects.get_or_create(name=cat_id, defaults={'slug': slugify(cat_id)})
+                            tq.category = cat_obj
+
                     if file_obj: tq.audio_file = file_obj
                     tq.save()
                     return JsonResponse({'status': 'success', 'message': 'Audio updated successfully!', 'audio_url': tq.get_playable_url()})
