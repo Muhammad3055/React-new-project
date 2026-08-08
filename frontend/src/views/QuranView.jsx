@@ -156,6 +156,27 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   };
 
+  const handleDeleteAudio = async (audioId) => {
+    if (!window.confirm("Are you sure you want to delete this MP3 audio track?")) return;
+    try {
+      const res = await fetch(`/api/quran/${audioId}/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || ''}`,
+        }
+      });
+      if (res.ok || res.status === 204) {
+        alert("MP3 Audio deleted successfully!");
+        setTranslationAudios(prev => prev.filter(item => item.id !== audioId));
+      } else {
+        alert("Failed to delete audio.");
+      }
+    } catch (err) {
+      alert("Error deleting audio track.");
+    }
+  };
+
+
   useEffect(() => {
     // Load Quran Surahs with caching and fallback
     fetchWithCache('https://api.alquran.cloud/v1/surah')
@@ -503,58 +524,98 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       {/* SECTIONS 2 & 3: Brahui & Urdu Quran Translation MP3 Audio */}
       {(subCategory === 'quran_brahui' || subCategory === 'quran_urdu') && (
         <div>
-          <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <div className="filter-group" style={{ flex: 2, minWidth: '240px' }}>
-              <span className="filter-label"><i className="fas fa-search"></i> Search Surah:</span>
+          <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
+              <span className="filter-label"><i className="fas fa-search"></i> Search Translation MP3:</span>
               <input
                 type="text"
                 className="filter-input"
-                placeholder="Search Surah name or number..."
+                placeholder="Search Surah or reciter..."
                 value={quranQuery}
                 onChange={(e) => { setQuranQuery(e.target.value); setQuranPage(1); }}
                 style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               />
             </div>
-            <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-              <i className="fas fa-volume-up" style={{ color: '#b45309' }}></i>
-              {subCategory === 'quran_brahui' ? 'Brahui Quran Audio (براہوئی قرآن ترجمہ MP3)' : 'Urdu Quran Audio (اردو قرآن ترجمہ MP3)'}
-            </div>
 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {(user?.is_staff || user?.is_superuser) && (
+                <button
+                  onClick={() => setShowAdminUploadModal(true)}
+                  style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  <i className="fas fa-plus-circle"></i> + Add Tarjuma MP3
+                </button>
+              )}
+              <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <i className="fas fa-volume-up" style={{ color: '#b45309' }}></i>
+                {subCategory === 'quran_brahui' ? 'Brahui Quran Audio (براہوئی قرآن ترجمہ MP3)' : 'Urdu Quran Audio (اردو قرآن ترجمہ MP3)'}
+              </div>
+            </div>
           </div>
 
-          <div className="grid-3">
-            {displayedSurahs.map((surah) => {
-              const dbAudio = translationAudios.find(a => a.surah_number === surah.number);
-              const targetAudioUrl = dbAudio ? dbAudio.audio_url : (subCategory === 'quran_brahui' ? getBrahuiAudioUrl(surah.number) : getUrduAudioUrl(surah.number));
-              const reciterLabel = dbAudio ? dbAudio.reciter : (subCategory === 'quran_brahui' ? 'مولانا عبد الغفور براہوئی (Brahui Translation)' : 'فتح محمد جالندھری (Urdu Tarjuma)');
-
-              return (
-                <div key={surah.number} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
+          {loadingTranslationAudios ? (
+            <div className="grid-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-line-short skeleton-shimmer"></div>
+                  <div className="skeleton-line-title skeleton-shimmer"></div>
+                </div>
+              ))}
+            </div>
+          ) : translationAudios.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: '#ffffff', color: '#1c1917', borderRadius: '18px', border: '1.5px solid #e7e5e4', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
+              <i className="fas fa-headphones-alt fa-4x" style={{ color: '#b45309', marginBottom: '1rem' }}></i>
+              <h3 style={{ color: '#1c1917', fontWeight: 800, fontSize: '1.3rem' }}>
+                No {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} Quran Translation Audio Uploaded Yet
+              </h3>
+              <p style={{ color: '#78716c', fontSize: '0.9rem', maxWidth: '500px', margin: '0.5rem auto 1.25rem auto', lineHeight: '1.6' }}>
+                This section is currently empty. Admins can upload {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} translation MP3 files using the Admin Studio button!
+              </p>
+              {(user?.is_staff || user?.is_superuser) && (
+                <button
+                  onClick={() => setShowAdminUploadModal(true)}
+                  style={{ background: '#b45309', color: '#ffffff', border: 'none', borderRadius: '20px', padding: '0.55rem 1.25rem', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 4px 14px rgba(180, 83, 9, 0.25)' }}
+                >
+                  <i className="fas fa-upload"></i> + Upload {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} Tarjuma MP3
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid-3">
+              {translationAudios.filter(a => 
+                !quranQuery || 
+                (a.surah_name_english && a.surah_name_english.toLowerCase().includes(quranQuery.toLowerCase())) ||
+                (a.reciter && a.reciter.toLowerCase().includes(quranQuery.toLowerCase())) ||
+                (a.surah_number && a.surah_number.toString().includes(quranQuery))
+              ).map((audio) => (
+                <div key={audio.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
                   <div>
-                    <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem' }}>
-                      <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>{surah.number}</span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-gold)', background: '#fef3c7', padding: '3px 10px', borderRadius: '14px', border: '1px solid #fcd34d' }}>
+                    <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>{audio.surah_number || 'MP3'}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '3px 10px', borderRadius: '14px', border: '1px solid #fcd34d' }}>
                         {subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'}
                       </span>
                     </div>
                     <div className="card-body" style={{ padding: 0 }}>
-                      <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>Surah {surah.englishName}</h3>
-                      <p style={{ fontSize: '0.85rem', color: '#78716c', marginBottom: '0.4rem', fontWeight: 600 }}>{surah.englishNameTranslation}</p>
-                      <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{surah.name}</p>
+                      <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
+                        {audio.surah_name_english ? `Surah ${audio.surah_name_english}` : (audio.title || 'Translation Audio')}
+                      </h3>
+                      {audio.surah_name_arabic && (
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{audio.surah_name_arabic}</p>
+                      )}
                       <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}>
                         <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
-                        {reciterLabel}
+                        {audio.reciter || 'Qari / Scholar'}
                       </p>
                     </div>
                   </div>
 
-                  {/* Compact Buttons Bar */}
+                  {/* Buttons Bar */}
                   <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', background: 'transparent', borderTop: '1.5px solid #f0edf6', paddingTop: '0.65rem' }}>
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => safePlayTrack(targetAudioUrl, `Surah ${surah.englishName} (${subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'})`, reciterLabel)}
-
+                      onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tarjuma MP3
                     </button>
@@ -562,26 +623,25 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       title="Download Tarjuma MP3"
-                      onClick={() => handleDownloadMp3(`Surah_${surah.number}_${surah.englishName}_${subCategory}`, targetAudioUrl)}
+                      onClick={() => handleDownloadMp3(`Audio_${audio.id}`, audio.audio_url)}
                       style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px' }}
                     >
                       <i className="fas fa-download"></i>
                     </button>
+
+                    {(user?.is_staff || user?.is_superuser) && (
+                      <button
+                        className="btn-play"
+                        onClick={() => handleDeleteAudio(audio.id)}
+                        style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                        title="Delete Audio Track"
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </button>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {totalQuranPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2rem 0' }}>
-              <button className="btn-play" disabled={quranPage <= 1} onClick={() => setQuranPage(quranPage - 1)} style={{ opacity: quranPage <= 1 ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
-                <i className="fas fa-chevron-left"></i> Previous
-              </button>
-              <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Page {quranPage} of {totalQuranPages}</span>
-              <button className="btn-play" disabled={quranPage >= totalQuranPages} onClick={() => setQuranPage(quranPage + 1)} style={{ opacity: quranPage >= totalQuranPages ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
-                Next <i className="fas fa-chevron-right"></i>
-              </button>
+              ))}
             </div>
           )}
         </div>
