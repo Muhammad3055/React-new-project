@@ -600,18 +600,18 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             )}
           </nav>
 
-          {/* User Profile Settings Modal */}
-          {showProfileModal && user && (
-            <UserProfileModal
-              user={user}
-              onClose={() => setShowProfileModal(false)}
-              onUpdateUser={(updated) => setUser(updated)}
-            />
-          )}
-
           {/* Arabic calligraphy decoration */}
           <p className="mobile-menu-calligraphy">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
         </div>
+
+        {/* User Profile Settings Modal */}
+        {showProfileModal && user && (
+          <UserProfileModal
+            user={user}
+            onClose={() => setShowProfileModal(false)}
+            onUpdateUser={(updated) => setUser(updated)}
+          />
+        )}
       </header>
     </>
   );
