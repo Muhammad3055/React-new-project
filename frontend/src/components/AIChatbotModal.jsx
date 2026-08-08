@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, X, Volume2, Copy, Check, User, RefreshCw } from 'lucide-react';
+import { Bot, Send, X, Volume2, Copy, Check, User, RefreshCw, Sparkles, BookOpen } from 'lucide-react';
 
 const QUICK_PROMPTS = [
   { icon: '📖', label: 'Surah Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?' },
@@ -14,20 +14,32 @@ const QUICK_PROMPTS = [
   { icon: '✨', label: '99 Names of Allah', prompt: 'Tell me about the 99 Names of Allah and Tawheed' }
 ];
 
+const AGENT_THINKING_STEPS = [
+  "Understanding your question...",
+  "Searching Quran & Authentic Hadith...",
+  "Reviewing Tafsir & Fiqh sources...",
+  "Preparing verified answer..."
+];
+
 export default function AIChatbotModal({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'ai',
-      text: "Assalamu Alaikum! 🌙 Welcome to **Maktaba AI Islamic Assistant**.\n\nAsk me anything regarding Quranic verses, Sahih Hadith, Seerah, Namaz guides, Tafseer, or Islamic rulings. How can I guide you today?",
-      references: "Maktaba tul Muslim Knowledge Engine",
-      urls: ["https://maktabatulmuslim.com/read", "https://maktabatulmuslim.com/books"],
+      text: "Assalamu Alaikum! 🌙 Welcome to **Maktaba AI Islamic Knowledge Agent**.\n\nAsk me anything regarding Quranic verses, Sahih Hadith, Seerah, Namaz guides, Tafseer, or Islamic rulings. How can I guide you today?",
+      references: "[Quran 20:114], [Sahih Bukhari]",
+      suggested: [
+        "What does Quran say about patience?",
+        "Tell me the story of Prophet Musa (AS)",
+        "How do I perform Fajr prayer step-by-step?"
+      ],
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [agentStep, setAgentStep] = useState(0);
   const [copiedId, setCopiedId] = useState(null);
   const messagesEndRef = useRef(null);
 
@@ -35,7 +47,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     if (isOpen) {
       scrollToBottom();
     }
-  }, [messages, isOpen]);
+  }, [messages, isLoading, agentStep, isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -55,6 +67,16 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     setMessages(prev => [...prev, userMsg]);
     if (!customPrompt) setInputPrompt('');
     setIsLoading(true);
+    setAgentStep(0);
+
+    // Thinking steps animation (~1.2s total delay)
+    const stepInterval = setInterval(() => {
+      setAgentStep(prev => {
+        if (prev < AGENT_THINKING_STEPS.length - 1) return prev + 1;
+        clearInterval(stepInterval);
+        return prev;
+      });
+    }, 300);
 
     try {
       const response = await fetch('/api/ai-assistant/', {
@@ -64,18 +86,21 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       });
 
       const data = await response.json();
-      
+      clearInterval(stepInterval);
+
       const aiMsg = {
         id: Date.now() + 1,
         sender: 'ai',
         text: data.answer || "I apologize, I could not process your request right now. Please try again.",
         references: data.references || "",
         urls: data.urls || [],
+        suggested: data.suggested_questions || [],
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
       setMessages(prev => [...prev, aiMsg]);
     } catch (err) {
+      clearInterval(stepInterval);
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: 'ai',
@@ -103,7 +128,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     }
   };
 
-  // Helper to format text with Markdown bold, links, and line breaks
+  // Helper to format Markdown bold, links, and line breaks cleanly
   const renderFormattedText = (rawText) => {
     if (!rawText) return null;
     let html = rawText;
@@ -128,14 +153,14 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         position: 'fixed',
         bottom: '85px',
         right: '25px',
-        width: 'min(400px, calc(100vw - 30px))',
-        height: 'min(580px, calc(100vh - 110px))',
+        width: 'min(420px, calc(100vw - 30px))',
+        height: 'min(600px, calc(100vh - 110px))',
         zIndex: 999999,
         background: 'linear-gradient(135deg, #022c22 0%, #0f172a 100%)',
         color: '#ffffff',
         border: '2px solid var(--accent-gold)',
         borderRadius: '24px',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.35)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(16, 185, 129, 0.35)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -145,15 +170,15 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       {/* Header */}
       <div style={{ padding: '0.85rem 1.1rem', background: 'rgba(2, 44, 34, 0.95)', borderBottom: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', border: '1.5px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Bot size={20} style={{ color: '#f59e0b' }} />
+          <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', border: '1.5px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Bot size={22} style={{ color: '#f59e0b' }} />
           </div>
           <div>
-            <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              Maktaba AI Assistant
-              <span style={{ fontSize: '0.65rem', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '1px 6px', borderRadius: '10px' }}>Active</span>
+            <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              Maktaba AI Agent
+              <span style={{ fontSize: '0.65rem', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '1px 6px', borderRadius: '10px' }}>Islamic AI</span>
             </h3>
-            <p style={{ margin: 0, fontSize: '0.72rem', color: '#cbd5e1' }}>Islamic Knowledge & Guidance Engine</p>
+            <p style={{ margin: 0, fontSize: '0.72rem', color: '#cbd5e1' }}>Search Quran, Hadith, Seerah & Fiqh</p>
           </div>
         </div>
 
@@ -166,7 +191,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       </div>
 
       {/* Quick Prompts Horizontal Scroll */}
-      <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(0, 0, 0, 0.3)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', overflowX: 'auto', display: 'flex', gap: '0.4rem', whiteSpace: 'nowrap' }}>
+      <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(0, 0, 0, 0.35)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', overflowX: 'auto', display: 'flex', gap: '0.4rem', whiteSpace: 'nowrap' }}>
         {QUICK_PROMPTS.map((item, idx) => (
           <button
             key={idx}
@@ -218,21 +243,30 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             </div>
 
             <div style={{
-              maxWidth: '82%',
+              maxWidth: '85%',
               padding: '0.75rem 0.95rem',
               borderRadius: msg.sender === 'user' ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
               background: msg.sender === 'user' ? 'linear-gradient(135deg, #059669 0%, #0d9488 100%)' : 'rgba(255, 255, 255, 0.07)',
               border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.12)',
               color: '#ffffff',
-              lineHeight: '1.5',
+              lineHeight: '1.55',
               boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
             }}>
               <div style={{ fontSize: '0.83rem' }}>
                 {renderFormattedText(msg.text)}
               </div>
 
+              {/* Citations & References */}
+              {msg.references && (
+                <div style={{ marginTop: '0.5rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(245, 158, 11, 0.2)', fontSize: '0.72rem', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <BookOpen size={12} />
+                  <span>Sources: {msg.references}</span>
+                </div>
+              )}
+
+              {/* Explicit Requested URLs */}
               {msg.urls && msg.urls.length > 0 && (
-                <div style={{ marginTop: '0.5rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                <div style={{ marginTop: '0.4rem', display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
                   {msg.urls.map((url, i) => (
                     <a
                       key={i}
@@ -247,6 +281,38 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                 </div>
               )}
 
+              {/* Smart Follow-Up Suggestions */}
+              {msg.sender === 'ai' && msg.suggested && msg.suggested.length > 0 && (
+                <div style={{ marginTop: '0.65rem', paddingTop: '0.45rem', borderTop: '1px dashed rgba(255,255,255,0.15)' }}>
+                  <div style={{ fontSize: '0.68rem', color: '#cbd5e1', marginBottom: '0.35rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Sparkles size={10} style={{ color: 'var(--accent-gold)' }} />
+                    <span>Suggested Questions:</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    {msg.suggested.map((sug, sIdx) => (
+                      <button
+                        key={sIdx}
+                        onClick={() => handleSend(sug)}
+                        style={{
+                          textAlign: 'left',
+                          background: 'rgba(245, 158, 11, 0.12)',
+                          border: '1px solid rgba(245, 158, 11, 0.3)',
+                          color: '#fcd34d',
+                          fontSize: '0.72rem',
+                          padding: '3px 8px',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        ❓ {sug}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Message Time & Controls */}
               <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', opacity: 0.7 }}>
                 <span>{msg.time}</span>
                 {msg.sender === 'ai' && (
@@ -264,10 +330,11 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           </div>
         ))}
 
+        {/* Short Progress Animation Bar (~1s Step Status) */}
         {isLoading && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399', fontSize: '0.78rem', background: 'rgba(0,0,0,0.3)', padding: '0.6rem 0.85rem', borderRadius: '14px', border: '1px solid rgba(52, 211, 153, 0.3)', maxWidth: '280px' }}>
-            <RefreshCw size={14} className="animate-spin" />
-            <span>Consulting Quran & Authentic Hadith...</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399', fontSize: '0.78rem', background: 'rgba(0,0,0,0.4)', padding: '0.65rem 0.85rem', borderRadius: '14px', border: '1px solid rgba(52, 211, 153, 0.4)', maxWidth: '300px' }}>
+            <RefreshCw size={14} className="animate-spin text-emerald-400" />
+            <span style={{ fontWeight: 600 }}>{AGENT_THINKING_STEPS[agentStep]}</span>
           </div>
         )}
 
@@ -283,7 +350,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           type="text"
           value={inputPrompt}
           onChange={(e) => setInputPrompt(e.target.value)}
-          placeholder="Ask any question about Islam..."
+          placeholder="Ask any question about Islam, Quran, Hadith..."
           style={{ flex: 1, background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '20px', padding: '0.5rem 0.85rem', color: '#fff', fontSize: '0.82rem', outline: 'none' }}
         />
         <button
