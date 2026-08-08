@@ -515,10 +515,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               />
             </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 800, background: '#ffffff', padding: '0.4rem 0.85rem', borderRadius: '20px', border: '2px solid var(--accent-gold)' }}>
-              <i className="fas fa-volume-up" style={{ marginRight: '0.35rem', color: 'var(--accent-gold)' }}></i>
+            <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-volume-up" style={{ color: '#b45309' }}></i>
               {subCategory === 'quran_brahui' ? 'Brahui Quran Audio (براہوئی قرآن ترجمہ MP3)' : 'Urdu Quran Audio (اردو قرآن ترجمہ MP3)'}
             </div>
+
           </div>
 
           <div className="grid-3">
@@ -610,10 +611,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                   <i className="fas fa-plus-circle"></i> + Add MP3 Audio / Tarjuma
                 </button>
               )}
-              <div style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 800, background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', padding: '0.5rem 1rem', borderRadius: '30px', border: '2px solid var(--accent-gold)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
-                <i className="fas fa-microphone-alt" style={{ marginRight: '0.4rem', color: '#f59e0b' }}></i>
-                {subCategory === 'taqreer_arabic' ? 'Arabic Speeches (تقارير عربية)' : (subCategory === 'taqreer_brahui' ? 'Brahui Speeches (تقارير براہوئی)' : 'Urdu Speeches (تقارير اردو)')}
+              <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <i className="fas fa-microphone-alt" style={{ color: '#b45309' }}></i>
+                {subCategory === 'taqreer_arabic' ? 'Arabic Speeches (تقارير عربية MP3)' : (subCategory === 'taqreer_brahui' ? 'Brahui Speeches (تقارير براہوئی MP3)' : 'Urdu Speeches (تقارير اردو MP3)')}
               </div>
+
 
             </div>
           </div>
@@ -697,9 +699,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       {subCategory === 'quran_mixed' && (
         <div>
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 800, background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', padding: '0.5rem 1rem', borderRadius: '30px', border: '2px solid var(--accent-gold)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
-              <i className="fas fa-compact-disc" style={{ marginRight: '0.4rem', color: '#f59e0b' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ)
+            <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-compact-disc" style={{ color: '#b45309' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ MP3)
             </div>
+
             {(user?.is_staff || user?.is_superuser) && (
               <button
                 onClick={() => setShowAdminUploadModal(true)}
