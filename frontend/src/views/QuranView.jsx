@@ -245,7 +245,14 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     { id: 'quran_mixed', label: 'Mixed Audio MP3', sub: 'مکسڈ آڈیو مجموعہ', icon: 'fas fa-compact-disc' },
   ];
 
+  const safePlayTrack = (url, title, artist) => {
+    if (typeof playTrack === 'function') {
+      playTrack(url, title, artist);
+    }
+  };
+
   const getQariAudioUrl = (surahNumber, qariObj) => {
+
     const padded = surahNumber < 10 ? `00${surahNumber}` : (surahNumber < 100 ? `0${surahNumber}` : `${surahNumber}`);
     return `${qariObj.server}${padded}.mp3`;
   };
@@ -446,7 +453,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       <button
                         className="btn-play"
                         style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                        onClick={() => playTrack(qariAudioUrl, `Surah ${surah.englishName} (${surah.name})`, activeQariObj.name)}
+                        onClick={() => safePlayTrack(qariAudioUrl, `Surah ${surah.englishName} (${surah.name})`, activeQariObj.name)}
+
                       >
                         <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tilawat
                       </button>
@@ -542,7 +550,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => playTrack(targetAudioUrl, `Surah ${surah.englishName} (${subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'})`, reciterLabel)}
+                      onClick={() => safePlayTrack(targetAudioUrl, `Surah ${surah.englishName} (${subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'})`, reciterLabel)}
+
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tarjuma MP3
                     </button>
@@ -649,7 +658,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
-                      onClick={() => playTrack(tq.audio_url, tq.title, tq.speaker)}
+                      onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
+
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Taqreer
                     </button>
