@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Bot, Send, X, BookOpen, Volume2, Copy, Check, User, RefreshCw
-} from 'lucide-react';
-
+import { Bot, Send, X, Volume2, Copy, Check, User, RefreshCw } from 'lucide-react';
 
 const QUICK_PROMPTS = [
   { icon: '📖', label: 'Surah Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?' },
@@ -14,7 +11,7 @@ const QUICK_PROMPTS = [
   { icon: '🌙', label: 'Fasting Rules & Laylatul Qadr', prompt: 'What are the rules of Sawm (Fasting) in Ramadan and virtues of Laylatul Qadr?' },
   { icon: '💎', label: 'Virtue of Ayatul Kursi', prompt: 'What are the benefits and Hadith about Ayatul Kursi?' },
   { icon: '💰', label: 'Zakat & Nisab Calculation', prompt: 'What is the Nisab threshold and percentage for Zakat calculation?' },
-  { icon: '✨', label: '99 Names of Allah (Asma ul Husna)', prompt: 'Tell me about the 99 Names of Allah and Tawheed' }
+  { icon: '✨', label: '99 Names of Allah', prompt: 'Tell me about the 99 Names of Allah and Tawheed' }
 ];
 
 export default function AIChatbotModal({ isOpen, onClose }) {
@@ -22,7 +19,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     {
       id: 1,
       sender: 'ai',
-      text: "Assalamu Alaikum! 🌙 Welcome to **Maktaba AI Islamic Knowledge Assistant**.\n\nI am dedicated strictly to authentic Islamic knowledge: Quran (114 Surahs), Sahih Hadith, Seerah of Prophet Muhammad (ﷺ), 25 Prophets, 5 Pillars, Salah, Zakat, Hajj, Fasting, Tafseer, Duas, and Islamic Books.\n\nHow may I guide you today?",
+      text: "Assalamu Alaikum! 🌙 Welcome to **Maktaba AI Islamic Assistant**.\n\nAsk me anything regarding Quranic verses, Sahih Hadith, Seerah, Namaz guides, Tafseer, or Islamic rulings. How can I guide you today?",
       references: "Maktaba tul Muslim Knowledge Engine",
       urls: ["https://maktabatulmuslim.com/read", "https://maktabatulmuslim.com/books"],
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -106,161 +103,209 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     }
   };
 
+  // Helper to format text with Markdown bold, links, and line breaks
+  const renderFormattedText = (rawText) => {
+    if (!rawText) return null;
+    let html = rawText;
+
+    // Convert markdown links [Text](url) to <a> tags
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer" style="color: #34d399; font-weight: 700; text-decoration: underline;">$1</a>');
+    
+    // Convert **bold** to <strong>
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: var(--accent-gold);">$1</strong>');
+    
+    // Convert line breaks
+    html = html.replace(/\n/g, '<br/>');
+
+    return <span dangerouslySetInnerHTML={{ __html: html }} />;
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-gradient-to-b from-emerald-950 via-slate-900 to-slate-950 text-slate-100 rounded-3xl shadow-2xl border border-emerald-500/30 w-full max-w-2xl h-[85vh] flex flex-col overflow-hidden">
-        
-        {/* Header */}
-        <div className="px-5 py-4 bg-emerald-900/40 border-b border-emerald-500/20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-emerald-500/20">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <Bot className="w-5 h-5 text-emerald-400 animate-pulse" />
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg text-emerald-100 flex items-center gap-2 font-serif">
-                Maktaba AI Assistant
-                <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-sans font-normal">
-                  Islamic Knowledge Engine
-                </span>
-              </h3>
-              <p className="text-xs text-emerald-400/80">Search Quran, Hadith, Anbiya Stories & Fiqh</p>
-            </div>
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '85px',
+        right: '25px',
+        width: 'min(400px, calc(100vw - 30px))',
+        height: 'min(580px, calc(100vh - 110px))',
+        zIndex: 999999,
+        background: 'linear-gradient(135deg, #022c22 0%, #0f172a 100%)',
+        color: '#ffffff',
+        border: '2px solid var(--accent-gold)',
+        borderRadius: '24px',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.35)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        fontFamily: 'system-ui, sans-serif'
+      }}
+    >
+      {/* Header */}
+      <div style={{ padding: '0.85rem 1.1rem', background: 'rgba(2, 44, 34, 0.95)', borderBottom: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', border: '1.5px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Bot size={20} style={{ color: '#f59e0b' }} />
           </div>
-          <button 
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all"
+          <div>
+            <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              Maktaba AI Assistant
+              <span style={{ fontSize: '0.65rem', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '1px 6px', borderRadius: '10px' }}>Active</span>
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.72rem', color: '#cbd5e1' }}>Islamic Knowledge & Guidance Engine</p>
+          </div>
+        </div>
+
+        <button 
+          onClick={onClose}
+          style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+        >
+          <X size={16} />
+        </button>
+      </div>
+
+      {/* Quick Prompts Horizontal Scroll */}
+      <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(0, 0, 0, 0.3)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', overflowX: 'auto', display: 'flex', gap: '0.4rem', whiteSpace: 'nowrap' }}>
+        {QUICK_PROMPTS.map((item, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleSend(item.prompt)}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '16px',
+              background: 'rgba(5, 150, 105, 0.2)',
+              border: '1px solid rgba(16, 185, 129, 0.4)',
+              color: '#34d399',
+              fontSize: '0.73rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
           >
-            <X className="w-5 h-5" />
+            <span>{item.icon}</span>
+            <span>{item.label}</span>
           </button>
-        </div>
+        ))}
+      </div>
 
-        {/* Quick Prompts Carousel */}
-        <div className="px-4 py-2.5 bg-slate-900/60 border-b border-slate-800/80 overflow-x-auto flex gap-2 no-scrollbar">
-          {QUICK_PROMPTS.map((item, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSend(item.prompt)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/30 border border-emerald-500/30 text-xs text-emerald-200 hover:bg-emerald-800/50 hover:border-emerald-400 transition-all whitespace-nowrap"
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </div>
+      {/* Chat Messages Body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.85rem' }}>
+        {messages.map((msg) => (
+          <div 
+            key={msg.id}
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row',
+              alignItems: 'flex-start'
+            }}
+          >
+            <div style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              background: msg.sender === 'user' ? '#059669' : '#022c22',
+              border: msg.sender === 'user' ? 'none' : '1px solid var(--accent-gold)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              {msg.sender === 'user' ? <User size={14} style={{ color: '#fff' }} /> : <Bot size={14} style={{ color: '#f59e0b' }} />}
+            </div>
 
-        {/* Messages Body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 font-sans text-sm">
-          {messages.map((msg) => (
-            <div 
-              key={msg.id}
-              className={`flex items-start space-x-3 ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}
-            >
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                msg.sender === 'user' 
-                  ? 'bg-emerald-600 text-white' 
-                  : 'bg-emerald-950 border border-emerald-500/40 text-emerald-400'
-              }`}>
-                {msg.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+            <div style={{
+              maxWidth: '82%',
+              padding: '0.75rem 0.95rem',
+              borderRadius: msg.sender === 'user' ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
+              background: msg.sender === 'user' ? 'linear-gradient(135deg, #059669 0%, #0d9488 100%)' : 'rgba(255, 255, 255, 0.07)',
+              border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.12)',
+              color: '#ffffff',
+              lineHeight: '1.5',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}>
+              <div style={{ fontSize: '0.83rem' }}>
+                {renderFormattedText(msg.text)}
               </div>
 
-              <div className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md ${
-                msg.sender === 'user'
-                  ? 'bg-emerald-600 text-white rounded-tr-none'
-                  : 'bg-slate-900/90 border border-emerald-500/20 text-slate-200 rounded-tl-none'
-              }`}>
-                <div className="whitespace-pre-wrap leading-relaxed font-sans">
-                  {msg.text}
+              {msg.urls && msg.urls.length > 0 && (
+                <div style={{ marginTop: '0.5rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  {msg.urls.map((url, i) => (
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ fontSize: '0.7rem', color: '#34d399', textDecoration: 'underline', background: 'rgba(0,0,0,0.3)', padding: '2px 7px', borderRadius: '8px', border: '1px solid rgba(52, 211, 153, 0.3)' }}
+                    >
+                      🔗 {url.replace('https://', '')}
+                    </a>
+                  ))}
                 </div>
+              )}
 
-                {msg.references && (
-                  <div className="mt-3 pt-2 border-t border-emerald-500/20 text-xs text-emerald-400 font-mono space-y-1">
-                    <div className="flex items-center gap-1">
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>References: {msg.references}</span>
-                    </div>
-
-                    {msg.urls && msg.urls.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {msg.urls.map((url, i) => (
-                          <a
-                            key={i}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[11px] text-teal-300 hover:text-emerald-200 underline font-sans bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-500/30"
-                          >
-                            🔗 {url.replace('https://', '')}
-                          </a>
-                        ))}
-                      </div>
-                    )}
+              <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', opacity: 0.7 }}>
+                <span>{msg.time}</span>
+                {msg.sender === 'ai' && (
+                  <div style={{ display: 'flex', gap: '0.35rem' }}>
+                    <button onClick={() => handleSpeak(msg.text)} style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', padding: 0 }} title="Listen">
+                      <Volume2 size={12} />
+                    </button>
+                    <button onClick={() => handleCopy(msg.id, msg.text)} style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', padding: 0 }} title="Copy">
+                      {copiedId === msg.id ? <Check size={12} style={{ color: '#34d399' }} /> : <Copy size={12} />}
+                    </button>
                   </div>
                 )}
-
-
-                <div className="mt-2 flex items-center justify-between text-[10px] opacity-70">
-                  <span>{msg.time}</span>
-                  {msg.sender === 'ai' && (
-                    <div className="flex items-center space-x-2">
-                      <button 
-                        onClick={() => handleSpeak(msg.text)}
-                        className="hover:text-emerald-400 transition-colors p-1"
-                        title="Listen to audio"
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button 
-                        onClick={() => handleCopy(msg.id, msg.text)}
-                        className="hover:text-emerald-400 transition-colors p-1"
-                        title="Copy text"
-                      >
-                        {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
-          {isLoading && (
-            <div className="flex items-center space-x-3 text-emerald-400 text-xs italic bg-slate-900/60 border border-emerald-500/20 p-3 rounded-2xl max-w-xs">
-              <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Consulting Quran & Authentic Hadith Sources...</span>
-            </div>
-          )}
+        {isLoading && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399', fontSize: '0.78rem', background: 'rgba(0,0,0,0.3)', padding: '0.6rem 0.85rem', borderRadius: '14px', border: '1px solid rgba(52, 211, 153, 0.3)', maxWidth: '280px' }}>
+            <RefreshCw size={14} className="animate-spin" />
+            <span>Consulting Quran & Authentic Hadith...</span>
+          </div>
+        )}
 
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Bar */}
-        <div className="p-3 bg-slate-950 border-t border-emerald-500/20">
-          <form 
-            onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-            className="flex items-center space-x-2"
-          >
-            <input
-              type="text"
-              value={inputPrompt}
-              onChange={(e) => setInputPrompt(e.target.value)}
-              placeholder="Ask any question about Islam, Quran, Hadith, Prophets..."
-              className="flex-1 bg-slate-900 border border-emerald-500/30 rounded-2xl px-4 py-3 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all"
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !inputPrompt.trim()}
-              className="p-3 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white disabled:opacity-50 transition-all shadow-lg shadow-emerald-500/20"
-            >
-              <Send className="w-5 h-5" />
-            </button>
-          </form>
-        </div>
-
+        <div ref={messagesEndRef} />
       </div>
+
+      {/* Input Bar */}
+      <form 
+        onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+        style={{ padding: '0.65rem 0.85rem', background: 'rgba(0, 0, 0, 0.5)', borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', gap: '0.5rem' }}
+      >
+        <input
+          type="text"
+          value={inputPrompt}
+          onChange={(e) => setInputPrompt(e.target.value)}
+          placeholder="Ask any question about Islam..."
+          style={{ flex: 1, background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '20px', padding: '0.5rem 0.85rem', color: '#fff', fontSize: '0.82rem', outline: 'none' }}
+        />
+        <button
+          type="submit"
+          disabled={isLoading || !inputPrompt.trim()}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
+            border: '1px solid var(--accent-gold)',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            opacity: (isLoading || !inputPrompt.trim()) ? 0.5 : 1
+          }}
+        >
+          <Send size={16} />
+        </button>
+      </form>
     </div>
   );
 }

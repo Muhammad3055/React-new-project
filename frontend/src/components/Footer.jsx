@@ -12,7 +12,8 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
           <div className="footer-col brand-col">
             <div className="brand-logo" style={{ marginBottom: '0.75rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }} onClick={() => navigateToTab('home')}>
               <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '36px', height: '36px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
-              <span>{t('brandName')}</span>
+              <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.25rem' }}>{t('brandName')}</span>
+
             </div>
 
 
