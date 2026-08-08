@@ -1,35 +1,30 @@
 import React, { useState } from 'react';
-import { Sparkles, X, Check, Mic } from 'lucide-react';
-
+import { Sparkles, X, Check, Mic, Volume2 } from 'lucide-react';
 
 const TAJWEED_RULES = [
   {
     name: 'Ghunnah (غنة)',
     description: 'Nasal sound made when pronouncing Noon (ن) or Meem (م) with Tashdeed (ّ). Held for 2 beats.',
-    exampleArabic: 'إِنَّ ٱلَّذِينَ مَنُوا',
-    exampleTrans: 'Inna alladhina amanu',
-    color: 'border-emerald-500/40 bg-emerald-950/40'
+    exampleArabic: 'إِنَّ ٱلَّذِينَ آمَنُوا',
+    exampleTrans: 'Inna alladhina amanu'
   },
   {
     name: 'Qalqalah (قلقلة)',
     description: 'Echoing or bouncing sound produced when one of the Qalqalah letters (ق, ط, ب, ج, د) has Sukoon.',
     exampleArabic: 'قُلْ هُوَ ٱللَّهُ أَحَدٌ',
-    exampleTrans: 'Qul huwa Allahu Ahad',
-    color: 'border-teal-500/40 bg-teal-950/40'
+    exampleTrans: 'Qul huwa Allahu Ahad'
   },
   {
     name: 'Madd Asli (مد اصلي)',
     description: 'Natural prolongation of Alif, Ya, or Waw for 2 counts.',
     exampleArabic: 'ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
-    exampleTrans: 'Ar-Rahman Ar-Rahim',
-    color: 'border-amber-500/40 bg-amber-950/40'
+    exampleTrans: 'Ar-Rahman Ar-Rahim'
   },
   {
     name: 'Ikhfa (إخفاء)',
     description: 'Concealing the sound of Noon Sakinah or Tanween when followed by one of the 15 Ikhfa letters.',
     exampleArabic: 'مِن قَبْلِكَ',
-    exampleTrans: 'Min Qablik',
-    color: 'border-cyan-500/40 bg-cyan-950/40'
+    exampleTrans: 'Min Qablik'
   }
 ];
 
@@ -53,89 +48,125 @@ export default function AITajweedModal({ isOpen, onClose }) {
     }, 2000);
   };
 
+  const rule = TAJWEED_RULES[activeRule];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-gradient-to-b from-slate-900 via-emerald-950 to-slate-950 text-slate-100 rounded-3xl shadow-2xl border border-emerald-500/30 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-        
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 999999,
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem'
+      }}
+    >
+      <div 
+        style={{
+          width: '100%',
+          maxWidth: '680px',
+          maxHeight: '90vh',
+          background: 'linear-gradient(135deg, #022c22 0%, #0f172a 100%)',
+          border: '2px solid var(--accent-gold)',
+          borderRadius: '24px',
+          color: '#ffffff',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}
+      >
         {/* Header */}
-        <div className="px-6 py-4 bg-emerald-900/40 border-b border-emerald-500/20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              <Sparkles className="w-6 h-6 animate-pulse" />
+        <div style={{ padding: '1.25rem 1.5rem', background: 'rgba(2, 44, 34, 0.95)', borderBottom: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Sparkles size={22} style={{ color: '#f59e0b' }} />
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-emerald-100 font-serif">AI Tajweed Pronunciation Guide</h3>
-              <p className="text-xs text-emerald-400/80">Interactive Tajweed Rules & Recitation Voice Checker</p>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-gold)' }}>AI Tajweed Pronunciation Guide</h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>Interactive Tajweed Rules & Voice Checker</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <X size={18} />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
-
-          {/* Tajweed Selector */}
-          <div className="grid grid-cols-2 gap-2">
-            {TAJWEED_RULES.map((rule, idx) => (
+        <div style={{ padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          
+          {/* Rule Selection Pills */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
+            {TAJWEED_RULES.map((r, idx) => (
               <button
                 key={idx}
                 onClick={() => { setActiveRule(idx); setFeedback(null); }}
-                className={`p-3 rounded-2xl border text-left transition-all ${
-                  activeRule === idx
-                    ? 'border-emerald-400 bg-emerald-900/60 shadow-lg shadow-emerald-500/10'
-                    : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:bg-slate-800'
-                }`}
+                style={{
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: '14px',
+                  background: activeRule === idx ? 'linear-gradient(135deg, #059669 0%, #0d9488 100%)' : 'rgba(255, 255, 255, 0.05)',
+                  border: activeRule === idx ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer'
+                }}
               >
-                <h5 className="font-semibold text-sm font-serif text-emerald-100">{rule.name}</h5>
-                <p className="text-[11px] text-slate-300 mt-1 line-clamp-1">{rule.description}</p>
+                {r.name}
               </button>
             ))}
           </div>
 
-          {/* Active Rule Details */}
-          <div className={`p-5 rounded-2xl border ${TAJWEED_RULES[activeRule].color} space-y-4`}>
-            <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-emerald-400">Rule Explanation</span>
-              <h4 className="text-xl font-bold font-serif text-emerald-100 mt-1">{TAJWEED_RULES[activeRule].name}</h4>
-              <p className="text-sm text-slate-200 mt-2 leading-relaxed">{TAJWEED_RULES[activeRule].description}</p>
+          {/* Active Rule Explanation Card */}
+          <div style={{ padding: '1.25rem', borderRadius: '18px', background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '1px' }}>Rule Explanation</div>
+            <h4 style={{ margin: 0, fontSize: '1.3rem', color: '#ffffff', fontWeight: 800 }}>{rule.name}</h4>
+            <p style={{ margin: 0, fontSize: '0.88rem', color: '#cbd5e1', lineHeight: '1.5' }}>{rule.description}</p>
+            
+            <div style={{ marginTop: '0.5rem', padding: '1rem', background: 'rgba(0,0,0,0.4)', borderRadius: '14px', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 700, marginBottom: '0.35rem' }}>Example Ayah Text</div>
+              <div style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', fontWeight: 700, fontFamily: "'Amiri', 'Traditional Arabic', serif", margin: '0.35rem 0' }}>{rule.exampleArabic}</div>
+              <div style={{ fontSize: '0.82rem', color: '#94a3b8' }}>"{rule.exampleTrans}"</div>
             </div>
+          </div>
 
-            {/* Example Ayah */}
-            <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-center space-y-2">
-              <span className="text-xs text-emerald-400/80 font-mono">Example Ayah Text</span>
-              <p className="text-2xl font-serif text-amber-300 leading-loose" dir="rtl">
-                {TAJWEED_RULES[activeRule].exampleArabic}
-              </p>
-              <p className="text-xs text-slate-300 italic">
-                "{TAJWEED_RULES[activeRule].exampleTrans}"
-              </p>
-            </div>
-
-            {/* Voice Recitation Test */}
-            <div className="flex items-center justify-between pt-2">
-              <button
-                onClick={handleSimulateCheck}
-                disabled={isRecording}
-                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-all shadow-lg shadow-emerald-600/30"
-              >
-                <Mic className={`w-4 h-4 ${isRecording ? 'animate-bounce text-red-300' : ''}`} />
-                <span>{isRecording ? 'Listening to Recitation...' : 'Practice Voice Recitation'}</span>
-              </button>
-
-              {feedback && (
-                <div className="flex items-center space-x-2 text-xs text-emerald-300 font-semibold bg-emerald-950/90 border border-emerald-500/40 px-3 py-2 rounded-xl">
-                  <Check className="w-4 h-4 text-emerald-400" />
-                  <span>Score: {feedback.score} ({feedback.accuracy})</span>
-                </div>
-              )}
-            </div>
+          {/* AI Voice Check Simulation Box */}
+          <div style={{ padding: '1.25rem', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(13, 148, 136, 0.15) 100%)', border: '1px solid var(--accent-gold)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
+            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-gold)' }}>🎤 AI Pronunciation Voice Check</div>
+            <p style={{ fontSize: '0.82rem', color: '#e2e8f0', margin: 0 }}>Click below to simulate reading this Ayah and check your Tajweed accuracy:</p>
+            
+            <button
+              onClick={handleSimulateCheck}
+              disabled={isRecording}
+              style={{
+                padding: '0.65rem 1.5rem',
+                borderRadius: '30px',
+                background: isRecording ? '#ef4444' : 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
+                color: '#fff',
+                border: '1.5px solid var(--accent-gold)',
+                fontWeight: 800,
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 15px rgba(5, 150, 105, 0.4)'
+              }}
+            >
+              <Mic size={18} />
+              {isRecording ? 'Listening to Recitation...' : 'Start Voice Verification'}
+            </button>
 
             {feedback && (
-              <p className="text-xs text-emerald-200 italic bg-emerald-950/50 p-2.5 rounded-xl border border-emerald-500/20">
-                {feedback.comment}
-              </p>
+              <div style={{ padding: '0.85rem 1.1rem', borderRadius: '14px', background: 'rgba(0,0,0,0.5)', border: '1px solid #34d399', width: '100%', textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#34d399', fontWeight: 800, fontSize: '0.95rem' }}>
+                  <Check size={18} /> Score: {feedback.score} ({feedback.accuracy})
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#e2e8f0', marginTop: '0.35rem' }}>{feedback.comment}</div>
+              </div>
             )}
           </div>
 

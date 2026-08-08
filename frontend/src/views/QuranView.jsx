@@ -199,12 +199,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   }, [subCategory]);
 
-  // Load Taqreers when subCategory changes to a Taqreer section
+  // Fetch Taqreers when subCategory changes to a Taqreer section
   useEffect(() => {
     if (subCategory.startsWith('taqreer_')) {
       const lang = subCategory.replace('taqreer_', '');
       setLoadingTaqreers(true);
-      fetch(`/api/taqreer/?language=${lang}&q=${encodeURIComponent(taqreerQuery)}`)
+      fetch(getApiUrl(`/api/taqreer/?language=${lang}&q=${encodeURIComponent(taqreerQuery)}`))
         .then(res => res.json())
         .then(data => {
           if (data.results && data.results.length > 0) {
@@ -214,14 +214,35 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           }
         })
         .catch(() => {
-          const lang = subCategory.replace('taqreer_', '');
           setTaqreers(DEFAULT_TAQREERS[lang] || []);
         })
         .finally(() => setLoadingTaqreers(false));
     }
   }, [subCategory, taqreerQuery]);
 
-  const activeQariObj = QARIS.find(q => q.id === selectedQari) || QARIS[0];
+
+  const activeQariObj = QARIS.find((q) => q.id === selectedQari) || QARIS[0];
+
+  const itemsPerPage = 12;
+
+  const filteredSurahs = surahsList.filter(s =>
+    s.englishName.toLowerCase().includes(quranQuery.toLowerCase()) ||
+    s.englishNameTranslation.toLowerCase().includes(quranQuery.toLowerCase()) ||
+    s.number.toString().includes(quranQuery)
+  );
+
+  const totalQuranPages = Math.ceil(filteredSurahs.length / itemsPerPage) || 1;
+  const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
+
+  const subCategoryOptions = [
+    { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
+    { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
+    { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
+    { id: 'taqreer_arabic', label: 'Arabic Taqreers', sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
+    { id: 'taqreer_brahui', label: 'Brahui Taqreers', sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
+    { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
+    { id: 'quran_mixed', label: 'Mixed Audio MP3', sub: 'مکسڈ آڈیو مجموعہ', icon: 'fas fa-compact-disc' },
+  ];
 
   const getQariAudioUrl = (surahNumber, qariObj) => {
     const padded = surahNumber < 10 ? `00${surahNumber}` : (surahNumber < 100 ? `0${surahNumber}` : `${surahNumber}`);
@@ -248,37 +269,6 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     document.body.removeChild(link);
   };
 
-  const itemsPerPage = 12;
-
-  const filteredSurahs = surahsList.filter(s =>
-    s.englishName.toLowerCase().includes(quranQuery.toLowerCase()) ||
-    s.englishNameTranslation.toLowerCase().includes(quranQuery.toLowerCase()) ||
-    s.number.toString().includes(quranQuery)
-  );
-
-  const totalQuranPages = Math.ceil(filteredSurahs.length / itemsPerPage) || 1;
-  const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
-
-  const subCategoryOptions = [
-    { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
-    { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
-    { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
-    { id: 'quran_balochi', label: 'Balochi Tarjuma MP3', sub: 'بلوچی قرآن ترجمہ', icon: 'fas fa-headphones' },
-    { id: 'quran_mixed', label: 'Mixed Quran MP3', sub: 'مکسڈ قرآن آڈیو', icon: 'fas fa-compact-disc' },
-    { id: 'taqreer_arabic', label: 'Arabic Taqreers', sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
-    { id: 'taqreer_brahui', label: 'Brahui Taqreers', sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
-    { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
-    { id: 'taqreer_balochi', label: 'Balochi Taqreers', sub: 'بلوچی گپ', icon: 'fas fa-microphone' },
-    { id: 'taqreer_mixed', label: 'Mixed Taqreers', sub: 'مکسڈ تقارير', icon: 'fas fa-layer-group' },
-  ];
-
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const handleUpdate = () => setTick(t => t + 1);
-    window.addEventListener('admin_content_updated', handleUpdate);
-    return () => window.removeEventListener('admin_content_updated', handleUpdate);
-  }, []);
-
   const currentTaqreerLang = subCategory.replace('taqreer_', '');
   const adminTaqreers = [...getAdminItems('taqreer'), ...getAdminItems('audio'), ...getAdminItems(subCategory)].map(item => ({
     id: item.id,
@@ -294,14 +284,62 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const activeTaqreers = filterOutDeleted([...adminTaqreers, ...baseTaqreers]);
 
   return (
+
     <div className="container" style={{ paddingBottom: '3rem' }}>
       <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '20px' }}>
         <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
           <i className="fas fa-headphones-alt"></i> Audio MP3 Portal & Recitations
         </h1>
         <p style={{ color: '#e2e8f0', fontSize: '0.88rem', marginTop: '0.35rem', lineHeight: '1.5' }}>
-          Listen to complete Quran MP3 recitations in Arabic, Brahui (براہوئی), Urdu (اردو), Balochi, or Mixed audio collections.
+          Listen to complete Quran MP3 recitations in Arabic, Brahui (براہوئی), Urdu (اردو), or Mixed audio collections.
         </p>
+      </div>
+
+      {/* Interactive Spiritual Tools & Toggles Bar */}
+      <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+        {onOpenCalendar && (
+          <button
+            onClick={onOpenCalendar}
+            style={{
+              padding: '0.55rem 1.1rem',
+              borderRadius: '20px',
+              background: 'rgba(245, 158, 11, 0.15)',
+              border: '1.5px solid var(--accent-gold)',
+              color: '#fcd34d',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
+            }}
+          >
+            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 Hijri Calendar & Events
+          </button>
+        )}
+
+        {onOpenTajweed && (
+          <button
+            onClick={onOpenTajweed}
+            style={{
+              padding: '0.55rem 1.1rem',
+              borderRadius: '20px',
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1.5px solid #34d399',
+              color: '#34d399',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
+            }}
+          >
+            <i className="fas fa-microphone" style={{ color: '#34d399' }}></i> 🎙️ AI Tajweed Voice Guide
+          </button>
+        )}
       </div>
 
       <div style={{
@@ -341,11 +379,6 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           );
         })}
       </div>
-
-
-
-      {/* SECTION 1: Arabic Tilawat MP3 */}
-
       {subCategory === 'quran_arabic' && (
         <div>
           <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -565,10 +598,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                   <i className="fas fa-plus-circle"></i> + Add MP3 Audio / Tarjuma
                 </button>
               )}
-              <div style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(2, 44, 34, 0.9)', padding: '0.4rem 0.85rem', borderRadius: '20px', border: '1px solid var(--accent-gold)' }}>
-                <i className="fas fa-microphone-alt" style={{ marginRight: '0.35rem', color: 'var(--accent-gold)' }}></i>
+              <div style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 800, background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', padding: '0.5rem 1rem', borderRadius: '30px', border: '2px solid var(--accent-gold)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
+                <i className="fas fa-microphone-alt" style={{ marginRight: '0.4rem', color: '#f59e0b' }}></i>
                 {subCategory === 'taqreer_arabic' ? 'Arabic Speeches (تقارير عربية)' : (subCategory === 'taqreer_brahui' ? 'Brahui Speeches (تقارير براہوئی)' : 'Urdu Speeches (تقارير اردو)')}
               </div>
+
             </div>
           </div>
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Moon, Calendar, Sparkles, X, Star } from 'lucide-react';
 
-
 const HIJRI_MONTHS = [
   'Muharram (محرم)', 'Safar (صفر)', 'Rabi al-Awwal (ربيع الأول)', 'Rabi al-Thani (ربيع الثاني)',
   'Jumada al-Awwal (جمادى الأولى)', 'Jumada al-Thani (جمادى الثانية)', 'Rajab (رجب)',
@@ -29,52 +28,75 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
   const formattedGregorian = today.toLocaleDateString('en-US', options);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-gradient-to-b from-slate-900 via-emerald-950 to-slate-950 text-slate-100 rounded-3xl shadow-2xl border border-emerald-500/30 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-        
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 999999,
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem'
+      }}
+    >
+      <div 
+        style={{
+          width: '100%',
+          maxWidth: '680px',
+          maxHeight: '90vh',
+          background: 'linear-gradient(135deg, #022c22 0%, #0f172a 100%)',
+          border: '2px solid var(--accent-gold)',
+          borderRadius: '24px',
+          color: '#ffffff',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}
+      >
         {/* Header */}
-        <div className="px-6 py-4 bg-emerald-900/40 border-b border-emerald-500/20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              <Moon className="w-6 h-6" />
+        <div style={{ padding: '1.25rem 1.5rem', background: 'rgba(2, 44, 34, 0.95)', borderBottom: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Moon size={22} style={{ color: '#f59e0b' }} />
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-emerald-100 font-serif">Islamic Hijri Calendar</h3>
-              <p className="text-xs text-emerald-400/80">Current Date & Sacred Islamic Events</p>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-gold)' }}>Islamic Hijri Calendar</h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>Current Date & Sacred Islamic Events</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <X size={18} />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div style={{ padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
           {/* Today Banner */}
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-900/50 via-teal-900/40 to-slate-900 border border-emerald-500/30 flex items-center justify-between shadow-lg">
+          <div style={{ padding: '1.25rem', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(5, 150, 105, 0.3) 0%, rgba(13, 148, 136, 0.2) 100%)', border: '1px solid var(--accent-gold)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-emerald-400">Gregorian & Hijri Date</span>
-              <h4 className="text-2xl font-bold font-serif text-emerald-200 mt-1">Safar 1448 AH</h4>
-              <p className="text-sm text-slate-300 mt-0.5">{formattedGregorian}</p>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#34d399', letterSpacing: '1px' }}>Gregorian & Hijri Date</span>
+              <h4 style={{ margin: '0.2rem 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold)' }}>Safar 1448 AH</h4>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#e2e8f0' }}>{formattedGregorian}</p>
             </div>
-            <div className="text-center p-3 rounded-2xl bg-emerald-950/80 border border-emerald-500/40">
-              <Star className="w-6 h-6 text-amber-400 mx-auto animate-pulse" />
-              <span className="text-[10px] text-emerald-300 font-medium mt-1 block">Moon Phase</span>
-              <span className="text-xs text-emerald-100 font-bold">Waxing Crescent</span>
+            <div style={{ textAlign: 'right', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 0.85rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ fontSize: '0.75rem', color: '#fcd34d', fontWeight: 700 }}>Moon Phase</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Waxing Crescent 🌙</div>
             </div>
           </div>
 
-          {/* Hijri Months Grid */}
+          {/* 12 Sacred Hijri Months Grid */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4" /> 12 Sacred Hijri Months
-            </h5>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-              {HIJRI_MONTHS.map((month, i) => (
-                <div key={i} className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 transition-colors">
-                  <span className="text-[10px] text-emerald-400 block font-mono">Month {i + 1}</span>
-                  <span className="font-medium text-slate-200">{month}</span>
+            <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Calendar size={18} /> 12 Sacred Hijri Months
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.6rem' }}>
+              {HIJRI_MONTHS.map((month, idx) => (
+                <div key={idx} style={{ padding: '0.65rem 0.85rem', borderRadius: '12px', background: idx === 1 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)', border: idx === 1 ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.1)', fontSize: '0.82rem', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--accent-gold)', fontWeight: 800, marginRight: '0.4rem' }}>{idx + 1}.</span> {month}
                 </div>
               ))}
             </div>
@@ -82,18 +104,18 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
 
           {/* Key Islamic Events */}
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> Important Islamic Events & Fasting Days
-            </h5>
-            <div className="space-y-2">
-              {ISLAMIC_EVENTS.map((event, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:bg-emerald-950/30 transition-all">
+            <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Sparkles size={18} /> Important Islamic Events & Fasting Days
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {ISLAMIC_EVENTS.map((evt, idx) => (
+                <div key={idx} style={{ padding: '0.65rem 1rem', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <h6 className="font-semibold text-slate-200 text-sm font-serif">{event.name}</h6>
-                    <span className="text-xs text-emerald-400/80">{event.hijriDate}</span>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>{evt.name}</div>
+                    <div style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>{evt.hijriDate}</div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    {event.status}
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, background: 'rgba(5, 150, 105, 0.3)', color: '#34d399', border: '1px solid rgba(52, 211, 153, 0.4)', padding: '3px 10px', borderRadius: '12px' }}>
+                    {evt.status}
                   </span>
                 </div>
               ))}

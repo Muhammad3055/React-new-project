@@ -215,8 +215,15 @@ function MainAppContent() {
         )}
 
         {activeTab === 'quran' && (
-          <QuranView playTrack={playTrack} user={user} navigateToTab={navigateToTab} />
+          <QuranView 
+            playTrack={playTrack} 
+            user={user} 
+            navigateToTab={navigateToTab} 
+            onOpenCalendar={() => setIsCalendarOpen(true)}
+            onOpenTajweed={() => setIsTajweedOpen(true)}
+          />
         )}
+
 
         {activeTab === 'qaris' && (
           <QarisView playTrack={playTrack} />
