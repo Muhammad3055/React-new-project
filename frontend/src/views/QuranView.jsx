@@ -698,11 +698,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       {/* SECTION 7: Mixed Audio MP3 Collections */}
       {subCategory === 'quran_mixed' && (
         <div>
-          <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-              <i className="fas fa-compact-disc" style={{ color: '#b45309' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ MP3)
-            </div>
-
+          <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             {(user?.is_staff || user?.is_superuser) && (
               <button
                 onClick={() => setShowAdminUploadModal(true)}
@@ -711,7 +707,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 <i className="fas fa-plus-circle"></i> + Add Mixed Audio / Upload
               </button>
             )}
+
+            <div style={{ marginLeft: 'auto', fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-compact-disc" style={{ color: '#b45309' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ MP3)
+            </div>
           </div>
+
 
           <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: '#ffffff', color: '#1c1917', borderRadius: '18px', border: '1.5px solid #e7e5e4', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
             <i className="fas fa-compact-disc fa-4x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
