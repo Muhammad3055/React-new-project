@@ -17,7 +17,9 @@ import ReadView from './views/ReadView';
 import QuranView from './views/QuranView';
 import QarisView from './views/QarisView';
 import BooksView from './views/BooksView';
+import VideosView from './views/VideosView';
 import TafseerView from './views/TafseerView';
+
 import HadithView from './views/HadithView';
 import QiblaView from './views/QiblaView';
 import BookmarksView from './views/BookmarksView';
@@ -53,7 +55,9 @@ function MainAppContent() {
     quran: '/quran',
     qaris: '/qaris',
     books: '/books',
+    videos: '/videos',
     tafseer: '/tafseer',
+
     hadith: '/hadith',
     qibla: '/qibla',
     fazail: '/fazail',
@@ -221,6 +225,11 @@ function MainAppContent() {
         {activeTab === 'books' && (
           <BooksView openReportModal={openReportModal} user={user} />
         )}
+
+        {activeTab === 'videos' && (
+          <VideosView />
+        )}
+
 
         {activeTab === 'tafseer' && (
           <TafseerView openReportModal={openReportModal} />

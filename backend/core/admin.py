@@ -21,11 +21,34 @@ class TaqreerAudioAdmin(admin.ModelAdmin):
     search_fields = ('title', 'speaker', 'description')
 
 
+from .models import Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker
+
 @admin.register(VideoMedia)
 class VideoMediaAdmin(admin.ModelAdmin):
-    list_display = ('title', 'speaker', 'category', 'created_at')
+    list_display = ('title', 'speaker', 'category', 'preview_media_link', 'created_at')
     list_filter = ('category', 'speaker')
     search_fields = ('title', 'speaker', 'description')
+
+    def preview_media_link(self, obj):
+        url = obj.video_url or (obj.video_file.url if obj.video_file else '')
+        if url:
+            return format_html('<a href="{}" target="_blank" style="padding: 4px 10px; background: #0d9488; color: #ffffff; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 12px; display: inline-block;">🎬 Watch / Play Media</a>', url)
+        return format_html('<span style="color:#9ca3af; font-size:12px;">No Media</span>')
+    preview_media_link.short_description = "Media Link"
+
+
+@admin.register(AudioPlaylist)
+class AudioPlaylistAdmin(admin.ModelAdmin):
+    list_display = ('title', 'user', 'created_at')
+    search_fields = ('title', 'user__username', 'description')
+
+
+@admin.register(HifzTracker)
+class HifzTrackerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'surah_number', 'surah_name', 'status', 'last_revised')
+    list_filter = ('status', 'surah_number')
+    search_fields = ('user__username', 'surah_name', 'notes')
+
 
 
 from django.utils.html import format_html

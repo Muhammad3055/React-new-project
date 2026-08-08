@@ -16,13 +16,12 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
             </div>
 
 
-            <p className="footer-desc">{t('footerTagline')}</p>
             <div className="social-links">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-btn" title="Facebook"><i className="fab fa-facebook-f"></i></a>
-              <a href="https://youtube.com" target="_blank" rel="noreferrer" className="social-btn" title="YouTube"><i className="fab fa-youtube"></i></a>
-              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="social-btn" title="Twitter"><i className="fab fa-twitter"></i></a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="social-btn" title="Instagram"><i className="fab fa-instagram"></i></a>
+              <a href="#" className="social-btn" title="Facebook"><i className="fab fa-facebook-f"></i></a>
+              <a href="#" className="social-btn" title="YouTube"><i className="fab fa-youtube"></i></a>
+              <a href="#" className="social-btn" title="Instagram"><i className="fab fa-instagram"></i></a>
             </div>
+
           </div>
 
           {/* Col 2: Quran Studies */}
