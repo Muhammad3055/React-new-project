@@ -116,7 +116,8 @@ const DEFAULT_TAQREERS = {
   ]
 };
 
-export default function QuranView({ playTrack, user, navigateToTab, initialSubCategory = 'quran_arabic' }) {
+export default function QuranView({ playTrack, user, navigateToTab, initialSubCategory = 'quran_arabic', onOpenCalendar, onOpenTajweed }) {
+
   const [subCategory, setSubCategory] = useState(initialSubCategory); 
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
 
