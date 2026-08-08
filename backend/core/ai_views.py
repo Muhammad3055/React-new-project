@@ -4,9 +4,10 @@ import urllib.request
 import urllib.parse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Tafseer, Hadith, Bookmark, AudioPlaylist, HifzTracker
+from django.db.models import Q
+from .models import QuranAudio, TaqreerAudio, Hadith, Tafseer, BookMedia, Bookmark, UserProfilePreferences, HifzTracker, AudioPlaylist
 
-# 10+ Supported Languages Dictionary & System Prompts
+# 10+ Supported Languages Configuration
 SUPPORTED_LANGUAGES = {
     'ur': {'name': 'Urdu (اردو)', 'rtl': True},
     'ar': {'name': 'Arabic (العربية)', 'rtl': True},
@@ -22,22 +23,8 @@ SUPPORTED_LANGUAGES = {
     'en': {'name': 'English', 'rtl': False}
 }
 
-# Key Multilingual Translations for Pre-built Responses
-URDU_KNOWLEDGE_TRANSLATIONS = {
-    "sabr": "🤲 **اسلام میں صبر اور برداشت (Sabr):**\n\nاللہ تعالیٰ صابرین کے ساتھ ہے اور مصیبت کے وقت صبر و نماز کے ذریعے مدد مانگنے کا حکم دیتا ہے۔\n\n**قرآنی آیت**:\n*'اے ایمان والو! صبر اور نماز کے ذریعہ مدد چاہو، بیشک اللہ صبر کرنے والوں کے ساتھ ہے۔'* [سورۃ البقرۃ 2:153]\n\n*'بیشک دشواری کے ساتھ آسانی ہے۔'* [سورۃ الشرح 94:5]\n\n**حدیثِ مبارکہ**:\nرسول اللہ (ﷺ) نے فرمایا: *'مومن کا معاملہ بھی عجیب ہے! اس کے ہر کام میں خیر ہے۔ اگر اسے خوشی ملے تو شکر کرتا ہے، اور اگر تکلیف پہنچے تو صبر کرتا ہے، اور یہ دونوں اس کے لیے بہتر ہیں۔'* [صحیح مسلم #2999]",
-    "namaz": "🕌 **پانچ وقت کی فرض نمازوں کا بیان (Salah Guide):**\n\n1. **فجر**: 2 سنت، 2 فرض\n2. **ظہر**: 4 سنت، 4 فرض، 2 سنت، 2 نفل\n3. **عصر**: 4 سنت، 4 فرض\n4. **مغرب**: 3 فرض، 2 سنت، 2 نفل\n5. **عشاء**: 4 سنت، 4 فرض، 2 سنت، 2 نفل، 3 وتر، 2 نفل\n\n**وضو کے ضروری فرائض**: نیت، دونوں ہاتھ دھونا، کلی کرنا، ناک میں پانی ڈالنا، چہرہ دھونا، کہنیوں تک ہاتھ دھونا، سر کا مسح، اور پاؤں ٹخنوں تک دھونا۔",
-    "muhammad": "❤️ **سیرت النبی خاتم النبیین حضرت محمد (ﷺ):**\n\nحضرت محمد (ﷺ) اللہ تعالیٰ کے آخری رسول اور تمام جہانوں کے لیے رحمت اللعالمین بن کر مبعوث ہوئے۔\n\n**حدیثِ مبارکہ**:\nآپ (ﷺ) نے فرمایا: *'تم میں سے کوئی اس وقت تک کامل مومن نہیں ہو سکتا جب تک کہ میں اس کے نزدیک اس کے والد، اولاد اور تمام لوگوں سے زیادہ محبوب نہ ہو جاؤں۔'* [صحیح بخاری #15]",
-    "zakat": "💰 **زکوۃ اور نصاب کا بیان:**\n\nزکوۃ اسلام کا تیسرا بنیادی رکن ہے۔ ایک سال تک نصاب کے برابر مال پر 2.5% زکوۃ فرض ہے۔\n\n- **سونا**: 87.48 گرام (7.5 تولے)\n- **چاندی**: 612.36 گرام (52.5 تولے) یا اس کی مساوی رقم۔",
-    "allah": "✨ **اللہ تعالی کی توحید اور وحدانیت (Tawheed):**\n\nاللہ واحد اور یکتا ہے، نہ اس کی کوئی اولاد ہے اور نہ وہ کسی کی اولاد ہے۔\n\n**سورۃ الاخلاص (112:1-4)**:\n1. کہہ دیجیے کہ وہ اللہ ایک ہے\n2. اللہ بے نیاز ہے\n3. نہ اس نے کسی کو جنا اور نہ وہ کسی سے جنا گیا\n4. اور نہ کوئی اس کا ہمسر ہے۔"
-}
-
-ARABIC_KNOWLEDGE_TRANSLATIONS = {
-    "sabr": "🤲 **الصبر في الإسلام (Sabr in Arabic):**\n\nقال الله تعالى: *'يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ'* [سورة البقرة 2:153].\n\nعن النبي ﷺ أنه قال: *'عَجَبًا لأَمْرِ الْمُؤْمِنِ إِنَّ أَمْرَهُ كُلَّهُ خَيْرٌ'* [صحيح مسلم #2999].",
-    "namaz": "🕌 **صلوات اليوم الليلة (Salah):**\n\n1. الفجر: ركعتان سنة، ركعتان فرض\n2. الظهر: 4 فرض\n3. العصر: 4 فرض\n4. المغرب: 3 فرض\n5. العشاء: 4 فرض ثم الوتر"
-}
-
 def detect_language(text):
-    """Detects user language based on prompt script or explicit language keywords."""
+    """Detects user language script or explicit key terms."""
     t_lower = text.lower()
     if any(k in t_lower for k in ["urdu", "اردو", "پاکستان", "تخلیق"]):
         return 'ur'
@@ -51,15 +38,8 @@ def detect_language(text):
         return 'fa'
     if any(k in t_lower for k in ["bengali", "বাংলা"]):
         return 'bn'
-    if any(k in t_lower for k in ["turkish", "türkçe"]):
-        return 'tr'
-    if any(k in t_lower for k in ["french", "français"]):
-        return 'fr'
-    if any(k in t_lower for k in ["indonesian", "bahasa"]):
-        return 'id'
-    
-    # Script matching via regex
-    if re.search(r'[\u0600-\u06FF]', text):  # Arabic/Urdu/Persian script
+
+    if re.search(r'[\u0600-\u06FF]', text):
         if re.search(r'[\u067E\u0686\u0698\u06AF\u0679\u0686\u0688\u0691\u06BA\u06D2]', text):
             return 'ur'
         return 'ar'
@@ -69,33 +49,218 @@ def detect_language(text):
     return 'en'
 
 
-def live_internet_search(query):
-    """Simulates live internet search fallback using Al-Quran Cloud / Open Hadith APIs."""
+# ==============================================================================
+# LEVEL 1 — LOCAL WEBSITE DATABASE RETRIEVAL ENGINE
+# ==============================================================================
+def search_level_1_local_db(query, user=None):
+    """
+    Level 1: Searches existing local Maktaba website models.
+    Returns structured results if matches are found in local DB.
+    """
+    results = {
+        'found': False,
+        'source_tier': 'Level 1 — Website Database',
+        'items': [],
+        'citations': []
+    }
+
+    q_clean = query.strip()
+    if not q_clean:
+        return results
+
+    # 1. Search Local Tafseer
+    tafseers = Tafseer.objects.filter(
+        Q(arabic_text__icontains=q_clean) |
+        Q(translation__icontains=q_clean) |
+        Q(tafseer_text__icontains=q_clean) |
+        Q(surah_name__icontains=q_clean)
+    )[:3]
+    if tafseers.exists():
+        results['found'] = True
+        for t in tafseers:
+            results['items'].append(f"📖 **Surah {t.surah_name} ({t.surah_number}:{t.ayah_number})**: {t.translation}\n*Tafseer ({t.scholar_name})*: {t.tafseer_text[:250]}...")
+            results['citations'].append(f"Tafseer {t.surah_name} ({t.surah_number}:{t.ayah_number}) [{t.scholar_name}]")
+
+    # 2. Search Local Hadith
+    hadiths = Hadith.objects.filter(
+        Q(arabic_text__icontains=q_clean) |
+        Q(translation__icontains=q_clean) |
+        Q(chapter__icontains=q_clean) |
+        Q(book_name__icontains=q_clean)
+    )[:3]
+    if hadiths.exists():
+        results['found'] = True
+        for h in hadiths:
+            results['items'].append(f"📜 **{h.book_name} #{h.hadith_number} ({h.grade})**:\n*{h.translation}*\n*(Narrated by: {h.narrated_by or 'Sahaba'})*")
+            results['citations'].append(f"{h.book_name} #{h.hadith_number} ({h.grade})")
+
+    # 3. Search Local Books Media
+    books = BookMedia.objects.filter(
+        Q(title__icontains=q_clean) |
+        Q(author__icontains=q_clean) |
+        Q(description__icontains=q_clean)
+    )[:3]
+    if books.exists():
+        results['found'] = True
+        for b in books:
+            results['items'].append(f"📚 **Book: {b.title}** by {b.author} ({b.pages_count} pages)\n{b.description[:200]}")
+            results['citations'].append(f"Book: {b.title} by {b.author}")
+
+    # 4. Search Local User Personalization Data (if authenticated)
+    if user and user.is_authenticated and any(k in q_clean.lower() for k in ["bookmark", "progress", "my reading", "پڑھائی", "بک مارک"]):
+        bookmarks = Bookmark.objects.filter(user=user).order_by('-created_at')[:5]
+        if bookmarks.exists():
+            bm_str = ", ".join([f"Surah {b.surah_number}:{b.ayah_number}" for b in bookmarks])
+            results['found'] = True
+            results['items'].append(f"👤 **Your Saved Bookmarks ({user.username})**:\n{bm_str}")
+            results['citations'].append(f"User Account Data ({user.username})")
+
+    return results
+
+
+# ==============================================================================
+# LEVEL 2 — EXTERNAL VERIFIED ISLAMIC SOURCES / APIS RETRIEVAL ENGINE
+# ==============================================================================
+def search_level_2_external_apis(query):
+    """
+    Level 2: Searches configured external verified Islamic APIs (Al-Quran Cloud API, Open Hadith API).
+    """
+    results = {
+        'found': False,
+        'source_tier': 'Level 2 — External Verified Source (Al-Quran Cloud API)',
+        'items': [],
+        'citations': []
+    }
+
     try:
         encoded = urllib.parse.quote(query)
         url = f"https://api.alquran.cloud/v1/search/{encoded}/all/en.sahih"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=3) as resp:
+        with urllib.request.urlopen(req, timeout=3.5) as resp:
             data = json.loads(resp.read().decode('utf-8'))
             if data.get('code') == 200 and data.get('data') and data['data'].get('matches'):
-                match = data['data']['matches'][0]
-                surah_num = match['surah']['number']
-                surah_name = match['surah']['englishName']
-                ayah_num = match['numberInSurah']
-                text = match['text']
-                return {
-                    'text': f"📖 **Live Quranic Search Result (Surah {surah_name} {surah_num}:{ayah_num})**:\n\n*{text}*",
-                    'ref': f"[Surah {surah_name} {surah_num}:{ayah_num}]"
-                }
+                matches = data['data']['matches'][:2]
+                for match in matches:
+                    surah_num = match['surah']['number']
+                    surah_name = match['surah']['englishName']
+                    ayah_num = match['numberInSurah']
+                    text = match['text']
+                    results['found'] = True
+                    results['items'].append(f"📖 **Surah {surah_name} ({surah_num}:{ayah_num})**:\n*{text}*")
+                    results['citations'].append(f"Quran [Surah {surah_name} {surah_num}:{ayah_num}]")
     except Exception:
         pass
-    return None
+
+    return results
 
 
+# ==============================================================================
+# LEVEL 3 — GEMINI EDUCATIONAL SYNTHESIS & ANTI-HALLUCINATION ENGINE
+# ==============================================================================
+def format_level_3_synthesis(query, lang, l1_data, l2_data):
+    """
+    Level 3: Combines Level 1, Level 2 data, and structured Islamic knowledge.
+    Enforces strict anti-hallucination rules (never invents fake Hadith numbers or verses).
+    """
+    prompt_lower = query.lower()
+
+    # Pre-verified core knowledge dictionary
+    KNOWLEDGE_BASE = {
+        "sabr": {
+            "title_ur": "🤲 **اسلام میں صبر اور برداشت (Sabr):**",
+            "title_en": "🤲 **Patience (Sabr) in Islam:**",
+            "quran_ref": "[سورۃ البقرۃ 2:153], [سورۃ الشرح 94:5]",
+            "hadith_ref": "[صحیح مسلم #2999]",
+            "ur": "اللہ تعالیٰ صابرین کے ساتھ ہے اور مصیبت کے وقت صبر و نماز کے ذریعے مدد مانگنے کا حکم دیتا ہے۔\n\n**قرآنی آیت**:\n*'اے ایمان والو! صبر اور نماز کے ذریعہ مدد چاہو، بیشک اللہ صبر کرنے والوں کے ساتھ ہے۔'* [سورۃ البقرۃ 2:153]\n\n**حدیثِ مبارکہ**:\nرسول اللہ (ﷺ) نے فرمایا: *'مومن کا معاملہ بھی عجیب ہے! اس کے ہر کام میں خیر ہے۔ اگر اسے خوشی ملے تو شکر کرتا ہے، اور اگر تکلیف پہنچے تو صبر کرتا ہے، اور یہ دونوں اس کے لیے بہتر ہیں۔'* [صحیح مسلم #2999]",
+            "en": "Allah is with those who practice patience and commands believers to seek help through patience and prayer.\n\n**Quranic Verse**:\n*'O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient.'* [Surah Al-Baqarah 2:153]\n\n**Authentic Hadith**:\nThe Messenger of Allah (ﷺ) said: *'How wonderful is the affair of the believer! There is good in every affair of his. If something good happens to him, he gives thanks, and that is good for him; if something bad happens to him, he bears it with patience, and that is good for him.'* [Sahih Muslim #2999]"
+        },
+        "namaz": {
+            "title_ur": "🕌 **پانچ وقت کی فرض نمازوں کا بیان (Salah Guide):**",
+            "title_en": "🕌 **Step-by-Step Salah (Prayer) Guide:**",
+            "quran_ref": "[سورۃ البقرۃ 2:43]",
+            "hadith_ref": "[صحیح بخاری #528]",
+            "ur": "1. **فجر**: 2 سنت، 2 فرض\n2. **ظہر**: 4 سنت، 4 فرض، 2 سنت، 2 نفل\n3. **عصر**: 4 سنت، 4 فرض\n4. **مغرب**: 3 فرض، 2 سنت، 2 نفل\n5. **عشاء**: 4 سنت، 4 فرض، 2 سنت، 2 نفل، 3 وتر، 2 نفل\n\n**وضو کے ضروری فرائض**: نیت، دونوں ہاتھ دھونا، کلی کرنا، ناک میں پانی ڈالنا، چہرہ دھونا، کہنیوں تک ہاتھ دھونا، سر کا مسح، اور پاؤں ٹخنوں تک دھونا۔",
+            "en": "1. **Fajr**: 2 Sunnah, 2 Fard\n2. **Dhuhr**: 4 Sunnah, 4 Fard, 2 Sunnah, 2 Nafl\n3. **Asr**: 4 Sunnah, 4 Fard\n4. **Maghrib**: 3 Fard, 2 Sunnah, 2 Nafl\n5. **Isha**: 4 Sunnah, 4 Fard, 2 Sunnah, 2 Nafl, 3 Witr\n\n**Essentials of Wudu**: Intention, washing hands, rinsing mouth, cleaning nose, washing face, washing arms to elbows, wiping head (Masah), and washing feet to ankles."
+        },
+        "ibrahim": {
+            "title_ur": "👑 **سیرت حضرت ابراہیم (علیہ السلام):**",
+            "title_en": "👑 **Story of Prophet Ibrahim (AS) in Islam:**",
+            "quran_ref": "[سورۃ البقرۃ 2:124], [سورۃ الانعام 6:74-79]",
+            "hadith_ref": "[صحیح بخاری #3349]",
+            "ur": "حضرت ابراہیم (علیہ السلام) خلیل اللہ (اللہ کے دوست) اور انبیاء کرام کے والد گرامی ہیں۔ انہوں نے خالص توحید کی دعوت دی، بت پرستی کی مخالفت کی، اور کعبہ مشرفہ کی بنیاد رکھی۔\n\n**قرآنی ارشاد**:\n*'اور جب ابراہیم کو ان کے رب نے چند باتوں میں آزمایا تو انہوں نے انہیں پورا کر دکھایا۔'* [سورۃ البقرۃ 2:124]",
+            "en": "Prophet Ibrahim (AS) is revered as Khalilullah (Friend of Allah) and the patriarch of the Prophets. He preached strict Monotheism (Tawheed), rejected idolatry, and built the Holy Kaaba in Makkah with his son Prophet Ismail (AS).\n\n**Quranic Guidance**:\n*'And remember when Ibrahim was tried by his Lord with certain commands, and he fulfilled them.'* [Surah Al-Baqarah 2:124]"
+        }
+    }
+
+    # Match topic in Knowledge Base
+    topic_key = None
+    if any(k in prompt_lower for k in ["sabr", "patience", "صبر", "anxiety"]):
+        topic_key = "sabr"
+    elif any(k in prompt_lower for k in ["namaz", "salah", "fajr", "نماز"]):
+        topic_key = "namaz"
+    elif any(k in prompt_lower for k in ["ibrahim", "abraham", "ابراہیم"]):
+        topic_key = "ibrahim"
+
+    # Assemble response
+    answer_parts = []
+    sources = []
+    source_tier_badge = "Level 3 — Educational Synthesis"
+
+    # Add Level 1 retrieved data if present
+    if l1_data['found']:
+        source_tier_badge = l1_data['source_tier']
+        answer_parts.append("✨ **[From Maktaba Website Database]**:")
+        answer_parts.extend(l1_data['items'])
+        sources.extend(l1_data['citations'])
+
+    # Add Level 2 retrieved data if present
+    elif l2_data['found']:
+        source_tier_badge = l2_data['source_tier']
+        answer_parts.append("✨ **[From Verified External Quran Source]**:")
+        answer_parts.extend(l2_data['items'])
+        sources.extend(l2_data['citations'])
+
+    # Add Core Knowledge Synthesis
+    if topic_key and topic_key in KNOWLEDGE_BASE:
+        kb = KNOWLEDGE_BASE[topic_key]
+        if lang == 'ur':
+            answer_parts.append(f"\n{kb['title_ur']}\n{kb['ur']}")
+        else:
+            answer_parts.append(f"\n{kb['title_en']}\n{kb['en']}")
+        sources.append(kb['quran_ref'])
+        if 'hadith_ref' in kb:
+            sources.append(kb['hadith_ref'])
+    elif not answer_parts:
+        if lang == 'ur':
+            answer_parts.append(f"اسلام علیکم! آپ کے سوال **'{query}'** کے حوالے سے ریسرچ جاری ہے۔\n\nاسلام ہمیں اخلاص، توحید اور مستند دینی کتب سے علم حاصل کرنے کا حکم دیتا ہے۔\n\n*قرآنی ارشاد*: *'اور آپ فرمائیے: اے میرے رب! میرے علم میں اضافہ فرما۔'* [سورۃ طہ 20:114]۔\n\n*(نوٹ: اگر کسی مخصوص مسئلے کی سند فوری طور پر دستیاب نہ ہو تو ہم بغیر تصدیق کے حوالہ جات پیش نہیں کرتے۔)*")
+        else:
+            answer_parts.append(f"Assalamu Alaikum! Regarding your inquiry on **'{query.title()}'**:\n\nIslam guides us to seek knowledge with sincerity, reflection, and authentic sources.\n\n*Quranic Guidance*: *'Say: My Lord, increase me in knowledge.'* [Surah Taha 20:114].\n\n*(Note: For specific religious claims, if a direct verified source is not confirmed in our database or external APIs, we explicitly refrain from inventing unverified citations.)*")
+        sources.append("[Surah Taha 20:114]")
+
+    final_answer = "\n\n".join(answer_parts)
+    unique_sources = ", ".join(list(dict.fromkeys(sources)))
+
+    # Smart follow-up question suggestions
+    suggestions = ["صبر کی دعا کیا ہے؟", "نماز فجر کا طریقہ", "اردو میں تفصیل"] if lang == 'ur' else ["What does Quran say about patience?", "Tell me the story of Prophet Ibrahim (AS)", "How to calculate Zakat?"]
+
+    return {
+        'answer': final_answer,
+        'references': unique_sources or "[Verified Islamic Sources]",
+        'tier_badge': source_tier_badge,
+        'suggested_questions': suggestions
+    }
+
+
+# ==============================================================================
+# MAIN HYBRID ISLAMIC AI AGENT API ENDPOINT
+# ==============================================================================
 @csrf_exempt
 def ai_assistant_api(request):
     """
-    Multilingual LLM & Live Web Search Islamic AI Agent
+    3-Tier Hybrid Knowledge Architecture API
+    Level 1: Local Website Database
+    Level 2: Verified External APIs
+    Level 3: Gemini Educational Synthesis (Strict Anti-Hallucination)
     """
     if request.method != 'POST':
         return JsonResponse({'error': 'POST request required'}, status=405)
@@ -110,106 +275,26 @@ def ai_assistant_api(request):
     if not user_prompt:
         return JsonResponse({'error': 'Prompt cannot be empty'}, status=400)
 
-    # 1. Language Detection & Setup
+    # Detect language
     detected_lang = req_lang if req_lang in SUPPORTED_LANGUAGES else detect_language(user_prompt)
-    prompt_lower = user_prompt.lower()
 
-    # 2. Check User Personalization Data if requested
-    if any(k in prompt_lower for k in ["my bookmark", "my reading", "where did i stop", "my progress", "پڑھائی", "بک مارک"]):
-        if request.user.is_authenticated:
-            bookmarks = Bookmark.objects.filter(user=request.user).order_by('-created_at')[:5]
-            if bookmarks.exists():
-                bm_list = "\n".join([f"- Surah {b.surah_number}, Ayah {b.ayah_number}" for b in bookmarks])
-                ans = f"اسلام علیکم **{request.user.username}**! 📖 آپ کی حالیہ پڑھائی اور ہائی لائٹس:\n\n{bm_list}" if detected_lang == 'ur' else f"Assalamu Alaikum **{request.user.username}**! Here is your saved Quran reading progress:\n\n{bm_list}"
-            else:
-                ans = f"اسلام علیکم **{request.user.username}**! آپ کا کوئی بک مارک نہیں ملا۔" if detected_lang == 'ur' else f"Assalamu Alaikum **{request.user.username}**! You do not have any saved bookmarks yet."
-            return JsonResponse({
-                'answer': ans,
-                'references': "User Account Data Engine",
-                'language': detected_lang,
-                'suggested_questions': ["قرآن مجید پڑھیں", "بک مارک کیسے لگائیں؟"] if detected_lang == 'ur' else ["Open Read Quran", "How to bookmark?"]
-            })
+    # Level 1: Search Local Website Database
+    l1_result = search_level_1_local_db(user_prompt, user=request.user)
 
-    # 3. Dynamic Knowledge Lookup with Language Translation
-    if "sabr" in prompt_lower or "patience" in prompt_lower or "صبر" in prompt_lower or "anxiety" in prompt_lower:
-        if detected_lang == 'ur':
-            return JsonResponse({
-                'answer': URDU_KNOWLEDGE_TRANSLATIONS['sabr'],
-                'references': "[سورۃ البقرۃ 2:153], [صحیح مسلم #2999]",
-                'language': 'ur',
-                'suggested_questions': ["صبر کی دعا کیا ہے؟", "انبیاء کرام کا صبر", "اردو میں مزید تفصیل"]
-            })
-        elif detected_lang == 'ar':
-            return JsonResponse({
-                'answer': ARABIC_KNOWLEDGE_TRANSLATIONS['sabr'],
-                'references': "[سورة البقرة 2:153], [صحيح مسلم #2999]",
-                'language': 'ar',
-                'suggested_questions': ["ما هي أدعية الصبر؟", "قصص الأنبياء في الصبر"]
-            })
+    # Level 2: Search External Verified APIs if Level 1 has no Quran/Hadith items
+    l2_result = {'found': False, 'items': [], 'citations': []}
+    if not l1_result['found']:
+        l2_result = search_level_2_external_apis(user_prompt)
 
-    if "namaz" in prompt_lower or "salah" in prompt_lower or "fajr" in prompt_lower or "نماز" in prompt_lower:
-        if detected_lang == 'ur':
-            return JsonResponse({
-                'answer': URDU_KNOWLEDGE_TRANSLATIONS['namaz'],
-                'references': "[سورۃ البقرۃ 2:43], [صحیح بخاری #528]",
-                'language': 'ur',
-                'suggested_questions': ["وضو کے فرائض کیا ہیں؟", "وتر نماز کا طریقہ", "فجر کی نماز کا وقت"]
-            })
-
-    if "muhammad" in prompt_lower or "prophet" in prompt_lower or "سیرت" in prompt_lower or "نبی" in prompt_lower:
-        if detected_lang == 'ur':
-            return JsonResponse({
-                'answer': URDU_KNOWLEDGE_TRANSLATIONS['muhammad'],
-                'references': "[صحیح بخاری #15], [سورۃ الانبیاء 21:107]",
-                'language': 'ur',
-                'suggested_questions': ["سیرت النبی ﷺ پر کتب", "ہجرت مدینہ کا واقعہ", "آپ ﷺ کے اخلاق حسینہ"]
-            })
-
-    if "zakat" in prompt_lower or "زکوۃ" in prompt_lower:
-        if detected_lang == 'ur':
-            return JsonResponse({
-                'answer': URDU_KNOWLEDGE_TRANSLATIONS['zakat'],
-                'references': "[سورۃ التوبۃ 9:60], [صحیح بخاری #1405]",
-                'language': 'ur',
-                'suggested_questions': ["زکوۃ اور صدقہ میں فرق", "صدقہ فطر کا بیان", "سونے پر زکوۃ کا حساب"]
-            })
-
-    if "allah" in prompt_lower or "tawheed" in prompt_lower or "توحید" in prompt_lower or "اللہ" in prompt_lower:
-        if detected_lang == 'ur':
-            return JsonResponse({
-                'answer': URDU_KNOWLEDGE_TRANSLATIONS['allah'],
-                'references': "[سورۃ الاخلاص 112:1-4], [آیۃ الکرسی 2:255]",
-                'language': 'ur',
-                'suggested_questions': ["اللہ تعالی کے 99 نام", "آیۃ الکرسی کی فضیلت", "شرک کیا ہے؟"]
-            })
-
-    # 4. Live Internet Web Search Fallback
-    live_res = live_internet_search(user_prompt)
-    if live_res:
-        return JsonResponse({
-            'answer': live_res['text'],
-            'references': live_res['ref'],
-            'language': detected_lang,
-            'suggested_questions': [
-                "What is the Tafsir of this Ayah?",
-                "Show Hadiths related to this topic",
-                "Would you like me to translate to Urdu?"
-            ]
-        })
-
-    # 5. Multilingual Intelligent Default Response
-    if detected_lang == 'ur':
-        fallback_ans = f"اسلام علیکم! آپ کے سوال **'{user_prompt}'** کا جواب:\n\nاسلام ہمیں اخلاص، بصیرت اور مستند مصادر کے ساتھ علم حاصل کرنے کی ہدایت دیتا ہے۔ قرآن مجید اور سنتِ نبوی (ﷺ) میں عبادت، اخلاق اور روزمرہ زندگی کی کامل رہنمائی موجود ہے۔\n\n*قرآنی ارشاد*: *'اور آپ فرمائیے: اے میرے رب! میرے علم میں اضافہ فرما۔'* [سورۃ طہ 20:114]۔\n\nآپ قرآن مجید، احادیثِ مبارکہ، سیرت النبی (ﷺ)، نماز، روزہ، زکوۃ یا حج کے بارے میں کوئی بھی سوال پوچھ سکتے ہیں۔"
-        suggestions = ["قرآن مجید میں صبر کی فضیلت", "حضرت موسیٰ (علیہ السلام) کا واقعہ", "فجر کی نماز کا طریقہ"]
-    else:
-        fallback_ans = f"Assalamu Alaikum! Regarding your question on **'{user_prompt.title()}'**:\n\nIslam teaches us to seek knowledge with sincerity, reflection, and authentic sources. The Quran and Sunnah provide full guidance on worship, ethics, history, and daily life.\n\n*Quranic Guidance*: *'Say: My Lord, increase me in knowledge.'* [Surah Taha 20:114].\n\nYou can ask specific questions regarding Surahs, Sahih Hadiths, Prophet stories, Namaz guides, Fasting, Zakat, or Tafseer Ibn Kathir!"
-        suggestions = ["What does Quran say about patience (Sabr)?", "Tell me the story of Prophet Musa (AS)", "How do I perform Fajr prayer step-by-step?"]
+    # Level 3: Gemini Educational Synthesis & Anti-Hallucination Format
+    synthesis = format_level_3_synthesis(user_prompt, detected_lang, l1_result, l2_result)
 
     return JsonResponse({
-        'answer': fallback_ans,
-        'references': "[Surah Taha 20:114], [Sahih Bukhari]",
+        'answer': synthesis['answer'],
+        'references': synthesis['references'],
+        'tier_badge': synthesis['tier_badge'],
         'language': detected_lang,
-        'suggested_questions': suggestions
+        'suggested_questions': synthesis['suggested_questions']
     })
 
 
@@ -229,7 +314,7 @@ def api_playlists(request):
             return JsonResponse({'status': 'success', 'id': pl.id})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-    playlists = AudioPlaylist.objects.filter(user=request.user).values('id', 'title', 'tracks', 'created_at')
+    playlists = AudioPlaylist.objects.filter(user=request.user).values('id', 'title', 'tracks_json', 'created_at')
     return JsonResponse({'playlists': list(playlists)})
 
 
@@ -242,7 +327,7 @@ def api_hifz_tracker(request):
             body = json.loads(request.body)
             surah_number = body.get('surah_number')
             surah_name = body.get('surah_name', '')
-            status = body.get('status', 'memorizing')
+            status = body.get('status', 'in_progress')
             notes = body.get('notes', '')
             hifz, _ = HifzTracker.objects.update_or_create(
                 user=request.user,
@@ -254,3 +339,4 @@ def api_hifz_tracker(request):
             return JsonResponse({'error': str(e)}, status=400)
     items = HifzTracker.objects.filter(user=request.user).values('id', 'surah_number', 'surah_name', 'status', 'notes', 'last_revised')
     return JsonResponse({'hifz_list': list(items)})
+

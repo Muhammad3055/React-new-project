@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, X, Volume2, Copy, Check, User, RefreshCw, Sparkles, BookOpen, Mic, MicOff, Globe } from 'lucide-react';
+import { Bot, Send, X, Volume2, Copy, Check, User, RefreshCw, Sparkles, BookOpen, Mic, MicOff, ShieldCheck } from 'lucide-react';
 
 const LANGUAGES = [
   { code: 'auto', label: '🌐 Auto Detect' },
   { code: 'ur', label: '🇵🇰 Urdu (اردو)' },
   { code: 'ar', label: '🇸🇦 Arabic (العربية)' },
   { code: 'brh', label: '🇵🇰 Brahui (براہوئی)' },
-  { code: 'ps', label: '🇦🇫 Pashto (پښتو)' },
+  { code: 'ps', label: '🇦ف Pashto (پښتو)' },
   { code: 'fa', label: '🇮🇷 Persian (فارسی)' },
   { code: 'bn', label: '🇧🇩 Bengali (বাংলা)' },
   { code: 'tr', label: '🇹🇷 Turkish (Türkçe)' },
@@ -18,23 +18,20 @@ const LANGUAGES = [
 ];
 
 const QUICK_PROMPTS = [
+  { icon: '🤲', label: 'Virtues of Patience (Sabr)', prompt: 'What does Islam say about patience (Sabr)?' },
+  { icon: '👑', label: 'Story of Prophet Ibrahim (AS)', prompt: 'Tell me about Prophet Ibrahim (AS) in the Quran' },
+  { icon: '🕌', label: 'Step-by-Step Salah Guide', prompt: 'How do I perform Fajr prayer step-by-step?' },
   { icon: '📖', label: 'Surah Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?' },
-  { icon: '👑', label: 'Story of Prophet Musa (AS)', prompt: 'Tell me the story of Prophet Musa (AS) and Pharaoh in the Quran' },
   { icon: '🕋', label: 'Steps of Hajj & Umrah', prompt: 'Explain the step by step guide to perform Hajj and Umrah' },
-  { icon: '🤲', label: 'Dua for Anxiety & Sabr', prompt: 'What is the Dua and Ayah for patience, anxiety, and peace of mind?' },
-  { icon: '🕌', label: 'Raka\'ahs of Fajr & Isha', prompt: 'How many Raka\'ahs are in Fajr, Dhuhr, Asr, Maghrib, and Isha?' },
-  { icon: '📚', label: 'Recommended Books on Seerah', prompt: 'What Islamic PDF books do you recommend for Seerah of Prophet Muhammad (ﷺ)?' },
-  { icon: '🌙', label: 'Fasting Rules & Laylatul Qadr', prompt: 'What are the rules of Sawm (Fasting) in Ramadan and virtues of Laylatul Qadr?' },
-  { icon: '💎', label: 'Virtue of Ayatul Kursi', prompt: 'What are the benefits and Hadith about Ayatul Kursi?' },
   { icon: '💰', label: 'Zakat & Nisab Calculation', prompt: 'What is the Nisab threshold and percentage for Zakat calculation?' },
+  { icon: '🌙', label: 'Fasting & Laylatul Qadr', prompt: 'What are the rules of Sawm (Fasting) in Ramadan and virtues of Laylatul Qadr?' },
   { icon: '✨', label: '99 Names of Allah', prompt: 'Tell me about the 99 Names of Allah and Tawheed' }
 ];
 
 const AGENT_THINKING_STEPS = [
-  "Understanding your question...",
-  "Searching Quran & Authentic Hadith...",
-  "Reviewing Tafsir & Fiqh sources...",
-  "Preparing verified response..."
+  "Searching local website database...",
+  "Checking external verified APIs...",
+  "Synthesizing authentic knowledge..."
 ];
 
 export default function AIChatbotModal({ isOpen, onClose }) {
@@ -43,11 +40,12 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     {
       id: 1,
       sender: 'ai',
-      text: "Assalamu Alaikum! 🌙 Welcome to **Maktaba AI Islamic Knowledge Agent**.\n\nAsk me anything regarding Quranic verses, Sahih Hadith, Seerah, Namaz guides, Tafseer, or Islamic rulings in 10+ languages (English, Urdu, Arabic, Brahui, Pashto, French, etc.). How can I guide you today?",
+      text: "Assalamu Alaikum! 🌙 Welcome to **Maktaba AI Islamic Knowledge Agent**.\n\nPowered by a 3-Tier Knowledge Engine:\n1. **Website Database** (Local Quran, Hadith & Books)\n2. **External Verified APIs** (Al-Quran Cloud)\n3. **Educational Knowledge Engine** (Strict Anti-Hallucination)\n\nAsk me anything regarding Quranic verses, Sahih Hadith, Seerah, Namaz guides, or Tafseer in 10+ languages!",
       references: "[Quran 20:114], [Sahih Bukhari]",
+      tierBadge: "Level 1 — Website Database",
       suggested: [
-        "What does Quran say about patience?",
-        "Tell me the story of Prophet Musa (AS)",
+        "What does Islam say about patience?",
+        "Tell me about Prophet Ibrahim (AS)",
         "How do I perform Fajr prayer step-by-step?"
       ],
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -72,12 +70,9 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Initialize Speech Recognition for Microphone Input
   const toggleVoiceRecording = () => {
     if (isRecording) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
+      if (recognitionRef.current) recognitionRef.current.stop();
       setIsRecording(false);
       return;
     }
@@ -92,38 +87,16 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     rec.continuous = false;
     rec.interimResults = false;
 
-    // Map language code to BCP 47 locale
-    const langLocales = {
-      ur: 'ur-PK',
-      ar: 'ar-SA',
-      ps: 'ps-AF',
-      fa: 'fa-IR',
-      bn: 'bn-BD',
-      tr: 'tr-TR',
-      fr: 'fr-FR',
-      es: 'es-ES',
-      de: 'de-DE',
-      en: 'en-US'
-    };
+    const langLocales = { ur: 'ur-PK', ar: 'ar-SA', ps: 'ps-AF', fa: 'fa-IR', bn: 'bn-BD', tr: 'tr-TR', fr: 'fr-FR', es: 'es-ES', de: 'de-DE', en: 'en-US' };
     rec.lang = langLocales[selectedLang] || 'en-US';
 
-    rec.onstart = () => {
-      setIsRecording(true);
-    };
-
-    rec.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setInputPrompt(transcript);
+    rec.onstart = () => setIsRecording(true);
+    rec.onresult = (e) => {
+      setInputPrompt(e.results[0][0].transcript);
       setIsRecording(false);
     };
-
-    rec.onerror = () => {
-      setIsRecording(false);
-    };
-
-    rec.onend = () => {
-      setIsRecording(false);
-    };
+    rec.onerror = () => setIsRecording(false);
+    rec.onend = () => setIsRecording(false);
 
     recognitionRef.current = rec;
     rec.start();
@@ -151,7 +124,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         clearInterval(stepInterval);
         return prev;
       });
-    }, 300);
+    }, 350);
 
     try {
       const response = await fetch('/api/ai-assistant/', {
@@ -166,9 +139,9 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       const aiMsg = {
         id: Date.now() + 1,
         sender: 'ai',
-        text: data.answer || "I apologize, I could not process your request right now. Please try again.",
+        text: data.answer || "I apologize, I could not process your request right now.",
         references: data.references || "",
-        urls: data.urls || [],
+        tierBadge: data.tier_badge || "Level 3 — Educational Synthesis",
         language: data.language || 'en',
         suggested: data.suggested_questions || [],
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -180,7 +153,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: 'ai',
-        text: "Assalamu Alaikum. Network error connecting to Islamic Knowledge engine. Please verify your connection.",
+        text: "Assalamu Alaikum. Network connection issue to Maktaba Knowledge Engine.",
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
     } finally {
@@ -209,11 +182,9 @@ export default function AIChatbotModal({ isOpen, onClose }) {
   const renderFormattedText = (rawText) => {
     if (!rawText) return null;
     let html = rawText;
-
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer" style="color: #34d399; font-weight: 700; text-decoration: underline;">$1</a>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: var(--accent-gold);">$1</strong>');
     html = html.replace(/\n/g, '<br/>');
-
     return <span dangerouslySetInnerHTML={{ __html: html }} />;
   };
 
@@ -248,14 +219,13 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           <div>
             <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               Maktaba AI Agent
-              <span style={{ fontSize: '0.65rem', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '1px 6px', borderRadius: '10px' }}>10+ Languages</span>
+              <span style={{ fontSize: '0.65rem', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '1px 6px', borderRadius: '10px' }}>Hybrid AI</span>
             </h3>
-            <p style={{ margin: 0, fontSize: '0.72rem', color: '#cbd5e1' }}>Live Web AI & Authentic Knowledge Engine</p>
+            <p style={{ margin: 0, fontSize: '0.72rem', color: '#cbd5e1' }}>Website DB + Verified APIs + Gemini</p>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {/* Language Selector Dropdown */}
           <select
             value={selectedLang}
             onChange={(e) => setSelectedLang(e.target.value)}
@@ -275,7 +245,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         </div>
       </div>
 
-      {/* Quick Prompts Horizontal Scroll */}
+      {/* Quick Prompts Bar */}
       <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(0, 0, 0, 0.35)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', overflowX: 'auto', display: 'flex', gap: '0.4rem', whiteSpace: 'nowrap' }}>
         {QUICK_PROMPTS.map((item, idx) => (
           <button
@@ -301,7 +271,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         ))}
       </div>
 
-      {/* Chat Messages Body */}
+      {/* Body */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.85rem' }}>
         {messages.map((msg) => {
           const isRtl = msg.language === 'ur' || msg.language === 'ar' || msg.language === 'brh' || msg.language === 'ps' || msg.language === 'fa';
@@ -341,11 +311,19 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                 boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                 textAlign: isRtl ? 'right' : 'left'
               }}>
+                {/* Level Tier Badge */}
+                {msg.sender === 'ai' && msg.tierBadge && (
+                  <div style={{ marginBottom: '0.4rem', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', background: 'rgba(5, 150, 105, 0.25)', border: '1px solid rgba(16, 185, 129, 0.5)', color: '#34d399', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                    <ShieldCheck size={11} />
+                    <span>{msg.tierBadge}</span>
+                  </div>
+                )}
+
                 <div style={{ fontSize: isRtl ? '0.9rem' : '0.83rem', fontFamily: isRtl ? "'Jameel Noori Nastaleeq', 'Amiri', serif" : 'inherit' }}>
                   {renderFormattedText(msg.text)}
                 </div>
 
-                {/* Citations & References */}
+                {/* Citations & Sources */}
                 {msg.references && (
                   <div style={{ marginTop: '0.5rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(245, 158, 11, 0.2)', fontSize: '0.72rem', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                     <BookOpen size={12} />
@@ -353,24 +331,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                   </div>
                 )}
 
-                {/* Explicit Requested URLs */}
-                {msg.urls && msg.urls.length > 0 && (
-                  <div style={{ marginTop: '0.4rem', display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                    {msg.urls.map((url, i) => (
-                      <a
-                        key={i}
-                        href={url}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ fontSize: '0.7rem', color: '#34d399', textDecoration: 'underline', background: 'rgba(0,0,0,0.3)', padding: '2px 7px', borderRadius: '8px', border: '1px solid rgba(52, 211, 153, 0.3)' }}
-                      >
-                        🔗 {url.replace('https://', '')}
-                      </a>
-                    ))}
-                  </div>
-                )}
-
-                {/* Smart Follow-Up Suggestions */}
+                {/* Suggested Questions */}
                 {msg.sender === 'ai' && msg.suggested && msg.suggested.length > 0 && (
                   <div style={{ marginTop: '0.65rem', paddingTop: '0.45rem', borderTop: '1px dashed rgba(255,255,255,0.15)' }}>
                     <div style={{ fontSize: '0.68rem', color: '#cbd5e1', marginBottom: '0.35rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -390,8 +351,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                             fontSize: '0.72rem',
                             padding: '3px 8px',
                             borderRadius: '10px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease'
+                            cursor: 'pointer'
                           }}
                         >
                           ❓ {sug}
@@ -401,7 +361,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                   </div>
                 )}
 
-                {/* Message Time & Controls */}
+                {/* Controls */}
                 <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', opacity: 0.7 }}>
                   <span>{msg.time}</span>
                   {msg.sender === 'ai' && (
@@ -420,7 +380,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           );
         })}
 
-        {/* Short Progress Animation Bar (~1s Step Status) */}
+        {/* Step Progress Bar */}
         {isLoading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399', fontSize: '0.78rem', background: 'rgba(0,0,0,0.4)', padding: '0.65rem 0.85rem', borderRadius: '14px', border: '1px solid rgba(52, 211, 153, 0.4)', maxWidth: '300px' }}>
             <RefreshCw size={14} className="animate-spin text-emerald-400" />
@@ -431,12 +391,11 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Bar with Voice Microphone Recording */}
+      {/* Input */}
       <form 
         onSubmit={(e) => { e.preventDefault(); handleSend(); }}
         style={{ padding: '0.65rem 0.85rem', background: 'rgba(0, 0, 0, 0.5)', borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', gap: '0.4rem', alignItems: 'center' }}
       >
-        {/* Microphone Voice Recording Button */}
         <button
           type="button"
           onClick={toggleVoiceRecording}
