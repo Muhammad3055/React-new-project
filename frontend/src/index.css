@@ -3104,3 +3104,42 @@ a.btn-play:hover {
     background: #f3f4f6 !important;
     color: #000000 !important;
 }
+
+/* ====================================
+   USER PROFILE SIDE PANEL
+   ==================================== */
+.profile-sidepanel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0;
+  animation: panelFadeIn 0.3s ease-out forwards;
+}
+
+.profile-sidepanel {
+  width: 100%;
+  max-width: 450px;
+  height: 100dvh;
+  overflow-y: auto;
+  background: #022c22;
+  color: #fff;
+  padding: 1.75rem;
+  transform: translateX(100%);
+  animation: panelSlideIn 0.3s ease-out forwards;
+  box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+}
+
+@keyframes panelFadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes panelSlideIn {
+  to { transform: translateX(0); }
+}

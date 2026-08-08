@@ -161,6 +161,39 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
     setSaving(false);
   };
 
+  // ---- Delete Account ----
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteMsg, setDeleteMsg] = useState({ text: '', type: '' });
+  
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    if (!deletePassword) { setDeleteMsg({ text: 'Please enter your password to confirm.', type: 'error' }); return; }
+    
+    if (!window.confirm('Are you absolutely sure you want to delete your account? This cannot be undone.')) return;
+    
+    setSaving(true);
+    setDeleteMsg({ text: '', type: '' });
+    try {
+      const res = await fetch(getApiUrl('/api/user/delete/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password: deletePassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.removeItem('quran_portal_user');
+        window.location.href = '/';
+      } else {
+        setDeleteMsg({ text: data.message || 'Incorrect password or error occurred.', type: 'error' });
+      }
+    } catch {
+      setDeleteMsg({ text: 'Failed to connect to server.', type: 'error' });
+    }
+    setSaving(false);
+  };
+
+
   const tabStyle = (key) => ({
     padding: '0.5rem 0.9rem', borderRadius: '20px', border: 'none',
     background: activeTab === key ? 'var(--accent-gold)' : 'rgba(255,255,255,0.08)',
@@ -178,8 +211,8 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
   const labelStyle = { display: 'block', fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.3rem', color: 'rgba(255,255,255,0.85)' };
 
   return (
-    <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(8px)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div className="card" style={{ maxWidth: '680px', width: '100%', maxHeight: '94vh', overflowY: 'auto', background: '#022c22', border: `1.5px solid ${activeFrameObj.border.split(' ')[2]}`, borderRadius: '20px', color: '#fff', padding: '1.75rem' }}>
+    <div className="profile-sidepanel-overlay" onClick={(e) => { if (e.target.className === 'profile-sidepanel-overlay') onClose(); }}>
+      <div className="profile-sidepanel" style={{ borderLeft: `1.5px solid ${activeFrameObj.border.split(' ')[2]}` }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
@@ -208,11 +241,14 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.5rem', flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem' }}>
-          <button style={tabStyle('profile')} onClick={() => setActiveTab('profile')}><i className="fas fa-user-edit"></i> {t('profileTab', 'Profile')}</button>
-          <button style={tabStyle('frame')} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> {t('frameTab', 'Frames')}</button>
-          <button style={tabStyle('settings')} onClick={() => setActiveTab('settings')}><i className="fas fa-cog"></i> {t('settingsTab', 'Settings')}</button>
-          <button style={tabStyle('password')} onClick={() => setActiveTab('password')}><i className="fas fa-key"></i> {t('passwordTab', 'Security')}</button>
-          <button style={tabStyle('activity')} onClick={() => setActiveTab('activity')}><i className="fas fa-list-alt"></i> {t('activityTab', 'Activity')}</button>
+          <button style={tabStyle('profile')} onClick={() => setActiveTab('profile')}><i className="fas fa-user-edit"></i> Profile</button>
+          <button style={tabStyle('frame')} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> Frames</button>
+          <button style={tabStyle('settings')} onClick={() => setActiveTab('settings')}><i className="fas fa-cog"></i> Prefs</button>
+          <button style={tabStyle('notifications')} onClick={() => setActiveTab('notifications')}><i className="fas fa-bell"></i> Alerts</button>
+          <button style={tabStyle('privacy')} onClick={() => setActiveTab('privacy')}><i className="fas fa-user-shield"></i> Privacy</button>
+          <button style={tabStyle('password')} onClick={() => setActiveTab('password')}><i className="fas fa-key"></i> Security</button>
+          <button style={tabStyle('activity')} onClick={() => setActiveTab('activity')}><i className="fas fa-list-alt"></i> Activity</button>
+          <button style={{...tabStyle('delete'), background: activeTab === 'delete' ? '#ef4444' : 'rgba(239,68,68,0.1)', color: activeTab === 'delete' ? '#fff' : '#f87171'}} onClick={() => setActiveTab('delete')}><i className="fas fa-trash-alt"></i> Account</button>
         </div>
 
         {/* TAB 1: PROFILE */}
@@ -461,6 +497,108 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               </button>
             </div>
           </div>
+        )}
+
+        {/* TAB 6: NOTIFICATIONS */}
+        {activeTab === 'notifications' && (
+          <div>
+            <h4 style={{ color: 'var(--accent-gold)', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem' }}>
+              <i className="fas fa-bell" style={{ marginRight: '0.5rem' }}></i> Notification Preferences
+            </h4>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', marginBottom: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Email Updates</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Receive platform news and updates</div>
+                </div>
+                <input type="checkbox" defaultChecked style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+              </label>
+              <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0.8rem 0' }} />
+              <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Prayer Alerts</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Namaz reminder notifications</div>
+                </div>
+                <input type="checkbox" defaultChecked style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+              </label>
+              <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0.8rem 0' }} />
+              <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Daily Hadith</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Receive a daily Hadith via email</div>
+                </div>
+                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+              </label>
+            </div>
+            <button style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', width: '100%', justifyContent: 'center' }}>Save Preferences</button>
+          </div>
+        )}
+
+        {/* TAB 7: PRIVACY & SECURITY */}
+        {activeTab === 'privacy' && (
+          <div>
+            <h4 style={{ color: 'var(--accent-gold)', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem' }}>
+              <i className="fas fa-user-shield" style={{ marginRight: '0.5rem' }}></i> Privacy Settings
+            </h4>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.8rem', fontSize: '0.85rem', fontWeight: 700 }}>Profile Visibility</label>
+              <select style={inputStyle}>
+                <option value="public">Public (Visible to everyone)</option>
+                <option value="friends">Friends Only</option>
+                <option value="private">Private (Only me)</option>
+              </select>
+              
+              <div style={{ marginTop: '1.25rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Show Activity Status</div>
+                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Let others see when you are online</div>
+                  </div>
+                  <input type="checkbox" defaultChecked style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+                </label>
+              </div>
+            </div>
+            <button style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', width: '100%', justifyContent: 'center' }}>Update Privacy</button>
+          </div>
+        )}
+
+        {/* TAB 8: DELETE ACCOUNT */}
+        {activeTab === 'delete' && (
+          <form onSubmit={handleDeleteAccount}>
+            <h4 style={{ color: '#ef4444', fontWeight: 800, marginBottom: '0.5rem', fontSize: '1rem' }}>
+              <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.5rem' }}></i> Danger Zone
+            </h4>
+            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', marginBottom: '1.25rem' }}>
+              Once you delete your account, there is no going back. Please be certain. All your data, bookmarks, and preferences will be permanently erased.
+            </p>
+
+            {deleteMsg.text && (
+              <div style={{ padding: '0.75rem 1rem', background: deleteMsg.type === 'success' ? '#dcfce7' : '#fee2e2', color: deleteMsg.type === 'success' ? '#15803d' : '#b91c1c', borderRadius: '10px', marginBottom: '1rem', fontWeight: 700 }}>
+                {deleteMsg.text}
+              </div>
+            )}
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={labelStyle}>Confirm Password to Delete</label>
+              <input 
+                type="password" 
+                style={{ ...inputStyle, borderColor: 'rgba(239,68,68,0.5)' }} 
+                value={deletePassword} 
+                onChange={e => setDeletePassword(e.target.value)} 
+                placeholder="••••••••" 
+                required 
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={saving} 
+              style={{ padding: '0.85rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', transition: 'all 0.2s' }}
+            >
+              {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-trash-alt"></i>}
+              Permanently Delete Account
+            </button>
+          </form>
         )}
 
       </div>

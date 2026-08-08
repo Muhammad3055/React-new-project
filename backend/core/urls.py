@@ -42,6 +42,7 @@ urlpatterns = [
     # Logged-in User Dashboard & Personalization API
     path('api/user/dashboard/', views.api_user_dashboard, name='api_user_dashboard'),
     path('api/user/preferences/update/', views.api_update_user_preferences, name='api_update_user_preferences'),
+    path('api/user/delete/', views.api_delete_user, name='api_delete_user'),
     path('api/user/namaz/toggle/', views.api_toggle_namaz, name='api_toggle_namaz'),
     path('api/user/note/add/', views.api_save_ayah_note, name='api_save_ayah_note'),
     path('api/user/zakat/save/', views.api_save_zakat_history, name='api_save_zakat_history'),

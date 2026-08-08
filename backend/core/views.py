@@ -1443,6 +1443,29 @@ def api_update_user_preferences(request):
 
 
 @csrf_exempt
+def api_delete_user(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method == 'POST':
+        import json
+        from django.contrib.auth import authenticate, logout
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+        password = body.get('password', '')
+        if not password:
+            return JsonResponse({'status': 'error', 'message': 'Password is required to delete account'}, status=400)
+        user = authenticate(username=request.user.username, password=password)
+        if user is not None:
+            user.delete()
+            logout(request)
+            response = JsonResponse({'status': 'success', 'message': 'Account deleted successfully'})
+            response.delete_cookie('quran_portal_user')
+            response.delete_cookie('sessionid')
+            return response
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Incorrect password'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+@csrf_exempt
 def api_toggle_namaz(request):
     if not request.user.is_authenticated:
         return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
