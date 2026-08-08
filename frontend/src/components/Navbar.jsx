@@ -249,33 +249,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </select>
             </div>
 
-            {/* Dedicated AI Assistant Button */}
-            <button
-              onClick={() => openAIChat && openAIChat()}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
-                color: '#ffffff',
-                border: '1px solid rgba(16, 185, 129, 0.4)',
-                padding: '5px 12px',
-                borderRadius: '20px',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap'
-              }}
-              title="Open AI Islamic Assistant"
-            >
-              <i className="fas fa-robot" style={{ color: '#f59e0b', fontSize: '0.9rem' }}></i>
-              <span>AI Assistant</span>
-            </button>
-
             {/* Desktop Extras Menu Toggle */}
             <div className="desktop-extras-menu">
+
 
               <button
                 className={`extras-menu-toggle ${showExtrasMenu ? 'active' : ''}`}

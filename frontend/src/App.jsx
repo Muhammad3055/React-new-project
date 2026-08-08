@@ -305,24 +305,47 @@ function MainAppContent() {
       <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />
       <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />
 
-      {/* Prominent Floating AI Islamic Assistant Chatbot Launcher Button */}
-      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2">
+      {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}
+      <div 
+        style={{
+          position: 'fixed',
+          bottom: '25px',
+          right: '25px',
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
         <button
           onClick={() => setIsAIChatOpen(true)}
-          className="flex items-center space-x-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500 text-white shadow-2xl shadow-emerald-500/60 hover:scale-105 active:scale-95 transition-all duration-300 border border-emerald-300/40"
-          style={{ boxShadow: '0 10px 30px rgba(16, 185, 129, 0.45)' }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            padding: '12px 22px',
+            borderRadius: '50px',
+            background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
+            color: '#ffffff',
+            border: '2px solid rgba(245, 158, 11, 0.7)',
+            boxShadow: '0 10px 30px rgba(5, 150, 105, 0.6), 0 0 18px rgba(245, 158, 11, 0.4)',
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+            fontWeight: 800,
+            transition: 'all 0.3s ease',
+            letterSpacing: '0.3px'
+          }}
+          title="Open AI Islamic Assistant"
         >
-          <Bot className="w-6 h-6 animate-pulse text-amber-300" />
-          <span className="font-bold text-xs sm:text-sm tracking-wide font-sans">
-            🤖 Ask AI Assistant
-          </span>
-          <span className="w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
+          <i className="fas fa-robot" style={{ fontSize: '1.25rem', color: '#f59e0b' }}></i>
+          <span style={{ fontFamily: 'system-ui, sans-serif' }}>Ask AI Assistant</span>
+          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }}></span>
         </button>
       </div>
 
       {/* Floating Admin Studio Bar (Only visible when logged in as admin) */}
       <AdminFloatingBar user={user} navigateToTab={navigateToTab} />
     </div>
+
 
   );
 }
