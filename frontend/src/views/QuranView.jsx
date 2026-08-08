@@ -363,30 +363,31 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               key={opt.id}
               onClick={() => { setSubCategory(opt.id); setQuranPage(1); }}
               style={{
-                padding: '0.65rem 1rem',
+                padding: '0.7rem 1rem',
                 borderRadius: '30px',
-                border: isActive ? '2px solid var(--accent-gold)' : '2px solid rgba(245, 158, 11, 0.5)',
-                background: isActive ? 'linear-gradient(135deg, #059669 0%, #0d9488 100%)' : 'rgba(2, 44, 34, 0.85)',
-                color: isActive ? '#ffffff' : 'var(--accent-gold)',
-                boxShadow: isActive ? '0 6px 18px rgba(16, 185, 129, 0.45)' : '0 3px 10px rgba(0, 0, 0, 0.15)',
+                border: isActive ? '2px solid var(--accent-gold)' : '1.5px solid #d6d3d1',
+                background: isActive ? 'linear-gradient(135deg, #022c22 0%, #1c1917 100%)' : '#ffffff',
+                color: isActive ? '#ffffff' : '#1c1917',
+                boxShadow: isActive ? '0 6px 18px rgba(0, 0, 0, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.06)',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.6rem',
+                gap: '0.65rem',
                 justifyContent: 'center',
                 outline: 'none'
               }}
             >
-              <i className={opt.icon} style={{ fontSize: '1.05rem', color: isActive ? '#f59e0b' : 'var(--accent-gold)' }}></i>
-              <div style={{ textAlign: 'left', lineHeight: '1.2' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.83rem', color: isActive ? '#ffffff' : 'var(--accent-gold)' }}>{opt.label}</div>
-                <div style={{ fontSize: '0.7rem', opacity: isActive ? 0.95 : 0.8, color: isActive ? '#e2e8f0' : 'var(--text-muted)' }}>{opt.sub}</div>
+              <i className={opt.icon} style={{ fontSize: '1.1rem', color: isActive ? '#f59e0b' : '#d97706' }}></i>
+              <div style={{ textAlign: 'left', lineHeight: '1.25' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.85rem', color: isActive ? '#ffffff' : '#1c1917' }}>{opt.label}</div>
+                <div style={{ fontSize: '0.72rem', color: isActive ? '#fcd34d' : '#6b7280', fontWeight: 600 }}>{opt.sub}</div>
               </div>
             </button>
           );
         })}
       </div>
+
       {subCategory === 'quran_arabic' && (
         <div>
           <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -691,9 +692,37 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         </div>
       )}
 
+      {/* SECTION 7: Mixed Audio MP3 Collections */}
+      {subCategory === 'quran_mixed' && (
+        <div>
+          <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 800, background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', padding: '0.5rem 1rem', borderRadius: '30px', border: '2px solid var(--accent-gold)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
+              <i className="fas fa-compact-disc" style={{ marginRight: '0.4rem', color: '#f59e0b' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ)
+            </div>
+            {(user?.is_staff || user?.is_superuser) && (
+              <button
+                onClick={() => setShowAdminUploadModal(true)}
+                style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              >
+                <i className="fas fa-plus-circle"></i> + Add Mixed Audio / Upload
+              </button>
+            )}
+          </div>
+
+          <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: '#ffffff', color: '#1c1917', borderRadius: '18px', border: '1.5px solid #e7e5e4', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
+            <i className="fas fa-compact-disc fa-4x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
+            <h3 style={{ color: '#1c1917', fontWeight: 800, fontSize: '1.3rem' }}>Mixed MP3 Audio Collection</h3>
+            <p style={{ color: '#44403c', fontSize: '0.9rem', maxWidth: '520px', margin: '0.5rem auto 1.25rem auto', lineHeight: '1.6' }}>
+              This section is reserved for mixed Tilawat, translations, and multi-lingual audio lectures. You can add mixed MP3s anytime using the Admin Studio!
+            </p>
+          </div>
+        </div>
+      )}
+
       {showAdminUploadModal && (
         <AdminUploadModal onClose={() => setShowAdminUploadModal(false)} />
       )}
+
     </div>
   );
 }
