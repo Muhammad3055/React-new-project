@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, ai_views
 
 urlpatterns = [
     # REST API endpoints for React Frontend
@@ -14,6 +14,11 @@ urlpatterns = [
     path('api/stats/', views.api_home_stats, name='api_home_stats'),
     path('api/search/', views.api_global_search, name='api_global_search'),
     
+    # AI Assistant & Special Features API
+    path('api/ai-assistant/', ai_views.ai_assistant_api, name='ai_assistant_api'),
+    path('api/playlists/', ai_views.api_playlists, name='api_playlists'),
+    path('api/hifz/', ai_views.api_hifz_tracker, name='api_hifz_tracker'),
+
     # Bookmarks, Reports & Contact 
     path('api/bookmarks/', views.user_bookmarks_json, name='user_bookmarks_json'),
     path('api/bookmark/toggle/', views.toggle_bookmark, name='toggle_bookmark'),
@@ -45,3 +50,4 @@ urlpatterns = [
     path('robots.txt', views.robots_txt_view, name='robots_txt'),
     path('sitemap.xml', views.sitemap_xml_view, name='sitemap_xml'),
 ]
+

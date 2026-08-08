@@ -196,7 +196,9 @@ EMAIL_PORT = env.int('EMAIL_PORT', default=587)
 EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='b4a48a001@smtp-brevo.com')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Maktaba tul Muslim <notification@maktabatulmuslim.com>')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Maktaba tul Muslim <maktabtulmuslim26@gmail.com>')
+CONTACT_EMAIL = 'maktabtulmuslim26@gmail.com'
+
 
 
 

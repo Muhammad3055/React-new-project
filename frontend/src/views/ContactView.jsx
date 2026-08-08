@@ -55,7 +55,8 @@ export default function ContactView() {
               </div>
               <div>
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>Email Support</h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>support@quranportal.org</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>maktabtulmuslim26@gmail.com</p>
+
               </div>
             </div>
           </div>

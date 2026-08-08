@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
 import UserProfileModal from './UserProfileModal';
 
-export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal }) {
+export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat }) {
   const { lang, setLang, t } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,6 +30,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: '✨ Ask AI Assistant', icon: 'fas fa-robot', action: () => { if (openAIChat) openAIChat(); setShowExtrasMenu(false); } },
+    { label: 'Islamic Calendar', icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
+    { label: 'Hifz Memorization', icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
+    { label: 'AI Tajweed Guide', icon: 'fas fa-sparkles', action: () => { if (openTajweed) openTajweed(); setShowExtrasMenu(false); } },
     { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },
     { label: t('khatam'), icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },
     { label: t('fazail'), icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
@@ -42,6 +46,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: t('aboutUs'), icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
     { label: t('contact'), icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
   ];
+
+
 
 
   const showToast = (msg) => {
@@ -243,8 +249,34 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </select>
             </div>
 
+            {/* Dedicated AI Assistant Button */}
+            <button
+              onClick={() => openAIChat && openAIChat()}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
+                color: '#ffffff',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                padding: '5px 12px',
+                borderRadius: '20px',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap'
+              }}
+              title="Open AI Islamic Assistant"
+            >
+              <i className="fas fa-robot" style={{ color: '#f59e0b', fontSize: '0.9rem' }}></i>
+              <span>AI Assistant</span>
+            </button>
+
             {/* Desktop Extras Menu Toggle */}
             <div className="desktop-extras-menu">
+
               <button
                 className={`extras-menu-toggle ${showExtrasMenu ? 'active' : ''}`}
                 onClick={(e) => { e.stopPropagation(); setShowExtrasMenu(!showExtrasMenu); }}

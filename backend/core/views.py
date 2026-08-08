@@ -616,7 +616,53 @@ def submit_report_view(request):
     return JsonResponse({'status': 'success', 'message': 'Thank you! Your error report has been submitted to portal administrators.'})
 
 
+@csrf_exempt
+def submit_contact_view(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    try:
+        if request.content_type == 'application/json':
+            body = json.loads(request.body)
+            name = body.get('name', '').strip()
+            email = body.get('email', '').strip()
+            subject = body.get('subject', '').strip()
+            message = body.get('message', '').strip()
+        else:
+            name = request.POST.get('name', '').strip()
+            email = request.POST.get('email', '').strip()
+            subject = request.POST.get('subject', '').strip()
+            message = request.POST.get('message', '').strip()
+    except Exception:
+        return JsonResponse({'error': 'Invalid payload'}, status=400)
+
+    if not name or not email or not message:
+        return JsonResponse({'error': 'Name, email, and message are required fields.'}, status=400)
+
+    ContactMessage.objects.create(
+        name=name,
+        email=email,
+        subject=subject or 'Website Inquiry',
+        message=message
+    )
+
+    # Attempt to dispatch email notification to maktabtulmuslim26@gmail.com
+    try:
+        from django.core.mail import send_mail
+        send_mail(
+            subject=f"[Maktaba Contact] {subject or 'New Message'}",
+            message=f"New Message Received from Maktaba tul Muslim Contact Form:\n\nName: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message}",
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'maktabtulmuslim26@gmail.com'),
+            recipient_list=['maktabtulmuslim26@gmail.com'],
+            fail_silently=True
+        )
+    except Exception:
+        pass
+
+    return JsonResponse({'status': 'success', 'message': 'JazakAllah Khair! Your message has been sent to maktabtulmuslim26@gmail.com.'})
+
+
 # --- Authentication API Endpoints ---
+
 
 # --- Authentication API Endpoints ---
 

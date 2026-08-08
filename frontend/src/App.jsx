@@ -5,7 +5,10 @@ import AudioPlayer from './components/AudioPlayer';
 import ReportModal from './components/ReportModal';
 import AuthModal from './components/AuthModal';
 import AdminFloatingBar from './components/AdminFloatingBar';
-
+import AIChatbotModal from './components/AIChatbotModal';
+import IslamicCalendarModal from './components/IslamicCalendarModal';
+import MemorizationTrackerModal from './components/MemorizationTrackerModal';
+import AITajweedModal from './components/AITajweedModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -30,8 +33,8 @@ import KhatamTrackerView from './views/KhatamTrackerView';
 import UserDashboardView from './views/UserDashboardView';
 
 import { getApiUrl } from './utils/apiCache';
-
 import { LanguageProvider } from './context/LanguageContext';
+import { Bot, Calendar as CalendarIcon, Award, Sparkles } from 'lucide-react';
 
 export default function App() {
   return (
@@ -80,9 +83,17 @@ function MainAppContent() {
   // Modal States
   const [reportData, setReportData] = useState(null);
   const [authModalMode, setAuthModalMode] = useState(null);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isHifzOpen, setIsHifzOpen] = useState(false);
+  const [isTajweedOpen, setIsTajweedOpen] = useState(false);
 
-  // Keep UI in sync with browser URL and history
+  // Register PWA Service Worker & sync browser URL
   useEffect(() => {
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
     const handlePopState = () => {
       setActiveTab(getTabFromPath(window.location.pathname));
     };
@@ -98,30 +109,30 @@ function MainAppContent() {
       home: 'Maktaba tul Muslim (مكتبة المسلم) - Read Quran Online (English, Urdu, Brahui / Brohi) | MP3 & Taqreer Library',
       read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui (Brohi) Tarjuma | Maktaba tul Muslim',
       quran: 'Quran & Taqreer MP3 Audio Portal - Qaris Tilawat & Scholar Lectures | Maktaba tul Muslim',
-      qaris: '20 Famous Qaris & Reciters - Quran Audio MP3 Downloads | Maktaba tul Muslim',
-      tafseer: 'Tafseer Quran & Verse Explanations - Maktaba tul Muslim',
-      hadith: 'Hadith Collection - Sahih al-Bukhari, Sahih Muslim & Sunan | Maktaba tul Muslim',
-      fazail: 'Fazail & Virtues of Quran & Good Deeds - Maktaba tul Muslim',
-      books: 'Maktaba tul Muslim - Free Islamic PDF Books & Library (Brohi / Urdu / English)',
-      namesOfAllah: '99 Names of Allah (Asma ul Husna) - Maktaba tul Muslim',
-      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr - Maktaba tul Muslim',
-      duas: 'Masnoon Duas & Supplications - Maktaba tul Muslim',
-      khatam: 'Khatam Quran Progress Tracker - Maktaba tul Muslim',
-      contact: 'Contact Us & Feedback - Maktaba tul Muslim (مكتبة المسلم)',
-      about: 'About Us & Portal Profile - Maktaba tul Muslim',
-      bookmarks: 'My Saved Bookmarks - Maktaba tul Muslim',
-      upload: 'Admin Upload Content Studio - Maktaba tul Muslim'
+      qaris: 'Famous Quran Qaris & Reciters - Play & Download Recitations | Maktaba tul Muslim',
+      books: 'Islamic Digital Library - Free PDF Books & Documents | Maktaba tul Muslim',
+      tafseer: 'Authentic Quran Tafseer Commentary & Explanation | Maktaba tul Muslim',
+      hadith: 'Sahih Hadith Collections & Translations | Maktaba tul Muslim',
+      qibla: 'Live Qibla Finder & Accurate Prayer Times | Maktaba tul Muslim',
+      fazail: 'Virtues of Quran & Dhikr (فضائل قرآن) | Maktaba tul Muslim',
+      namesOfAllah: '99 Beautiful Names of Allah (Asma ul Husna) | Maktaba tul Muslim',
+      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr | Maktaba tul Muslim',
+      duas: 'Masnoon Duas & Daily Supplications | Maktaba tul Muslim',
+      khatam: 'Quran Khatam Progress Tracker & Goal Planner | Maktaba tul Muslim',
+      contact: 'Contact Us & Send Feedback | Maktaba tul Muslim',
+      about: 'About Maktaba tul Muslim - Free Authentic Islamic Resource Platform',
+      bookmarks: 'My Saved Bookmarks & Highlights | Maktaba tul Muslim',
+      dashboard: 'User Profile & Personalized Dashboard | Maktaba tul Muslim',
+      upload: 'Admin Media Upload Studio | Maktaba tul Muslim',
     };
-    document.title = seoTitles[activeTab] || 'Maktaba tul Muslim (مكتبة المسلم) - Digital Islamic Library & Quran Portal';
+    document.title = seoTitles[activeTab] || 'Maktaba tul Muslim - Islamic Portal';
   }, [activeTab]);
 
-
-
-  // Check auth status on mount
+  // Check Auth Status on Load
   useEffect(() => {
     fetch(getApiUrl('/api/auth/status/'), { cache: 'no-store', headers: { 'Pragma': 'no-cache' } })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data && data.is_authenticated) {
           const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
           setUser(userObj);
@@ -145,39 +156,43 @@ function MainAppContent() {
       });
   }, []);
 
+  const navigateToTab = (tabName) => {
+    setActiveTab(tabName);
+    const path = tabPathMap[tabName] || '/';
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const playTrack = (url, title, reciter, onEnded = null) => {
     setCurrentTrack({ url, title, reciter, onEnded });
     setIsPlaying(true);
-  };
-
-  const navigateToTab = (tab) => {
-    setActiveTab(tab);
-    const targetPath = tabPathMap[tab] || '/';
-    if (window.location.pathname !== targetPath) {
-      window.history.pushState(null, '', targetPath);
-    }
   };
 
   const openReportModal = (contentType, contentId) => {
     setReportData({ contentType, contentId });
   };
 
-  const openAuthModal = (mode) => {
+  const openAuthModal = (mode = 'login') => {
     setAuthModalMode(mode);
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-white relative">
       <Navbar
         activeTab={activeTab}
         navigateToTab={navigateToTab}
         user={user}
         setUser={setUser}
         openAuthModal={openAuthModal}
-        openReportModal={openReportModal}
+        openCalendar={() => setIsCalendarOpen(true)}
+        openHifz={() => setIsHifzOpen(true)}
+        openTajweed={() => setIsTajweedOpen(true)}
+        openAIChat={() => setIsAIChatOpen(true)}
       />
 
-      <main className="main-content">
+      <main className="flex-1">
         {activeTab === 'home' && (
           <HomeView
             navigateToTab={navigateToTab}
@@ -284,8 +299,30 @@ function MainAppContent() {
         />
       )}
 
+      {/* Interactive Feature Modals */}
+      <AIChatbotModal isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
+      <IslamicCalendarModal isOpen={isCalendarOpen} onClose={() => setIsCalendarOpen(false)} />
+      <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />
+      <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />
+
+      {/* Prominent Floating AI Islamic Assistant Chatbot Launcher Button */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2">
+        <button
+          onClick={() => setIsAIChatOpen(true)}
+          className="flex items-center space-x-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500 text-white shadow-2xl shadow-emerald-500/60 hover:scale-105 active:scale-95 transition-all duration-300 border border-emerald-300/40"
+          style={{ boxShadow: '0 10px 30px rgba(16, 185, 129, 0.45)' }}
+        >
+          <Bot className="w-6 h-6 animate-pulse text-amber-300" />
+          <span className="font-bold text-xs sm:text-sm tracking-wide font-sans">
+            🤖 Ask AI Assistant
+          </span>
+          <span className="w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
+        </button>
+      </div>
+
       {/* Floating Admin Studio Bar (Only visible when logged in as admin) */}
       <AdminFloatingBar user={user} navigateToTab={navigateToTab} />
     </div>
+
   );
 }

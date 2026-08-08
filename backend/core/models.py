@@ -341,6 +341,10 @@ class UserProfilePreferences(models.Model):
     last_read_ayah = models.PositiveIntegerField(default=1)
     khatm_target_days = models.PositiveIntegerField(default=30)
     completed_surahs_json = models.TextField(default='[]')
+    reading_streak_days = models.PositiveIntegerField(default=0)
+    total_ayahs_read = models.PositiveIntegerField(default=0)
+    achievements_json = models.TextField(default='[]')
+    reading_history_json = models.TextField(default='[]')
 
     def __str__(self):
         return f"Preferences for {self.user.username}"
@@ -389,6 +393,44 @@ class ZakatHistory(models.Model):
 
     def __str__(self):
         return f"Zakat {self.year} - {self.user.username}: PKR {self.zakat_payable}"
+
+
+class AudioPlaylist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='playlists')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    tracks_json = models.TextField(default='[]', help_text="JSON list of track items: [{id, title, url, type, reciter}]")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Playlist '{self.title}' by {self.user.username}"
+
+
+class HifzTracker(models.Model):
+    STATUS_CHOICES = [
+        ('memorized', 'Memorized (محفوظ)'),
+        ('in_progress', 'In Progress (جاري Memorization)'),
+        ('revision', 'Needs Revision (مراجعة)'),
+        ('not_started', 'Not Started'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hifz_records')
+    surah_number = models.PositiveIntegerField()
+    surah_name = models.CharField(max_length=100)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='not_started')
+    notes = models.TextField(blank=True)
+    last_revised = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'surah_number')
+        ordering = ['surah_number']
+
+    def __str__(self):
+        return f"Hifz {self.user.username} - Surah {self.surah_number} ({self.get_status_display()})"
+
 
 
 
