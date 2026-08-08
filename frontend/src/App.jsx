@@ -140,7 +140,10 @@ function MainAppContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data && data.is_authenticated) {
-          const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
+          const savedUserStr = localStorage.getItem('quran_portal_user');
+          let savedUser = {};
+          try { savedUser = savedUserStr ? JSON.parse(savedUserStr) : {}; } catch (e) {}
+          const userObj = { ...savedUser, username: data.username, email: data.email, is_staff: data.is_staff };
           setUser(userObj);
           localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
         } else {

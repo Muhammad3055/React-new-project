@@ -1392,6 +1392,19 @@ def api_user_dashboard(request):
             'khatm_target_days': pref.khatm_target_days,
             'completed_surahs': completed_surahs,
             'khatm_percent': khatm_percent,
+            # Extended fields
+            'full_name': pref.full_name,
+            'dob': pref.dob,
+            'gender': pref.gender,
+            'bio': pref.bio,
+            'contact_phone': pref.contact_phone,
+            'frame': pref.frame,
+            'avatar': pref.avatar,
+            'notif_email_updates': pref.notif_email_updates,
+            'notif_prayer_alerts': pref.notif_prayer_alerts,
+            'notif_daily_hadith': pref.notif_daily_hadith,
+            'privacy_profile_visibility': pref.privacy_profile_visibility,
+            'privacy_show_activity': pref.privacy_show_activity,
         },
         'bookmarks': bookmarks_data,
         'namaz_days': namaz_days,
@@ -1427,6 +1440,12 @@ def api_update_user_preferences(request):
         if 'contact_phone' in body: pref.contact_phone = body['contact_phone']
         if 'frame' in body: pref.frame = body['frame']
         if 'avatar' in body: pref.avatar = body['avatar']
+        
+        if 'notif_email_updates' in body: pref.notif_email_updates = bool(body['notif_email_updates'])
+        if 'notif_prayer_alerts' in body: pref.notif_prayer_alerts = bool(body['notif_prayer_alerts'])
+        if 'notif_daily_hadith' in body: pref.notif_daily_hadith = bool(body['notif_daily_hadith'])
+        if 'privacy_profile_visibility' in body: pref.privacy_profile_visibility = body['privacy_profile_visibility']
+        if 'privacy_show_activity' in body: pref.privacy_show_activity = bool(body['privacy_show_activity'])
 
         pref.save()
 

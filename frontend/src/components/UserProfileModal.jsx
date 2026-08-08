@@ -39,6 +39,13 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
   const [contactPhone, setContactPhone] = useState(user?.contact_phone || '');
   const [prefLang, setPrefLang] = useState(user?.preferred_language || lang || 'en');
 
+  // Notifications & Privacy
+  const [notifEmail, setNotifEmail] = useState(user?.notif_email_updates ?? true);
+  const [notifPrayer, setNotifPrayer] = useState(user?.notif_prayer_alerts ?? true);
+  const [notifHadith, setNotifHadith] = useState(user?.notif_daily_hadith ?? false);
+  const [privacyVisibility, setPrivacyVisibility] = useState(user?.privacy_profile_visibility || 'public');
+  const [privacyActivity, setPrivacyActivity] = useState(user?.privacy_show_activity ?? true);
+
   // Frame
   const [selectedFrame, setSelectedFrame] = useState(user?.frame || 'gold');
 
@@ -108,6 +115,40 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
     setSavedSuccess(t('saveProfile', 'Profile saved successfully!'));
     setTimeout(() => setSavedSuccess(''), 3500);
   };
+
+  // ---- Save Notifications & Privacy ----
+  const handleSavePreferences = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setSavedSuccess('');
+
+    const payload = {
+      notif_email_updates: notifEmail,
+      notif_prayer_alerts: notifPrayer,
+      notif_daily_hadith: notifHadith,
+      privacy_profile_visibility: privacyVisibility,
+      privacy_show_activity: privacyActivity
+    };
+
+    const updatedUser = { ...user, ...payload };
+    try {
+      await fetch(getApiUrl('/api/user/preferences/update/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+    } catch {}
+
+    localStorage.setItem('quran_portal_user', JSON.stringify(updatedUser));
+    if (onUpdateUser) onUpdateUser(updatedUser);
+
+    logActivity('Preferences Updated', activeTab === 'notifications' ? 'Notifications' : 'Privacy');
+    setSaving(false);
+    setSavedSuccess('Preferences saved successfully!');
+    setTimeout(() => setSavedSuccess(''), 3500);
+  };
+
 
   // ---- Apply Frame ----
   const handleApplyFrame = async (e) => {
@@ -501,7 +542,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
         {/* TAB 6: NOTIFICATIONS */}
         {activeTab === 'notifications' && (
-          <div>
+          <form onSubmit={handleSavePreferences}>
             <h4 style={{ color: 'var(--accent-gold)', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem' }}>
               <i className="fas fa-bell" style={{ marginRight: '0.5rem' }}></i> Notification Preferences
             </h4>
@@ -511,7 +552,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                   <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Email Updates</div>
                   <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Receive platform news and updates</div>
                 </div>
-                <input type="checkbox" defaultChecked style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+                <input type="checkbox" checked={notifEmail} onChange={e => setNotifEmail(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
               </label>
               <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0.8rem 0' }} />
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
@@ -519,7 +560,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                   <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Prayer Alerts</div>
                   <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Namaz reminder notifications</div>
                 </div>
-                <input type="checkbox" defaultChecked style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+                <input type="checkbox" checked={notifPrayer} onChange={e => setNotifPrayer(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
               </label>
               <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0.8rem 0' }} />
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
@@ -527,22 +568,31 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                   <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Daily Hadith</div>
                   <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Receive a daily Hadith via email</div>
                 </div>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+                <input type="checkbox" checked={notifHadith} onChange={e => setNotifHadith(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
               </label>
             </div>
-            <button style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', width: '100%', justifyContent: 'center' }}>Save Preferences</button>
-          </div>
+            
+            {savedSuccess && (
+              <div style={{ padding: '0.75rem 1rem', background: '#dcfce7', color: '#15803d', borderRadius: '10px', marginBottom: '1rem', fontWeight: 700 }}>
+                {savedSuccess}
+              </div>
+            )}
+
+            <button type="submit" disabled={saving} style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', width: '100%', justifyContent: 'center' }}>
+              {saving ? <i className="fas fa-spinner fa-spin"></i> : 'Save Preferences'}
+            </button>
+          </form>
         )}
 
         {/* TAB 7: PRIVACY & SECURITY */}
         {activeTab === 'privacy' && (
-          <div>
+          <form onSubmit={handleSavePreferences}>
             <h4 style={{ color: 'var(--accent-gold)', fontWeight: 800, marginBottom: '1rem', fontSize: '1rem' }}>
               <i className="fas fa-user-shield" style={{ marginRight: '0.5rem' }}></i> Privacy Settings
             </h4>
             <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.8rem', fontSize: '0.85rem', fontWeight: 700 }}>Profile Visibility</label>
-              <select style={inputStyle}>
+              <select value={privacyVisibility} onChange={e => setPrivacyVisibility(e.target.value)} style={inputStyle}>
                 <option value="public">Public (Visible to everyone)</option>
                 <option value="friends">Friends Only</option>
                 <option value="private">Private (Only me)</option>
@@ -554,12 +604,21 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                     <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>Show Activity Status</div>
                     <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Let others see when you are online</div>
                   </div>
-                  <input type="checkbox" defaultChecked style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
+                  <input type="checkbox" checked={privacyActivity} onChange={e => setPrivacyActivity(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--accent-gold)' }} />
                 </label>
               </div>
             </div>
-            <button style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', width: '100%', justifyContent: 'center' }}>Update Privacy</button>
-          </div>
+
+            {savedSuccess && (
+              <div style={{ padding: '0.75rem 1rem', background: '#dcfce7', color: '#15803d', borderRadius: '10px', marginBottom: '1rem', fontWeight: 700 }}>
+                {savedSuccess}
+              </div>
+            )}
+
+            <button type="submit" disabled={saving} style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', width: '100%', justifyContent: 'center' }}>
+              {saving ? <i className="fas fa-spinner fa-spin"></i> : 'Update Privacy'}
+            </button>
+          </form>
         )}
 
         {/* TAB 8: DELETE ACCOUNT */}

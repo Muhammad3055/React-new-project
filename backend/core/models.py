@@ -349,6 +349,12 @@ class UserProfilePreferences(models.Model):
     contact_phone = models.CharField(max_length=20, blank=True, default='')
     frame = models.CharField(max_length=50, blank=True, default='gold')
     avatar = models.URLField(max_length=500, blank=True, default='')
+    # Real-world profile fields
+    notif_email_updates = models.BooleanField(default=True)
+    notif_prayer_alerts = models.BooleanField(default=True)
+    notif_daily_hadith = models.BooleanField(default=False)
+    privacy_profile_visibility = models.CharField(max_length=20, default='public')
+    privacy_show_activity = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Preferences for {self.user.username}"
