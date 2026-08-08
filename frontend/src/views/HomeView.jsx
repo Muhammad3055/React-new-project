@@ -305,7 +305,85 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           </div>
         </div>
 
+        {/* Interactive Islamic Tools & Services Section */}
+        <div style={{ marginTop: '1.75rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+              <i className="fas fa-tools" style={{ color: 'var(--accent-gold)' }}></i> Interactive Islamic Tools & Services
+            </h3>
+            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Quick access to spiritual trackers, AI guide, & prayer tools</span>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '0.85rem'
+          }}>
+            <div 
+              onClick={() => handleNav('read')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
+            >
+              <i className="fas fa-book-open" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Read Quran</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>114 Surahs & Tafseer</p>
+            </div>
+
+            <div 
+              onClick={() => handleNav('quran')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
+            >
+              <i className="fas fa-headphones" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>MP3 Recitations</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>20 Qaris & Brahui MP3</p>
+            </div>
+
+            <div 
+              onClick={() => handleNav('khatam')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
+            >
+              <i className="fas fa-chart-line" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Khatam Tracker</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>30-Day Quran Goal</p>
+            </div>
+
+            <div 
+              onClick={() => handleNav('tasbeeh')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
+            >
+              <i className="fas fa-ring" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Digital Tasbeeh</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>Zikr & Counter</p>
+            </div>
+
+            <div 
+              onClick={() => handleNav('qibla')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
+            >
+              <i className="fas fa-compass" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Qibla Compass</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>Kaaba Direction</p>
+            </div>
+
+            <div 
+              onClick={() => handleNav('books')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
+            >
+              <i className="fas fa-book-reader" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>PDF Books</h4>
+
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>Authentic Library</p>
+            </div>
+          </div>
+        </div>
+
         {/* Live Portal Stats Grid (Option 4 Styled) */}
+
         <div style={{ margin: '1.5rem 0' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
             <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>

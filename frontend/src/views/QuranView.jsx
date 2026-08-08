@@ -263,17 +263,13 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
     { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
     { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
-    { id: 'quran_english', label: 'English Tarjuma MP3', sub: 'English Translation', icon: 'fas fa-globe' },
-    { id: 'quran_sindhi', label: 'Sindhi Tarjuma MP3', sub: 'سنڌي قرآن ترجمو', icon: 'fas fa-microphone' },
-    { id: 'quran_pashto', label: 'Pashto Tarjuma MP3', sub: 'پښتو قرآن ژباړه', icon: 'fas fa-volume-up' },
-    { id: 'quran_balochi', label: 'Balochi Tarjuma MP3', sub: 'بلوچی قرآن ترجمه', icon: 'fas fa-headphones' },
+    { id: 'quran_balochi', label: 'Balochi Tarjuma MP3', sub: 'بلوچی قرآن ترجمہ', icon: 'fas fa-headphones' },
+    { id: 'quran_mixed', label: 'Mixed Quran MP3', sub: 'مکسڈ قرآن آڈیو', icon: 'fas fa-compact-disc' },
     { id: 'taqreer_arabic', label: 'Arabic Taqreers', sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
     { id: 'taqreer_brahui', label: 'Brahui Taqreers', sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
     { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
-    { id: 'taqreer_english', label: 'English Lectures', sub: 'English Speeches', icon: 'fas fa-[#3b82f6]' },
-    { id: 'taqreer_sindhi', label: 'Sindhi Taqreers', sub: 'سنڌي تقريرون', icon: 'fas fa-bullhorn' },
-    { id: 'taqreer_pashto', label: 'Pashto Taqreers', sub: 'پښتو تقريرونه', icon: 'fas fa-podcast' },
     { id: 'taqreer_balochi', label: 'Balochi Taqreers', sub: 'بلوچی گپ', icon: 'fas fa-microphone' },
+    { id: 'taqreer_mixed', label: 'Mixed Taqreers', sub: 'مکسڈ تقارير', icon: 'fas fa-layer-group' },
   ];
 
   const [, setTick] = useState(0);
@@ -304,14 +300,14 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           <i className="fas fa-headphones-alt"></i> Audio MP3 Portal & Recitations
         </h1>
         <p style={{ color: '#e2e8f0', fontSize: '0.88rem', marginTop: '0.35rem', lineHeight: '1.5' }}>
-          Listen to complete Quran MP3 recitations in Arabic or Quran Translations & Taqreers in Brahui (براہوئی) and Urdu (اردو).
+          Listen to complete Quran MP3 recitations in Arabic, Brahui (براہوئی), Urdu (اردو), Balochi, or Mixed audio collections.
         </p>
       </div>
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
-        gap: '0.65rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
+        gap: '0.75rem',
         marginBottom: '1.75rem'
       }}>
         {subCategoryOptions.map(opt => {
@@ -321,31 +317,35 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               key={opt.id}
               onClick={() => { setSubCategory(opt.id); setQuranPage(1); }}
               style={{
-                padding: '0.6rem 0.85rem',
-                borderRadius: '16px',
-                border: '2px solid var(--accent-gold)',
-                background: isActive ? '#ffffff' : 'var(--bg-card)',
-                color: 'var(--accent-gold)',
-                boxShadow: isActive ? '0 4px 14px rgba(180,83,9,0.18)' : '0 2px 6px rgba(0,0,0,0.04)',
+                padding: '0.65rem 1rem',
+                borderRadius: '30px',
+                border: isActive ? '2px solid var(--accent-gold)' : '2px solid rgba(245, 158, 11, 0.5)',
+                background: isActive ? 'linear-gradient(135deg, #059669 0%, #0d9488 100%)' : 'rgba(2, 44, 34, 0.85)',
+                color: isActive ? '#ffffff' : 'var(--accent-gold)',
+                boxShadow: isActive ? '0 6px 18px rgba(16, 185, 129, 0.45)' : '0 3px 10px rgba(0, 0, 0, 0.15)',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                justifyContent: 'center'
+                gap: '0.6rem',
+                justifyContent: 'center',
+                outline: 'none'
               }}
             >
-              <i className={opt.icon} style={{ fontSize: '1rem', color: 'var(--accent-gold)' }}></i>
+              <i className={opt.icon} style={{ fontSize: '1.05rem', color: isActive ? '#f59e0b' : 'var(--accent-gold)' }}></i>
               <div style={{ textAlign: 'left', lineHeight: '1.2' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.82rem', color: 'var(--accent-gold)' }}>{opt.label}</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.9, color: 'var(--text-muted)' }}>{opt.sub}</div>
+                <div style={{ fontWeight: 800, fontSize: '0.83rem', color: isActive ? '#ffffff' : 'var(--accent-gold)' }}>{opt.label}</div>
+                <div style={{ fontSize: '0.7rem', opacity: isActive ? 0.95 : 0.8, color: isActive ? '#e2e8f0' : 'var(--text-muted)' }}>{opt.sub}</div>
               </div>
             </button>
           );
         })}
       </div>
 
+
+
       {/* SECTION 1: Arabic Tilawat MP3 */}
+
       {subCategory === 'quran_arabic' && (
         <div>
           <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
