@@ -365,10 +365,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               style={{
                 padding: '0.7rem 1rem',
                 borderRadius: '30px',
-                border: isActive ? '2px solid var(--accent-gold)' : '1.5px solid #d6d3d1',
-                background: isActive ? 'linear-gradient(135deg, #022c22 0%, #1c1917 100%)' : '#ffffff',
-                color: isActive ? '#ffffff' : '#1c1917',
-                boxShadow: isActive ? '0 6px 18px rgba(0, 0, 0, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: isActive ? '2.5px solid #b45309' : '1.5px solid #d6d3d1',
+                background: isActive ? '#fef3c7' : '#ffffff',
+                color: '#000000',
+                boxShadow: isActive ? '0 6px 18px rgba(180, 83, 9, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)',
                 cursor: 'pointer',
                 transition: 'all 0.25s ease',
                 display: 'flex',
@@ -378,15 +378,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 outline: 'none'
               }}
             >
-              <i className={opt.icon} style={{ fontSize: '1.1rem', color: isActive ? '#f59e0b' : '#d97706' }}></i>
+              <i className={opt.icon} style={{ fontSize: '1.1rem', color: isActive ? '#b45309' : '#d97706' }}></i>
               <div style={{ textAlign: 'left', lineHeight: '1.25' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.85rem', color: isActive ? '#ffffff' : '#1c1917' }}>{opt.label}</div>
-                <div style={{ fontSize: '0.72rem', color: isActive ? '#fcd34d' : '#6b7280', fontWeight: 600 }}>{opt.sub}</div>
+                <div style={{ fontWeight: 900, fontSize: '0.85rem', color: '#000000' }}>{opt.label}</div>
+                <div style={{ fontSize: '0.72rem', color: isActive ? '#78350f' : '#6b7280', fontWeight: 700 }}>{opt.sub}</div>
               </div>
             </button>
           );
         })}
       </div>
+
 
       {subCategory === 'quran_arabic' && (
         <div>
