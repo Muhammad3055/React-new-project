@@ -13,14 +13,19 @@ const FOLDERS_KEY = 'quran_portal_admin_folders';
 const DELETED_ITEMS_KEY = 'quran_portal_deleted_items';
 
 export const defaultFolders = [
+  { id: 'quran_arabic', name: 'Arabic Tilawat (تلاوت قرآن)', icon: 'fas fa-quran', color: '#10b981' },
+  { id: 'quran_brahui', name: 'Brahui Tarjuma MP3 (براہوئی قرآن)', icon: 'fas fa-volume-up', color: '#f59e0b' },
+  { id: 'quran_urdu', name: 'Urdu Tarjuma MP3 (اردو قرآن)', icon: 'fas fa-headphones', color: '#3b82f6' },
+  { id: 'taqreer_arabic', name: 'Arabic Taqreers (تقارير عربية)', icon: 'fas fa-microphone-alt', color: '#8b5cf6' },
+  { id: 'taqreer_brahui', name: 'Brahui Taqreers (تقارير براہوئی)', icon: 'fas fa-bullhorn', color: '#ec4899' },
+  { id: 'taqreer_urdu', name: 'Urdu Taqreers (تقارير اردو)', icon: 'fas fa-podcast', color: '#eab308' },
+  { id: 'quran_mixed', name: 'Mixed Audio MP3 (مکسڈ آڈیو)', icon: 'fas fa-compact-disc', color: '#14b8a6' },
   { id: 'books', name: 'Books & PDF Library', icon: 'fas fa-book', color: '#f59e0b' },
-  { id: 'taqreer', name: 'MP3 Audios & Taqreers', icon: 'fas fa-headphones', color: '#10b981' },
   { id: 'hadith', name: 'Hadith Collections', icon: 'fas fa-scroll', color: '#6366f1' },
   { id: 'tafseer', name: 'Tafseer Quran', icon: 'fas fa-bookmark', color: '#ec4899' },
   { id: 'duas', name: 'Du\'as & Azkar', icon: 'fas fa-hands', color: '#8b5cf6' },
-  { id: 'fazail', name: 'Fazail & Virtues', icon: 'fas fa-star', color: '#eab308' },
-  { id: 'namesOfAllah', name: '99 Names of Allah', icon: 'fas fa-moon', color: '#14b8a6' },
 ];
+
 
 export function getDeletedItemIds() {
   try {

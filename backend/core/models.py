@@ -19,14 +19,12 @@ class QuranAudio(models.Model):
         ('Madani', 'Madani'),
     ]
     LANGUAGE_CHOICES = [
-        ('arabic', 'Arabic Recitation (تلاوت)'),
-        ('brahui', 'Brahui Translation MP3 (براہوئی ترجمہ)'),
-        ('urdu', 'Urdu Translation MP3 (اردو ترجمہ)'),
-        ('english', 'English Translation MP3'),
-        ('sindhi', 'Sindhi Translation MP3 (سنڌي ترجمو)'),
-        ('pashto', 'Pashto Translation MP3 (پښتو ژباړه)'),
-        ('balochi', 'Balochi Translation MP3 (بلوچی گپ)'),
+        ('arabic', 'Arabic (عربي)'),
+        ('brahui', 'Brahui Translation MP3 (براہوئی)'),
+        ('urdu', 'Urdu Translation MP3 (اردو)'),
+        ('mixed', 'Mixed Collection (مکسڈ آڈیو)'),
     ]
+
 
     surah_number = models.PositiveIntegerField(db_index=True)
     surah_name_arabic = models.CharField(max_length=100)
@@ -59,11 +57,9 @@ class TaqreerAudio(models.Model):
         ('arabic', 'Arabic (عربي)'),
         ('brahui', 'Brahui (براہوئی)'),
         ('urdu', 'Urdu (اردو)'),
-        ('english', 'English'),
-        ('sindhi', 'Sindhi (سنڌي)'),
-        ('pashto', 'Pashto (پښتو)'),
-        ('balochi', 'Balochi (بلوچی)'),
+        ('mixed', 'Mixed Collection (مکسڈ تقارير)'),
     ]
+
 
     title = models.CharField(max_length=255)
     speaker = models.CharField(max_length=150, default="Islamic Scholar")
