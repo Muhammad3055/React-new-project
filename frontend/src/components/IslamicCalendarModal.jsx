@@ -1,5 +1,6 @@
 import React from 'react';
-import { Moon, Calendar, Sparkles, X, Sun, Compass, Clock, Star } from 'lucide-react';
+import { Moon, Calendar, Sparkles, X, Star } from 'lucide-react';
+
 
 const HIJRI_MONTHS = [
   'Muharram (محرم)', 'Safar (صفر)', 'Rabi al-Awwal (ربيع الأول)', 'Rabi al-Thani (ربيع الثاني)',

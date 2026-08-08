@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Award, CheckCircle2, Clock, AlertCircle, Sparkles, X, BookOpen, RefreshCw, ChevronRight } from 'lucide-react';
+import { Award, X } from 'lucide-react';
+
 
 const SURAHS_LIST = [
   { number: 1, name: 'Al-Fatiha', ayahs: 7, juz: 1 },

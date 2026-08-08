@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Volume2, Sparkles, X, Check, Mic, BookOpen, AlertCircle, Play } from 'lucide-react';
+import { Sparkles, X, Check, Mic } from 'lucide-react';
+
 
 const TAJWEED_RULES = [
   {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Bot, Send, X, Sparkles, BookOpen, Volume2, Copy, Check, MessageSquare, 
-  HelpCircle, User, RefreshCw, Compass, Moon, Heart
+  Bot, Send, X, BookOpen, Volume2, Copy, Check, User, RefreshCw
 } from 'lucide-react';
+
 
 const QUICK_PROMPTS = [
   { icon: '📖', label: 'Surah Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?' },

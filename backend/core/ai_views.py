@@ -1,10 +1,8 @@
 import json
-import os
-import urllib.request
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-from .models import Tafseer, Hadith, BookMedia, QuranAudio, AudioPlaylist, HifzTracker, UserProfilePreferences
+from .models import Tafseer, Hadith, AudioPlaylist, HifzTracker
+
 
 # Off-topic filter for non-Islamic topics
 OTHER_RELIGIONS_KEYWORDS = [

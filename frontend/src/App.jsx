@@ -34,7 +34,7 @@ import UserDashboardView from './views/UserDashboardView';
 
 import { getApiUrl } from './utils/apiCache';
 import { LanguageProvider } from './context/LanguageContext';
-import { Bot, Calendar as CalendarIcon, Award, Sparkles } from 'lucide-react';
+
 
 export default function App() {
   return (
