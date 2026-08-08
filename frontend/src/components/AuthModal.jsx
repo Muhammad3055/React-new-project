@@ -411,24 +411,21 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     setSubmitting(true);
 
     if (provider === 'google') {
-      if (window.google?.accounts?.id) {
+      if (window.google?.accounts?.oauth2) {
         try {
-          window.google.accounts.id.initialize({
+          const client = window.google.accounts.oauth2.initTokenClient({
             client_id: window.GOOGLE_OAUTH_CLIENT_ID || '737764543282-iirc07mgk8du29h55p7s4mbs97h2d86g.apps.googleusercontent.com',
+            scope: 'email profile',
             callback: (response) => {
-              if (response && response.credential) {
-                executeSocialAuth('google', response.credential);
+              if (response && response.access_token) {
+                executeSocialAuth('google', '', response.access_token);
               } else {
                 setSubmitting(false);
                 setError('Google Sign-In was cancelled.');
               }
             }
           });
-          window.google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-              executeSocialAuth('google', '', '', email || username);
-            }
-          });
+          client.requestAccessToken();
           return;
         } catch (e) {
           console.error("Google Auth Exception:", e);
@@ -446,19 +443,22 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             }
           };
           const msalInstance = new window.msal.PublicClientApplication(msalConfig);
-          msalInstance.loginPopup({ scopes: ['user.read', 'email', 'profile'] })
-            .then(res => {
-              if (res && (res.accessToken || res.idToken)) {
-                executeSocialAuth('microsoft', res.idToken || '', res.accessToken || '', res.account?.username || '');
-              } else {
+          // msal-browser 2.x+ requires initialize() before loginPopup
+          msalInstance.initialize().then(() => {
+            msalInstance.loginPopup({ scopes: ['user.read', 'email', 'profile'] })
+              .then(res => {
+                if (res && (res.accessToken || res.idToken)) {
+                  executeSocialAuth('microsoft', res.idToken || '', res.accessToken || '', res.account?.username || '');
+                } else {
+                  setSubmitting(false);
+                  setError('Microsoft authentication failed.');
+                }
+              })
+              .catch(() => {
                 setSubmitting(false);
-                setError('Microsoft authentication failed.');
-              }
-            })
-            .catch(() => {
-              setSubmitting(false);
-              setError('Microsoft Sign-In was cancelled.');
-            });
+                setError('Microsoft Sign-In was cancelled.');
+              });
+          });
           return;
         } catch (e) {
           console.error("Microsoft MSAL Exception:", e);

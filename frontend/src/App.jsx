@@ -198,7 +198,7 @@ function MainAppContent() {
         openAIChat={() => setIsAIChatOpen(true)}
       />
 
-      <main className="flex-1">
+      <main className="main-content" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
         {activeTab === 'home' && (
           <HomeView
             navigateToTab={navigateToTab}
