@@ -1419,10 +1419,27 @@ def api_update_user_preferences(request):
         if 'last_read_ayah' in body: pref.last_read_ayah = int(body['last_read_ayah'])
         if 'khatm_target_days' in body: pref.khatm_target_days = int(body['khatm_target_days'])
         if 'completed_surahs' in body: pref.completed_surahs_json = json.dumps(body['completed_surahs'])
+        # Extended profile fields
+        if 'full_name' in body: pref.full_name = body['full_name']
+        if 'dob' in body: pref.dob = body['dob']
+        if 'gender' in body: pref.gender = body['gender']
+        if 'bio' in body: pref.bio = body['bio']
+        if 'contact_phone' in body: pref.contact_phone = body['contact_phone']
+        if 'frame' in body: pref.frame = body['frame']
+        if 'avatar' in body: pref.avatar = body['avatar']
 
         pref.save()
-        return JsonResponse({'status': 'success', 'message': 'Preferences saved successfully'})
+
+        # Also update Django User's first/last name if full_name provided
+        if 'full_name' in body and body['full_name']:
+            parts = body['full_name'].strip().split(' ', 1)
+            request.user.first_name = parts[0]
+            request.user.last_name = parts[1] if len(parts) > 1 else ''
+            request.user.save(update_fields=['first_name', 'last_name'])
+
+        return JsonResponse({'status': 'success', 'message': 'Profile & Preferences saved successfully'})
     return JsonResponse({'status': 'error'}, status=400)
+
 
 
 @csrf_exempt

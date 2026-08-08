@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getApiUrl } from '../utils/apiCache';
 import { useLanguage } from '../context/LanguageContext';
+import { logActivity } from './UserProfileModal';
 
 export default function AuthModal({ initialMode, onClose, setUser }) {
   const { lang, setLang, t } = useLanguage();
@@ -25,6 +26,9 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [submitting, setSubmitting] = useState(false);
   const [accountCreatedSuccess, setAccountCreatedSuccess] = useState(false);
 
+  // Welcome toast (one-time first login)
+  const [showWelcome, setShowWelcome] = useState(false);
+
   // OTP Verification State
   const [step, setStep] = useState('input'); // 'input' | 'otp'
   const [pendingEmail, setPendingEmail] = useState('');
@@ -35,6 +39,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   // Social Auth State
   const [socialProvider, setSocialProvider] = useState(null);
   const [socialEmail, setSocialEmail] = useState('');
+
 
   // Refs for 6 individual OTP input boxes
   const otpInputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
@@ -141,11 +146,21 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
             const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
             localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
             setUser(userObj);
-            onClose();
+            logActivity('Signed In', `Welcome back, ${data.username}`);
+            // One-time first login welcome
+            const welcomed = localStorage.getItem('mtm_welcomed');
+            if (!welcomed) {
+              localStorage.setItem('mtm_welcomed', '1');
+              setShowWelcome(true);
+              setTimeout(() => { setShowWelcome(false); onClose(); }, 3000);
+            } else {
+              onClose();
+            }
           } else {
             setError(data.error || 'Invalid credentials. Please check your username/email and password.');
             if (data.no_account) setNoAccountError(true);
           }
+
         })
         .catch(() => {
           setSubmitting(false);
@@ -328,10 +343,19 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           setAccountCreatedSuccess(true);
           const userObj = { username: data.username, email: data.email, is_staff: data.is_staff };
           localStorage.setItem('quran_portal_user', JSON.stringify(userObj));
-          setTimeout(() => {
-            setUser(userObj);
-            onClose();
-          }, 1200);
+          logActivity('Account Created / Signed In', `Welcome, ${data.username}`);
+          // Always show welcome on fresh signup/first OTP verify
+          const welcomed = localStorage.getItem('mtm_welcomed');
+          if (!welcomed) {
+            localStorage.setItem('mtm_welcomed', '1');
+            setTimeout(() => {
+              setUser(userObj);
+              setShowWelcome(true);
+              setTimeout(() => { setShowWelcome(false); onClose(); }, 3000);
+            }, 800);
+          } else {
+            setTimeout(() => { setUser(userObj); onClose(); }, 1200);
+          }
         } else {
           setError(data.error || 'Invalid verification code.');
         }
@@ -343,6 +367,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         setUser(userObj);
         onClose();
       });
+
   };
 
   // Official OAuth 2.0 / OpenID Connect Token Verification Handler
@@ -473,6 +498,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   };
 
   return (
+    <>
     <div
       className="modal-overlay"
       onClick={onClose}
@@ -1093,5 +1119,26 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         </div>
       </div>
     </div>
+
+    {/* One-Time First Login Welcome Toast */}
+    {showWelcome && (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)' }}>
+        <div style={{ background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', border: '2px solid #f59e0b', borderRadius: '24px', padding: '2.5rem 3rem', textAlign: 'center', maxWidth: '420px', width: '90%', boxShadow: '0 0 60px rgba(245,158,11,0.4)', animation: 'fadeInScale 0.4s ease' }}>
+          <div style={{ fontSize: '3.5rem', marginBottom: '0.75rem' }}>🕌</div>
+          <h2 style={{ color: '#f59e0b', fontWeight: 900, fontSize: '1.5rem', margin: '0 0 0.5rem' }}>
+            {t('welcomeTitle', 'Welcome to Maktaba tul Muslim!')}
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', margin: '0 0 1rem', lineHeight: 1.6 }}>
+            {t('welcomeSubtitle', 'Assalamu Alaikum! May Allah bless your journey of knowledge.')}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginTop: '1rem' }}>
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b', opacity: 0.4 + i * 0.3 }}></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

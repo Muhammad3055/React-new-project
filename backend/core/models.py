@@ -341,9 +341,18 @@ class UserProfilePreferences(models.Model):
     total_ayahs_read = models.PositiveIntegerField(default=0)
     achievements_json = models.TextField(default='[]')
     reading_history_json = models.TextField(default='[]')
+    # Extended profile fields
+    full_name = models.CharField(max_length=150, blank=True, default='')
+    dob = models.CharField(max_length=20, blank=True, default='')
+    gender = models.CharField(max_length=20, blank=True, default='male')
+    bio = models.TextField(blank=True, default='')
+    contact_phone = models.CharField(max_length=20, blank=True, default='')
+    frame = models.CharField(max_length=50, blank=True, default='gold')
+    avatar = models.URLField(max_length=500, blank=True, default='')
 
     def __str__(self):
         return f"Preferences for {self.user.username}"
+
 
 
 class DailyPrayerTracker(models.Model):
