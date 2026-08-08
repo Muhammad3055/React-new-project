@@ -874,6 +874,7 @@ def api_send_otp(request):
         password = body.get('password', '').strip()
         full_name = body.get('full_name', '').strip()
         provider = body.get('provider', '').strip()
+        gender = body.get('gender', 'male').strip().lower()
     except Exception:
         return JsonResponse({'error': 'Invalid request data'}, status=400)
 
@@ -938,6 +939,7 @@ def api_send_otp(request):
         'password': password,
         'full_name': full_name,
         'provider': provider,
+        'gender': gender,
         'user_id': target_user.id if target_user else None,
         'created_at': time.time()
     }
@@ -1120,6 +1122,13 @@ def api_verify_otp(request):
             target_user.is_staff = True
             target_user.is_superuser = True
         target_user.save()
+        
+        # Save gender to preferences
+        gender = pending.get('gender')
+        if gender:
+            pref, _ = UserProfilePreferences.objects.get_or_create(user=target_user)
+            pref.gender = gender
+            pref.save()
 
     elif auth_type == 'social':
         email = pending.get('email')

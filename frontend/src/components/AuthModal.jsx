@@ -14,6 +14,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [gender, setGender] = useState('male');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
@@ -252,7 +253,8 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           full_name: fullName.trim(),
           username: username.trim(),
           email: email.trim().toLowerCase(),
-          password: password.trim()
+          password: password.trim(),
+          gender: gender
         })
       })
         .then(res => res.json())
@@ -859,6 +861,25 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         onChange={(e) => setEmail(e.target.value)}
                         style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
                       />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.35rem' }}>
+                      Gender / صنف *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <i className="fas fa-venus-mars" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
+                      <select
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917', appearance: 'none' }}
+                      >
+                        <option value="male">Male (مرد)</option>
+                        <option value="female">Female (عورت)</option>
+                      </select>
+                      <i className="fas fa-chevron-down" style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', pointerEvents: 'none' }}></i>
+
                     </div>
                   </div>
                 </>

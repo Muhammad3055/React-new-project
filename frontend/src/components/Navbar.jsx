@@ -321,7 +321,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                     <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>
                       {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
                     </div>
-                    <span style={{ color: '#ffffff', fontWeight: 700 }}>{user.full_name || user.username}</span>
+                    <span style={{ color: '#000000', fontWeight: 700 }}>{user.full_name || user.username}</span>
                   </button>
 
                   {user.is_staff && (
@@ -418,7 +418,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   }}
                 >
                   <i className="fas fa-user-circle"></i>
-                  <span>{user.username}</span>
+                  <span style={{ color: '#000000' }}>{user.username}</span>
                 </button>
               ) : (
                 <button
@@ -477,7 +477,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               <div className="mobile-user-card">
                 <div className="mobile-user-info">
                   <i className="fas fa-user-circle"></i>
-                  <span>Logged in as <strong>{user.username}</strong></span>
+                  <span style={{ color: '#000000' }}>Logged in as <strong>{user.username}</strong></span>
                 </div>
                 <button className="mobile-auth-btn mobile-logout-btn" onClick={() => { handleLogout(); setMobileActive(false); }}>
                   <i className="fas fa-sign-out-alt"></i> Logout
