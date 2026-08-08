@@ -157,11 +157,12 @@ ISLAMIC_KNOWLEDGE_BASE = [
 
 
 @csrf_exempt
-def ai_assistant_endpoint(request):
+def ai_assistant_api(request):
     """
     Intelligent Islamic AI Knowledge Agent View
     Processes prompt, verifies sources, formats clean citations, and suggests smart follow-up questions.
     """
+
     if request.method != 'POST':
         return JsonResponse({'error': 'POST request required'}, status=405)
 
@@ -307,3 +308,49 @@ def ai_assistant_endpoint(request):
             "How do I perform Fajr prayer step-by-step?"
         ]
     })
+
+
+# Alias for backward compatibility
+ai_assistant_endpoint = ai_assistant_api
+
+
+@csrf_exempt
+def api_playlists(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'playlists': []})
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            title = body.get('title', 'My Playlist').strip()
+            tracks = body.get('tracks', [])
+            pl = AudioPlaylist.objects.create(user=request.user, title=title, tracks=tracks)
+            return JsonResponse({'status': 'success', 'id': pl.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    playlists = AudioPlaylist.objects.filter(user=request.user).values('id', 'title', 'tracks', 'created_at')
+    return JsonResponse({'playlists': list(playlists)})
+
+
+@csrf_exempt
+def api_hifz_tracker(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'hifz_list': []})
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            surah_number = body.get('surah_number')
+            surah_name = body.get('surah_name', '')
+            status = body.get('status', 'memorizing')
+            notes = body.get('notes', '')
+            hifz, _ = HifzTracker.objects.update_or_create(
+                user=request.user,
+                surah_number=surah_number,
+                defaults={'surah_name': surah_name, 'status': status, 'notes': notes}
+            )
+            return JsonResponse({'status': 'success', 'id': hifz.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    items = HifzTracker.objects.filter(user=request.user).values('id', 'surah_number', 'surah_name', 'status', 'notes', 'last_revised')
+    return JsonResponse({'hifz_list': list(items)})
+
+
