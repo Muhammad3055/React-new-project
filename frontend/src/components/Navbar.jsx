@@ -31,9 +31,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const extraMenuItems = [
     { label: '✨ Ask AI Assistant', icon: 'fas fa-robot', action: () => { if (openAIChat) openAIChat(); setShowExtrasMenu(false); } },
+    { label: '🎙️ AI Tajweed Guide', icon: 'fas fa-microphone', action: () => { if (openTajweed) openTajweed(); setShowExtrasMenu(false); } },
+    { label: '🎬 Video Lectures', icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
     { label: 'Islamic Calendar', icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
     { label: 'Hifz Memorization', icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
-    { label: 'AI Tajweed Guide', icon: 'fas fa-sparkles', action: () => { if (openTajweed) openTajweed(); setShowExtrasMenu(false); } },
     { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },
     { label: t('khatam'), icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },
     { label: t('fazail'), icon: 'fas fa-book', action: () => { navigateToTab('fazail'); setShowExtrasMenu(false); } },
@@ -46,6 +47,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: t('aboutUs'), icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
     { label: t('contact'), icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
   ];
+
 
 
 
@@ -115,7 +117,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
+    { id: 'videos', label: 'Videos (ویڈیوز)', icon: 'fas fa-video' },
   ];
+
 
   return (
     <>

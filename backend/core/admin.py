@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage
+from django.utils.html import format_html
+from .models import (
+    Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
+    Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker,
+    UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory
+)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -21,8 +26,6 @@ class TaqreerAudioAdmin(admin.ModelAdmin):
     search_fields = ('title', 'speaker', 'description')
 
 
-from .models import Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith, Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker
-
 @admin.register(VideoMedia)
 class VideoMediaAdmin(admin.ModelAdmin):
     list_display = ('title', 'speaker', 'category', 'preview_media_link', 'created_at')
@@ -36,22 +39,6 @@ class VideoMediaAdmin(admin.ModelAdmin):
         return format_html('<span style="color:#9ca3af; font-size:12px;">No Media</span>')
     preview_media_link.short_description = "Media Link"
 
-
-@admin.register(AudioPlaylist)
-class AudioPlaylistAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'created_at')
-    search_fields = ('title', 'user__username', 'description')
-
-
-@admin.register(HifzTracker)
-class HifzTrackerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'surah_number', 'surah_name', 'status', 'last_revised')
-    list_filter = ('status', 'surah_number')
-    search_fields = ('user__username', 'surah_name', 'notes')
-
-
-
-from django.utils.html import format_html
 
 @admin.register(BookMedia)
 class BookMediaAdmin(admin.ModelAdmin):
@@ -88,6 +75,45 @@ class BookmarkAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'surah_number', 'ayah_number')
 
 
+@admin.register(AudioPlaylist)
+class AudioPlaylistAdmin(admin.ModelAdmin):
+    list_display = ('title', 'user', 'created_at')
+    search_fields = ('title', 'user__username', 'description')
+
+
+@admin.register(HifzTracker)
+class HifzTrackerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'surah_number', 'surah_name', 'status', 'last_revised')
+    list_filter = ('status', 'surah_number')
+    search_fields = ('user__username', 'surah_name', 'notes')
+
+
+@admin.register(UserProfilePreferences)
+class UserProfilePreferencesAdmin(admin.ModelAdmin):
+    list_display = ('user', 'preferred_language', 'preferred_qari', 'location_city', 'reading_streak_days', 'total_ayahs_read')
+    search_fields = ('user__username', 'location_city')
+
+
+@admin.register(DailyPrayerTracker)
+class DailyPrayerTrackerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'date', 'fajr', 'dhuhr', 'asr', 'maghrib', 'isha')
+    list_filter = ('date',)
+    search_fields = ('user__username', 'date')
+
+
+@admin.register(AyahReflectionNote)
+class AyahReflectionNoteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'surah_number', 'ayah_number', 'created_at')
+    search_fields = ('user__username', 'note_text')
+
+
+@admin.register(ZakatHistory)
+class ZakatHistoryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'year', 'total_assets', 'zakat_payable', 'created_at')
+    list_filter = ('year',)
+    search_fields = ('user__username',)
+
+
 @admin.register(ContentReport)
 class ContentReportAdmin(admin.ModelAdmin):
     list_display = ('content_type', 'content_id', 'reported_by', 'is_resolved', 'created_at')
@@ -110,5 +136,3 @@ class ContactMessageAdmin(admin.ModelAdmin):
     def mark_as_read(self, request, queryset):
         queryset.update(is_read=True)
     mark_as_read.short_description = "Mark selected messages as read"
-
-
