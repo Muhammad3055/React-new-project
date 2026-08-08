@@ -33,6 +33,7 @@ import DuasView from './views/DuasView';
 import KhatamTrackerView from './views/KhatamTrackerView';
 
 import UserDashboardView from './views/UserDashboardView';
+import PrayersView from './views/PrayersView';
 
 import { getApiUrl } from './utils/apiCache';
 import { LanguageProvider } from './context/LanguageContext';
@@ -59,6 +60,7 @@ function MainAppContent() {
     tafseer: '/tafseer',
 
     hadith: '/hadith',
+    prayers: '/prayers',
     qibla: '/qibla',
     fazail: '/fazail',
     namesOfAllah: '/names-of-allah',
@@ -246,9 +248,14 @@ function MainAppContent() {
           <HadithView openReportModal={openReportModal} user={user} />
         )}
 
+        {activeTab === 'prayers' && (
+          <PrayersView navigateToTab={navigateToTab} />
+        )}
+
         {activeTab === 'qibla' && (
           <QiblaView />
         )}
+
 
         {activeTab === 'fazail' && (
           <FazailView />
