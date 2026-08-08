@@ -205,7 +205,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     if (subCategory.startsWith('taqreer_')) {
       const lang = subCategory.replace('taqreer_', '');
       setLoadingTaqreers(true);
-      fetch(getApiUrl(`/api/taqreer/?language=${lang}&q=${encodeURIComponent(taqreerQuery)}`))
+      fetch(`/api/taqreer/?language=${lang}&q=${encodeURIComponent(taqreerQuery)}`)
         .then(res => res.json())
         .then(data => {
           if (data.results && data.results.length > 0) {
@@ -221,7 +221,6 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   }, [subCategory, taqreerQuery]);
 
-
   const activeQariObj = QARIS.find((q) => q.id === selectedQari) || QARIS[0];
 
   const itemsPerPage = 12;
@@ -236,6 +235,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
 
   const subCategoryOptions = [
+
     { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
     { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
     { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
