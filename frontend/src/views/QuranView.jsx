@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchWithCache } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import AdminUploadModal from '../components/AdminUploadModal';
+import { ALL_114_SURAHS } from '../data/quran_data';
 
 const QARIS = [
   { id: 'alafasy', name: 'Mishary Rashid Alafasy', server: 'https://server8.mp3quran.net/afs/' },
@@ -128,7 +129,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   }, [initialSubCategory]);
 
   // Quran Tilawat states
-  const [surahsList, setSurahsList] = useState([]);
+  const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
   const [selectedQari, setSelectedQari] = useState('alafasy');
   const [quranQuery, setQuranQuery] = useState('');
   const [quranPage, setQuranPage] = useState(1);
@@ -178,21 +179,6 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
 
   useEffect(() => {
-    // Load Quran Surahs with caching and fallback
-    fetchWithCache('https://api.alquran.cloud/v1/surah')
-      .then(data => {
-        if (data && data.data && data.data.length === 114) {
-          setSurahsList(data.data);
-        } else if (surahsList.length === 0) {
-          setSurahsList(ALL_114_SURAHS);
-        }
-      })
-      .catch(() => {
-        if (surahsList.length === 0) {
-          setSurahsList(ALL_114_SURAHS);
-        }
-      });
-
     // Sync preferred Qari if logged in
     if (user) {
       fetch('/api/user/dashboard/')
