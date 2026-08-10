@@ -268,9 +268,12 @@ GOOGLE_OAUTH_CLIENT_ID = env('GOOGLE_OAUTH_CLIENT_ID', default='')
 GOOGLE_OAUTH_CLIENT_SECRET = env('GOOGLE_OAUTH_CLIENT_SECRET', default='')
 MICROSOFT_OAUTH_CLIENT_ID = env('MICROSOFT_OAUTH_CLIENT_ID', default='')
 APPLE_OAUTH_CLIENT_ID = env('APPLE_OAUTH_CLIENT_ID', default='')
+# ai model keys
 GROQ_API_KEY = env('GROQ_API_KEY', default='')
 TAVILY_API_KEY = env('TAVILY_API_KEY', default='')
 
 GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
-OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
-ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY', default='')
+OPENAI_API_KEY = env('OPEN_AI_API', default='')  # Matches .env variable OPEN_AI_API
+CLAUDE_API_KEY = env('CLAUDE_API_KEY', default='')
+DEEPSEEK_API_KEY = env('DEEPSEEK_API_KEY', default='')
+XAI_API_KEY = env('XAI_API_KEY', default='')
