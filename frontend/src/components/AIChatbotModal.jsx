@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 
 import { getApiUrl } from '../utils/apiCache';
+import { useLanguage } from '../context/LanguageContext';
 
 const LANGUAGES = [
   { code: 'auto', label: '🌐 Auto Detect' },
@@ -34,6 +35,7 @@ const QUICK_PROMPTS = [
 ];
 
 export default function AIChatbotModal({ isOpen, onClose }) {
+  const { lang: siteLang } = useLanguage();
   const [selectedLang, setSelectedLang] = useState('auto');
   const [messages, setMessages] = useState([]);
   const [inputPrompt, setInputPrompt] = useState('');
@@ -71,7 +73,21 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     const rec = new SpeechRecognition();
     rec.continuous = false;
     rec.interimResults = false;
-    rec.lang = selectedLang === 'auto' ? 'en-US' : selectedLang;
+    
+    // Support multi-language voice inputs
+    let recognitionLang = 'en-US';
+    if (selectedLang !== 'auto') {
+      recognitionLang = selectedLang;
+    } else {
+      if (siteLang === 'ur' || siteLang === 'br') {
+        recognitionLang = 'ur-PK';
+      } else if (siteLang === 'ar') {
+        recognitionLang = 'ar-SA';
+      } else {
+        recognitionLang = 'en-US';
+      }
+    }
+    rec.lang = recognitionLang;
     
     rec.onstart = () => setIsRecording(true);
     rec.onresult = (event) => {
@@ -83,6 +99,25 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     
     recognitionRef.current = rec;
     rec.start();
+  };
+
+  const handleSpeak = (text, msgLang) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      // Remove link syntax and bold syntax for clear synthesis speech
+      const cleanText = String(text).replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      if (msgLang === 'ur' || msgLang === 'ur_roman' || msgLang === 'brh') {
+        utterance.lang = 'ur-PK';
+      } else if (msgLang === 'ar') {
+        utterance.lang = 'ar-SA';
+      } else {
+        utterance.lang = 'en-US';
+      }
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert('Text-to-Speech is not supported in your browser.');
+    }
   };
 
   const handleSend = async (customPrompt = null) => {
@@ -116,6 +151,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         sender: 'ai',
         text: data.answer || 'I apologize, I could not process your request.',
         intent: data.intent,
+        language: data.language,
         quran: data.quran || [],
         hadith: data.hadith || [],
         tafseer: data.tafseer || [],
@@ -238,8 +274,28 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                 boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: msg.sender === 'ai' ? '1px solid #f1f5f9' : 'none'
               }}>
                 {msg.sender === 'ai' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#0066FF', fontWeight: 600 }}>
-                    <Sparkles size={14} /> AI Agent
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '8px', color: '#0066FF', fontWeight: 600 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Sparkles size={14} /> AI Agent
+                    </span>
+                    <button
+                      onClick={() => handleSpeak(msg.text, msg.language || siteLang)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#94a3b8',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.color = '#0066FF'}
+                      onMouseOut={(e) => e.currentTarget.style.color = '#94a3b8'}
+                      title="Read response aloud"
+                    >
+                      <Volume2 size={16} />
+                    </button>
                   </div>
                 )}
                 {renderFormattedText(msg.text)}
