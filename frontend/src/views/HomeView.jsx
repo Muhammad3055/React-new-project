@@ -229,7 +229,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           {/* Slide Content */}
           <div className="hero-carousel-slide" style={{ padding: '3.5rem 2rem 3.5rem 2rem', textCenter: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', padding: '6px 18px', background: 'rgba(255, 255, 255, 0.12)', borderRadius: '30px', border: '1.5px solid var(--accent-gold)', marginBottom: '1.25rem', backdropFilter: 'blur(8px)' }}>
-              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" loading="lazy" decoding="async" style={{ width: '34px', height: '34px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(180, 83, 9, 0.5)', flexShrink: 0 }} />
+              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" width="34" height="34" loading="lazy" decoding="async" style={{ width: '34px', height: '34px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(180, 83, 9, 0.5)', flexShrink: 0 }} />
               <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>
                 MAKTABA TUL MUSLIM &bull; {slide.badge}
               </span>
