@@ -68,7 +68,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     };
     loadScript('google-gsi-client', 'https://accounts.google.com/gsi/client');
     loadScript('microsoft-msal-client', 'https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js');
-    loadScript('apple-auth-client', 'https://appleid.cdn-apple.com/appleauth/static/js/api/v1/appleid.auth.js');
   }, []);
 
   // Resend Countdown Timer (30s)
@@ -424,7 +423,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       });
   };
 
-  // Official OAuth 2.0 Consent Popup Triggers for Google, Microsoft & Apple
+  // Official OAuth 2.0 Consent Popup Triggers for Google & Microsoft
   const handleOpenSocialModal = (provider = 'google') => {
     setError('');
     setSubmitting(true);
@@ -483,36 +482,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           console.error("Microsoft MSAL Exception:", e);
         }
       }
-      executeSocialAuth('microsoft', '', '', email || username);
-
-    } else if (provider === 'apple') {
-      if (window.AppleID) {
-        try {
-          window.AppleID.auth.init({
-            clientId: 'com.maktabatulmuslim.service',
-            scope: 'name email',
-            redirectURI: window.location.origin,
-            usePopup: true
-          });
-          window.AppleID.auth.signIn()
-            .then(res => {
-              if (res && res.authorization) {
-                executeSocialAuth('apple', res.authorization.id_token || '', '', res.user?.email || '');
-              } else {
-                setSubmitting(false);
-                setError('Apple Sign-In failed.');
-              }
-            })
-            .catch(() => {
-              setSubmitting(false);
-              setError('Apple Sign-In was cancelled.');
-            });
-          return;
-        } catch (e) {
-          console.error("Apple Auth Exception:", e);
-        }
-      }
-      executeSocialAuth('apple', '', '', email || username);
     }
   };
 
@@ -1104,7 +1073,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                 </button>
               </div>
 
-              {/* Social Login Buttons (Google, Microsoft, Apple) */}
+              {/* Social Login Buttons (Google, Microsoft) */}
               <div style={{ margin: '1.1rem 0 0.8rem 0', textAlign: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.7rem', fontWeight: 700, marginBottom: '0.8rem' }}>
                   <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #e2e8f0' }} />
@@ -1128,14 +1097,6 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                   >
                     <svg width="15" height="15" viewBox="0 0 23 23"><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M12 1h10v10H1z"/><path fill="#05a6f0" d="M1 12h10v10H1z"/><path fill="#ffba08" d="M12 12h10v10H1z"/></svg> Microsoft
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleOpenSocialModal('apple')}
-                    disabled={submitting}
-                    style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                  >
-                    <i className="fab fa-apple" style={{ fontSize: '0.95rem' }}></i> Apple
                   </button>
                 </div>
               </div>

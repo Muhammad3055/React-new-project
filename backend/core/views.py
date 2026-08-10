@@ -780,20 +780,53 @@ def api_signup(request):
 
 @csrf_exempt
 def api_social_auth(request):
+    import urllib.request
+    
     if request.method != 'POST':
         return JsonResponse({'error': 'POST required'}, status=405)
     try:
         body = json.loads(request.body) if (request.content_type == 'application/json' and request.body) else request.POST
         provider = body.get('provider', 'google').lower().strip()
-        email = body.get('email', '').strip().lower()
-        name = body.get('name', '').strip()
+        email_provided = body.get('email', '').strip().lower()
+        access_token = body.get('access_token', '').strip()
     except Exception:
         return JsonResponse({'error': 'Invalid request data'}, status=400)
 
-    if not email:
-        email = f"{provider}_user@maktabatulmuslim.com"
+    email = email_provided
+    name = ''
 
-    username_base = email.split('@')[0].replace('.', '_').replace('-', '_').lower() if email else f"{provider}_user"
+    if provider == 'google':
+        if not access_token:
+            return JsonResponse({'error': 'Google login failed: Missing access token.'}, status=400)
+        try:
+            req = urllib.request.Request("https://www.googleapis.com/oauth2/v3/userinfo", headers={"Authorization": f"Bearer {access_token}"})
+            with urllib.request.urlopen(req) as response:
+                user_info = json.loads(response.read().decode())
+                email = user_info.get('email', '').lower()
+                name = user_info.get('name', '')
+                if not email:
+                    return JsonResponse({'error': 'Google login failed: Could not retrieve email from Google.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': 'Google login failed: Invalid or expired token.'}, status=400)
+            
+    elif provider == 'microsoft':
+        if not access_token:
+            return JsonResponse({'error': 'Microsoft login failed: Missing access token.'}, status=400)
+        try:
+            req = urllib.request.Request("https://graph.microsoft.com/v1.0/me", headers={"Authorization": f"Bearer {access_token}"})
+            with urllib.request.urlopen(req) as response:
+                user_info = json.loads(response.read().decode())
+                email = (user_info.get('mail') or user_info.get('userPrincipalName', '')).lower()
+                name = user_info.get('displayName', '')
+                if not email:
+                    return JsonResponse({'error': 'Microsoft login failed: Could not retrieve email from Microsoft.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': 'Microsoft login failed: Invalid or expired token.'}, status=400)
+            
+    else:
+        return JsonResponse({'error': f'Unsupported provider: {provider}'}, status=400)
+
+    username_base = email.split('@')[0].replace('.', '_').replace('-', '_').lower()
     username = username_base
 
     # Retrieve or create user in database
