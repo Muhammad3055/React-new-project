@@ -164,7 +164,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           </div>
           <div>
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#111827' }}>
-              Maktaba AI
+              Maktaba tul Muslim AI
             </h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#059669' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669' }} />
@@ -348,7 +348,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           </button>
         </div>
         <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-          <ShieldCheck size={12} /> Powered by Maktaba AI Agent
+          <ShieldCheck size={12} /> Powered by Maktaba tul Muslim AI Agent
         </div>
       </div>
       

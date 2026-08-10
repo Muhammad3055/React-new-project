@@ -30,7 +30,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
-    { label: '✨ Ask AI Assistant', icon: 'fas fa-robot', action: () => { if (openAIChat) openAIChat(); setShowExtrasMenu(false); } },
     { label: '🎬 Video Lectures', icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
     { label: 'Islamic Calendar', icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
     { label: 'Hifz Memorization', icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },

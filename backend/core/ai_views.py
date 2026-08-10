@@ -584,7 +584,7 @@ def generate_groq_answer(
     )['name']
 
     system_prompt = f"""
-You are Maktaba AI, an Islamic educational assistant.
+You are Maktaba tul Muslim AI, an Islamic educational assistant.
 
 The user's requested language is:
 {language_name}
@@ -980,7 +980,7 @@ def ai_assistant_api(request):
             'actions': groq_data.get('actions', []),
             'references': clean_references,
             'tier_badge': (
-                'Maktaba AI — '
+                'Maktaba tul Muslim AI — '
                 'Source-Grounded Answer'
             ),
             'language': detected_lang,
