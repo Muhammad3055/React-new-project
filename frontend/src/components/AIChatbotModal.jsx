@@ -147,12 +147,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed', bottom: '20px', right: '20px', width: '380px', height: '650px',
-      zIndex: 999999, background: '#ffffff', borderRadius: '16px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)', display: 'flex',
-      flexDirection: 'column', overflow: 'hidden', fontFamily: 'system-ui, sans-serif'
-    }}>
+    <div className="ai-chatbot-container">
       {/* Header */}
       <div style={{
         padding: '16px', background: '#ffffff', borderBottom: '1px solid #f1f5f9',
@@ -358,9 +353,51 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
+        .ai-chatbot-container {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          width: 360px;
+          height: 550px;
+          max-height: 80vh;
+          z-index: 999999;
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          font-family: system-ui, sans-serif;
+          border: 1px solid rgba(226, 232, 240, 0.8);
+          animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+
         @keyframes bounce {
           0%, 80%, 100% { transform: scale(0); }
           40% { transform: scale(1); }
+        }
+
+        @media (max-width: 640px) {
+          .ai-chatbot-container {
+            bottom: 12px;
+            right: 12px;
+            left: 12px;
+            width: calc(100% - 24px);
+            height: 480px;
+            max-height: 70vh;
+            border-radius: 14px;
+          }
         }
       `}} />
     </div>
