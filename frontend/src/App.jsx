@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AudioPlayer from './components/AudioPlayer';
@@ -12,28 +12,27 @@ import AITajweedModal from './components/AITajweedModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
-import HomeView from './views/HomeView';
-import ReadView from './views/ReadView';
-import QuranView from './views/QuranView';
-import QarisView from './views/QarisView';
-import BooksView from './views/BooksView';
-import VideosView from './views/VideosView';
-import TafseerView from './views/TafseerView';
-
-import HadithView from './views/HadithView';
-import QiblaView from './views/QiblaView';
-import BookmarksView from './views/BookmarksView';
-import UploadView from './views/UploadView';
-import ContactView from './views/ContactView';
-import AboutView from './views/AboutView';
-import FazailView from './views/FazailView';
-import NamesOfAllahView from './views/NamesOfAllahView';
-import TasbeehView from './views/TasbeehView';
-import DuasView from './views/DuasView';
-import KhatamTrackerView from './views/KhatamTrackerView';
-
-import UserDashboardView from './views/UserDashboardView';
-import PrayersView from './views/PrayersView';
+// Lazy load views for high performance & bundle splitting
+const HomeView = lazy(() => import('./views/HomeView'));
+const ReadView = lazy(() => import('./views/ReadView'));
+const QuranView = lazy(() => import('./views/QuranView'));
+const QarisView = lazy(() => import('./views/QarisView'));
+const BooksView = lazy(() => import('./views/BooksView'));
+const VideosView = lazy(() => import('./views/VideosView'));
+const TafseerView = lazy(() => import('./views/TafseerView'));
+const HadithView = lazy(() => import('./views/HadithView'));
+const QiblaView = lazy(() => import('./views/QiblaView'));
+const BookmarksView = lazy(() => import('./views/BookmarksView'));
+const UploadView = lazy(() => import('./views/UploadView'));
+const ContactView = lazy(() => import('./views/ContactView'));
+const AboutView = lazy(() => import('./views/AboutView'));
+const FazailView = lazy(() => import('./views/FazailView'));
+const NamesOfAllahView = lazy(() => import('./views/NamesOfAllahView'));
+const TasbeehView = lazy(() => import('./views/TasbeehView'));
+const DuasView = lazy(() => import('./views/DuasView'));
+const KhatamTrackerView = lazy(() => import('./views/KhatamTrackerView'));
+const UserDashboardView = lazy(() => import('./views/UserDashboardView'));
+const PrayersView = lazy(() => import('./views/PrayersView'));
 
 import { getApiUrl } from './utils/apiCache';
 import { LanguageProvider } from './context/LanguageContext';
@@ -201,104 +200,110 @@ function MainAppContent() {
         openAIChat={() => setIsAIChatOpen(true)}
       />
 
-      <main className="main-content" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
-        {activeTab === 'home' && (
-          <HomeView
-            navigateToTab={navigateToTab}
-            playTrack={playTrack}
-            user={user}
-            openAuthModal={openAuthModal}
-          />
-        )}
+      <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
+        <Suspense fallback={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', flex: 1 }}>
+            <div className="loading-spinner"></div>
+          </div>
+        }>
+          {activeTab === 'home' && (
+            <HomeView
+              navigateToTab={navigateToTab}
+              playTrack={playTrack}
+              user={user}
+              openAuthModal={openAuthModal}
+            />
+          )}
 
-        {activeTab === 'read' && (
-          <ReadView
-            user={user}
-            playTrack={playTrack}
-            openReportModal={openReportModal}
-          />
-        )}
+          {activeTab === 'read' && (
+            <ReadView
+              user={user}
+              playTrack={playTrack}
+              openReportModal={openReportModal}
+            />
+          )}
 
-        {activeTab === 'quran' && (
-          <QuranView 
-            playTrack={playTrack} 
-            user={user} 
-            navigateToTab={navigateToTab} 
-            onOpenCalendar={() => setIsCalendarOpen(true)}
-            onOpenTajweed={() => setIsTajweedOpen(true)}
-          />
-        )}
-
-
-        {activeTab === 'qaris' && (
-          <QarisView playTrack={playTrack} />
-        )}
-
-        {activeTab === 'books' && (
-          <BooksView openReportModal={openReportModal} user={user} />
-        )}
-
-        {activeTab === 'videos' && (
-          <VideosView />
-        )}
+          {activeTab === 'quran' && (
+            <QuranView 
+              playTrack={playTrack} 
+              user={user} 
+              navigateToTab={navigateToTab} 
+              onOpenCalendar={() => setIsCalendarOpen(true)}
+              onOpenTajweed={() => setIsTajweedOpen(true)}
+            />
+          )}
 
 
-        {activeTab === 'tafseer' && (
-          <TafseerView openReportModal={openReportModal} />
-        )}
+          {activeTab === 'qaris' && (
+            <QarisView playTrack={playTrack} />
+          )}
 
-        {activeTab === 'hadith' && (
-          <HadithView openReportModal={openReportModal} user={user} />
-        )}
+          {activeTab === 'books' && (
+            <BooksView openReportModal={openReportModal} user={user} />
+          )}
 
-        {activeTab === 'prayers' && (
-          <PrayersView navigateToTab={navigateToTab} />
-        )}
-
-        {activeTab === 'qibla' && (
-          <QiblaView />
-        )}
+          {activeTab === 'videos' && (
+            <VideosView />
+          )}
 
 
-        {activeTab === 'fazail' && (
-          <FazailView />
-        )}
+          {activeTab === 'tafseer' && (
+            <TafseerView openReportModal={openReportModal} />
+          )}
 
-        {activeTab === 'namesOfAllah' && (
-          <NamesOfAllahView />
-        )}
+          {activeTab === 'hadith' && (
+            <HadithView openReportModal={openReportModal} user={user} />
+          )}
 
-        {activeTab === 'tasbeeh' && (
-          <TasbeehView />
-        )}
+          {activeTab === 'prayers' && (
+            <PrayersView navigateToTab={navigateToTab} />
+          )}
 
-        {activeTab === 'duas' && (
-          <DuasView playTrack={playTrack} user={user} />
-        )}
+          {activeTab === 'qibla' && (
+            <QiblaView />
+          )}
 
-        {activeTab === 'khatam' && (
-          <KhatamTrackerView navigateToTab={navigateToTab} user={user} openAuthModal={openAuthModal} />
-        )}
 
-        {activeTab === 'contact' && (
-          <ContactView />
-        )}
+          {activeTab === 'fazail' && (
+            <FazailView />
+          )}
 
-        {activeTab === 'about' && (
-          <AboutView navigateToTab={navigateToTab} />
-        )}
+          {activeTab === 'namesOfAllah' && (
+            <NamesOfAllahView />
+          )}
 
-        {activeTab === 'bookmarks' && (
-          <BookmarksView user={user} navigateToTab={navigateToTab} />
-        )}
+          {activeTab === 'tasbeeh' && (
+            <TasbeehView />
+          )}
 
-        {activeTab === 'dashboard' && (
-          <UserDashboardView user={user} openAuthModal={openAuthModal} navigateToTab={navigateToTab} playTrack={playTrack} />
-        )}
+          {activeTab === 'duas' && (
+            <DuasView playTrack={playTrack} user={user} />
+          )}
 
-        {activeTab === 'upload' && (
-          <UploadView user={user} />
-        )}
+          {activeTab === 'khatam' && (
+            <KhatamTrackerView navigateToTab={navigateToTab} user={user} openAuthModal={openAuthModal} />
+          )}
+
+          {activeTab === 'contact' && (
+            <ContactView />
+          )}
+
+          {activeTab === 'about' && (
+            <AboutView navigateToTab={navigateToTab} />
+          )}
+
+          {activeTab === 'bookmarks' && (
+            <BookmarksView user={user} navigateToTab={navigateToTab} />
+          )}
+
+          {activeTab === 'dashboard' && (
+            <UserDashboardView user={user} openAuthModal={openAuthModal} navigateToTab={navigateToTab} playTrack={playTrack} />
+          )}
+
+          {activeTab === 'upload' && (
+            <UploadView user={user} />
+          )}
+        </Suspense>
       </main>
 
       <Footer navigateToTab={navigateToTab} user={user} openAuthModal={openAuthModal} />
