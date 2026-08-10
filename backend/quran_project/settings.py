@@ -262,14 +262,13 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
 
 # Set upload permissions so Nginx (www-data) can read uploaded PDF & media files (Fixes 403 Forbidden)
 # Official OAuth 2.0 / OpenID Connect Provider Configurations
+
+
 GOOGLE_OAUTH_CLIENT_ID = env('GOOGLE_OAUTH_CLIENT_ID', default='')
 GOOGLE_OAUTH_CLIENT_SECRET = env('GOOGLE_OAUTH_CLIENT_SECRET', default='')
 MICROSOFT_OAUTH_CLIENT_ID = env('MICROSOFT_OAUTH_CLIENT_ID', default='')
 APPLE_OAUTH_CLIENT_ID = env('APPLE_OAUTH_CLIENT_ID', default='')
+GROQ_API_KEY = env('GROQ_API_KEY', default='')
+TAVILY_API_KEY = env('TAVILY_API_KEY', default='')
 
-
-
-
-
-
-
+GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
