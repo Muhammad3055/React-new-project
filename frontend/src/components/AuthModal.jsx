@@ -54,6 +54,23 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Dynamically load third-party OAuth SDKs on-demand to optimize home page boot performance
+  useEffect(() => {
+    const loadScript = (id, src) => {
+      if (!document.getElementById(id)) {
+        const s = document.createElement('script');
+        s.id = id;
+        s.src = src;
+        s.async = true;
+        s.defer = true;
+        document.body.appendChild(s);
+      }
+    };
+    loadScript('google-gsi-client', 'https://accounts.google.com/gsi/client');
+    loadScript('microsoft-msal-client', 'https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js');
+    loadScript('apple-auth-client', 'https://appleid.cdn-apple.com/appleauth/static/js/api/v1/appleid.auth.js');
+  }, []);
+
   // Resend Countdown Timer (30s)
   useEffect(() => {
     let timer;
