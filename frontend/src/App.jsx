@@ -347,24 +347,22 @@ function MainAppContent() {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.65rem',
-            padding: '12px 22px',
-            borderRadius: '50px',
+            justifyContent: 'center',
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
             background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
             color: '#ffffff',
             border: '2px solid rgba(245, 158, 11, 0.7)',
             boxShadow: '0 10px 30px rgba(5, 150, 105, 0.6), 0 0 18px rgba(245, 158, 11, 0.4)',
             cursor: 'pointer',
-            fontSize: '0.9rem',
-            fontWeight: 800,
             transition: 'all 0.3s ease',
-            letterSpacing: '0.3px'
+            position: 'relative'
           }}
           title="Open AI Islamic Assistant"
         >
-          <i className="fas fa-robot" style={{ fontSize: '1.25rem', color: '#f59e0b' }}></i>
-          <span style={{ fontFamily: 'system-ui, sans-serif' }}>Ask AI Assistant</span>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }}></span>
+          <i className="fas fa-robot" style={{ fontSize: '1.5rem', color: '#f59e0b' }}></i>
+          <span style={{ position: 'absolute', top: '8px', right: '8px', width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }}></span>
         </button>
       </div>
 
