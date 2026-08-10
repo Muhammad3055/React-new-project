@@ -332,39 +332,41 @@ function MainAppContent() {
       <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}
-      <div 
-        style={{
-          position: 'fixed',
-          bottom: '25px',
-          right: '25px',
-          zIndex: 999999,
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        <button
-          onClick={() => setIsAIChatOpen(true)}
+      {!isAIChatOpen && (
+        <div 
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
-            color: '#ffffff',
-            border: '2px solid rgba(245, 158, 11, 0.7)',
-            boxShadow: '0 10px 30px rgba(5, 150, 105, 0.6), 0 0 18px rgba(245, 158, 11, 0.4)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            position: 'relative'
+            position: 'fixed',
+            bottom: '25px',
+            right: '25px',
+            zIndex: 999999,
+            display: 'flex',
+            alignItems: 'center'
           }}
-          title="Open AI Islamic Assistant"
         >
-          <i className="fas fa-robot" style={{ fontSize: '1.5rem', color: '#f59e0b' }}></i>
-          <span style={{ position: 'absolute', top: '8px', right: '8px', width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }}></span>
-        </button>
-      </div>
+          <button
+            onClick={() => setIsAIChatOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
+              color: '#ffffff',
+              border: '2px solid rgba(245, 158, 11, 0.7)',
+              boxShadow: '0 10px 30px rgba(5, 150, 105, 0.6), 0 0 18px rgba(245, 158, 11, 0.4)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              position: 'relative'
+            }}
+            title="Open AI Islamic Assistant"
+          >
+            <i className="fas fa-robot" style={{ fontSize: '1.5rem', color: '#f59e0b' }}></i>
+            <span style={{ position: 'absolute', top: '8px', right: '8px', width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }}></span>
+          </button>
+        </div>
+      )}
 
       {/* Floating Admin Studio Bar (Only visible when logged in as admin) */}
       <AdminFloatingBar user={user} navigateToTab={navigateToTab} />
