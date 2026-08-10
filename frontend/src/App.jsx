@@ -5,10 +5,11 @@ import AudioPlayer from './components/AudioPlayer';
 import ReportModal from './components/ReportModal';
 import AuthModal from './components/AuthModal';
 import AdminFloatingBar from './components/AdminFloatingBar';
-import AIChatbotModal from './components/AIChatbotModal';
-import IslamicCalendarModal from './components/IslamicCalendarModal';
-import MemorizationTrackerModal from './components/MemorizationTrackerModal';
-import AITajweedModal from './components/AITajweedModal';
+// Lazy load interactive feature modals to keep initial page load lightweight
+const AIChatbotModal = lazy(() => import('./components/AIChatbotModal'));
+const IslamicCalendarModal = lazy(() => import('./components/IslamicCalendarModal'));
+const MemorizationTrackerModal = lazy(() => import('./components/MemorizationTrackerModal'));
+const AITajweedModal = lazy(() => import('./components/AITajweedModal'));
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HomeView from './views/HomeView'; // Statically imported for instant initial paint
@@ -330,11 +331,13 @@ function MainAppContent() {
         />
       )}
 
-      {/* Interactive Feature Modals */}
-      <AIChatbotModal isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
-      <IslamicCalendarModal isOpen={isCalendarOpen} onClose={() => setIsCalendarOpen(false)} />
-      <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />
-      <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />
+      {/* Interactive Feature Modals (Loaded lazily on demand) */}
+      <Suspense fallback={null}>
+        {isAIChatOpen && <AIChatbotModal isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />}
+        {isCalendarOpen && <IslamicCalendarModal isOpen={isCalendarOpen} onClose={() => setIsCalendarOpen(false)} />}
+        {isHifzOpen && <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />}
+        {isTajweedOpen && <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />}
+      </Suspense>
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}
       {!isAIChatOpen && (
