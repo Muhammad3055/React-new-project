@@ -11,9 +11,9 @@ import MemorizationTrackerModal from './components/MemorizationTrackerModal';
 import AITajweedModal from './components/AITajweedModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
+import HomeView from './views/HomeView'; // Statically imported for instant initial paint
 
-// Lazy load views for high performance & bundle splitting
-const HomeView = lazy(() => import('./views/HomeView'));
+// Lazy load remaining sub-views for performance & bundle splitting
 const ReadView = lazy(() => import('./views/ReadView'));
 const QuranView = lazy(() => import('./views/QuranView'));
 const QarisView = lazy(() => import('./views/QarisView'));
