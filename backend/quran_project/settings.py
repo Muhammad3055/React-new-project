@@ -272,3 +272,5 @@ GROQ_API_KEY = env('GROQ_API_KEY', default='')
 TAVILY_API_KEY = env('TAVILY_API_KEY', default='')
 
 GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
+OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
+ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY', default='')

@@ -11,6 +11,21 @@ from django.views.decorators.csrf import csrf_exempt
 from groq import Groq
 from tavily import TavilyClient
 
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
+
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
+
+try:
+    import anthropic
+except ImportError:
+    anthropic = None
+
 from .models import (
     QuranAudio,
     TaqreerAudio,
@@ -561,22 +576,11 @@ def generate_groq_answer(
     language,
     sources
 ):
-
-    api_key = getattr(
-        settings,
-        'GROQ_API_KEY',
-        ''
-    )
-
-    if not api_key:
-        return None
-
+    # Set source text
     if not sources:
         source_text = "No direct source material found in the database. Please answer using general authentic Islamic/educational knowledge."
     else:
-        source_text = "\n\n--------------------\n\n".join(
-            sources
-        )
+        source_text = "\n\n--------------------\n\n".join(sources)
 
     language_name = SUPPORTED_LANGUAGES.get(
         language,
@@ -592,6 +596,7 @@ The user's requested language is:
 IMPORTANT RULES:
 
 1. CLASSIFY THE USER QUERY: You can ONLY answer queries related to Islam, Quran, Hadith, Islamic rulings, Prophets, Islamic books, Islamic history, and religious/spiritual topics.
+   - Also allow queries about this website ("Maktaba Tul Muslim") itself, its database, its catalog of content (books, videos, Hadiths, Quran, Qaris), and questions about what this AI Assistant can do (e.g. "what is in this website", "what type of data do you have", "what can you do").
    - If the query is OUTSIDE this scope (e.g. asking about computer programming, cooking recipes, general pop culture, sports, etc.), you MUST set the "intent" to "OUT_OF_SCOPE" and return the following statement in "answer" (translated to the requested language if needed):
      "I am sorry, but I can only answer questions related to Islam, Quran, Hadith, Prophets, Islamic history, and religious topics. Your query appears to be out of this scope."
    - Set "suggested_questions" and "actions" to empty arrays in this case.
@@ -619,35 +624,91 @@ SOURCE MATERIAL:
 {source_text}
 """
 
-    try:
+    # 1. TRY GROQ (llama-3.3-70b-versatile)
+    groq_api_key = getattr(settings, 'GROQ_API_KEY', '')
+    if groq_api_key:
+        try:
+            client = Groq(api_key=groq_api_key)
+            completion = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                temperature=0.1,
+                max_tokens=1500,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": query},
+                ],
+            )
+            response_text = completion.choices[0].message.content
+            return json.loads(response_text)
+        except Exception as e:
+            print(f"Groq Error, falling back: {e}")
 
-        client = Groq(
-            api_key=api_key
-        )
+    # 2. TRY GEMINI (gemini-1.5-flash)
+    gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
+    if gemini_api_key and genai:
+        try:
+            genai.configure(api_key=gemini_api_key)
+            generation_config = {
+                "temperature": 0.1,
+                "top_p": 0.95,
+                "max_output_tokens": 1500,
+                "response_mime_type": "application/json",
+            }
+            model = genai.GenerativeModel(
+                model_name="gemini-1.5-flash",
+                generation_config=generation_config,
+                system_instruction=system_prompt
+            )
+            response = model.generate_content(query)
+            return json.loads(response.text)
+        except Exception as e:
+            print(f"Gemini Error, falling back: {e}")
 
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            temperature=0.1,
-            max_tokens=1500,
-            response_format={"type": "json_object"},
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt,
-                },
-                {
-                    "role": "user",
-                    "content": query,
-                },
-            ],
-        )
+    # 3. TRY OPENAI (gpt-4o-mini)
+    openai_api_key = getattr(settings, 'OPENAI_API_KEY', '')
+    if openai_api_key and OpenAI:
+        try:
+            client = OpenAI(api_key=openai_api_key)
+            completion = client.chat.completions.create(
+                model="gpt-4o-mini",
+                temperature=0.1,
+                max_tokens=1500,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": query},
+                ],
+            )
+            response_text = completion.choices[0].message.content
+            return json.loads(response_text)
+        except Exception as e:
+            print(f"OpenAI Error, falling back: {e}")
 
-        response_text = completion.choices[0].message.content
-        return json.loads(response_text)
+    # 4. TRY CLAUDE (claude-3-5-sonnet-20241022)
+    anthropic_api_key = getattr(settings, 'ANTHROPIC_API_KEY', '')
+    if anthropic_api_key and anthropic:
+        try:
+            client = anthropic.Anthropic(api_key=anthropic_api_key)
+            message = client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=1500,
+                temperature=0.1,
+                system=system_prompt,
+                messages=[
+                    {"role": "user", "content": query}
+                ]
+            )
+            text_resp = message.content[0].text.strip()
+            start_idx = text_resp.find('{')
+            end_idx = text_resp.rfind('}') + 1
+            if start_idx != -1 and end_idx != -1:
+                text_resp = text_resp[start_idx:end_idx]
+            return json.loads(text_resp)
+        except Exception as e:
+            print(f"Claude Error: {e}")
 
-    except Exception as e:
-        print(f"Groq Error: {e}")
-        return None
+    return None
 
 
 # ============================================================
