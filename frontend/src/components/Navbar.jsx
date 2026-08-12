@@ -169,27 +169,38 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
               />
               {showDropdown && searchResults.length > 0 && (
-                <div className="search-results-dropdown" style={{ minWidth: '280px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid var(--accent-gold)' }}>
+                <div className="search-results-dropdown" style={{ minWidth: '320px', borderRadius: '14px', boxShadow: '0 12px 30px rgba(0,0,0,0.35)', border: '1px solid var(--accent-gold)', overflow: 'hidden', background: 'var(--bg-card)' }}>
                   {searchResults.map((item, idx) => (
                     <div
                       key={idx}
                       className="search-item"
                       onClick={() => handleResultClick(item)}
-                      style={{ padding: '0.6rem 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}
+                      style={{ padding: '0.7rem 0.9rem', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', transition: 'background 0.2s ease' }}
                     >
-                      <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <i className={item.badge_icon || 'fas fa-search'}></i> {item.title}
-                        </div>
-                        {item.subtitle && (
-                          <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '0.15rem' }}>
-                            {item.subtitle}
-                          </div>
-                        )}
+                      {/* Google Search Style Breadcrumb Header with Site Favicon Logo */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
+                        <img src="/favicon.svg" alt="Maktaba Logo" style={{ width: '18px', height: '18px', borderRadius: '4px', flexShrink: 0, boxShadow: '0 1px 4px rgba(245,158,11,0.3)' }} />
+                        <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          maktabatulmuslim.com <i className="fas fa-chevron-right" style={{ fontSize: '0.55rem', opacity: 0.6 }}></i> <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>{item.type}</span>
+                        </span>
                       </div>
-                      <span className="search-item-type" style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: '8px', background: 'rgba(245,158,11,0.2)', color: 'var(--accent-gold)', fontWeight: 800 }}>
-                        {item.type}
-                      </span>
+
+                      {/* Main Title & Type Badge */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <i className={item.badge_icon || 'fas fa-search'} style={{ fontSize: '0.8rem' }}></i> {item.title}
+                        </div>
+                        <span className="search-item-type" style={{ fontSize: '0.68rem', padding: '2px 7px', borderRadius: '10px', background: 'rgba(245,158,11,0.18)', color: 'var(--accent-gold)', fontWeight: 800, whiteSpace: 'nowrap' }}>
+                          {item.type}
+                        </span>
+                      </div>
+
+                      {/* Subtitle / Description */}
+                      {item.subtitle && (
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.2rem', lineHeight: '1.3' }}>
+                          {item.subtitle}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
