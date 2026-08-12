@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 export default function NamesOfAllahView() {
   const [search, setSearch] = useState('');
   const [copiedName, setCopiedName] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(18);
 
   const namesOfAllah = [
     { number: 1, arabic: 'الرَّحْمَٰنُ', transliteration: 'Ar-Rahman', meaning: 'The Most Gracious / The Compassionate', meaning_ur: 'سب سے زیادہ رحم کرنے والا', benefit: 'He who repeats this name 100 times after each prayer will be enhanced in memory and awareness.', benefit_ur: 'جو شخص ہر نماز کے بعد ۱۰۰ بار یہ اسم پڑھتا رہے گا، اس کا حافظہ قوی ہوگا اور غفلت و بھول چوک دور ہوگی۔' },
@@ -148,7 +149,7 @@ export default function NamesOfAllahView() {
 
       {/* Grid of 99 Names */}
       <div className="grid-3">
-        {filteredNames.map((name) => (
+        {filteredNames.slice(0, search ? filteredNames.length : visibleCount).map((name) => (
           <div key={name.number} className="card" style={{ padding: '1.35rem', position: 'relative', background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
@@ -199,6 +200,29 @@ export default function NamesOfAllahView() {
           </div>
         ))}
       </div>
+
+      {/* Load More Button if search is empty and not all names are loaded */}
+      {!search && visibleCount < filteredNames.length && (
+        <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+          <button
+            onClick={() => setVisibleCount((prev) => Math.min(prev + 18, 99))}
+            style={{
+              padding: '0.75rem 2rem',
+              borderRadius: '25px',
+              border: '2px solid var(--accent-gold)',
+              background: '#ffffff',
+              color: 'var(--accent-gold)',
+              fontWeight: 800,
+              fontSize: '0.92rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(180, 83, 9, 0.15)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <i className="fas fa-arrow-down" style={{ marginRight: '0.5rem' }}></i> Load More Names ({visibleCount} of {filteredNames.length})
+          </button>
+        </div>
+      )}
     </div>
   );
 }

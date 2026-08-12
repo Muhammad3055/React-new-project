@@ -88,12 +88,15 @@ export default function QiblaView() {
         setLoadingLoc(false);
         setLocError(err.message || 'Unable to retrieve your location. Please select a city manually below.');
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
     );
   };
 
   useEffect(() => {
-    requestGpsLocation();
+    const timer = setTimeout(() => {
+      requestGpsLocation();
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   // Request Device Orientation Sensor (iOS 13+ & Android)
