@@ -94,6 +94,7 @@ const toArabicNumerals = (num) => {
 };
 
 export default function ReadView({ user, playTrack, openReportModal }) {
+  const { lang } = useLanguage();
   const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
   const [selectedSurah, setSelectedSurah] = useState(1);
   const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
@@ -111,11 +112,23 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   const [selectedQari, setSelectedQari] = useState('ar.alafasy');
 
   // Active Translations (English, Urdu, Brahui)
-  const [translations, setTranslations] = useState({
-    en: true,
-    ur: true,
-    br: false
-  });
+  const [translations, setTranslations] = useState(() => ({
+    en: lang === 'en',
+    ur: lang === 'ur' || lang === 'br',
+    br: lang === 'br'
+  }));
+
+  useEffect(() => {
+    if (lang === 'ur') {
+      setTranslations({ en: false, ur: true, br: false });
+    } else if (lang === 'br') {
+      setTranslations({ en: false, ur: true, br: true });
+    } else if (lang === 'ar') {
+      setTranslations({ en: false, ur: false, br: false });
+    } else {
+      setTranslations({ en: true, ur: false, br: false });
+    }
+  }, [lang]);
 
   const [translationData, setTranslationData] = useState({ en: FALLBACK_ENGLISH_FATIHAH });
   const [fontSize, setFontSize] = useState(28);

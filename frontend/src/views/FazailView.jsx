@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 const FAZAIL_DATA = [
   {
@@ -124,9 +125,20 @@ const FAZAIL_DATA = [
 ];
 
 export default function FazailView() {
+  const { lang, t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLang, setSelectedLang] = useState('both'); // 'both' | 'en' | 'ur'
+  const [selectedLang, setSelectedLang] = useState(() => (lang === 'ur' ? 'ur' : (lang === 'en' ? 'en' : 'both')));
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (lang === 'ur') {
+      setSelectedLang('ur');
+    } else if (lang === 'en') {
+      setSelectedLang('en');
+    } else {
+      setSelectedLang('both');
+    }
+  }, [lang]);
 
   const categories = [
     { id: 'all', label: 'All Fazail / تمام فضائل', icon: 'fas fa-star' },

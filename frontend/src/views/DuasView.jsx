@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DuasView({ playTrack, user }) {
+  const { lang, t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState(null);
@@ -488,14 +490,11 @@ export default function DuasView({ playTrack, user }) {
               </div>
             </div>
 
-            {/* Dua Title (English & Urdu) */}
+            {/* Dua Title (Dynamic Language) */}
             <div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                {item.title}
+              <h3 style={{ fontSize: lang === 'en' ? '1.15rem' : '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0, direction: lang === 'en' ? 'ltr' : 'rtl' }}>
+                {lang === 'en' ? item.title : item.title_ur}
               </h3>
-              <p className="arabic-font" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-emerald)', margin: '0.2rem 0 0 0', direction: 'rtl' }}>
-                {item.title_ur}
-              </p>
             </div>
 
             {/* Arabic Card Box */}
@@ -510,20 +509,15 @@ export default function DuasView({ playTrack, user }) {
               "{item.transliteration}"
             </p>
 
-            {/* English Translation */}
-            <p style={{ fontSize: '0.9rem', color: '#334155', margin: 0, lineHeight: '1.55' }}>
-              <strong style={{ color: 'var(--primary-dark)' }}>English:</strong> {item.translation}
-            </p>
-
-            {/* Urdu Translation */}
-            <p className="arabic-font" style={{ fontSize: '1.05rem', fontWeight: 700, color: '#047857', margin: 0, lineHeight: '1.6', direction: 'rtl' }}>
-              <strong>اردو ترجمہ:</strong> {item.translation_ur}
+            {/* Translation (Dynamic Language) */}
+            <p style={{ fontSize: lang === 'en' ? '0.9rem' : '1.05rem', color: lang === 'en' ? '#334155' : '#047857', margin: 0, lineHeight: '1.6', direction: lang === 'en' ? 'ltr' : 'rtl', fontWeight: lang === 'en' ? 400 : 700 }}>
+              {lang === 'en' ? item.translation : item.translation_ur}
             </p>
 
             {/* Virtues & Reference Footer Box */}
             <div style={{ background: '#f0fdf4', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #bbf7d0', marginTop: '0.2rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <p className="arabic-font" style={{ fontSize: '0.95rem', color: '#064e3b', margin: 0, direction: 'rtl' }}>
-                <strong style={{ color: '#047857' }}>فضیلت و برکت:</strong> {item.virtue_ur}
+              <p className="arabic-font" style={{ fontSize: '0.95rem', color: '#064e3b', margin: 0, direction: lang === 'en' ? 'ltr' : 'rtl' }}>
+                <strong style={{ color: '#047857' }}>{t('fazail')}:</strong> {item.virtue_ur}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#475569', fontWeight: 700 }}>
                 <i className="fas fa-bookmark" style={{ color: 'var(--accent-gold)' }}></i>
