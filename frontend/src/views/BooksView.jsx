@@ -23,15 +23,15 @@ export default function BooksView({ openReportModal, user }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const fileTypeOptions = [
-    { id: '', label: 'All Formats', icon: 'fas fa-layer-group', color: '#475569' },
-    { id: 'pdf', label: 'PDF Document', icon: 'fas fa-file-pdf', color: '#dc2626' },
-    { id: 'doc', label: 'Word Document (.docx)', icon: 'fas fa-file-word', color: '#2563eb' },
-    { id: 'ppt', label: 'PPT Presentation (.pptx)', icon: 'fas fa-file-powerpoint', color: '#ea580c' },
-    { id: 'book', label: 'Books (100+ Pages)', icon: 'fas fa-book', color: '#d97706' },
+    { id: '', label: t('allFormats'), icon: 'fas fa-layer-group', color: '#475569' },
+    { id: 'pdf', label: t('pdfDoc'), icon: 'fas fa-file-pdf', color: '#dc2626' },
+    { id: 'doc', label: t('wordDoc'), icon: 'fas fa-file-word', color: '#2563eb' },
+    { id: 'ppt', label: t('pptDoc'), icon: 'fas fa-file-powerpoint', color: '#ea580c' },
+    { id: 'book', label: t('bookDoc'), icon: 'fas fa-book', color: '#d97706' },
   ];
 
   const languageOptions = [
-    { id: '', label: 'All Languages', icon: 'fas fa-globe', color: '#6366f1' },
+    { id: '', label: t('allLanguages'), icon: 'fas fa-globe', color: '#6366f1' },
     { id: 'br', label: 'Brahui (براہوئی)', icon: 'fas fa-language', color: '#f59e0b' },
     { id: 'ur', label: 'Urdu (اردو)', icon: 'fas fa-language', color: '#10b981' },
     { id: 'en', label: 'English', icon: 'fas fa-language', color: '#0ea5e9' },
@@ -293,17 +293,17 @@ export default function BooksView({ openReportModal, user }) {
       {/* Header Banner */}
       <div className="section-header" style={{ marginBottom: '1.5rem' }}>
         <h1 className="section-title">
-          <i className="fas fa-book-reader" style={{ color: 'var(--accent-gold)' }}></i> Islamic Library & Resource Center
+          <i className="fas fa-book-reader" style={{ color: 'var(--accent-gold)' }}></i> {t('libraryHeaderTitle')}
         </h1>
         <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-          Read online in high clarity or download Islamic Books, PDF Documents, Word Files (.docx), and Presentation Slides (.pptx).
+          {t('libraryHeaderSubtitle')}
         </p>
       </div>
 
       {/* Language Multi-Select Toggle Pill Bar */}
       <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <i className="fas fa-language" style={{ color: '#0284c7' }}></i> Filter by Language (Select single or multiple):
+          <i className="fas fa-language" style={{ color: '#0284c7' }}></i> {t('filterByLang')}
         </div>
         <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
           {languageOptions.map((opt) => {
@@ -340,7 +340,7 @@ export default function BooksView({ openReportModal, user }) {
       {/* Format Multi-Select Toggle Pill Bar */}
       <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem' }}>
         <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <i className="fas fa-file-alt" style={{ color: '#059669' }}></i> Filter by Document Format (PDF, Word, PPT, Book):
+          <i className="fas fa-file-alt" style={{ color: '#059669' }}></i> {t('filterByFormat')}
         </div>
         <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
           {fileTypeOptions.map((opt) => {
@@ -380,7 +380,7 @@ export default function BooksView({ openReportModal, user }) {
         <div style={{ background: '#e0f2fe', border: '1px solid #7dd3fc', padding: '0.65rem 1.25rem', borderRadius: '10px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ fontSize: '0.85rem', color: '#0369a1', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <i className="fas fa-filter"></i>
-            <span>Active Filters:</span>
+            <span>{t('activeFiltersLabel')}</span>
             {selectedLanguages.length > 0 && (
               <span style={{ background: '#ffffff', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
                 Languages: {selectedLanguages.map(l => languageOptions.find(o => o.id === l)?.label || l).join(', ')}
@@ -396,7 +396,7 @@ export default function BooksView({ openReportModal, user }) {
             onClick={clearAllFilters}
             style={{ background: '#0284c7', color: '#ffffff', border: 'none', padding: '0.35rem 0.85rem', borderRadius: '6px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
           >
-            <i className="fas fa-times-circle"></i> Clear All Filters
+            <i className="fas fa-times-circle"></i> {t('clearAllFilters')}
           </button>
         </div>
       )}
@@ -405,24 +405,24 @@ export default function BooksView({ openReportModal, user }) {
       <div className="filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', flex: 1, minWidth: '280px' }}>
           <div className="filter-group" style={{ flex: 2, minWidth: '220px' }}>
-            <span className="filter-label"><i className="fas fa-search"></i> Search:</span>
+            <span className="filter-label"><i className="fas fa-search"></i> {t('searchLabel')}</span>
             <input
               type="text"
               className="filter-input"
-              placeholder="Search book title, author, topics..."
+              placeholder={t('searchBooksPlaceholder')}
               value={query}
               onChange={(e) => { setQuery(e.target.value); setPage(1); }}
             />
           </div>
 
           <div className="filter-group" style={{ flex: 1, minWidth: '180px' }}>
-            <span className="filter-label"><i className="fas fa-folder"></i> Category:</span>
+            <span className="filter-label"><i className="fas fa-folder"></i> {t('categoryLabel')}</span>
             <select
               className="filter-select"
               value={selectedCategory}
               onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
             >
-              <option value="">All Categories</option>
+              <option value="">{t('allCategories')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}

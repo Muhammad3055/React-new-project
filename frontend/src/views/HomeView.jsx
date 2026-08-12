@@ -144,55 +144,55 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
   const CAROUSEL_SLIDES = [
     {
-      badge: "114 SURAHS & MULTI-LANGUAGE TARJUMA",
-      title: "Read The Holy Quran Online",
-      subtitle: "Complete 114 Surahs with English, Urdu & Brahui (براہوئی) translations, Tafseer commentary, and verse reflection notes.",
-      btnText: t('readQuran') || "Start Reading Quran",
+      badge: t('slide1Badge'),
+      title: t('slide1Title'),
+      subtitle: t('slide1Desc'),
+      btnText: t('readQuran'),
       btnIcon: "fas fa-book-open",
       tab: "read",
       arabic: "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ"
     },
     {
-      badge: "20 WORLD-RENOWNED RECITERS MP3",
-      title: "High-Quality Qari Recitations",
-      subtitle: "Listen to & download MP3 Tilawat by Qari Sudais, Mishary Rashid Alafasy, Saud Al-Shuraim, Abdul Basit, and Brahui Taqreers.",
-      btnText: t('mp3Audio') || "Listen to MP3 Audio",
+      badge: t('slide2Badge'),
+      title: t('slide2Title'),
+      subtitle: t('slide2Desc'),
+      btnText: t('mp3Audio'),
       btnIcon: "fas fa-headphones",
       tab: "quran",
       arabic: "وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا"
     },
     {
-      badge: "AUTHENTIC ISLAMIC PDF KUTUB KHANA",
-      title: "Islamic PDF Books & Tafseer Library",
-      subtitle: "Download authentic PDF books, Sahih Hadith collections, and Tafseer Ibn Kathir completely free of charge.",
-      btnText: "Explore Books Library",
+      badge: t('slide3Badge'),
+      title: t('slide3Title'),
+      subtitle: t('slide3Desc'),
+      btnText: t('books'),
       btnIcon: "fas fa-book",
       tab: "books",
       arabic: "وَقُل رَّبِّ زِدْنِي عِلْمًا"
     },
     {
-      badge: "DAILY SPIRITUAL TOOLS & NIMAZ",
-      title: "Prayer Times & Qibla Compass",
-      subtitle: "Accurate daily prayer times, Qibla direction compass, 30-Day Khatam Quran Tracker, Masnoon Duas, and Digital Tasbeeh Counter.",
-      btnText: "View Daily Tools",
+      badge: t('slide4Badge'),
+      title: t('slide4Title'),
+      subtitle: t('slide4Desc'),
+      btnText: t('prayers'),
       btnIcon: "fas fa-clock",
       tab: "prayers",
       arabic: "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا"
     },
     {
-      badge: "SAHIH HADITH COLLECTIONS",
-      title: "Authentic Prophetic Traditions",
-      subtitle: "Browse Sahih Bukhari, Sahih Muslim, Riyad As-Salihin, and 40 Hadith Nawawi with full Arabic & Urdu text.",
-      btnText: "Browse Hadith Library",
+      badge: t('slide5Badge'),
+      title: t('slide5Title'),
+      subtitle: t('slide5Desc'),
+      btnText: t('hadith'),
       btnIcon: "fas fa-star",
       tab: "hadith",
       arabic: "مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ"
     },
     {
-      badge: "KHATAM QURAN & TASBEEH COUNTER",
-      title: "Spiritual Goal Tracker & Zikr",
-      subtitle: "Track your 30-day Quran completion progress, log daily read Juz, and use the built-in digital Tasbeeh counter.",
-      btnText: "Open Khatam Tracker",
+      badge: t('slide6Badge'),
+      title: t('slide6Title'),
+      subtitle: t('slide6Desc'),
+      btnText: t('khatam'),
       btnIcon: "fas fa-chart-line",
       tab: "khatam",
       arabic: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ"
@@ -309,9 +309,9 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         <div style={{ marginTop: '1.75rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <i className="fas fa-tools" style={{ color: 'var(--accent-gold)' }}></i> Interactive Islamic Tools & Services
+              <i className="fas fa-tools" style={{ color: 'var(--accent-gold)' }}></i> {t('interactiveServices')}
             </h3>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Quick access to spiritual trackers, AI guide, & prayer tools</span>
+            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{t('interactiveSubtitle')}</span>
           </div>
 
           <div style={{
@@ -325,8 +325,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
             >
               <i className="fas fa-book-open" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Read Quran</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>114 Surahs & Tafseer</p>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('readQuran')}</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('readQuranSub')}</p>
             </div>
 
             <div 
@@ -335,8 +335,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
             >
               <i className="fas fa-headphones" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>MP3 Recitations</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>20 Qaris & Brahui MP3</p>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('mp3Audio')}</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('mp3RecitationsSub')}</p>
             </div>
 
             <div 
@@ -345,8 +345,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
             >
               <i className="fas fa-chart-line" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Khatam Tracker</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>30-Day Quran Goal</p>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('khatam')}</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('khatamTrackerSub')}</p>
             </div>
 
             <div 
@@ -355,8 +355,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
             >
               <i className="fas fa-ring" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Digital Tasbeeh</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>Zikr & Counter</p>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('tasbeeh')}</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('digitalTasbeehSub')}</p>
             </div>
 
             <div 
@@ -365,8 +365,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
             >
               <i className="fas fa-compass" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>Qibla Compass</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>Kaaba Direction</p>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('qibla')}</h4>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('qiblaCompassSub')}</p>
             </div>
 
             <div 
@@ -375,9 +375,9 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
             >
               <i className="fas fa-book-reader" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>PDF Books</h4>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('books')}</h4>
 
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>Authentic Library</p>
+              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('pdfBooksSub')}</p>
             </div>
           </div>
         </div>
@@ -389,17 +389,17 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
               <i className="fas fa-headphones" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
               <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_audios}</h3>
-              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>Quran Recitations</p>
+              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>{t('quranRecitationsStat')}</p>
             </div>
             <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
               <i className="fas fa-book" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
               <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_books}</h3>
-              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>PDF Books Library</p>
+              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>{t('pdfBooksStat')}</p>
             </div>
             <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
               <i className="fas fa-star" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
               <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_hadiths}</h3>
-              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>Hadith Collections</p>
+              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>{t('hadithStat')}</p>
             </div>
           </div>
         </div>
@@ -535,10 +535,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-volume-up" style={{ color: 'var(--accent-gold)' }}></i> Featured Surahs Recitations
+            <i className="fas fa-volume-up" style={{ color: 'var(--accent-gold)' }}></i> {t('surahTilawat')}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            Listen to beautiful high-definition recitations from world-renowned Qaris.
+            {t('quranHeroSubtitle')}
           </p>
         </div>
 
@@ -564,7 +564,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                   onClick={() => playTrack(item.audio_url, `Surah ${item.surah_name_english}`, item.reciter)}
                   style={{ width: '100%', justifyContent: 'center', padding: '0.6rem 1rem', background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}
                 >
-                  <i className="fas fa-play"></i> Play Audio
+                  <i className="fas fa-play"></i> {t('playAudioBtn')}
                 </button>
               </div>
             </div>
@@ -591,7 +591,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               textDecoration: 'none'
             }}
           >
-            View All 114 Surahs Recitations <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
+            {t('mp3Audio')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
           </a>
         </div>
       </section>
@@ -600,10 +600,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> PDF Books Library
+            <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> {t('featuredBooks')}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            Explore and download authentic Islamic literature, Quranic commentary, and Hadith guides.
+            {t('booksSubtitle')}
           </p>
         </div>
 
@@ -644,7 +644,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                     textDecoration: 'none'
                   }}
                 >
-                  <i className="fas fa-file-pdf"></i> Read / Download PDF
+                  <i className="fas fa-file-pdf"></i> {t('downloadPdf')}
                 </a>
               </div>
             </div>
@@ -671,7 +671,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               textDecoration: 'none'
             }}
           >
-            Explore Full PDF Books Library <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
+            {t('exploreFullBooks')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
           </a>
         </div>
       </section>
@@ -680,10 +680,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> Featured Taqreer Audios (Arabic, Brahui & Urdu)
+            <i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> {t('taqreerSectionTitle')}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            Listen to inspiring Islamic Taqreers and voice notes in Arabic, Brahui, and Urdu.
+            {t('taqreerSectionDesc')}
           </p>
         </div>
 
@@ -709,7 +709,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
                 onClick={() => playTrack(tq.audio_url, tq.title, tq.speaker)}
               >
-                <i className="fas fa-play"></i> Play Taqreer MP3
+                <i className="fas fa-play"></i> {t('playTaqreerBtn')}
               </button>
             </div>
           ))}
@@ -720,10 +720,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       <section className="container" style={{ marginBottom: '4rem', textAlign: 'center' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Authentic Hadith Spotlight
+            <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> {t('hadithSpotlightTitle')}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            Read authentic traditions of Prophet Muhammad ﷺ.
+            {t('hadithSpotlightDesc')}
           </p>
         </div>
 
@@ -761,7 +761,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               textDecoration: 'none'
             }}
           >
-            Explore Hadith Collections <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
+            {t('exploreHadithCollections')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
           </a>
         </div>
       </section>
