@@ -3215,3 +3215,87 @@ a.btn-play:hover {
     transform: rotate(360deg);
   }
 }
+
+/* =========================================================
+   CROSS-DEVICE & MOBILE PERFORMANCE OPTIMIZATION ENGINE
+   ========================================================= */
+
+/* 1. Touch Latency Optimization (Eliminates 300ms mobile tap delay) */
+button,
+a,
+input,
+select,
+textarea,
+.nav-link,
+.surah-card,
+.book-card,
+.hadith-card,
+.dua-card,
+.name-card,
+.qari-card,
+.desktop-extras-card,
+.mobile-nav-item,
+.action-btn,
+.search-item {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 2. Content Visibility & Intelligent Render Skipping for Long Lists */
+.surah-card,
+.book-card,
+.hadith-card,
+.dua-card,
+.name-card,
+.taqreer-card,
+.qari-card,
+.fazail-card,
+.media-card,
+.reading-verse-item,
+.user-activity-item,
+.quran-ayah-row {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 220px;
+}
+
+/* 3. GPU Hardware-Accelerated Layout Layers for Smooth 60FPS Mobile Scroll & Animation */
+.navbar,
+.audio-player-fixed,
+.mobile-menu-overlay,
+.search-results-dropdown,
+.desktop-extras-sidepanel,
+.auth-modal-card,
+.gpu-accelerated {
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
+}
+
+/* 4. Smooth iOS Momentum Scrolling */
+html,
+body,
+.mobile-menu-overlay,
+.desktop-extras-sidepanel,
+.search-results-dropdown,
+.read-surah-container,
+.main-content {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* 5. Font Display & Text Rendering Efficiency */
+body {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 6. Mobile Layout Shift Prevention (CLS) & Image Aspect Ratio Containment */
+img {
+  content-visibility: auto;
+  height: auto;
+  max-width: 100%;
+}
+
