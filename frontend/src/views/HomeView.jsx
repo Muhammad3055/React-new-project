@@ -269,7 +269,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 }}
                 onClick={() => handleNav('read')}
               >
-                <i className="fas fa-book-reader" style={{ marginRight: '0.4rem' }}></i> Explore Portal
+                <i className="fas fa-book-reader" style={{ marginRight: '0.4rem' }}></i> {t('exploreLibrary')}
               </button>
             </div>
           </div>

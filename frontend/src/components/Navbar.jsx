@@ -30,9 +30,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
-    { label: '🎬 Video Lectures', icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
-    { label: 'Islamic Calendar', icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
-    { label: 'Hifz Memorization', icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
+    { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
+    { label: t('islamicCalendar'), icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
+    { label: t('hifzTracker'), icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
 
     { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },
     { label: t('khatam'), icon: 'fas fa-calendar-check', action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); } },

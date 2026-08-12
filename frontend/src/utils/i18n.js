@@ -72,7 +72,7 @@ export const translations = {
     isha: "Isha",
     nextPrayer: "Next Prayer",
 
-    // Extra Views
+    // Extra Views & Modals
     khatam: "Khatam Tracker",
     fazail: "Fazail e Quran",
     namesOfAllah: "99 Names of Allah",
@@ -80,6 +80,33 @@ export const translations = {
     duas: "Masnoon Duas",
     hadith: "Sahih Hadith",
     tafseer: "Tafseer Ibn Kathir",
+
+    // Video Lectures, Calendar, Hifz, Navigation & Buttons
+    videoLectures: "Video Lectures",
+    islamicCalendar: "Islamic Calendar",
+    hifzTracker: "Hifz Memorization",
+    aiChatbot: "Quran AI Assistant",
+    rightsReserved: "All Rights Reserved.",
+    quranStudies: "Quran Studies",
+    mediaAndBooks: "Media & Books",
+    navigation: "Quick Navigation",
+    listenNow: "Listen Now",
+    exploreLibrary: "Explore Portal",
+    todayVerse: "Verse of the Day",
+    surahTilawat: "Quran Tilawat MP3",
+    audioLectures: "Audio Taqreers",
+    featuredBooks: "Featured Books PDF",
+    quickAccess: "Quick Features",
+    clearSearch: "Clear Search",
+    noResultsFound: "No Results Found",
+    loadMore: "Load More",
+    surahName: "Surah Name",
+    juzNumber: "Juz / Para",
+    copyVerse: "Copy Verse",
+    bookmarkVerse: "Bookmark Verse",
+    shareVerse: "Share Verse",
+    addedToBookmarks: "Added to Bookmarks",
+    reportIssue: "Report Content Issue",
 
     // Authentication & OTP Modal
     authModalTitle: "Sign In / Register",
@@ -238,7 +265,7 @@ export const translations = {
     selectCity: "شہر کا انتخاب کریں",
     customCoordinates: "مخصوص عرض البلد اور طول البلد درج کریں",
 
-    // Extra Views
+    // Extra Views & Modals
     khatam: "ختم قرآن ٹریکر",
     fazail: "فضائل قرآن",
     namesOfAllah: "أسماء الله الحسنى",
@@ -246,6 +273,33 @@ export const translations = {
     duas: "مسنون دعائیں",
     hadith: "صحیح احادیث",
     tafseer: "تفسیر ابن کثیر",
+
+    // Video Lectures, Calendar, Hifz, Navigation & Buttons
+    videoLectures: "ویڈیو بیانات",
+    islamicCalendar: "اسلامی کیلنڈر",
+    hifzTracker: "حفظ قرآن ٹریکر",
+    aiChatbot: "قرآن اے آئی اسسٹنٹ",
+    rightsReserved: "جملہ حقوق محفوظ ہیں۔",
+    quranStudies: "قرآنی علوم",
+    mediaAndBooks: "میڈیا اور اسلامی کتب",
+    navigation: "اہم نیویگیشن",
+    listenNow: "تلاوت سنیں",
+    exploreLibrary: "پورٹل دیکھیں",
+    todayVerse: "آج کی آیت مبارکہ",
+    surahTilawat: "صوتی تلاوت قرآن",
+    audioLectures: "اسلامی تقاریر",
+    featuredBooks: "منتخب اسلامی کتب",
+    quickAccess: "فوری خصوصیات",
+    clearSearch: "تلاش صاف کریں",
+    noResultsFound: "کوئی نتیجہ نہیں ملا",
+    loadMore: "مزید دیکھیں",
+    surahName: "سورة کا نام",
+    juzNumber: "پارہ نمبر",
+    copyVerse: "آیت کاپی کریں",
+    bookmarkVerse: "بُک مارک کریں",
+    shareVerse: "آیت شیئر کریں",
+    addedToBookmarks: "بُک مارکس میں شامل کر دیا گیا",
+    reportIssue: "مواد کی رپورٹ کریں",
 
     // Authentication & OTP Modal
     authModalTitle: "سائن ان / رجسٹریشن",
@@ -395,7 +449,7 @@ export const translations = {
     selectCity: "شہر ءِ گچیں بکن بو",
     customCoordinates: "عرض البلد و طول البلد داخل بکن بو",
 
-    // Extra Views
+    // Extra Views & Modals
     khatam: "ختم قرآن ٹریکر",
     fazail: "فضائل قرآن",
     namesOfAllah: "أسماء الله الحسنى",
@@ -403,6 +457,33 @@ export const translations = {
     duas: "مسنون دعائیں",
     hadith: "صحیح احادیث",
     tafseer: "تفسیر ابن کثیر",
+
+    // Video Lectures, Calendar, Hifz, Navigation & Buttons
+    videoLectures: "ویڈیو تقریر آک",
+    islamicCalendar: "اسلامی کیلنڈر",
+    hifzTracker: "حفظ قرآن ٹریکر",
+    aiChatbot: "قرآن اے آئی ہیلپر",
+    rightsReserved: "غٹ حقوق تخوک ءُ۔",
+    quranStudies: "قرآنی علم آک",
+    mediaAndBooks: "میڈیا و اسلامی کتاب آک",
+    navigation: "نیویگیشن",
+    listenNow: "داسے بکن بو",
+    exploreLibrary: "پورٹل ءِ پٹ بو",
+    todayVerse: "اینو نا آیت مبارکہ",
+    surahTilawat: "قرآن نا تلاوت",
+    audioLectures: "صوتی تقریر آک",
+    featuredBooks: "گچیں کتاب آک",
+    quickAccess: "زوت خصوصیات آک",
+    clearSearch: "پٹ صاف بکن بو",
+    noResultsFound: "اسہ نتیجہ اس بتو",
+    loadMore: "مستی نشان بو",
+    surahName: "سورت نا پن",
+    juzNumber: "سپارہ نمبر",
+    copyVerse: "آیت کاپی بکن بو",
+    bookmarkVerse: "بُک مارک بکن بو",
+    shareVerse: "آیت روہی بکن بو",
+    addedToBookmarks: "بُک مارکس اٹ ہوار مس",
+    reportIssue: "رپورٹ بکن بو",
 
     // Authentication & OTP Modal
     authModalTitle: "سائن ان / دفتری پن تروک",
@@ -552,7 +633,7 @@ export const translations = {
     selectCity: "اختر المدينة يدوياً",
     customCoordinates: "أدخل خط العرض وخط الطول المخصص",
 
-    // Extra Views
+    // Extra Views & Modals
     khatam: "متابع ختم القرآن",
     fazail: "فضائل القرآن",
     namesOfAllah: "أسماء الله الحسنى",
@@ -560,6 +641,33 @@ export const translations = {
     duas: "الأدعية المأثورة",
     hadith: "الأحاديث الصحيحة",
     tafseer: "تفسير ابن كثير",
+
+    // Video Lectures, Calendar, Hifz, Navigation & Buttons
+    videoLectures: "محاضرات فيديو",
+    islamicCalendar: "التقويم الهجري",
+    hifzTracker: "متابع حفظ القرآن",
+    aiChatbot: "مساعد الذكاء الاصطناعي",
+    rightsReserved: "جميع الحقوق محفوظة.",
+    quranStudies: "علوم القرآن",
+    mediaAndBooks: "الوسائط والكتب",
+    navigation: "التنقل السريع",
+    listenNow: "استمع الآن",
+    exploreLibrary: "تصفح البوابة",
+    todayVerse: "آية اليوم",
+    surahTilawat: "تلاوات القرآن الكريم",
+    audioLectures: "المحاضرات الصوتية",
+    featuredBooks: "كتب مختارة",
+    quickAccess: "الخدمات السريعة",
+    clearSearch: "مسح البحث",
+    noResultsFound: "لم يتم العثور على نتائج",
+    loadMore: "تحميل المزيد",
+    surahName: "اسم السورة",
+    juzNumber: "الجزء",
+    copyVerse: "نسخ الآية",
+    bookmarkVerse: "حفظ الآية",
+    shareVerse: "مشاركة الآية",
+    addedToBookmarks: "تمت الإضافة إلى المحفوظات",
+    reportIssue: "الإبلاغ عن محتوى",
 
     // Authentication & OTP Modal
     authModalTitle: "تسجيل الدخول / إنشاء حساب",
