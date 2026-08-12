@@ -109,29 +109,112 @@ function MainAppContent() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Dynamic SEO Page Title update
+  // Dynamic SEO Page Title & Meta Tags Handler for All Pages
   useEffect(() => {
-    const seoTitles = {
-      home: 'Maktaba tul Muslim (مكتبة المسلم) - Read Quran Online (English, Urdu, Brahui / Brohi) | MP3 & Taqreer Library',
-      read: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui (Brohi) Tarjuma | Maktaba tul Muslim',
-      quran: 'Quran & Taqreer MP3 Audio Portal - Qaris Tilawat & Scholar Lectures | Maktaba tul Muslim',
-      qaris: 'Famous Quran Qaris & Reciters - Play & Download Recitations | Maktaba tul Muslim',
-      books: 'Islamic Digital Library - Free PDF Books & Documents | Maktaba tul Muslim',
-      tafseer: 'Authentic Quran Tafseer Commentary & Explanation | Maktaba tul Muslim',
-      hadith: 'Sahih Hadith Collections & Translations | Maktaba tul Muslim',
-      qibla: 'Live Qibla Finder & Accurate Prayer Times | Maktaba tul Muslim',
-      fazail: 'Virtues of Quran & Dhikr (فضائل قرآن) | Maktaba tul Muslim',
-      namesOfAllah: '99 Beautiful Names of Allah (Asma ul Husna) | Maktaba tul Muslim',
-      tasbeeh: 'Digital Tasbeeh Counter & Daily Dhikr | Maktaba tul Muslim',
-      duas: 'Masnoon Duas & Daily Supplications | Maktaba tul Muslim',
-      khatam: 'Quran Khatam Progress Tracker & Goal Planner | Maktaba tul Muslim',
-      contact: 'Contact Us & Send Feedback | Maktaba tul Muslim',
-      about: 'About Maktaba tul Muslim - Free Authentic Islamic Resource Platform',
-      bookmarks: 'My Saved Bookmarks & Highlights | Maktaba tul Muslim',
-      dashboard: 'User Profile & Personalized Dashboard | Maktaba tul Muslim',
-      upload: 'Admin Media Upload Studio | Maktaba tul Muslim',
+    const pageSeoData = {
+      home: {
+        title: 'Maktaba tul Muslim (مكتبة المسلم) - Read Quran Online (English, Urdu, Brahui / Brohi) | MP3 & Taqreer Library',
+        desc: 'Explore Holy Quran online with 114 Surahs, Prophet Muhammad (PBUH) teachings, Stories of Prophets (Adam, Nuh, Ibrahim, Musa, Isa, Muhammad SAW), multi-language Brahui / Urdu / English translations, 20 Qaris MP3 audio recitations, Tafseer Ibn Kathir, Sahih Hadith, Islamic PDF Books, 99 Names of Allah, and Masnoon Duas.',
+        keywords: 'Islam, Muslim, Quran, Prophet, Muhammad, Prophet Muhammad, Prophet Adam, Prophet Nuh, Prophet Ibrahim, Prophet Musa, Prophet Isa, Islamic Books, Sahih Al Bukhari, Sahih Muslim, Tafseer Ibn Kathir, Brahui Quran, Brohi Tarjuma, Urdu Quran, English Quran, Maktaba tul Muslim'
+      },
+      read: {
+        title: 'Read Holy Quran Online - 114 Surahs with English, Urdu & Brahui (Brohi) Tarjuma | Maktaba tul Muslim',
+        desc: 'Read the complete Holy Quran online with word-by-word translations in English, Urdu, and Brahui (Brohi). Explore 114 Surahs, Arabic script, audio playback, bookmarks, and search capabilities.',
+        keywords: 'Read Quran Online, Quran 114 Surahs, Surah Fatiha, Surah Yaseen, Surah Baqarah, Urdu Quran Tarjuma, Brahui Quran Translation, Brohi Quran Online, Arabic Quran Text'
+      },
+      quran: {
+        title: 'Quran & Taqreer MP3 Audio Portal - Qaris Tilawat & Scholar Lectures | Maktaba tul Muslim',
+        desc: 'Listen to and download high quality MP3 audio tilawat by 20 world renowned Qaris (Qari Sudais, Mishary Alafasy, Shuraim, Abdul Basit) and Islamic scholar taqreer lectures in Brahui, Urdu, and English.',
+        keywords: 'Quran MP3 Audio, Quran Tilawat MP3, Qari Sudais MP3, Mishary Alafasy, Qari Shuraim, Qari Abdul Basit, Islamic Taqreer Audio, Brahui Taqreer MP3, Scholar Speeches'
+      },
+      qaris: {
+        title: 'Famous Quran Qaris & Reciters - Play & Download Recitations | Maktaba tul Muslim',
+        desc: 'Listen to world famous Quran Qaris and reciters including Qari Abdul Rahman Al-Sudais, Mishary Rashid Alafasy, Saud Al-Shuraim, Maher Al-Muaiqly, Abdul Basit, Saad Al-Ghamdi, and Yasser Al-Dosari.',
+        keywords: 'Famous Qaris, Qari Sudais, Mishary Alafasy, Saud Shuraim, Maher Muaiqly, Abdul Basit, Saad Ghamdi, Minshawi, Hussary, Quran Reciters MP3'
+      },
+      books: {
+        title: 'Islamic Digital Library - Free PDF Books & Documents | Maktaba tul Muslim',
+        desc: 'Browse and download authentic Islamic PDF books, Hadith collections (Bukhari, Muslim, Tirmidhi, Abu Dawood), Tafseer commentary, Seerah of Prophet Muhammad (SAW), and Brahui/Urdu Islamic literature.',
+        keywords: 'Islamic Books PDF, Sahih Bukhari PDF, Sahih Muslim PDF, Tafseer Ibn Kathir PDF, Free Islamic PDF Books, Urdu Islamic Books, Brahui Islamic Literature'
+      },
+      tafseer: {
+        title: 'Authentic Quran Tafseer Commentary & Explanation | Maktaba tul Muslim',
+        desc: 'Study authentic Quran Tafseer commentary including Tafseer Ibn Kathir with verse by verse Tashreeh, Urdu and English explanations, and scholarly insights.',
+        keywords: 'Tafseer Ibn Kathir, Quran Tafseer Commentary, Quran Tashreeh, Urdu Tafseer, Verse Explanation, Authentic Quran Commentary'
+      },
+      hadith: {
+        title: 'Sahih Hadith Collections & Translations | Maktaba tul Muslim',
+        desc: 'Explore authentic Sahih Hadith collections including Sahih Al-Bukhari, Sahih Muslim, Sunan Abu Dawood, Jami at-Tirmidhi, Sunan An-Nasa\'i, and Sunan Ibn Majah with English and Urdu translations.',
+        keywords: 'Sahih Bukhari, Sahih Muslim, Sunan Abu Dawood, Tirmidhi, Hadith Collections, Hadith in Urdu, Hadith in English, Sunnah of Prophet Muhammad'
+      },
+      qibla: {
+        title: 'Live Qibla Finder & Accurate Prayer Times | Maktaba tul Muslim',
+        desc: 'Find accurate Qibla direction online using GPS compass and view live daily Islamic prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) for any location worldwide.',
+        keywords: 'Qibla Finder Online, Qibla Compass, Live Prayer Times, Namaz Timing Today, Fajr Asr Maghrib Isha Times, Kaaba Direction'
+      },
+      fazail: {
+        title: 'Virtues of Quran & Dhikr (فضائل قرآن) | Maktaba tul Muslim',
+        desc: 'Read authentic virtues of Quran recitation, Fazail-e-Quran, Fazail-e-Dhikr, and blessings of daily remembrance of Allah SWT.',
+        keywords: 'Fazail e Quran, Virtues of Quran Recitation, Virtues of Dhikr, فضائل قرآن, Blessings of Quran, Islamic Virtues'
+      },
+      namesOfAllah: {
+        title: '99 Beautiful Names of Allah (Asma ul Husna) | Maktaba tul Muslim',
+        desc: 'Learn 99 Beautiful Names of Allah (Asma ul Husna) with Arabic text, English transliteration, Urdu & English meanings, benefits, and audio pronunciation.',
+        keywords: '99 Names of Allah, Asma ul Husna, Names of Allah Meaning in Urdu, Allah Names English, Asmaul Husna Audio'
+      },
+      tasbeeh: {
+        title: 'Digital Tasbeeh Counter & Daily Dhikr | Maktaba tul Muslim',
+        desc: 'Use virtual digital Tasbeeh counter for daily Zikr, SubhanAllah, Alhamdulillah, AllahuAkbar, Salawat on Prophet Muhammad (PBUH), and custom dhikr tallies.',
+        keywords: 'Digital Tasbeeh Counter, Virtual Tasbeeh Online, Daily Zikr Counter, SubhanAllah Counter, Salawat Counter'
+      },
+      duas: {
+        title: 'Masnoon Duas & Daily Supplications | Maktaba tul Muslim',
+        desc: 'Access authentic Masnoon Duas, daily supplications from Fortress of the Muslim (Hisn al-Muslim), morning and evening Adhkar with Arabic, Urdu, and English audio.',
+        keywords: 'Masnoon Duas, Daily Islamic Duas, Hisn al Muslim, Morning Evening Adhkar, Dua for Forgiveness, Urdu Masnoon Duas'
+      },
+      khatam: {
+        title: 'Quran Khatam Progress Tracker & Goal Planner | Maktaba tul Muslim',
+        desc: 'Track your daily Quran reading progress, set 30-day Ramadan Quran Khatam goals, and manage completed Juz and Surahs with personalized progress analytics.',
+        keywords: 'Quran Khatam Tracker, Ramadan Quran Goal, Quran Reading Progress, Daily Juz Tracker'
+      },
+      contact: {
+        title: 'Contact Us & Send Feedback | Maktaba tul Muslim',
+        desc: 'Contact Maktaba tul Muslim team for questions, suggestions, feedback, or content submissions for our authentic Islamic portal.',
+        keywords: 'Contact Maktaba tul Muslim, Islamic Portal Support, Submit Content'
+      },
+      about: {
+        title: 'About Maktaba tul Muslim - Free Authentic Islamic Resource Platform',
+        desc: 'Learn about Maktaba tul Muslim mission to provide free, authentic multi-language Quran, Hadith, Tafseer, Audio recitations, and Brahui Islamic literature to Muslims worldwide.',
+        keywords: 'About Maktaba tul Muslim, Free Islamic Portal, Islamic Digital Resource'
+      }
     };
-    document.title = seoTitles[activeTab] || 'Maktaba tul Muslim - Islamic Portal';
+
+    const currentSeo = pageSeoData[activeTab] || pageSeoData.home;
+    document.title = currentSeo.title;
+
+    // Dynamically set Meta Description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', currentSeo.desc);
+
+    // Dynamically set Meta Keywords
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (metaKeywords) metaKeywords.setAttribute('content', currentSeo.keywords);
+
+    // Dynamically set OpenGraph Title, Description, Image & URL
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', currentSeo.title);
+
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', currentSeo.desc);
+
+    let ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage) ogImage.setAttribute('content', 'https://maktabatulmuslim.com/logo.png');
+
+    let twitterImage = document.querySelector('meta[property="twitter:image"]');
+    if (twitterImage) twitterImage.setAttribute('content', 'https://maktabatulmuslim.com/logo.png');
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', `https://maktabatulmuslim.com${tabPathMap[activeTab] || '/'}`);
   }, [activeTab]);
 
   // Check Auth Status on Load
