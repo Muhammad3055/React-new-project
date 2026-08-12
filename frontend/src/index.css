@@ -3241,7 +3241,7 @@ textarea,
   -webkit-tap-highlight-color: transparent;
 }
 
-/* 2. Content Visibility & Intelligent Render Skipping for Long Lists */
+/* 2. Zero-CLS Layout Containment & Render Isolation for Cards */
 .surah-card,
 .book-card,
 .hadith-card,
@@ -3254,11 +3254,11 @@ textarea,
 .reading-verse-item,
 .user-activity-item,
 .quran-ayah-row {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 220px;
+  contain: layout style;
+  box-sizing: border-box;
 }
 
-/* 3. GPU Hardware-Accelerated Layout Layers for Smooth 60FPS Mobile Scroll & Animation */
+/* 3. GPU Hardware-Accelerated Layout Layers for Smooth Mobile Scroll */
 .navbar,
 .audio-player-fixed,
 .mobile-menu-overlay,
@@ -3269,8 +3269,6 @@ textarea,
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  perspective: 1000px;
-  will-change: transform, opacity;
 }
 
 /* 4. Smooth iOS Momentum Scrolling */
@@ -3287,15 +3285,15 @@ body,
 
 /* 5. Font Display & Text Rendering Efficiency */
 body {
-  text-rendering: optimizeSpeed;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 6. Mobile Layout Shift Prevention (CLS) & Image Aspect Ratio Containment */
+/* 6. Mobile Layout Shift Prevention (CLS = 0) */
 img {
-  content-visibility: auto;
   height: auto;
   max-width: 100%;
 }
+
 

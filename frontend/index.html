@@ -17,16 +17,16 @@
   <link rel="icon" type="image/svg+xml" href="https://maktabatulmuslim.com/favicon.svg" />
   <link rel="image_src" href="https://maktabatulmuslim.com/logo.png" />
 
-  <!-- Resource Preconnects for High Performance & Low Latency FCP -->
+  <!-- Resource Preconnects & Stylesheet Preloads for Low Latency FCP/LCP -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" />
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Third-party SDKs are deferred to body bottom to prevent render blocking -->
-
+  <!-- FontAwesome Icons & Google Fonts (Loaded directly to prevent layout shifts & CLS) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" />
 
   <!-- Primary Meta Tags -->
   <title>Maktaba tul Muslim (مكتبة المسلم) - Read Quran Online in English, Urdu & Brahui | MP3 Recitations, Qari Sudais, Alafasy & Islamic Books Library</title>
@@ -73,10 +73,6 @@
     content="Explore Holy Quran online with 114 Surahs, multi-language translations (English, Urdu, Brahui/Brohi), 20 Qaris MP3 recitations (Qari Sudais, Alafasy, Shuraim), live Prayer Times, and Hadith collections on Maktaba tul Muslim." />
   <meta property="twitter:image" content="https://maktabatulmuslim.com/logo.png" />
   <meta property="twitter:image:alt" content="Maktaba tul Muslim Official Icon Logo" />
-
-  <!-- FontAwesome Icons & Modern Google Fonts (Loaded asynchronously to prevent render-blocking) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
 
   <!-- Structured Data (JSON-LD) for Google Rich Snippets & Search Engines -->
   <script type="application/ld+json">
