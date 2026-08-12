@@ -303,10 +303,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     <div className="container" style={{ paddingBottom: '3rem' }}>
       <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '20px' }}>
         <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-          <i className="fas fa-headphones-alt"></i> Audio MP3 Portal & Recitations
+          <i className="fas fa-headphones-alt"></i> {t('mp3TilawatHeader')}
         </h1>
         <p style={{ color: '#e2e8f0', fontSize: '0.88rem', marginTop: '0.35rem', lineHeight: '1.5' }}>
-          Listen to complete Quran MP3 recitations in Arabic, Brahui (براہوئی), Urdu (اردو), or Mixed audio collections.
+          {t('quranHeroSubtitle')}
         </p>
       </div>
 

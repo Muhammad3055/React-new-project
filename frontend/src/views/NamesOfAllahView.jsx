@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function NamesOfAllahView() {
+  const { lang, t } = useLanguage();
   const [search, setSearch] = useState('');
   const [copiedName, setCopiedName] = useState(null);
   const [visibleCount, setVisibleCount] = useState(18);
@@ -177,24 +179,17 @@ export default function NamesOfAllahView() {
                 </h3>
                 
                 {/* English Meaning */}
-                <p style={{ fontSize: '0.88rem', fontWeight: 700, color: '#334155', margin: '0.3rem 0' }}>
-                  <strong style={{ color: 'var(--primary-dark)' }}>English:</strong> {name.meaning}
-                </p>
-
-                {/* Urdu Meaning */}
-                <p className="arabic-font" style={{ fontSize: '1.05rem', fontWeight: 700, color: '#047857', margin: '0.3rem 0 0.6rem 0', direction: 'rtl' }}>
-                  <strong>اردو معنی:</strong> {name.meaning_ur}
+                {/* Dynamic Primary Language Meaning */}
+                <p style={{ fontSize: lang === 'en' ? '0.92rem' : '1.08rem', fontWeight: 700, color: 'var(--primary-dark)', margin: '0.4rem 0 0.6rem 0', direction: lang === 'en' ? 'ltr' : 'rtl' }}>
+                  {lang === 'en' ? name.meaning : name.meaning_ur}
                 </p>
               </div>
             </div>
 
-            {/* Virtues Section (English & Urdu) */}
+            {/* Virtues Section (Dynamic Language) */}
             <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-gold)', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <p style={{ fontSize: '0.8rem', color: '#334155', margin: 0, lineHeight: '1.45' }}>
-                <strong style={{ color: '#0f172a' }}><i className="fas fa-gem" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> English Virtue:</strong> {name.benefit}
-              </p>
-              <p className="arabic-font" style={{ fontSize: '0.95rem', color: '#064e3b', margin: 0, lineHeight: '1.5', direction: 'rtl' }}>
-                <strong style={{ color: '#047857' }}>اردو فضیلت و برکت:</strong> {name.benefit_ur}
+              <p style={{ fontSize: lang === 'en' ? '0.82rem' : '0.95rem', color: '#064e3b', margin: 0, lineHeight: '1.5', direction: lang === 'en' ? 'ltr' : 'rtl' }}>
+                <strong style={{ color: '#047857' }}><i className="fas fa-gem" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {t('fazail')}:</strong> {lang === 'en' ? name.benefit : name.benefit_ur}
               </p>
             </div>
           </div>
@@ -219,7 +214,8 @@ export default function NamesOfAllahView() {
               transition: 'all 0.2s ease'
             }}
           >
-            <i className="fas fa-arrow-down" style={{ marginRight: '0.5rem' }}></i> Load More Names ({visibleCount} of {filteredNames.length})
+            <i className="fas fa-chevron-down" style={{ marginRight: '0.5rem' }}></i>
+            {t('loadMore') || (lang === 'ur' ? 'مزید دیکھئے' : lang === 'br' ? 'مست لوڑ بکن بو' : lang === 'ar' ? 'تحميل المزيد' : 'Load More')}
           </button>
         </div>
       )}

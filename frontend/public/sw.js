@@ -1,4 +1,4 @@
-const CACHE_NAME = 'maktaba-pwa-v2';
+const CACHE_NAME = 'maktaba-pwa-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

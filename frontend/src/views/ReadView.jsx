@@ -446,10 +446,10 @@ export default function ReadView({ user, playTrack, openReportModal }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
-              <i className="fas fa-quran"></i> Quran Reading & Translation Portal
+              <i className="fas fa-quran"></i> {t('quranPortalTitle')}
             </h2>
             <p style={{ fontSize: '0.82rem', color: '#e2e8f0', marginTop: '0.25rem', lineHeight: '1.4' }}>
-              Choose your preferred mode: Read pure Quran Pak text or study with English, Urdu & Brahui Tarjuma/Translation.
+              {t('readQuranSub')}
             </p>
           </div>
 
@@ -460,7 +460,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
               onClick={() => setReadMode('only_quran')}
             >
               <i className="fas fa-book-open"></i>
-              <span>Only Quran Pak Text</span>
+              <span>{t('readQuranOnly')}</span>
             </button>
 
             <button
@@ -468,7 +468,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
               onClick={() => setReadMode('with_translation')}
             >
               <i className="fas fa-language"></i>
-              <span>Quran with Tarjuma / Translation</span>
+              <span>{t('quranWithTarjuma')}</span>
             </button>
           </div>
         </div>
@@ -488,7 +488,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                 onClick={() => setTranslationSubMode('audio_and_text')}
               >
                 <i className="fas fa-headphones-alt"></i>
-                <span>Multi-Qari Audio & Translation</span>
+                <span>{t('audioAndSpoken')}</span>
               </button>
 
               {/* Sub-Mode 2B: Text + Translation Only (No Audio MP3) */}
@@ -497,7 +497,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                 onClick={() => setTranslationSubMode('text_only_translation')}
               >
                 <i className="fas fa-file-alt"></i>
-                <span>Text & Translation Only</span>
+                <span>{t('textOnlyTarjuma')}</span>
               </button>
             </div>
 
@@ -505,7 +505,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
             {translationSubMode === 'audio_and_text' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#e2e8f0', whiteSpace: 'nowrap' }}>
-                  <i className="fas fa-user-circle" style={{ color: 'var(--accent-gold)' }}></i> Reciter Qari:
+                  <i className="fas fa-user-circle" style={{ color: 'var(--accent-gold)' }}></i> {t('selectQariLabel')}
                 </span>
                 <select
                   value={selectedQari}
@@ -539,12 +539,12 @@ export default function ReadView({ user, playTrack, openReportModal }) {
       <div className="read-view-layout">
         {/* Left Sidebar: Surah Selector */}
         <div className="card" style={{ padding: '1rem', maxHeight: '800px', display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ fontSize: '1.1rem', color: 'var(--primary-dark)', marginBottom: '0.75rem' }}><i className="fas fa-list"></i> Select Surah</h3>
+          <h3 style={{ fontSize: '1.1rem', color: 'var(--primary-dark)', marginBottom: '0.75rem' }}><i className="fas fa-list"></i> {t('selectSurahLabel')}</h3>
 
           <input
             type="text"
             className="form-input"
-            placeholder="Search Surah..."
+            placeholder={t('searchSurahAudioPlaceholder')}
             value={surahFilter}
             onChange={(e) => setSurahFilter(e.target.value)}
             style={{ marginBottom: '0.5rem', padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}
@@ -619,13 +619,13 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                     onClick={() => setQuranSubMode('page_view')}
                     style={{ padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, border: 'none', background: quranSubMode === 'page_view' ? 'var(--primary-dark)' : 'transparent', color: quranSubMode === 'page_view' ? 'var(--accent-gold)' : '#1e293b', cursor: 'pointer' }}
                   >
-                    <i className="fas fa-file-alt"></i> Page View (Mushaf)
+                    <i className="fas fa-file-alt"></i> {t('pageViewContinuous')}
                   </button>
                   <button
                     onClick={() => setQuranSubMode('ayah_view')}
                     style={{ padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, border: 'none', background: quranSubMode === 'ayah_view' ? 'var(--primary-dark)' : 'transparent', color: quranSubMode === 'ayah_view' ? 'var(--accent-gold)' : '#1e293b', cursor: 'pointer' }}
                   >
-                    <i className="fas fa-list-ol"></i> Verse by Verse
+                    <i className="fas fa-list-ol"></i> {t('verseByVerseView')}
                   </button>
                 </div>
               )}
