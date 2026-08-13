@@ -1332,7 +1332,7 @@ def submit_contact_view(request):
 def robots_txt_view(request):
     content = """User-agent: *
 Allow: /
-Sitemap: http://127.0.0.1:8000/sitemap.xml
+Sitemap: https://maktabatulmuslim.com/sitemap.xml
 """
     return HttpResponse(content, content_type="text/plain")
 
