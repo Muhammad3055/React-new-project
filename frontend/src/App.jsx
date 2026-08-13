@@ -222,6 +222,9 @@ function MainAppContent() {
     fetch(getApiUrl('/api/auth/status/'), { cache: 'no-store', headers: { 'Pragma': 'no-cache' } })
       .then((res) => res.json())
       .then((data) => {
+        if (data && data.google_client_id) {
+          window.GOOGLE_OAUTH_CLIENT_ID = data.google_client_id;
+        }
         if (data && data.is_authenticated) {
           const savedUserStr = localStorage.getItem('quran_portal_user');
           let savedUser = {};

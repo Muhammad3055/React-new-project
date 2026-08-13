@@ -447,9 +447,14 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           return;
         } catch (e) {
           console.error("Google Auth Exception:", e);
+          setSubmitting(false);
+          setError(`Google Sign-In initialization failed: ${e.message || e}`);
+          return;
         }
       }
-      executeSocialAuth('google', '', '', email || username);
+      setSubmitting(false);
+      setError('Google Sign-In client library is loading or blocked by your browser. Please try again in a moment or disable ad-blockers.');
+      return;
 
     } else if (provider === 'microsoft') {
       if (window.msal) {
