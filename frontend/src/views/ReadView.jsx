@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getBrahuiVerseTranslation, BRAHUI_SURAH_NAMES } from '../data/brahui_translations';
 import { fetchWithCache } from '../utils/apiCache';
 import { ALL_114_SURAHS } from '../data/quran_data';
+import { useLanguage } from '../context/LanguageContext';
 
 const FALLBACK_FATIHAH = {
   number: 1,
@@ -94,7 +95,7 @@ const toArabicNumerals = (num) => {
 };
 
 export default function ReadView({ user, playTrack, openReportModal }) {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
   const [selectedSurah, setSelectedSurah] = useState(1);
   const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
