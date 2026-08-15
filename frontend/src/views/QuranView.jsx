@@ -193,7 +193,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   }, [user]);
 
-  // Load Brahui or Urdu Quran Translation MP3s from database
+  // Load Brahui or Urdu Quran Translation MP3s from database with 114 Surahs fallback
   useEffect(() => {
     if (subCategory === 'quran_brahui' || subCategory === 'quran_urdu') {
       const lang = subCategory === 'quran_brahui' ? 'brahui' : 'urdu';
@@ -201,9 +201,33 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       fetch(`/api/quran/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
-          setTranslationAudios(data.results || []);
+          const apiResults = data && data.results && data.results.length > 0 ? data.results : [];
+          const defaultSurahAudios = ALL_114_SURAHS.map(s => ({
+            id: `default_${lang}_${s.number}`,
+            surah_number: s.number,
+            surah_name_english: s.englishName,
+            surah_name_arabic: s.name,
+            reciter: lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation',
+            audio_url: lang === 'brahui' ? getBrahuiAudioUrl(s.number) : getUrduAudioUrl(s.number),
+            language: lang
+          }));
+          const combined = apiResults.length > 0 
+            ? [...apiResults, ...defaultSurahAudios.filter(d => !apiResults.some(a => a.surah_number === d.surah_number))] 
+            : defaultSurahAudios;
+          setTranslationAudios(combined);
         })
-        .catch(() => setTranslationAudios([]))
+        .catch(() => {
+          const defaultSurahAudios = ALL_114_SURAHS.map(s => ({
+            id: `default_${lang}_${s.number}`,
+            surah_number: s.number,
+            surah_name_english: s.englishName,
+            surah_name_arabic: s.name,
+            reciter: lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation',
+            audio_url: lang === 'brahui' ? getBrahuiAudioUrl(s.number) : getUrduAudioUrl(s.number),
+            language: lang
+          }));
+          setTranslationAudios(defaultSurahAudios);
+        })
         .finally(() => setLoadingTranslationAudios(false));
     }
   }, [subCategory]);
@@ -213,10 +237,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     if (subCategory.startsWith('taqreer_')) {
       const lang = subCategory.replace('taqreer_', '');
       setLoadingTaqreers(true);
-      fetch(`/api/taqreer/?language=${lang}&q=${encodeURIComponent(taqreerQuery)}`)
+      fetch(`/api/taqreer/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
-          if (data.results && data.results.length > 0) {
+          if (data && data.results && data.results.length > 0) {
             setTaqreers(data.results);
           } else {
             setTaqreers(DEFAULT_TAQREERS[lang] || []);
@@ -227,7 +251,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         })
         .finally(() => setLoadingTaqreers(false));
     }
-  }, [subCategory, taqreerQuery]);
+  }, [subCategory]);
 
   const activeQariObj = QARIS.find((q) => q.id === selectedQari) || QARIS[0];
 
@@ -301,8 +325,9 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     description: item.description || 'Uploaded by Administrator',
     addedByAdmin: true
   }));
-  const baseTaqreers = taqreers.length > 0 ? taqreers : (DEFAULT_TAQREERS[currentTaqreerLang] || []);
-  const rawActiveTaqreers = filterOutDeleted([...adminTaqreers, ...baseTaqreers]);
+  const defaultList = DEFAULT_TAQREERS[currentTaqreerLang] || [];
+  const combinedTaqreers = taqreers.length > 0 ? [...taqreers, ...defaultList.filter(d => !taqreers.some(t => t.id === d.id))] : defaultList;
+  const rawActiveTaqreers = filterOutDeleted([...adminTaqreers, ...combinedTaqreers]);
   const activeTaqreers = rawActiveTaqreers.filter(tq => {
     if (!tq) return false;
     const q = (taqreerQuery || quranQuery || '').trim().toLowerCase();
