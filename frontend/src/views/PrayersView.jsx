@@ -1,7 +1,9 @@
 import React from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function PrayersView({ navigateToTab }) {
+  const { t } = useLanguage();
   const tools = [
     { title: 'Qibla Direction Compass', desc: 'Accurate live Qibla direction for your exact location.', icon: 'fas fa-compass', tab: 'qibla', color: '#0d9488' },
     { title: '30-Day Khatam Tracker', desc: 'Track your daily Juz reading progress to complete Quran.', icon: 'fas fa-calendar-check', tab: 'khatam', color: '#b45309' },
@@ -64,7 +66,7 @@ export default function PrayersView({ navigateToTab }) {
                 className="btn-play"
                 style={{ marginTop: '1.25rem', padding: '0.5rem 1rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: item.color, border: `1.5px solid ${item.color}`, fontWeight: 800, width: '100%', justifyContent: 'center' }}
               >
-                Open Tool <i className="fas fa-arrow-right" style={{ marginLeft: '0.35rem' }}></i>
+                {t('openTool', 'Open Tool')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.35rem' }}></i>
               </button>
             </div>
           ))}

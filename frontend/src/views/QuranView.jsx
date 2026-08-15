@@ -249,14 +249,13 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
 
   const subCategoryOptions = [
-
-    { id: 'quran_arabic', label: 'Arabic Tilawat', sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
-    { id: 'quran_brahui', label: 'Brahui Tarjuma MP3', sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
-    { id: 'quran_urdu', label: 'Urdu Tarjuma MP3', sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
-    { id: 'taqreer_arabic', label: 'Arabic Taqreers', sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
-    { id: 'taqreer_brahui', label: 'Brahui Taqreers', sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
-    { id: 'taqreer_urdu', label: 'Urdu Taqreers', sub: 'تقارير اردو', icon: 'fas fa-podcast' },
-    { id: 'quran_mixed', label: 'Mixed Audio MP3', sub: 'مکسڈ آڈیو مجموعہ', icon: 'fas fa-compact-disc' },
+    { id: 'quran_arabic', label: t('arabicTilawat', 'Arabic Tilawat'), sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
+    { id: 'quran_brahui', label: t('brahuiTarjuma', 'Brahui Tarjuma MP3'), sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-volume-up' },
+    { id: 'quran_urdu', label: t('urduTarjuma', 'Urdu Tarjuma MP3'), sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
+    { id: 'taqreer_arabic', label: t('arabicTaqreer', 'Arabic Taqreers'), sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
+    { id: 'taqreer_brahui', label: t('brahuiTaqreer', 'Brahui Taqreers'), sub: 'تقارير براہوئی', icon: 'fas fa-bullhorn' },
+    { id: 'taqreer_urdu', label: t('urduTaqreer', 'Urdu Taqreers'), sub: 'تقارير اردو', icon: 'fas fa-podcast' },
+    { id: 'quran_mixed', label: t('mixedAudio', 'Mixed Audio MP3'), sub: 'مکسڈ آڈیو مجموعہ', icon: 'fas fa-compact-disc' },
   ];
 
   const safePlayTrack = (url, title, artist) => {
