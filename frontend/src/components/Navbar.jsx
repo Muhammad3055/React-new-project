@@ -264,31 +264,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </select>
             </div>
 
-            {/* Live Islamic Hijri Date Badge */}
-            <button
-              onClick={openCalendar}
-              className="hijri-date-nav-badge"
-              title="Click to open Islamic Hijri Calendar & Events"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: 'rgba(245, 158, 11, 0.12)',
-                color: 'var(--accent-gold)',
-                border: '1.5px solid var(--accent-gold)',
-                borderRadius: '20px',
-                padding: '0.35rem 0.75rem',
-                fontSize: '0.78rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.15)',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <i className="fas fa-moon" style={{ color: 'var(--accent-gold)' }}></i>
-              <span>{getFormattedHijriDate(lang)}</span>
-            </button>
-
             {/* Desktop Extras Menu Toggle */}
             <div className="desktop-extras-menu">
 

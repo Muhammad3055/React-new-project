@@ -370,7 +370,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
             }}
           >
-            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 Hijri Calendar ({getFormattedHijriDate()})
+            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 Hijri Calendar & Events
           </button>
         )}
 
