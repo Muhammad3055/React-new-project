@@ -486,13 +486,9 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <div>
                       <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem' }}>
                         <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>{surah.number}</span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-gold)', background: '#fef3c7', padding: '3px 10px', borderRadius: '14px', border: '1px solid #fcd34d' }}>
-                          {surah.revelationType} &bull; {surah.numberOfAyahs} Ayahs
-                        </span>
                       </div>
                       <div className="card-body" style={{ padding: 0 }}>
                         <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>Surah {surah.englishName}</h3>
-                        <p style={{ fontSize: '0.85rem', color: '#78716c', marginBottom: '0.4rem', fontWeight: 600 }}>{surah.englishNameTranslation}</p>
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{surah.name}</p>
                         <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)', marginRight: '0.3rem' }}></i> {activeQariObj.name}</p>
                       </div>
