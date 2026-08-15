@@ -260,8 +260,12 @@ function MainAppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const playTrack = (url, title, reciter, onEnded = null) => {
-    setCurrentTrack({ url, title, reciter, onEnded });
+  const playTrack = (url, title, reciter, onEnded = null, onNext = null, onPrev = null) => {
+    if (typeof url === 'object' && url !== null) {
+      setCurrentTrack(url);
+    } else {
+      setCurrentTrack({ url, title, reciter, onEnded, onNext, onPrev });
+    }
     setIsPlaying(true);
   };
 

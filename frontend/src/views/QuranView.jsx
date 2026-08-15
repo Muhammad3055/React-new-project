@@ -305,6 +305,56 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     return `https://server8.mp3quran.net/afs/${padded}.mp3`;
   };
 
+  const playSurahByNumber = (surahNum) => {
+    if (surahNum < 1 || surahNum > 114) return;
+    const targetSurah = ALL_114_SURAHS.find(s => s.number === surahNum) || ALL_114_SURAHS[surahNum - 1];
+    if (!targetSurah) return;
+
+    const audioUrl = getQariAudioUrl(targetSurah.number, activeQariObj);
+    const title = `Surah ${targetSurah.englishName} (${targetSurah.name})`;
+    const reciter = activeQariObj.name;
+
+    const onNext = targetSurah.number < 114 ? () => playSurahByNumber(targetSurah.number + 1) : null;
+    const onPrev = targetSurah.number > 1 ? () => playSurahByNumber(targetSurah.number - 1) : null;
+    const onEnded = onNext;
+
+    if (typeof playTrack === 'function') {
+      playTrack({
+        url: audioUrl,
+        title: title,
+        reciter: reciter,
+        onNext,
+        onPrev,
+        onEnded
+      });
+    }
+  };
+
+  const playTranslationBySurahNumber = (surahNum, lang) => {
+    if (surahNum < 1 || surahNum > 114) return;
+    const targetSurah = ALL_114_SURAHS.find(s => s.number === surahNum) || ALL_114_SURAHS[surahNum - 1];
+    if (!targetSurah) return;
+
+    const audioUrl = lang === 'brahui' ? getBrahuiAudioUrl(targetSurah.number) : getUrduAudioUrl(targetSurah.number);
+    const title = `Surah ${targetSurah.englishName} (${targetSurah.name})`;
+    const reciter = lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation';
+
+    const onNext = targetSurah.number < 114 ? () => playTranslationBySurahNumber(targetSurah.number + 1, lang) : null;
+    const onPrev = targetSurah.number > 1 ? () => playTranslationBySurahNumber(targetSurah.number - 1, lang) : null;
+    const onEnded = onNext;
+
+    if (typeof playTrack === 'function') {
+      playTrack({
+        url: audioUrl,
+        title: title,
+        reciter: reciter,
+        onNext,
+        onPrev,
+        onEnded
+      });
+    }
+  };
+
   const handleDownloadMp3 = (title, audioUrl) => {
     const link = document.createElement('a');
     link.href = audioUrl;
@@ -499,7 +549,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       <button
                         className="btn-play"
                         style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                        onClick={() => safePlayTrack(qariAudioUrl, `Surah ${surah.englishName} (${surah.name})`, activeQariObj.name)}
+                        onClick={() => playSurahByNumber(surah.number)}
 
                       >
                         <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tilawat
@@ -642,7 +692,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
+                      onClick={() => audio.surah_number ? playTranslationBySurahNumber(audio.surah_number, subCategory === 'quran_brahui' ? 'brahui' : 'urdu') : safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tarjuma MP3
                     </button>
