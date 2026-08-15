@@ -1,5 +1,6 @@
 import React from 'react';
-import { Moon, Calendar, Sparkles, X, Star } from 'lucide-react';
+import { Moon, Calendar, Sparkles, X, Star, Clock } from 'lucide-react';
+import { getFormattedHijriDate } from '../utils/hijriDate';
 
 const HIJRI_MONTHS = [
   'Muharram (محرم)', 'Safar (صفر)', 'Rabi al-Awwal (ربيع الأول)', 'Rabi al-Thani (ربيع الثاني)',
@@ -79,7 +80,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
           <div style={{ padding: '1.25rem', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(5, 150, 105, 0.3) 0%, rgba(13, 148, 136, 0.2) 100%)', border: '1px solid var(--accent-gold)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#34d399', letterSpacing: '1px' }}>Gregorian & Hijri Date</span>
-              <h4 style={{ margin: '0.2rem 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold)' }}>Safar 1448 AH</h4>
+              <h4 style={{ margin: '0.2rem 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold)' }}>{getFormattedHijriDate()}</h4>
               <p style={{ margin: 0, fontSize: '0.88rem', color: '#e2e8f0' }}>{formattedGregorian}</p>
             </div>
             <div style={{ textAlign: 'right', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 0.85rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>

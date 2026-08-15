@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithCache } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
+import { getFormattedHijriDate } from '../utils/hijriDate';
 import AdminUploadModal from '../components/AdminUploadModal';
 import { ALL_114_SURAHS } from '../data/quran_data';
 
@@ -344,7 +345,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
             }}
           >
-            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 Hijri Calendar & Events
+            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 Hijri Calendar ({getFormattedHijriDate()})
           </button>
         )}
 
