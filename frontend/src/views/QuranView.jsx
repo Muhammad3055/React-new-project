@@ -202,32 +202,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       fetch(`/api/quran/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
-          const apiResults = data && data.results && data.results.length > 0 ? data.results : [];
-          const defaultSurahAudios = ALL_114_SURAHS.map(s => ({
-            id: `default_${lang}_${s.number}`,
-            surah_number: s.number,
-            surah_name_english: s.englishName,
-            surah_name_arabic: s.name,
-            reciter: lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation',
-            audio_url: lang === 'brahui' ? getBrahuiAudioUrl(s.number) : getUrduAudioUrl(s.number),
-            language: lang
-          }));
-          const combined = apiResults.length > 0 
-            ? [...apiResults, ...defaultSurahAudios.filter(d => !apiResults.some(a => a.surah_number === d.surah_number))] 
-            : defaultSurahAudios;
-          setTranslationAudios(combined);
+          const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
+          setTranslationAudios(apiResults);
         })
         .catch(() => {
-          const defaultSurahAudios = ALL_114_SURAHS.map(s => ({
-            id: `default_${lang}_${s.number}`,
-            surah_number: s.number,
-            surah_name_english: s.englishName,
-            surah_name_arabic: s.name,
-            reciter: lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation',
-            audio_url: lang === 'brahui' ? getBrahuiAudioUrl(s.number) : getUrduAudioUrl(s.number),
-            language: lang
-          }));
-          setTranslationAudios(defaultSurahAudios);
+          setTranslationAudios([]);
         })
         .finally(() => setLoadingTranslationAudios(false));
     }
@@ -241,14 +220,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       fetch(`/api/taqreer/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
-          if (data && data.results && data.results.length > 0) {
-            setTaqreers(data.results);
-          } else {
-            setTaqreers(DEFAULT_TAQREERS[lang] || []);
-          }
+          const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
+          setTaqreers(apiResults);
         })
         .catch(() => {
-          setTaqreers(DEFAULT_TAQREERS[lang] || []);
+          setTaqreers([]);
         })
         .finally(() => setLoadingTaqreers(false));
     }
@@ -376,9 +352,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     description: item.description || 'Uploaded by Administrator',
     addedByAdmin: true
   }));
-  const defaultList = DEFAULT_TAQREERS[currentTaqreerLang] || [];
-  const combinedTaqreers = taqreers.length > 0 ? [...taqreers, ...defaultList.filter(d => !taqreers.some(t => t.id === d.id))] : defaultList;
-  const rawActiveTaqreers = filterOutDeleted([...adminTaqreers, ...combinedTaqreers]);
+  const rawActiveTaqreers = filterOutDeleted([...adminTaqreers, ...taqreers]);
   const activeTaqreers = rawActiveTaqreers.filter(tq => {
     if (!tq) return false;
     const q = (taqreerQuery || quranQuery || '').trim().toLowerCase();
