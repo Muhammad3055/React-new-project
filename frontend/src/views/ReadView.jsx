@@ -176,7 +176,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
           const formatted = data.data.map(s => ({
             number: s.number,
             name: s.englishName,
-            englishName: s.englishNameTranslation,
+            englishName: s.englishName,
             arabic: s.name,
             ayahs: s.numberOfAyahs,
             type: s.revelationType
@@ -747,7 +747,7 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                   سُورَةُ {activeSurahMeta.arabic}
                 </h2>
                 <p style={{ fontSize: '0.85rem', color: theme === 'dark' ? '#cbd5e1' : 'var(--text-muted)' }}>
-                  Surah {activeSurahMeta.name} ({activeSurahMeta.englishName}) &bull; {activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Verses
+                  Surah {activeSurahMeta.name} &bull; {activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Verses
                 </p>
               </div>
 
