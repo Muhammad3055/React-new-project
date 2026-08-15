@@ -430,14 +430,19 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   };
 
   const filteredSurahs = surahsList.filter(s => {
-    const matchesSearch = s.name.toLowerCase().includes(surahFilter.toLowerCase()) ||
-      s.englishName.toLowerCase().includes(surahFilter.toLowerCase()) ||
-      s.number.toString().includes(surahFilter);
+    if (!s) return false;
+    const sf = (surahFilter || '').trim().toLowerCase();
+    const name = (s.name || s.surah_name_arabic || '').toLowerCase();
+    const eng = (s.englishName || s.surah_name_english || '').toLowerCase();
+    const trans = (s.englishNameTranslation || '').toLowerCase();
+    const num = (s.number || s.surah_number || '').toString();
+
+    const matchesSearch = !sf || name.includes(sf) || eng.includes(sf) || trans.includes(sf) || num.includes(sf);
 
     if (!topicFilter) return matchesSearch;
     const keywords = topicKeywords[topicFilter] || [];
     const matchesTopic = keywords.some(k =>
-      s.name.toLowerCase().includes(k) || s.englishName.toLowerCase().includes(k)
+      name.includes(k) || eng.includes(k)
     );
     return matchesSearch && matchesTopic;
   });

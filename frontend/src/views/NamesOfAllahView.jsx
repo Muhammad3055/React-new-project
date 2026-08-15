@@ -109,13 +109,17 @@ export default function NamesOfAllahView() {
     { number: 99, arabic: 'الصَّبُورُ', transliteration: 'As-Sabur', meaning: 'The Patient One', meaning_ur: 'بہت صبر کرنے والا', benefit: 'Reciting 3000 times in hardship grants patience and victory.', benefit_ur: 'سخت مشکل میں ۳۰۰۰ بار پڑھنے سے صبر، استقامت اور نصرت ملتی ہے۔' }
   ];
 
-  const filteredNames = namesOfAllah.filter(n =>
-    n.transliteration.toLowerCase().includes(search.toLowerCase()) ||
-    n.meaning.toLowerCase().includes(search.toLowerCase()) ||
-    n.meaning_ur.includes(search) ||
-    n.arabic.includes(search) ||
-    n.number.toString() === search.trim()
-  );
+  const filteredNames = namesOfAllah.filter(n => {
+    if (!n) return false;
+    const q = (search || '').trim().toLowerCase();
+    if (!q) return true;
+    const trans = (n.transliteration || '').toLowerCase();
+    const mean = (n.meaning || '').toLowerCase();
+    const meanUr = (n.meaning_ur || '').toLowerCase();
+    const arab = (n.arabic || '').toLowerCase();
+    const num = (n.number || '').toString();
+    return trans.includes(q) || mean.includes(q) || meanUr.includes(q) || arab.includes(q) || num === q || num.includes(q);
+  });
 
   const handleCopy = (item) => {
     const textToCopy = `${item.number}. ${item.arabic} (${item.transliteration})\nEnglish Meaning: ${item.meaning}\nاردو معنی: ${item.meaning_ur}\nEnglish Virtue: ${item.benefit}\nاردو فضیلت: ${item.benefit_ur}`;

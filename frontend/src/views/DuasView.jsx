@@ -296,14 +296,23 @@ export default function DuasView({ playTrack, user }) {
   ];
 
   const filteredDuas = duasData.filter((d) => {
+    if (!d) return false;
     const matchesCat = activeCategory === 'all' || d.category === activeCategory;
+    const q = (search || '').trim().toLowerCase();
+    if (!q) return matchesCat;
+    const title = (d.title || '').toLowerCase();
+    const titleUr = (d.title_ur || '').toLowerCase();
+    const translit = (d.transliteration || '').toLowerCase();
+    const transEn = (d.translation || '').toLowerCase();
+    const transUr = (d.translation_ur || '').toLowerCase();
+    const arabic = (d.arabic || '').toLowerCase();
     const matchesSearch =
-      d.title.toLowerCase().includes(search.toLowerCase()) ||
-      d.title_ur.includes(search) ||
-      d.transliteration.toLowerCase().includes(search.toLowerCase()) ||
-      d.translation.toLowerCase().includes(search.toLowerCase()) ||
-      d.translation_ur.includes(search) ||
-      d.arabic.includes(search);
+      title.includes(q) ||
+      titleUr.includes(q) ||
+      translit.includes(q) ||
+      transEn.includes(q) ||
+      transUr.includes(q) ||
+      arabic.includes(q);
     return matchesCat && matchesSearch;
   });
 

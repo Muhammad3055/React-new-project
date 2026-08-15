@@ -11,11 +11,15 @@ export default function QarisView({ playTrack }) {
       .catch(() => {});
   }, []);
 
-  const filteredQaris = qaris.filter(q =>
-    q.name.toLowerCase().includes(query.toLowerCase()) ||
-    q.arabic_name.includes(query) ||
-    q.bio.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredQaris = qaris.filter(qari => {
+    if (!qari) return false;
+    const q = (query || '').trim().toLowerCase();
+    if (!q) return true;
+    const name = (qari.name || '').toLowerCase();
+    const arabName = (qari.arabic_name || '').toLowerCase();
+    const bio = (qari.bio || '').toLowerCase();
+    return name.includes(q) || arabName.includes(q) || bio.includes(q);
+  });
 
   return (
     <div className="container">

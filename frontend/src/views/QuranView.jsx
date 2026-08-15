@@ -232,11 +232,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   const itemsPerPage = 12;
 
-  const filteredSurahs = surahsList.filter(s =>
-    s.englishName.toLowerCase().includes(quranQuery.toLowerCase()) ||
-    s.englishNameTranslation.toLowerCase().includes(quranQuery.toLowerCase()) ||
-    s.number.toString().includes(quranQuery)
-  );
+  const filteredSurahs = surahsList.filter(s => {
+    if (!s) return false;
+    const q = (quranQuery || '').trim().toLowerCase();
+    if (!q) return true;
+    const eng = (s.englishName || s.surah_name_english || '').toLowerCase();
+    const trans = (s.englishNameTranslation || s.translation || '').toLowerCase();
+    const arab = (s.name || s.surah_name_arabic || s.arabic || '').toLowerCase();
+    const num = (s.number || s.surah_number || '').toString();
+    return eng.includes(q) || trans.includes(q) || arab.includes(q) || num.includes(q);
+  });
 
   const totalQuranPages = Math.ceil(filteredSurahs.length / itemsPerPage) || 1;
   const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
@@ -296,7 +301,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     addedByAdmin: true
   }));
   const baseTaqreers = taqreers.length > 0 ? taqreers : (DEFAULT_TAQREERS[currentTaqreerLang] || []);
-  const activeTaqreers = filterOutDeleted([...adminTaqreers, ...baseTaqreers]);
+  const rawActiveTaqreers = filterOutDeleted([...adminTaqreers, ...baseTaqreers]);
+  const activeTaqreers = rawActiveTaqreers.filter(tq => {
+    if (!tq) return false;
+    const q = (taqreerQuery || quranQuery || '').trim().toLowerCase();
+    if (!q) return true;
+    const title = (tq.title || '').toLowerCase();
+    const speaker = (tq.speaker || tq.author || '').toLowerCase();
+    const desc = (tq.description || '').toLowerCase();
+    return title.includes(q) || speaker.includes(q) || desc.includes(q);
+  });
 
   return (
 
@@ -568,12 +582,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             </div>
           ) : (
             <div className="grid-3">
-              {translationAudios.filter(a => 
-                !quranQuery || 
-                (a.surah_name_english && a.surah_name_english.toLowerCase().includes(quranQuery.toLowerCase())) ||
-                (a.reciter && a.reciter.toLowerCase().includes(quranQuery.toLowerCase())) ||
-                (a.surah_number && a.surah_number.toString().includes(quranQuery))
-              ).map((audio) => (
+              {translationAudios.filter(a => {
+                if (!a) return false;
+                const q = (quranQuery || '').trim().toLowerCase();
+                if (!q) return true;
+                const eng = (a.surah_name_english || a.title || '').toLowerCase();
+                const arab = (a.surah_name_arabic || '').toLowerCase();
+                const reciter = (a.reciter || '').toLowerCase();
+                const num = (a.surah_number || '').toString();
+                return eng.includes(q) || arab.includes(q) || reciter.includes(q) || num.includes(q);
+              }).map((audio) => (
                 <div key={audio.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
                   <div>
                     <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

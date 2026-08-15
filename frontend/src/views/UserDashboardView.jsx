@@ -147,11 +147,16 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
 
   const totalDeductedMb = Object.values(offlineSurahs).reduce((acc, curr) => acc + (curr.sizeMb || 4.2), 0).toFixed(1);
 
-  const filteredCatalogSurahs = allSurahs.filter(s =>
-    s.englishName.toLowerCase().includes(downloadSearch.toLowerCase()) ||
-    s.englishNameTranslation.toLowerCase().includes(downloadSearch.toLowerCase()) ||
-    s.number.toString().includes(downloadSearch)
-  );
+  const filteredCatalogSurahs = allSurahs.filter(s => {
+    if (!s) return false;
+    const q = (downloadSearch || '').trim().toLowerCase();
+    if (!q) return true;
+    const eng = (s.englishName || s.surah_name_english || '').toLowerCase();
+    const trans = (s.englishNameTranslation || s.translation || '').toLowerCase();
+    const arab = (s.name || s.surah_name_arabic || '').toLowerCase();
+    const num = (s.number || s.surah_number || '').toString();
+    return eng.includes(q) || trans.includes(q) || arab.includes(q) || num.includes(q);
+  });
 
   // Time-based Islamic Greeting
   const hour = new Date().getHours();

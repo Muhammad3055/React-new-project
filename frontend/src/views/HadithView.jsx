@@ -97,7 +97,7 @@ export default function HadithView({ openReportModal, user }) {
   };
 
   const renderGradeBadge = (grade = '') => {
-    const g = grade.toLowerCase();
+    const g = (grade || '').toLowerCase();
     if (g.includes('sahih') || g.includes('authentic')) {
       return (
         <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 700, background: '#dcfce7', border: '1px solid #86efac', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>

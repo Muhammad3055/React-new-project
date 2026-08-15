@@ -151,12 +151,19 @@ export default function FazailView() {
   ];
 
   const filteredItems = FAZAIL_DATA.filter((item) => {
+    if (!item) return false;
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const q = (searchTerm || '').trim().toLowerCase();
+    if (!q) return matchesCategory;
+    const title = (item.title || '').toLowerCase();
+    const transEn = (item.translation_en || '').toLowerCase();
+    const transUr = (item.translation_ur || '').toLowerCase();
+    const arab = (item.arabic_text || '').toLowerCase();
     const matchesSearch =
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.translation_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.translation_ur.includes(searchTerm) ||
-      item.arabic_text.includes(searchTerm);
+      title.includes(q) ||
+      transEn.includes(q) ||
+      transUr.includes(q) ||
+      arab.includes(q);
     return matchesCategory && matchesSearch;
   });
 
