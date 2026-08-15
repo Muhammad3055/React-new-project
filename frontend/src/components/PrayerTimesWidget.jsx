@@ -320,8 +320,7 @@ export default function PrayerTimesWidget() {
         /* Live Daily Nimaz View & Countdowns */
         <div>
           {/* Live Countdown Cards Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
-            
+          <div style={{ marginBottom: '1.25rem' }}>
             {/* Next Prayer Countdown Card */}
             <div style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%)', border: '1.5px solid var(--accent-gold)', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
@@ -336,37 +335,6 @@ export default function PrayerTimesWidget() {
                 </span>
               </div>
             </div>
-
-            {/* Sehri / Suhoor Countdown Card */}
-            <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%)', border: '1.5px solid #10b981', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#34d399', letterSpacing: '0.5px' }}>🌅 Sehri (Suhoor) Time</span>
-                <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
-                  Fajr: {timings?.Fajr || '--:--'}
-                </h4>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#34d399', fontFamily: 'monospace' }}>
-                  {sehriCountdown || '00m 00s'}
-                </span>
-              </div>
-            </div>
-
-            {/* Iftar Countdown Card */}
-            <div style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(219, 39, 119, 0.1) 100%)', border: '1.5px solid #f472b6', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#f472b6', letterSpacing: '0.5px' }}>🌇 Iftar Time</span>
-                <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
-                  Maghrib: {timings?.Maghrib || '--:--'}
-                </h4>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#f472b6', fontFamily: 'monospace' }}>
-                  {iftarCountdown || '00m 00s'}
-                </span>
-              </div>
-            </div>
-
           </div>
 
           {/* Live Daily Nimaz View */}
