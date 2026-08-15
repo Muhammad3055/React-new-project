@@ -11,7 +11,8 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
   useEffect(() => {
     if (audioRef.current) {
       if (currentTrack) {
-        audioRef.current.src = currentTrack.url;
+        const audioUrl = typeof currentTrack === 'string' ? currentTrack : currentTrack.url;
+        audioRef.current.src = audioUrl;
         audioRef.current.playbackRate = playbackRate;
         if (isPlaying) {
           audioRef.current.play().catch(err => console.error("Playback error:", err));
@@ -67,6 +68,32 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
     }
   };
 
+  const skipTime = (seconds) => {
+    if (audioRef.current) {
+      let newTime = audioRef.current.currentTime + seconds;
+      if (newTime < 0) newTime = 0;
+      if (newTime > duration) newTime = duration;
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentTrack && typeof currentTrack.onPrev === 'function') {
+      currentTrack.onPrev();
+    } else {
+      skipTime(-10);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentTrack && typeof currentTrack.onNext === 'function') {
+      currentTrack.onNext();
+    } else {
+      skipTime(10);
+    }
+  };
+
   const handleVolumeChange = (e) => {
     const newVol = e.target.value;
     setVolume(newVol);
@@ -76,7 +103,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
   };
 
   const cycleSpeed = () => {
-    const speeds = [0.75, 1.0, 1.25, 1.5];
+    const speeds = [0.75, 1.0, 1.25, 1.5, 2.0];
     const nextIdx = (speeds.indexOf(playbackRate) + 1) % speeds.length;
     const newSpeed = speeds[nextIdx];
     setPlaybackRate(newSpeed);
@@ -102,20 +129,26 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
 
   const handleShareAudio = () => {
     if (!currentTrack) return;
-    const shareText = `Listen to ${currentTrack.title} (${currentTrack.reciter}) on Maktaba Tul Muslim:\nhttps://maktabatulmuslim.com`;
+    const title = typeof currentTrack === 'string' ? 'Islamic Audio Track' : (currentTrack.title || 'Quranic Audio');
+    const reciter = typeof currentTrack === 'string' ? 'Maktaba Tul Muslim' : (currentTrack.reciter || 'Qari / Scholar');
+    const url = typeof currentTrack === 'string' ? currentTrack : (currentTrack.url || window.location.href);
+    const shareText = `Listen to ${title} (${reciter}) on Maktaba Tul Muslim:\nhttps://maktabatulmuslim.com`;
     if (navigator.share) {
       navigator.share({
-        title: currentTrack.title,
+        title: title,
         text: shareText,
-        url: currentTrack.url || window.location.href
+        url: url
       }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(`${shareText}\nAudio Direct Link: ${currentTrack.url}`);
-      alert(`Audio link for ${currentTrack.title} copied to clipboard!`);
+      navigator.clipboard.writeText(`${shareText}\nAudio Direct Link: ${url}`);
+      alert(`Audio link for ${title} copied to clipboard!`);
     }
   };
 
   if (!currentTrack) return null;
+
+  const trackTitle = typeof currentTrack === 'string' ? 'Audio Track' : (currentTrack.title || 'Quranic Audio');
+  const trackReciter = typeof currentTrack === 'string' ? 'Maktaba Tul Muslim' : (currentTrack.reciter || 'Qari / Scholar');
 
   return (
     <div className="audio-player-bar">
@@ -123,10 +156,13 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
         onEnded={() => {
-          if (currentTrack && currentTrack.onEnded) {
+          if (currentTrack && typeof currentTrack.onEnded === 'function') {
             currentTrack.onEnded();
+          } else if (currentTrack && typeof currentTrack.onNext === 'function') {
+            currentTrack.onNext();
+          } else if (!isLooping) {
+            setIsPlaying(false);
           }
-          if (!isLooping) setIsPlaying(false);
         }}
         loop={isLooping}
       />
@@ -137,8 +173,8 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             <i className="fas fa-volume-up"></i>
           </div>
           <div className="player-text">
-            <span className="player-title" title={currentTrack.title}>{currentTrack.title}</span>
-            <span className="player-reciter" title={currentTrack.reciter}>{currentTrack.reciter}</span>
+            <span className="player-title" title={trackTitle}>{trackTitle}</span>
+            <span className="player-reciter" title={trackReciter}>{trackReciter}</span>
           </div>
           {/* Mobile close button inside info bar */}
           <button
@@ -161,6 +197,26 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               {playbackRate}x
             </button>
 
+            {/* Previous Track Button */}
+            <button
+              onClick={handlePrev}
+              title="Previous Audio Track (or -10s)"
+              className="player-skip-btn"
+            >
+              <i className="fas fa-step-backward"></i>
+            </button>
+
+            {/* Rewind -10s Button */}
+            <button
+              onClick={() => skipTime(-10)}
+              title="Rewind 10 Seconds (-10s)"
+              className="player-skip-btn"
+            >
+              <i className="fas fa-undo"></i>
+              <span className="skip-sec-label">-10s</span>
+            </button>
+
+            {/* Play/Pause Main Button */}
             <button
               className="btn-player-main"
               onClick={() => setIsPlaying(!isPlaying)}
@@ -169,6 +225,26 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
             </button>
 
+            {/* Forward +10s Button */}
+            <button
+              onClick={() => skipTime(10)}
+              title="Forward 10 Seconds (+10s)"
+              className="player-skip-btn"
+            >
+              <i className="fas fa-redo"></i>
+              <span className="skip-sec-label">+10s</span>
+            </button>
+
+            {/* Next Track Button */}
+            <button
+              onClick={handleNext}
+              title="Next Audio Track (or +10s)"
+              className="player-skip-btn"
+            >
+              <i className="fas fa-step-forward"></i>
+            </button>
+
+            {/* Repeat/Loop Toggle */}
             <button
               onClick={toggleLoop}
               title={isLooping ? 'Repeat Mode: Active' : 'Repeat Mode: Disabled'}
@@ -177,6 +253,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               <i className="fas fa-redo"></i>
             </button>
 
+            {/* Share Button */}
             <button
               onClick={handleShareAudio}
               title="Share this MP3 Audio"
@@ -186,6 +263,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
               <i className="fas fa-share-alt"></i>
             </button>
 
+            {/* Stop & Close Button */}
             <button
               onClick={handleStop}
               title="Stop & Close Audio Player"
