@@ -16,16 +16,61 @@ export default function PrayerTimesWidget() {
   const [customCity, setCustomCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
 
-  // Ticking digital clock
+  const [countdownText, setCountdownText] = useState('');
+  const [sehriCountdown, setSehriCountdown] = useState('');
+  const [iftarCountdown, setIftarCountdown] = useState('');
+
+  // Ticking digital clock & live countdown timer
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
       setLiveTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
+      if (timings) {
+        // Calculate countdown to Next Prayer
+        if (nextPrayer && nextPrayer.time) {
+          const [ph, pm] = nextPrayer.time.split(':').map(Number);
+          const pDate = new Date();
+          pDate.setHours(ph, pm, 0, 0);
+          if (pDate < now) pDate.setDate(pDate.getDate() + 1);
+          const diffMs = pDate - now;
+          const hrs = Math.floor(diffMs / 3600000);
+          const mins = Math.floor((diffMs % 3600000) / 60000);
+          const secs = Math.floor((diffMs % 60000) / 1000);
+          setCountdownText(`${hrs > 0 ? hrs + 'h ' : ''}${mins}m ${secs}s`);
+        }
+
+        // Calculate Sehri (Fajr time) Countdown
+        if (timings.Fajr) {
+          const [fh, fm] = timings.Fajr.split(':').map(Number);
+          const fDate = new Date();
+          fDate.setHours(fh, fm, 0, 0);
+          if (fDate < now) fDate.setDate(fDate.getDate() + 1);
+          const diffFajr = fDate - now;
+          const fHrs = Math.floor(diffFajr / 3600000);
+          const fMins = Math.floor((diffFajr % 3600000) / 60000);
+          const fSecs = Math.floor((diffFajr % 60000) / 1000);
+          setSehriCountdown(`${fHrs > 0 ? fHrs + 'h ' : ''}${fMins}m ${fSecs}s`);
+        }
+
+        // Calculate Iftar (Maghrib time) Countdown
+        if (timings.Maghrib) {
+          const [mh, mm] = timings.Maghrib.split(':').map(Number);
+          const mDate = new Date();
+          mDate.setHours(mh, mm, 0, 0);
+          if (mDate < now) mDate.setDate(mDate.getDate() + 1);
+          const diffMaghrib = mDate - now;
+          const mHrs = Math.floor(diffMaghrib / 3600000);
+          const mMins = Math.floor((diffMaghrib % 3600000) / 60000);
+          const mSecs = Math.floor((diffMaghrib % 60000) / 1000);
+          setIftarCountdown(`${mHrs > 0 ? mHrs + 'h ' : ''}${mMins}m ${mSecs}s`);
+        }
+      }
     };
     updateClock();
     const interval = setInterval(updateClock, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timings, nextPrayer]);
 
   // Location & Prayer Times Auto-Detection
   useEffect(() => {
@@ -272,17 +317,70 @@ export default function PrayerTimesWidget() {
       )}
 
       {!showCalendarView ? (
-        /* Live Daily Nimaz View */
-        <div className="prayer-times-grid">
-          {mainPrayers.map((p) => {
-            const isNext = nextPrayer.name === p.name;
-            return (
-              <div key={p.name} className={`prayer-time-box ${isNext ? 'active-prayer' : ''}`}>
-                <div className="prayer-name">{p.name}</div>
-                <div className="prayer-val">{p.time || '--:--'}</div>
+        /* Live Daily Nimaz View & Countdowns */
+        <div>
+          {/* Live Countdown Cards Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+            
+            {/* Next Prayer Countdown Card */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%)', border: '1.5px solid var(--accent-gold)', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#fcd34d', letterSpacing: '0.5px' }}>Next Nimaz Countdown</span>
+                <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
+                  {nextPrayer.name || 'Prayer'} ({nextPrayer.time || '--:--'})
+                </h4>
               </div>
-            );
-          })}
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--accent-gold)', fontFamily: 'monospace' }}>
+                  ⏱️ {countdownText || '00m 00s'}
+                </span>
+              </div>
+            </div>
+
+            {/* Sehri / Suhoor Countdown Card */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%)', border: '1.5px solid #10b981', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#34d399', letterSpacing: '0.5px' }}>🌅 Sehri (Suhoor) Time</span>
+                <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
+                  Fajr: {timings?.Fajr || '--:--'}
+                </h4>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#34d399', fontFamily: 'monospace' }}>
+                  {sehriCountdown || '00m 00s'}
+                </span>
+              </div>
+            </div>
+
+            {/* Iftar Countdown Card */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(219, 39, 119, 0.1) 100%)', border: '1.5px solid #f472b6', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#f472b6', letterSpacing: '0.5px' }}>🌇 Iftar Time</span>
+                <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
+                  Maghrib: {timings?.Maghrib || '--:--'}
+                </h4>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#f472b6', fontFamily: 'monospace' }}>
+                  {iftarCountdown || '00m 00s'}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Live Daily Nimaz View */}
+          <div className="prayer-times-grid">
+            {mainPrayers.map((p) => {
+              const isNext = nextPrayer.name === p.name;
+              return (
+                <div key={p.name} className={`prayer-time-box ${isNext ? 'active-prayer' : ''}`}>
+                  <div className="prayer-name">{p.name}</div>
+                  <div className="prayer-val">{p.time || '--:--'}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : (
         /* Full Month Daily Nimaz Timetable Calendar */
