@@ -287,7 +287,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     if (!targetSurah) return;
 
     const audioUrl = getQariAudioUrl(targetSurah.number, activeQariObj);
-    const title = `Surah ${targetSurah.englishName} (${targetSurah.name})`;
+    const title = `Surah ${targetSurah.name || targetSurah.englishName} (${targetSurah.arabic || ''})`;
     const reciter = activeQariObj.name;
 
     const onNext = targetSurah.number < 114 ? () => playSurahByNumber(targetSurah.number + 1) : null;
@@ -312,7 +312,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     if (!targetSurah) return;
 
     const audioUrl = lang === 'brahui' ? getBrahuiAudioUrl(targetSurah.number) : getUrduAudioUrl(targetSurah.number);
-    const title = `Surah ${targetSurah.englishName} (${targetSurah.name})`;
+    const title = `Surah ${targetSurah.name || targetSurah.englishName} (${targetSurah.arabic || ''})`;
     const reciter = lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation';
 
     const onNext = targetSurah.number < 114 ? () => playTranslationBySurahNumber(targetSurah.number + 1, lang) : null;
@@ -512,8 +512,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>{surah.number}</span>
                       </div>
                       <div className="card-body" style={{ padding: 0 }}>
-                        <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>Surah {surah.englishName}</h3>
-                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{surah.name}</p>
+                        <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>Surah {surah.name || surah.englishName}</h3>
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{surah.arabic ? (surah.arabic.startsWith('سورة') || surah.arabic.startsWith('سُورَةُ') ? surah.arabic : `سُورَةُ ${surah.arabic}`) : surah.name}</p>
                         <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)', marginRight: '0.3rem' }}></i> {activeQariObj.name}</p>
                       </div>
                     </div>
