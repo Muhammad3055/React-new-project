@@ -526,7 +526,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         onClick={() => playSurahByNumber(surah.number)}
 
                       >
-                        <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tilawat
+                        <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> {t('playTilawat', 'Play Tilawat')}
                       </button>
 
                       <button
@@ -668,7 +668,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
                       onClick={() => audio.surah_number ? playTranslationBySurahNumber(audio.surah_number, subCategory === 'quran_brahui' ? 'brahui' : 'urdu') : safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
                     >
-                      <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play Tarjuma MP3
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> {t('playTarjumaMp3', 'Play Tarjuma MP3')}
                     </button>
 
                     <button
@@ -776,7 +776,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
 
                     >
-                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Taqreer
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> {t('playTaqreer', 'Play Taqreer')}
                     </button>
 
                     <button

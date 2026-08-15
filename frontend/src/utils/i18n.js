@@ -109,6 +109,16 @@ export const translations = {
     reportIssue: "Report Content Issue",
     playAudioBtn: "Play Audio ▶",
     playTaqreerBtn: "Play Taqreer MP3 ▶",
+    arabicTilawat: "Arabic Tilawat",
+    brahuiTarjuma: "Brahui Tarjuma MP3",
+    urduTarjuma: "Urdu Tarjuma MP3",
+    arabicTaqreer: "Arabic Taqreers",
+    brahuiTaqreer: "Brahui Taqreers",
+    urduTaqreer: "Urdu Taqreers",
+    mixedAudio: "Mixed Audio MP3",
+    playTilawat: "Play Tilawat",
+    playTarjumaMp3: "Play Tarjuma MP3",
+    playTaqreer: "Play Taqreer",
 
     // Home Carousel & Sections
     slide1Badge: "114 SURAHS & MULTI-LANGUAGE TARJUMA",
