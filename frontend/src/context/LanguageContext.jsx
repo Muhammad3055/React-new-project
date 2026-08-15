@@ -4,52 +4,33 @@ import { translations } from '../utils/i18n';
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
-  // Get language from localStorage or URL parameter or fallback to 'en'
-  const [lang, setLangState] = useState(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlLang = urlParams.get('lang');
-    if (urlLang && translations[urlLang]) return urlLang;
-    const saved = localStorage.getItem('quran_portal_lang');
-    if (saved && translations[saved]) return saved;
-    return 'en';
-  });
+  // Default UI Language is English ('en') to keep all buttons, cards, headers, and sections clean
+  const [lang, setLangState] = useState('en');
 
-  const isRtl = lang === 'ur' || lang === 'br' || lang === 'ar';
-  const dir = isRtl ? 'rtl' : 'ltr';
+  const isRtl = false;
+  const dir = 'ltr';
 
   useEffect(() => {
-    localStorage.setItem('quran_portal_lang', lang);
-    document.documentElement.lang = lang;
-    document.documentElement.dir = dir;
-
-    // Apply font-family overrides based on language
-    if (lang === 'ur' || lang === 'br') {
-      document.body.style.fontFamily = "'Amiri', 'Jameel Noori Nastaleeq', 'Outfit', sans-serif";
-    } else if (lang === 'ar') {
-      document.body.style.fontFamily = "'Amiri', 'Traditional Arabic', serif";
-    } else {
-      document.body.style.fontFamily = "'Outfit', -apple-system, BlinkMacSystemFont, sans-serif";
-    }
-  }, [lang, dir]);
+    localStorage.setItem('quran_portal_lang', 'en');
+    document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.body.style.fontFamily = "'Outfit', -apple-system, BlinkMacSystemFont, sans-serif";
+  }, []);
 
   const setLang = (newLang) => {
-    if (translations[newLang]) {
-      setLangState(newLang);
-    }
+    setLangState('en');
   };
 
-  // Translation helper with English fallback
+  // Translation helper returning clean English UI text
   const t = (key, fallback = '') => {
-    const dict = translations[lang] || translations.en;
-    if (dict && dict[key] !== undefined) return dict[key];
     const enDict = translations.en;
     if (enDict && enDict[key] !== undefined) return enDict[key];
     return fallback || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, dir, isRtl, t }}>
-      <div dir={dir} className={isRtl ? 'rtl-layout' : 'ltr-layout'}>
+    <LanguageContext.Provider value={{ lang: 'en', setLang, dir, isRtl, t }}>
+      <div dir="ltr" className="ltr-layout">
         {children}
       </div>
     </LanguageContext.Provider>
@@ -59,7 +40,6 @@ export function LanguageProvider({ children }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    // Fallback if not wrapped in provider
     return {
       lang: 'en',
       setLang: () => {},
