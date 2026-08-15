@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchWithCache } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import { getFormattedHijriDate } from '../utils/hijriDate';
+import { useLanguage } from '../context/LanguageContext';
 import AdminUploadModal from '../components/AdminUploadModal';
 import { ALL_114_SURAHS } from '../data/quran_data';
 
@@ -119,7 +120,7 @@ const DEFAULT_TAQREERS = {
 };
 
 export default function QuranView({ playTrack, user, navigateToTab, initialSubCategory = 'quran_arabic', onOpenCalendar, onOpenTajweed }) {
-
+  const { t } = useLanguage();
   const [subCategory, setSubCategory] = useState(initialSubCategory); 
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
 
