@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Award, X } from 'lucide-react';
-
+import { useLanguage } from '../context/LanguageContext';
 
 const SURAHS_LIST = [
   { number: 1, name: 'Al-Fatiha', ayahs: 7, juz: 1 },
@@ -17,9 +17,8 @@ const SURAHS_LIST = [
 ];
 
 export default function MemorizationTrackerModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
   const [hifzData, setHifzData] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     if (isOpen) {
@@ -60,65 +59,90 @@ export default function MemorizationTrackerModal({ isOpen, onClose }) {
   const countInProgress = Object.values(hifzData).filter(s => s === 'in_progress').length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-gradient-to-b from-slate-900 via-emerald-950 to-slate-950 text-slate-100 rounded-3xl shadow-2xl border border-emerald-500/30 w-full max-w-3xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 99999,
+      background: 'rgba(0, 0, 0, 0.75)',
+      backdropFilter: 'blur(5px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem'
+    }}>
+      <div style={{
+        background: 'linear-gradient(180deg, #0f172a 0%, #064e3b 50%, #022c22 100%)',
+        color: '#f8fafc',
+        borderRadius: '24px',
+        border: '1.5px solid rgba(16, 185, 129, 0.4)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+        width: '100%',
+        maxWidth: '750px',
+        maxHeight: '85vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
         
         {/* Header */}
-        <div className="px-6 py-4 bg-emerald-900/40 border-b border-emerald-500/20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+        <div style={{ padding: '1.25rem 1.5rem', background: 'rgba(6, 78, 59, 0.4)', borderBottom: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ padding: '0.6rem', borderRadius: '14px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-emerald-100 font-serif">Hifz Quran Memorization Tracker</h3>
-              <p className="text-xs text-emerald-400/80">Track Memorized Surahs & Revision Schedules</p>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#ecfdf5' }}>{t('hifzTracker', 'Hifz Quran Memorization Tracker')}</h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#6ee7b7' }}>Track Memorized Surahs & Revision Schedules</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#cbd5e1', borderRadius: '12px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Stats Row */}
-        <div className="p-4 bg-slate-900/80 border-b border-slate-800 grid grid-cols-3 gap-3 text-center">
-          <div className="p-3 rounded-2xl bg-emerald-950/60 border border-emerald-500/30">
-            <span className="text-2xl font-bold text-emerald-400 font-serif">{countMemorized}</span>
-            <span className="text-[11px] text-slate-300 block">Memorized</span>
+        <div style={{ padding: '1rem 1.5rem', background: 'rgba(15, 23, 42, 0.8)', borderBottom: '1px solid #1e293b', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', textAlign: 'center' }}>
+          <div style={{ padding: '0.75rem', borderRadius: '16px', background: 'rgba(6, 78, 59, 0.5)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#34d399', display: 'block' }}>{countMemorized}</span>
+            <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Memorized</span>
           </div>
-          <div className="p-3 rounded-2xl bg-teal-950/60 border border-teal-500/30">
-            <span className="text-2xl font-bold text-teal-300 font-serif">{countInProgress}</span>
-            <span className="text-[11px] text-slate-300 block">In Progress</span>
+          <div style={{ padding: '0.75rem', borderRadius: '16px', background: 'rgba(19, 78, 74, 0.5)', border: '1px solid rgba(20, 184, 166, 0.3)' }}>
+            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2dd4bf', display: 'block' }}>{countInProgress}</span>
+            <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>In Progress</span>
           </div>
-          <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800">
-            <span className="text-2xl font-bold text-slate-200 font-serif">114</span>
-            <span className="text-[11px] text-slate-300 block">Total Surahs</span>
+          <div style={{ padding: '0.75rem', borderRadius: '16px', background: 'rgba(2, 44, 34, 0.5)', border: '1px solid #1e293b' }}>
+            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#f1f5f9', display: 'block' }}>114</span>
+            <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Total Surahs</span>
           </div>
         </div>
 
         {/* Surahs Grid */}
-        <div className="p-6 overflow-y-auto space-y-3 flex-1">
+        <div style={{ padding: '1.25rem', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           {SURAHS_LIST.map((surah) => {
             const status = hifzData[surah.number] || 'not_started';
             return (
               <div 
                 key={surah.number}
-                className="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/30 transition-all"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', borderRadius: '16px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid #1e293b' }}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-950 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 text-xs font-mono">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#022c22', border: '1px solid rgba(16, 185, 129, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#34d399', fontSize: '0.8rem', fontFamily: 'monospace' }}>
                     {surah.number}
                   </div>
                   <div>
-                    <h5 className="font-semibold text-slate-100 text-sm font-serif">{surah.name}</h5>
-                    <span className="text-xs text-slate-400">{surah.ayahs} Ayahs • Juz {surah.juz}</span>
+                    <h5 style={{ margin: 0, fontWeight: 800, color: '#f8fafc', fontSize: '0.92rem' }}>{surah.name}</h5>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{surah.ayahs} Ayahs • Juz {surah.juz}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div>
                   <select
                     value={status}
                     onChange={(e) => updateStatus(surah.number, surah.name, e.target.value)}
-                    className="bg-slate-950 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 px-3 py-1.5 focus:outline-none focus:border-emerald-400"
+                    style={{ background: '#022c22', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '12px', fontSize: '0.78rem', color: '#6ee7b7', padding: '0.35rem 0.65rem', outline: 'none', fontWeight: 700, cursor: 'pointer' }}
                   >
                     <option value="not_started">⚪ Not Started</option>
                     <option value="in_progress">🟡 In Progress</option>

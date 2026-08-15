@@ -9,17 +9,17 @@ export default function DuasView({ playTrack, user }) {
   const [bookmarkedIds, setBookmarkedIds] = useState({});
 
   const categories = [
-    { id: 'all', label: 'All Du\'as (تمام مسنون دعائیں)', icon: 'fas fa-hands' },
-    { id: 'morning', label: 'Morning Adhkar (صبح کے اذکار)', icon: 'fas fa-sun' },
-    { id: 'evening', label: 'Evening Adhkar (شام کے اذکار)', icon: 'fas fa-moon' },
-    { id: 'salah', label: 'After Prayer (نماز کے بعد)', icon: 'fas fa-kaaba' },
-    { id: 'sleep', label: 'Sleep & Waking (سونے جاگنے)', icon: 'fas fa-bed' },
-    { id: 'forgiveness', label: 'Forgiveness & Istighfar (استغفار)', icon: 'fas fa-heart' },
-    { id: 'anxiety', label: 'Anxiety & Relief (پریشانی و غم)', icon: 'fas fa-shield-alt' },
-    { id: 'guidance', label: 'Knowledge & Exams (علم و امتحان)', icon: 'fas fa-book-reader' },
-    { id: 'travel', label: 'Travel & Home (سفر و مکان)', icon: 'fas fa-plane' },
-    { id: 'eating', label: 'Food & Fasting (کھانا و روزہ)', icon: 'fas fa-utensils' },
-    { id: 'family', label: 'Family & Children (اولاد و والدین)', icon: 'fas fa-users' }
+    { id: 'all', label: 'All Du\'as', icon: 'fas fa-hands' },
+    { id: 'morning', label: 'Morning Adhkar', icon: 'fas fa-sun' },
+    { id: 'evening', label: 'Evening Adhkar', icon: 'fas fa-moon' },
+    { id: 'salah', label: 'After Prayer', icon: 'fas fa-kaaba' },
+    { id: 'sleep', label: 'Sleep & Waking', icon: 'fas fa-bed' },
+    { id: 'forgiveness', label: 'Forgiveness & Istighfar', icon: 'fas fa-heart' },
+    { id: 'anxiety', label: 'Anxiety & Relief', icon: 'fas fa-shield-alt' },
+    { id: 'guidance', label: 'Knowledge & Exams', icon: 'fas fa-book-reader' },
+    { id: 'travel', label: 'Travel & Home', icon: 'fas fa-plane' },
+    { id: 'eating', label: 'Food & Fasting', icon: 'fas fa-utensils' },
+    { id: 'family', label: 'Family & Children', icon: 'fas fa-users' }
   ];
 
   const duasData = [
@@ -360,10 +360,10 @@ export default function DuasView({ playTrack, user }) {
       {/* Banner */}
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title" style={{ justifyContent: 'center' }}>
-          <i className="fas fa-hands" style={{ color: 'var(--accent-gold)' }}></i> Authentic Du'as & Daily Adhkar (جامع مسنون دعائیں و اذکار)
+          <i className="fas fa-hands" style={{ color: 'var(--accent-gold)' }}></i> Authentic Du'as & Daily Adhkar
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.4rem', maxWidth: '750px', marginInline: 'auto' }}>
-          Explore authentic supplications from the Holy Quran & Sunnah with complete English & Urdu translations, timing instructions (کب اور کتنی بار پڑھیں), and spiritual virtues.
+          Explore authentic supplications from the Holy Quran & Sunnah with complete translations, recommended recitation times, and virtues.
         </p>
       </div>
 

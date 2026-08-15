@@ -208,6 +208,34 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               )}
             </div>
 
+            {/* Global Language Selector (English, Urdu, Brahui, Arabic) */}
+            <div className="header-language-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-card)', padding: '4px 10px', borderRadius: '20px', border: '1.5px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-gold)' }} title={t('selectLanguage', 'Select Language')}>
+                <i className="fas fa-globe"></i>
+              </span>
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                style={{
+                  background: 'transparent',
+                  color: 'var(--text-main)',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  borderRadius: '12px'
+                }}
+                title="Select Website Language (English, Urdu, Brahui, Arabic)"
+              >
+                <option value="en" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇬🇧 English</option>
+                <option value="ur" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇵🇰 اردو</option>
+                <option value="br" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>📜 براہموئی</option>
+                <option value="ar" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇸🇦 العربية</option>
+              </select>
+            </div>
+
             {/* Global Website Theme Selector (Light, Sepia, Black, Auto) */}
             <div className="header-theme-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-card)', padding: '4px 10px', borderRadius: '20px', border: '1.5px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-gold)' }} title="Website Theme">
