@@ -14,7 +14,11 @@ import {
   MicOff,
   ShieldCheck,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Paperclip,
+  FileText,
+  Image,
+  AlertCircle
 } from 'lucide-react';
 
 import { getApiUrl } from '../utils/apiCache';
@@ -34,6 +38,9 @@ const QUICK_PROMPTS = [
   { icon: '🕋', label: 'Hajj & Umrah', prompt: 'Explain the step by step guide to perform Hajj and Umrah' },
 ];
 
+const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
+
+
 export default function AIChatbotModal({ isOpen, onClose }) {
   const { lang: siteLang } = useLanguage();
   const [selectedLang, setSelectedLang] = useState('auto');
@@ -44,8 +51,14 @@ export default function AIChatbotModal({ isOpen, onClose }) {
   const [copiedId, setCopiedId] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
 
+  // File upload state
+  const [attachedFile, setAttachedFile] = useState(null); // { name, type, size, base64, preview }
+  const [fileError, setFileError] = useState('');
+
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
+  const fileInputRef = useRef(null);
+
 
   useEffect(() => {
     if (isOpen) {
@@ -120,31 +133,92 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     }
   };
 
+  // File selection handler
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileError('');
+
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
+    if (!allowed.includes(file.type)) {
+      setFileError('Only images (JPG, PNG, WebP) and PDF files are supported.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setFileError(`File too large. Max size is 30MB. Your file: ${(file.size / (1024 * 1024)).toFixed(1)}MB`);
+      e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target.result;
+      const preview = file.type.startsWith('image/') ? base64 : null;
+      setAttachedFile({ name: file.name, type: file.type, size: file.size, base64, preview });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const removeFile = () => {
+    setAttachedFile(null);
+    setFileError('');
+  };
+
   const handleSend = async (customPrompt = null) => {
     const query = (customPrompt ?? inputPrompt).trim();
-    if (!query || isLoading) return;
+    if ((!query && !attachedFile) || isLoading) return;
 
-    const userMsg = { id: Date.now(), sender: 'user', text: query };
+    const displayText = query || (attachedFile ? `[Attached: ${attachedFile.name}]` : '');
+    const userMsg = {
+      id: Date.now(),
+      sender: 'user',
+      text: displayText,
+      file: attachedFile ? { name: attachedFile.name, type: attachedFile.type, preview: attachedFile.preview } : null
+    };
     setMessages((prev) => [...prev, userMsg]);
     if (!customPrompt) setInputPrompt('');
     
+    const fileToSend = attachedFile;
+    setAttachedFile(null);
     setIsLoading(true);
-    setAgentStep('Analyzing intent...');
+    setAgentStep(fileToSend ? 'Reading file content...' : 'Analyzing intent...');
 
-    setTimeout(() => setAgentStep('Searching Islamic knowledge base...'), 800);
-    setTimeout(() => setAgentStep('Synthesizing authentic answer...'), 1600);
+    if (!fileToSend) {
+      setTimeout(() => setAgentStep('Searching Islamic knowledge base...'), 800);
+      setTimeout(() => setAgentStep('Synthesizing authentic answer...'), 1600);
+    }
 
     try {
-      const apiUrl = getApiUrl('/api/ai-assistant/');
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ prompt: query, language: selectedLang === 'auto' ? '' : selectedLang })
-      });
-
-      if (!response.ok) throw new Error('AI request failed');
-      const data = await response.json();
+      let data;
+      if (fileToSend) {
+        const apiUrl = getApiUrl('/api/ai-assistant/file/');
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            prompt: query || 'Please analyze this file. If it contains Hadith, verify its authenticity. If it contains Arabic text, translate it. Summarize the content.',
+            language: selectedLang === 'auto' ? '' : selectedLang,
+            file_data: fileToSend.base64,
+            file_name: fileToSend.name,
+            file_type: fileToSend.type,
+          })
+        });
+        if (!response.ok) throw new Error('AI file request failed');
+        data = await response.json();
+      } else {
+        const apiUrl = getApiUrl('/api/ai-assistant/');
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ prompt: query, language: selectedLang === 'auto' ? '' : selectedLang })
+        });
+        if (!response.ok) throw new Error('AI request failed');
+        data = await response.json();
+      }
 
       const aiMsg = {
         id: Date.now() + 1,
@@ -158,6 +232,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         books: data.books || [],
         actions: data.actions || [],
         suggested: data.suggested_questions || [],
+        file_analysis: data.file_analysis || null,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
@@ -170,6 +245,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       setTimeout(scrollToBottom, 100);
     }
   };
+
 
   const renderFormattedText = (rawText) => {
     if (!rawText) return null;
@@ -273,7 +349,22 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                 color: msg.sender === 'user' ? '#ffffff' : '#1e293b',
                 boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: msg.sender === 'ai' ? '1px solid #f1f5f9' : 'none'
               }}>
+                {/* File Attachment Render */}
+                {msg.file && (
+                  <div style={{ marginBottom: '8px', padding: '6px', borderRadius: '8px', background: msg.sender === 'user' ? 'rgba(0,0,0,0.15)' : '#f8fafc', border: '1px solid rgba(0,0,0,0.05)' }}>
+                    {msg.file.preview ? (
+                      <img src={msg.file.preview} alt={msg.file.name} style={{ maxWidth: '100%', maxHeight: '140px', borderRadius: '6px', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: msg.sender === 'user' ? '#ffffff' : '#64748b' }}>
+                        <FileText size={16} />
+                        {msg.file.name}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {msg.sender === 'ai' && (
+
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '8px', color: '#0066FF', fontWeight: 600 }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Sparkles size={14} /> AI Agent
@@ -300,7 +391,15 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                 )}
                 {renderFormattedText(msg.text)}
 
+                {/* File analysis success tag */}
+                {msg.file_analysis && (
+                  <div style={{ marginTop: '8px', padding: '6px 10px', borderRadius: '6px', background: '#ecfdf5', border: '1px solid #a7f3d0', fontSize: '11px', color: '#059669', fontWeight: 600 }}>
+                    📄 {msg.file_analysis}
+                  </div>
+                )}
+
                 {/* Rich Components */}
+
                 {msg.quran && msg.quran.length > 0 && (
                   <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {msg.quran.map((q, i) => (
@@ -375,9 +474,43 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* File attachment preview strip */}
+      {attachedFile && (
+        <div style={{ padding: '8px 16px', borderTop: '1px solid #f1f5f9', background: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {attachedFile.preview ? (
+            <img src={attachedFile.preview} alt="preview" style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#eff6ff', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FileText size={18} color="#0066FF" />
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{attachedFile.name}</div>
+            <div style={{ fontSize: '11px', color: '#64748b' }}>{(attachedFile.size / (1024*1024)).toFixed(1)}MB</div>
+          </div>
+          <button onClick={removeFile} style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#ef4444', width: '24px', height: '24px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <X size={12} />
+          </button>
+        </div>
+      )}
+
+      {/* File error message banner */}
+      {fileError && (
+        <div style={{ padding: '6px 16px', background: '#fef2f2', borderTop: '1px solid #fee2e2', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <AlertCircle size={12} color="#ef4444" />
+          <span style={{ fontSize: '11px', color: '#ef4444' }}>{fileError}</span>
+        </div>
+      )}
+
       {/* Input Area */}
       <div style={{ padding: '16px', background: '#ffffff', borderTop: '1px solid #f1f5f9' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '8px 16px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
+          {/* File select paperclip button */}
+          <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: attachedFile ? '#0066FF' : '#94a3b8', cursor: 'pointer', display: 'flex', padding: '4px' }} title="Attach image or PDF (max 30MB)">
+            <Paperclip size={20} />
+          </button>
+          <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" style={{ display: 'none' }} onChange={handleFileSelect} />
+
           <button onClick={toggleVoiceRecording} style={{ background: 'none', border: 'none', color: isRecording ? '#ef4444' : '#94a3b8', cursor: 'pointer', display: 'flex' }}>
             {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
           </button>
@@ -386,17 +519,17 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Type your message..."
+            placeholder={attachedFile ? "Ask about this file..." : "Type your message..."}
             style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', color: '#334155' }}
             disabled={isLoading}
           />
           <button
             onClick={() => handleSend()}
-            disabled={!inputPrompt.trim() || isLoading}
+            disabled={(!inputPrompt.trim() && !attachedFile) || isLoading}
             style={{
-              background: inputPrompt.trim() ? '#0066FF' : '#e2e8f0', color: '#fff',
+              background: (inputPrompt.trim() || attachedFile) ? '#0066FF' : '#e2e8f0', color: '#fff',
               border: 'none', borderRadius: '50%', width: '32px', height: '32px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: inputPrompt.trim() ? 'pointer' : 'default',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (inputPrompt.trim() || attachedFile) ? 'pointer' : 'default',
               transition: 'background 0.2s'
             }}
           >
@@ -407,6 +540,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           <ShieldCheck size={12} /> Powered by Maktaba tul Muslim AI Agent
         </div>
       </div>
+
       
       <style dangerouslySetInnerHTML={{__html: `
         .ai-chatbot-container {
