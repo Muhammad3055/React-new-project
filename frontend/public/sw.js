@@ -1,10 +1,13 @@
-const CACHE_NAME = 'maktaba-pwa-v4';
+const CACHE_NAME = 'maktaba-pwa-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
   '/favicon.svg',
+  '/favicon-48x48.png',
+  '/favicon-96x96.png',
+  '/apple-touch-icon.png',
   '/logo.png',
   '/pwa-192x192.png',
   '/pwa-512x512.png'

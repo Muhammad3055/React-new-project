@@ -37,6 +37,9 @@ const DuasView = lazy(() => import('./views/DuasView'));
 const KhatamTrackerView = lazy(() => import('./views/KhatamTrackerView'));
 const UserDashboardView = lazy(() => import('./views/UserDashboardView'));
 const PrayersView = lazy(() => import('./views/PrayersView'));
+const QuizView = lazy(() => import('./views/QuizView'));
+const SeerahView = lazy(() => import('./views/SeerahView'));
+import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
 import { LanguageProvider } from './context/LanguageContext';
@@ -233,10 +236,10 @@ function MainAppContent() {
     if (ogDesc) ogDesc.setAttribute('content', currentSeo.desc);
 
     let ogImage = document.querySelector('meta[property="og:image"]');
-    if (ogImage) ogImage.setAttribute('content', 'https://maktabatulmuslim.com/favicon.svg');
+    if (ogImage) ogImage.setAttribute('content', 'https://maktabatulmuslim.com/logo.png');
 
     let twitterImage = document.querySelector('meta[property="twitter:image"]');
-    if (twitterImage) twitterImage.setAttribute('content', 'https://maktabatulmuslim.com/favicon.svg');
+    if (twitterImage) twitterImage.setAttribute('content', 'https://maktabatulmuslim.com/logo.png');
 
     let canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute('href', `https://maktabatulmuslim.com${tabPathMap[activeTab] || '/'}`);
@@ -294,6 +297,14 @@ function MainAppContent() {
     setIsPlaying(true);
   };
 
+  const [socialCardData, setSocialCardData] = useState(null);
+  const [socialCardModalOpen, setSocialCardModalOpen] = useState(false);
+
+  const openSocialCardModal = (data) => {
+    setSocialCardData(data);
+    setSocialCardModalOpen(true);
+  };
+
   const openReportModal = (contentType, contentId) => {
     setReportData({ contentType, contentId });
   };
@@ -337,7 +348,16 @@ function MainAppContent() {
               user={user}
               playTrack={playTrack}
               openReportModal={openReportModal}
+              openSocialCardModal={openSocialCardModal}
             />
+          )}
+
+          {activeTab === 'quiz' && (
+            <QuizView />
+          )}
+
+          {activeTab === 'seerah' && (
+            <SeerahView />
           )}
 
           {activeTab === 'quran' && (
@@ -502,6 +522,14 @@ function MainAppContent() {
 
       {/* Always-visible Left Sidebar AI Chatbot (slides in from left edge) */}
       <ChatbotSidebar />
+
+      {socialCardModalOpen && (
+        <SocialCardModal
+          isOpen={socialCardModalOpen}
+          onClose={() => setSocialCardModalOpen(false)}
+          initialData={socialCardData}
+        />
+      )}
     </div>
 
 

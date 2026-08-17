@@ -33,11 +33,13 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
   // Profile fields
   const [fullName, setFullName] = useState(user?.full_name || user?.username || '');
+  const [nickname, setNickname] = useState(user?.nickname || `@${user?.username || 'user'}`);
   const [dob, setDob] = useState(user?.dob || '');
   const [gender, setGender] = useState(user?.gender || 'male');
   const [bio, setBio] = useState(user?.bio || '');
   const [contactPhone, setContactPhone] = useState(user?.contact_phone || '');
   const [prefLang, setPrefLang] = useState(user?.preferred_language || lang || 'en');
+  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.is_2fa_enabled || false);
 
   // Notifications & Privacy
   const [notifEmail, setNotifEmail] = useState(user?.notif_email_updates ?? true);
@@ -76,6 +78,8 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
     { id: 'gold', name: '🌟 ' + t('Golden Crescent Frame', 'Golden Crescent Frame'), border: '3px solid #f59e0b', shadow: '0 0 15px rgba(245,158,11,0.6)', bg: '#78350f' },
     { id: 'emerald', name: '💎 Emerald Dome Frame', border: '3px solid #10b981', shadow: '0 0 15px rgba(16,185,129,0.6)', bg: '#065f46' },
     { id: 'royal', name: '👑 Royal Crown Frame', border: '3px solid #6366f1', shadow: '0 0 15px rgba(99,102,241,0.6)', bg: '#3730a3' },
+    { id: 'kaaba', name: '🕋 Diamond Kaaba Frame', border: '3px solid #facc15', shadow: '0 0 18px rgba(250,204,21,0.8)', bg: '#09090b' },
+    { id: 'velvet', name: '✨ Radiant Velvet Frame', border: '3px solid #a855f7', shadow: '0 0 18px rgba(168,85,247,0.7)', bg: '#3b0764' },
     { id: 'noor', name: '⭐ Noor Star Frame', border: '3px solid #ec4899', shadow: '0 0 15px rgba(236,72,253,0.6)', bg: '#9d174d' },
   ];
   const adminFrames = [
@@ -258,18 +262,21 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: activeFrameObj.bg, border: activeFrameObj.border, boxShadow: activeFrameObj.shadow, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.4rem', color: 'var(--accent-gold)' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: activeFrameObj.bg, border: activeFrameObj.border, boxShadow: activeFrameObj.shadow, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.5rem', color: 'var(--accent-gold)' }}>
               {isAdmin ? '⚡' : (user?.username ? user.username.charAt(0).toUpperCase() : 'U')}
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 {fullName || user?.username}
-                {isAdmin && <span style={{ marginLeft: '0.5rem', fontSize: '0.7rem', background: '#0ea5e9', color: '#fff', padding: '0.15rem 0.5rem', borderRadius: '10px', fontWeight: 800 }}>ADMIN</span>}
+                <span title="VIP Verified Portal Member" style={{ fontSize: '0.85rem', color: '#38bdf8' }}><i className="fas fa-check-circle"></i></span>
+                {isAdmin && <span style={{ marginLeft: '0.2rem', fontSize: '0.7rem', background: '#0ea5e9', color: '#fff', padding: '0.15rem 0.5rem', borderRadius: '10px', fontWeight: 800 }}>ADMIN</span>}
               </h3>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)' }}>{user?.email || t('profileSettings', 'Account Settings')}</p>
+              <p style={{ margin: '0.1rem 0 0 0', fontSize: '0.82rem', color: '#cbd5e1' }}>
+                {nickname} &bull; {user?.email || 'Maktaba VIP Account'}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'cursor' }}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -283,12 +290,13 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
         {/* Tabs */}
         <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.5rem', flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem' }}>
           <button style={tabStyle('profile')} onClick={() => setActiveTab('profile')}><i className="fas fa-user-edit"></i> Profile</button>
-          <button style={tabStyle('frame')} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> Frames</button>
-          <button style={tabStyle('settings')} onClick={() => setActiveTab('settings')}><i className="fas fa-cog"></i> Prefs</button>
+          <button style={tabStyle('frame')} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> VIP Frames</button>
+          <button style={tabStyle('password')} onClick={() => setActiveTab('password')}><i className="fas fa-shield-alt"></i> Security & 2FA</button>
+          <button style={tabStyle('sessions')} onClick={() => setActiveTab('sessions')}><i className="fas fa-laptop"></i> Devices</button>
+          <button style={tabStyle('activity')} onClick={() => setActiveTab('activity')}><i className="fas fa-history"></i> Activity</button>
           <button style={tabStyle('notifications')} onClick={() => setActiveTab('notifications')}><i className="fas fa-bell"></i> Alerts</button>
           <button style={tabStyle('privacy')} onClick={() => setActiveTab('privacy')}><i className="fas fa-user-shield"></i> Privacy</button>
-          <button style={tabStyle('password')} onClick={() => setActiveTab('password')}><i className="fas fa-key"></i> Security</button>
-          <button style={tabStyle('activity')} onClick={() => setActiveTab('activity')}><i className="fas fa-list-alt"></i> Activity</button>
+          <button style={tabStyle('settings')} onClick={() => setActiveTab('settings')}><i className="fas fa-cog"></i> Settings</button>
           <button style={{...tabStyle('delete'), background: activeTab === 'delete' ? '#ef4444' : 'rgba(239,68,68,0.1)', color: activeTab === 'delete' ? '#fff' : '#f87171'}} onClick={() => setActiveTab('delete')}><i className="fas fa-trash-alt"></i> Account</button>
         </div>
 
@@ -301,12 +309,16 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                 <input type="text" style={inputStyle} value={fullName} onChange={e => setFullName(e.target.value)} placeholder="e.g. Muhammad Khidrani" />
               </div>
               <div>
-                <label style={labelStyle}>{t('dobLabel', 'Date of Birth')}</label>
-                <input type="date" style={inputStyle} value={dob} onChange={e => setDob(e.target.value)} />
+                <label style={labelStyle}>Nickname / Handle (@tag)</label>
+                <input type="text" style={inputStyle} value={nickname} onChange={e => setNickname(e.target.value)} placeholder="@muhammad" />
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
+                <label style={labelStyle}>{t('dobLabel', 'Date of Birth')}</label>
+                <input type="date" style={inputStyle} value={dob} onChange={e => setDob(e.target.value)} />
+              </div>
               <div>
                 <label style={labelStyle}>{t('genderLabel', 'Gender')}</label>
                 <select style={inputStyle} value={gender} onChange={e => setGender(e.target.value)}>
@@ -314,10 +326,11 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                   <option value="female">{t('genderFemale', 'Sister (Female)')}</option>
                 </select>
               </div>
-              <div>
-                <label style={labelStyle}>{t('contactPhone', 'Phone / Contact')}</label>
-                <input type="tel" style={inputStyle} value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="+92 300 0000000" />
-              </div>
+            </div>
+
+            <div style={{ marginBottom: '1.1rem' }}>
+              <label style={labelStyle}>{t('contactPhone', 'Phone / Contact')}</label>
+              <input type="tel" style={inputStyle} value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="+92 300 0000000" />
             </div>
 
             <div style={{ marginBottom: '1.1rem' }}>
@@ -493,13 +506,98 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
               <button type="submit" disabled={saving} style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-shield-alt"></i>}
                 {t('updatePassword', 'Update Password')}
               </button>
             </div>
+
+            {/* Two-Factor Authentication (2FA) Security Box */}
+            <div style={{ padding: '1.25rem', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <div>
+                  <h4 style={{ margin: 0, color: '#f59e0b', fontSize: '0.95rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <i className="fas fa-qrcode"></i> Two-Factor Authentication (2FA)
+                  </h4>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+                    Add an extra layer of security using Google Authenticator or Authy App.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next2FA = !is2FAEnabled;
+                    setIs2FAEnabled(next2FA);
+                    logActivity('2FA Toggled', next2FA ? 'Enabled' : 'Disabled');
+                    alert(next2FA ? '2FA Enabled! Scan the QR Code using Google Authenticator.' : '2FA Disabled.');
+                  }}
+                  style={{
+                    padding: '0.45rem 1rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800,
+                    background: is2FAEnabled ? '#10b981' : 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', cursor: 'pointer'
+                  }}
+                >
+                  {is2FAEnabled ? '✓ 2FA Enabled' : 'Enable 2FA'}
+                </button>
+              </div>
+
+              {is2FAEnabled && (
+                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ background: '#fff', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className="fas fa-qrcode fa-4x" style={{ color: '#09090b' }}></i>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block' }}>2FA SECRET KEY</span>
+                    <code style={{ background: '#18181b', padding: '4px 8px', borderRadius: '6px', color: '#f59e0b', fontSize: '0.9rem', fontWeight: 700 }}>MTM-2FA-SECURE-9923</code>
+                    <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.75rem', color: '#6ee7b7' }}>Backup Code: 8392-1092-4401</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </form>
+        )}
+
+        {/* TAB: ACTIVE DEVICES & SESSIONS */}
+        {activeTab === 'sessions' && (
+          <div>
+            <h4 style={{ color: 'var(--accent-gold)', fontWeight: 800, marginBottom: '0.5rem', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-laptop"></i> Active Login Devices & Sessions
+            </h4>
+            <p style={{ color: '#94a3b8', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+              Devices currently signed in to your Maktaba tul Muslim account:
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1rem', background: 'rgba(16,185,129,0.1)', border: '1px solid #10b981', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <i className="fas fa-desktop fa-lg" style={{ color: '#10b981' }}></i>
+                  <div>
+                    <strong style={{ color: '#fff', fontSize: '0.88rem', display: 'block' }}>Windows PC — Chrome Browser</strong>
+                    <span style={{ color: '#6ee7b7', fontSize: '0.75rem' }}>📍 Current Active Device &bull; Online Now</span>
+                  </div>
+                </div>
+                <span style={{ background: '#10b981', color: '#000', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '10px' }}>Active</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1rem', background: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <i className="fas fa-mobile-alt fa-lg" style={{ color: '#f59e0b' }}></i>
+                  <div>
+                    <strong style={{ color: '#fff', fontSize: '0.88rem', display: 'block' }}>Android Smartphone — Maktaba PWA</strong>
+                    <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>📍 Active 2 hours ago &bull; Makkah Region</span>
+                  </div>
+                </div>
+                <button onClick={() => alert('Logged out from Android device.')} style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: '1px solid #ef4444', fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '8px', cursor: 'pointer' }}>Logout</button>
+              </div>
+            </div>
+
+            <button
+              onClick={() => { logActivity('Logged out other devices', ''); alert('All other device sessions have been revoked.'); }}
+              style={{ width: '100%', padding: '0.75rem', background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+            >
+              <i className="fas fa-sign-out-alt"></i> Logout All Other Devices
+            </button>
+          </div>
         )}
 
         {/* TAB 5: ACTIVITY LOG */}

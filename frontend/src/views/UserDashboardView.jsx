@@ -48,6 +48,20 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
     }));
   };
 
+  const [qadaFasts, setQadaFasts] = useState(() => {
+    return parseInt(localStorage.getItem('maktaba_qada_fasts') || '0', 10);
+  });
+
+  const [reflections, setReflections] = useState(() => {
+    return JSON.parse(localStorage.getItem('maktaba_user_reflections') || '[]');
+  });
+
+  const updateQada = (delta) => {
+    const nextVal = Math.max(0, qadaFasts + delta);
+    setQadaFasts(nextVal);
+    localStorage.setItem('maktaba_qada_fasts', nextVal.toString());
+  };
+
   useEffect(() => {
     if (!user) {
       setLoading(false);
@@ -243,9 +257,10 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', borderBottom: '2px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', overflowX: 'auto' }}>
         {[
           { id: 'overview', label: '🏠 Today\'s Overview', icon: 'fas fa-home' },
+          { id: 'reflections', label: '✍️ My Reflections Journal', icon: 'fas fa-pen-nib' },
           { id: 'quran', label: '📖 Quran & Reading Vault', icon: 'fas fa-quran' },
           { id: 'audio', label: '🎧 Audio & Downloads (' + Object.keys(offlineSurahs).length + ')', icon: 'fas fa-headphones' },
-          { id: 'namaz', label: '🕌 Prayer Tracker (' + completedNamazCount + '/5)', icon: 'fas fa-pray' },
+          { id: 'namaz', label: '🕌 Prayer & Fasting Log (' + completedNamazCount + '/5)', icon: 'fas fa-pray' },
           { id: 'duas', label: '🤲 Daily Adhkar & Tasbeeh', icon: 'fas fa-hands' },
           { id: 'achievements', label: '⭐ Badges & Level', icon: 'fas fa-trophy' },
           { id: 'calendar', label: '📅 Islamic Calendar & Ramadan', icon: 'fas fa-calendar-alt' },
@@ -277,6 +292,52 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           );
         })}
       </div>
+
+      {/* ========================================================================= */}
+      {/* ✍️ TAB: MY REFLECTIONS JOURNAL */}
+      {/* ========================================================================= */}
+      {activeTab === 'reflections' && (
+        <div className="card" style={{ padding: '2rem', background: '#09090b', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.4)', color: '#fff' }}>
+          <h2 style={{ color: '#f59e0b', fontSize: '1.4rem', fontWeight: 800, margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <i className="fas fa-pen-nib"></i> My Tadabbur Personal Reflections & Notes ({reflections.length})
+          </h2>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+            Private notes and spiritual reflections attached to Ayahs while reading the Holy Quran.
+          </p>
+
+          {reflections.length === 0 ? (
+            <div style={{ padding: '3rem 1rem', textAlign: 'center', background: '#18181b', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.15)' }}>
+              <i className="fas fa-edit fa-3x" style={{ color: '#f59e0b', marginBottom: '1rem' }}></i>
+              <h3 style={{ color: '#e2e8f0', margin: '0 0 0.5rem 0' }}>No Reflections Saved Yet</h3>
+              <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+                Go to "Read Quran" view and click the pen icon (✍️) next to any Ayah to save your personal reflections here!
+              </p>
+              <button onClick={() => navigateToTab('read')} style={{ padding: '0.65rem 1.5rem', background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#000', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer' }}>
+                Open Quran Reader ▶
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+              {reflections.map((item) => (
+                <div key={item.id} style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '0.9rem' }}>
+                      Surah {item.surahName} [{item.surah}:{item.ayah}]
+                    </span>
+                    <span style={{ color: '#94a3b8', fontSize: '0.78rem' }}>{item.date}</span>
+                  </div>
+                  <p className="arabic-font" style={{ fontSize: '1.15rem', color: '#6ee7b7', direction: 'rtl', margin: '0.5rem 0', background: '#09090b', padding: '0.6rem', borderRadius: '8px' }}>
+                    {item.textArabic}
+                  </p>
+                  <p style={{ color: '#f8fafc', fontSize: '0.95rem', margin: '0.75rem 0 0 0', lineHeight: '1.5', background: 'rgba(245,158,11,0.08)', padding: '0.75rem', borderRadius: '10px', borderLeft: '3px solid #f59e0b' }}>
+                    💭 <strong>Reflection:</strong> {item.note}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 🏠 TAB 1: TODAY'S OVERVIEW (Daily Verse, Hadith, Prayer Times, Qibla) */}
@@ -579,6 +640,31 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               </div>
               <h4 style={{ margin: 0, color: '#fff', fontSize: '1.1rem' }}>Excellent Spiritual Discipline!</h4>
               <p style={{ fontSize: '0.85rem', color: '#cbd5e1', marginTop: '0.3rem' }}>You completed 141 out of 150 prayers this month.</p>
+            </div>
+          </div>
+
+          {/* Fasting (Sawm) & Qada Tracker Card */}
+          <div className="card" style={{ padding: '1.5rem', background: '#09090b', borderRadius: '20px', color: '#fff', border: '1.5px solid rgba(245,158,11,0.4)' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-moon"></i> Fasting (Sawm) & Qada Tracker
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '1.25rem' }}>
+              Track voluntary Sunnah fasts and manage remaining Qada fasts to make up.
+            </p>
+
+            <div style={{ background: '#18181b', padding: '1rem 1.25rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'block' }}>REMAINING QADA FASTS</span>
+                <strong style={{ fontSize: '1.6rem', color: '#f59e0b' }}>{qadaFasts} Days</strong>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button onClick={() => updateQada(-1)} style={{ padding: '0.4rem 0.8rem', background: '#047857', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>-1 Made Up</button>
+                <button onClick={() => updateQada(1)} style={{ padding: '0.4rem 0.8rem', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>+1 Added</button>
+              </div>
+            </div>
+
+            <div style={{ background: 'rgba(6,78,59,0.3)', border: '1px solid rgba(16,185,129,0.3)', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.85rem', color: '#6ee7b7' }}>
+              <i className="fas fa-star"></i> <strong>Recommended Sunnah Fasts:</strong> Mondays & Thursdays, 13th, 14th, 15th of Hijri month (White Days).
             </div>
           </div>
 

@@ -94,7 +94,7 @@ const toArabicNumerals = (num) => {
   return num.toString().split('').map(d => arabicDigits[parseInt(d, 10)] || d).join('');
 };
 
-export default function ReadView({ user, playTrack, openReportModal }) {
+export default function ReadView({ user, playTrack, openReportModal, openSocialCardModal }) {
   const { lang, t } = useLanguage();
   const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
   const [selectedSurah, setSelectedSurah] = useState(1);
@@ -138,6 +138,43 @@ export default function ReadView({ user, playTrack, openReportModal }) {
   const [surahFilter, setSurahFilter] = useState('');
   const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark' | 'custom'
   const [readerBgColor, setReaderBgColor] = useState('#ffffff');
+
+  // Reading Time Counter & Tadabbur Reflection Note State
+  const [readingSeconds, setReadingSeconds] = useState(0);
+  const [reflectionModalAyah, setReflectionModalAyah] = useState(null);
+  const [reflectionText, setReflectionText] = useState('');
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setReadingSeconds(prev => {
+        const nextSec = prev + 1;
+        if (nextSec % 60 === 0) {
+          const currentMins = parseInt(localStorage.getItem('maktaba_reading_mins') || '0', 10);
+          localStorage.setItem('maktaba_reading_mins', (currentMins + 1).toString());
+        }
+        return nextSec;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const saveReflectionNote = () => {
+    if (!reflectionModalAyah || !reflectionText.trim()) return;
+    const existing = JSON.parse(localStorage.getItem('maktaba_user_reflections') || '[]');
+    const newNote = {
+      id: Date.now(),
+      surah: selectedSurah,
+      surahName: activeSurahMeta.name,
+      ayah: reflectionModalAyah.numberInSurah,
+      textArabic: reflectionModalAyah.text,
+      note: reflectionText,
+      date: new Date().toLocaleDateString()
+    };
+    localStorage.setItem('maktaba_user_reflections', JSON.stringify([newNote, ...existing]));
+    setReflectionModalAyah(null);
+    setReflectionText('');
+    alert('Personal reflection note saved to your User Dashboard!');
+  };
   const [translationTextColor, setTranslationTextColor] = useState('#000000');
   const [arabicTextColor, setArabicTextColor] = useState('#000000');
   const [topicFilter, setTopicFilter] = useState('');
@@ -710,6 +747,11 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                 <button className="verse-btn" style={{ width: '26px', height: '26px' }} onClick={() => setFontSize(Math.min(46, fontSize + 2))}>+</button>
               </div>
 
+              {/* Live Reading Session Timer */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#022c22', color: '#f59e0b', padding: '3px 10px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700, border: '1px solid rgba(245,158,11,0.4)' }}>
+                <i className="fas fa-clock"></i> Reading: {Math.floor(readingSeconds / 60)}m {readingSeconds % 60}s
+              </div>
+
               {/* Translation Languages Selection (English, Urdu, Brahui) */}
               {readMode === 'with_translation' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', flexWrap: 'wrap', background: '#f8fafc', padding: '4px 10px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
@@ -901,6 +943,28 @@ export default function ReadView({ user, playTrack, openReportModal }) {
                               <i className="fas fa-share-alt"></i>
                             </button>
 
+                            <button
+                              className="verse-btn"
+                              title="Create Social Image Card"
+                              onClick={() => openSocialCardModal && openSocialCardModal({
+                                textArabic: ayah.text,
+                                textEnglish: getEnglishTranslationText(index),
+                                textUrdu: getUrduTranslationText(index),
+                                textBrahui: brTranslationText,
+                                reference: `Surah ${activeSurahMeta.name} [${selectedSurah}:${ayah.numberInSurah}] • Maktaba tul Muslim`
+                              })}
+                            >
+                              <i className="fas fa-palette" style={{ color: '#f59e0b' }}></i>
+                            </button>
+
+                            <button
+                              className="verse-btn"
+                              title="Write Tadabbur Personal Reflection / Note"
+                              onClick={() => setReflectionModalAyah(ayah)}
+                            >
+                              <i className="fas fa-pen-nib" style={{ color: '#10b981' }}></i>
+                            </button>
+
                             {/* Play MP3 Ayah & Spoken Translation (Only shown in Audio Translation Mode) */}
                             {readMode === 'with_translation' && translationSubMode === 'audio_and_text' && (
                               <button
@@ -979,6 +1043,35 @@ export default function ReadView({ user, playTrack, openReportModal }) {
           )}
         </div>
       </div>
+
+      {/* Reflection Note Modal */}
+      {reflectionModalAyah && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#09090b', border: '1px solid rgba(245,158,11,0.4)', borderRadius: '20px', maxWidth: '550px', width: '100%', padding: '1.5rem', color: '#fff', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+            <h3 style={{ margin: '0 0 1rem 0', color: '#f59e0b', fontSize: '1.2rem', fontWeight: 700 }}>
+              ✍️ Write Reflection Note on Verse {selectedSurah}:{reflectionModalAyah.numberInSurah}
+            </h3>
+            <p className="arabic-font" style={{ fontSize: '1.2rem', color: '#6ee7b7', direction: 'rtl', marginBottom: '1rem', background: '#18181b', padding: '0.75rem', borderRadius: '10px' }}>
+              {reflectionModalAyah.text}
+            </p>
+            <textarea
+              value={reflectionText}
+              onChange={(e) => setReflectionText(e.target.value)}
+              placeholder="Write your personal thoughts, reflections, or key learnings from this verse..."
+              rows={4}
+              style={{ width: '100%', background: '#18181b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', color: '#fff', padding: '0.75rem', fontSize: '0.95rem', marginBottom: '1rem' }}
+            />
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button onClick={() => setReflectionModalAyah(null)} style={{ padding: '0.6rem 1.2rem', background: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '10px', border: 'none', cursor: 'pointer' }}>
+                Cancel
+              </button>
+              <button onClick={saveReflectionNote} style={{ padding: '0.6rem 1.2rem', background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#000', fontWeight: 700, borderRadius: '10px', border: 'none', cursor: 'pointer' }}>
+                Save to Journal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

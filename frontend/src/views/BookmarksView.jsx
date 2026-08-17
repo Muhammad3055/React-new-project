@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedFolder, setSelectedFolder] = useState('All');
 
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
@@ -44,8 +45,30 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
 
   return (
     <div className="container">
-      <div className="section-header">
+      <div className="section-header" style={{ marginBottom: '1rem' }}>
         <h1 className="section-title"><i className="fas fa-bookmark" style={{ color: 'var(--accent-gold)' }}></i> My Saved Bookmarks</h1>
+      </div>
+
+      {/* Bookmark Folders Filter Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        {['All', 'Favorites ⭐', 'Duas 🤲', 'Study 📖', 'Hifz 🧠'].map((folder) => {
+          const folderName = folder.split(' ')[0];
+          const isSelected = selectedFolder === folderName;
+          return (
+            <button
+              key={folderName}
+              onClick={() => setSelectedFolder(folderName)}
+              style={{
+                padding: '0.45rem 1rem', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 700,
+                background: isSelected ? 'var(--accent-gold)' : '#18181b',
+                color: isSelected ? '#000' : '#cbd5e1',
+                border: isSelected ? 'none' : '1px solid rgba(255,255,255,0.1)', cursor: 'pointer'
+              }}
+            >
+              {folder}
+            </button>
+          );
+        })}
       </div>
 
       {loading ? (
