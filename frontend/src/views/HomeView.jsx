@@ -125,15 +125,15 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const year = parseInt(locationInfo.hijri.year, 10) || 1448;
     setHijriYear(year);
 
-    const loadRamadan = async () => {
+    const loadRamadan = async (targetYear) => {
       try {
         const { method, hijriAdjustment } = getPrayerMethodAndAdjustment(locationInfo.countryCode);
         const lat = locationInfo.lat;
         const lon = locationInfo.lng;
 
         const url = lat && lon
-          ? `https://api.aladhan.com/v1/hToGCalendar/9/${year}?latitude=${lat}&longitude=${lon}&method=${method}&hijriAdjustment=${hijriAdjustment}`
-          : `https://api.aladhan.com/v1/hToGCalendar/9/${year}?hijriAdjustment=${hijriAdjustment}`;
+          ? `https://api.aladhan.com/v1/hToGCalendar/9/${targetYear}?latitude=${lat}&longitude=${lon}&method=${method}&hijriAdjustment=${hijriAdjustment}`
+          : `https://api.aladhan.com/v1/hToGCalendar/9/${targetYear}?hijriAdjustment=${hijriAdjustment}`;
 
         const res = await fetch(url);
         const json = await res.json();
@@ -160,8 +160,14 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             const daysLeft = Math.ceil((ramEnd - now) / (1000 * 60 * 60 * 24));
             setRamadanCountdown({ state: 'active', dayIn, daysLeft, total: totalDays });
           } else {
-            const daysAgo = Math.ceil((now - ramEnd) / (1000 * 60 * 60 * 24));
-            setRamadanCountdown({ state: 'passed', daysAgo });
+            // Ramadan has passed for targetYear, check if we need to load next year's Ramadan
+            if (targetYear === year) {
+              setHijriYear(year + 1);
+              loadRamadan(year + 1);
+            } else {
+              const daysAgo = Math.ceil((now - ramEnd) / (1000 * 60 * 60 * 24));
+              setRamadanCountdown({ state: 'passed', daysAgo });
+            }
           }
         }
       } catch (e) {
@@ -169,7 +175,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       }
     };
 
-    loadRamadan();
+    loadRamadan(year);
   }, [locationInfo]);
 
   // Automatic Daily 12 AM Midnight Section Rotator Algorithm

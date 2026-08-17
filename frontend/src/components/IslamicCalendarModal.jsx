@@ -121,7 +121,22 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
       if (hijri) {
         setHijriData(hijri);
         const hijriYear = parseInt(hijri.year, 10);
-        const ramadan = await fetchRamadanDates(hijriYear, lat, lon, code);
+        let ramadan = await fetchRamadanDates(hijriYear, lat, lon, code);
+        
+        if (ramadan) {
+          const now = new Date();
+          now.setHours(0, 0, 0, 0);
+          const ramEnd = new Date(ramadan.end);
+          ramEnd.setHours(0, 0, 0, 0);
+
+          if (now > ramEnd) {
+            // Current year's Ramadan has passed, fetch next year's Ramadan!
+            const nextRamadan = await fetchRamadanDates(hijriYear + 1, lat, lon, code);
+            if (nextRamadan) {
+              ramadan = nextRamadan;
+            }
+          }
+        }
         setRamadanInfo(ramadan);
       }
     } catch {
