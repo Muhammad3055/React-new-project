@@ -1301,6 +1301,103 @@ def ai_assistant_file_api(request):
         except Exception as e:
             print(f'GPT-4o Vision Error: {e}')
 
+    # ── Fallback: xAI Grok Vision (grok-2-vision-1212) ──
+    xai_api_key = getattr(settings, 'XAI_API_KEY', '')
+    if xai_api_key and OpenAI and is_image:
+        try:
+            client = OpenAI(api_key=xai_api_key, base_url="https://api.x.ai/v1")
+            completion = client.chat.completions.create(
+                model='grok-2-vision-1212',
+                max_tokens=2000,
+                messages=[{
+                    'role': 'user',
+                    'content': [
+                        {'type': 'text', 'text': full_instruction},
+                        {'type': 'image_url', 'image_url': {'url': file_data_url}}
+                    ]
+                }]
+            )
+            answer_text = completion.choices[0].message.content
+            if answer_text:
+                return JsonResponse({
+                    'answer': answer_text,
+                    'language': req_lang or 'en',
+                    'source': 'xAI Grok Vision',
+                    'file_analysis': f'Analyzed: {file_name}',
+                    'quran': [], 'hadith': [],
+                    'suggested_questions': []
+                })
+        except Exception as e:
+            print(f'xAI Grok Vision Error: {e}')
+
+    # ── Fallback: Claude Vision (claude-3-5-sonnet-20241022) ──
+    claude_api_key = getattr(settings, 'CLAUDE_API_KEY', '')
+    if claude_api_key and anthropic and is_image:
+        try:
+            media_type = file_type if file_type else 'image/jpeg'
+            client = anthropic.Anthropic(api_key=claude_api_key)
+            message = client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=2000,
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": media_type,
+                                "data": raw_b64
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "text": full_instruction
+                        }
+                    ]
+                }]
+            )
+            answer_text = message.content[0].text.strip()
+            if answer_text:
+                return JsonResponse({
+                    'answer': answer_text,
+                    'language': req_lang or 'en',
+                    'source': 'Claude 3.5 Sonnet Vision',
+                    'file_analysis': f'Analyzed: {file_name}',
+                    'quran': [], 'hadith': [],
+                    'suggested_questions': []
+                })
+        except Exception as e:
+            print(f'Claude Vision Error: {e}')
+
+    # ── Fallback: DeepSeek (text query fallback) ──
+    deepseek_api_key = getattr(settings, 'DEEPSEEK_API_KEY', '')
+    if deepseek_api_key and OpenAI:
+        try:
+            client = OpenAI(api_key=deepseek_api_key, base_url="https://api.deepseek.com")
+            note = '[Note: Image binary was skipped. Answering text query via DeepSeek.]'
+            completion = client.chat.completions.create(
+                model="deepseek-chat",
+                temperature=0.1,
+                max_tokens=1500,
+                messages=[
+                    {"role": "system", "content": "You are Maktaba tul Muslim AI, an Islamic scholar assistant."},
+                    {"role": "user", "content": f"{note}\n\n{full_instruction}"},
+                ],
+            )
+            answer_text = completion.choices[0].message.content
+            if answer_text:
+                return JsonResponse({
+                    'answer': answer_text,
+                    'language': req_lang or 'en',
+                    'source': 'DeepSeek Chat',
+                    'file_analysis': f'Text analysis fallback for: {file_name}',
+                    'quran': [], 'hadith': [],
+                    'suggested_questions': []
+                })
+        except Exception as e:
+            print(f'DeepSeek File Fallback Error: {e}')
+
     # ── Fallback: Groq (text only — extract text from prompt context) ──
     groq_api_key = getattr(settings, 'GROQ_API_KEY', '')
     if groq_api_key:
