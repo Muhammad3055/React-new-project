@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Calendar, Sparkles, X, Clock, MapPin, RefreshCw } from 'lucide-react';
+import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Hijri Months list
@@ -40,16 +41,18 @@ const ISLAMIC_EVENTS = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Fetch Hijri date from AlAdhan API (location-aware)
 // ─────────────────────────────────────────────────────────────────────────────
-async function fetchHijriDate(lat, lon) {
+async function fetchHijriDate(lat, lon, countryCode) {
   const today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0');
   const yyyy = today.getFullYear();
   const dateStr = `${dd}-${mm}-${yyyy}`;
 
-  let url = `https://api.aladhan.com/v1/gToH?date=${dateStr}`;
+  const { method, hijriAdjustment } = getPrayerMethodAndAdjustment(countryCode);
+
+  let url = `https://api.aladhan.com/v1/gToH?date=${dateStr}&hijriAdjustment=${hijriAdjustment}`;
   if (lat && lon) {
-    url = `https://api.aladhan.com/v1/gToHCalendar/${mm}/${yyyy}?latitude=${lat}&longitude=${lon}&method=2`;
+    url = `https://api.aladhan.com/v1/gToHCalendar/${mm}/${yyyy}?latitude=${lat}&longitude=${lon}&method=${method}&hijriAdjustment=${hijriAdjustment}`;
   }
 
   const res = await fetch(url);
@@ -68,12 +71,12 @@ async function fetchHijriDate(lat, lon) {
 // Fetch Ramadan dates for current Hijri year from AlAdhan
 // Returns: { start: Date, end: Date } or null
 // ─────────────────────────────────────────────────────────────────────────────
-async function fetchRamadanDates(hijriYear, lat, lon) {
+async function fetchRamadanDates(hijriYear, lat, lon, countryCode) {
   try {
-    // Get Ramadan 1 (month 9) gregorian equivalent
+    const { method, hijriAdjustment } = getPrayerMethodAndAdjustment(countryCode);
     const url = lat && lon
-      ? `https://api.aladhan.com/v1/hToGCalendar/9/${hijriYear}?latitude=${lat}&longitude=${lon}&method=2`
-      : `https://api.aladhan.com/v1/hToGCalendar/9/${hijriYear}`;
+      ? `https://api.aladhan.com/v1/hToGCalendar/9/${hijriYear}?latitude=${lat}&longitude=${lon}&method=${method}&hijriAdjustment=${hijriAdjustment}`
+      : `https://api.aladhan.com/v1/hToGCalendar/9/${hijriYear}?hijriAdjustment=${hijriAdjustment}`;
 
     const res = await fetch(url);
     const json = await res.json();
@@ -111,14 +114,14 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
   });
 
   // ── Load Hijri date (with or without location) ──
-  const loadHijriData = async (lat, lon) => {
+  const loadHijriData = async (lat, lon, code) => {
     setLoading(true);
     try {
-      const hijri = await fetchHijriDate(lat, lon);
+      const hijri = await fetchHijriDate(lat, lon, code);
       if (hijri) {
         setHijriData(hijri);
         const hijriYear = parseInt(hijri.year, 10);
-        const ramadan = await fetchRamadanDates(hijriYear, lat, lon);
+        const ramadan = await fetchRamadanDates(hijriYear, lat, lon, code);
         setRamadanInfo(ramadan);
       }
     } catch {
@@ -129,38 +132,62 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
     }
   };
 
-  // ── Request geolocation on open ──
+  // ── Request geolocation or load from cache on open ──
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
 
+    // 1. Try reading cached location from localStorage
+    const cachedLat = localStorage.getItem('user_lat');
+    const cachedLng = localStorage.getItem('user_lng');
+    const cachedCode = localStorage.getItem('user_country_code');
+    const cachedLabel = localStorage.getItem('user_location_name');
+
+    if (cachedLat && cachedLng) {
+      const lat = parseFloat(cachedLat);
+      const lon = parseFloat(cachedLng);
+      setCoords({ lat, lon });
+      setLocationLabel(cachedLabel || 'Your Location');
+      loadHijriData(lat, lon, cachedCode || '');
+      return;
+    }
+
+    // 2. Geolocation GPS fallback
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           const { latitude, longitude } = pos.coords;
           setCoords({ lat: latitude, lon: longitude });
-          // Reverse geocode for city name using open-meteo (no key needed)
+          localStorage.setItem('user_lat', latitude);
+          localStorage.setItem('user_lng', longitude);
+
+          let code = '';
           try {
             const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
             const geoJson = await geoRes.json();
             const city = geoJson.address?.city || geoJson.address?.town || geoJson.address?.state || geoJson.address?.country || 'Your Location';
+            code = geoJson.address?.country_code?.toUpperCase() || '';
+            if (code) {
+              localStorage.setItem('user_country_code', code);
+            }
             setLocationLabel(city);
+            localStorage.setItem('user_location_name', city);
           } catch {
             setLocationLabel('Your Location');
+            localStorage.setItem('user_location_name', 'Your Location');
           }
-          loadHijriData(latitude, longitude);
+          loadHijriData(latitude, longitude, code);
         },
         () => {
-          // Permission denied or error
           setLocationError(true);
           setLocationLabel('Global (UTC)');
-          loadHijriData(null, null);
+          loadHijriData(null, null, '');
         },
         { timeout: 8000 }
       );
     } else {
       setLocationError(true);
-      loadHijriData(null, null);
+      loadHijriData(null, null, '');
     }
   }, [isOpen]);
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 import { fetchWithCache } from '../utils/apiCache';
 import { useLanguage } from '../context/LanguageContext';
+import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
 
 const DEFAULT_AUDIOS = [
   { id: 1, surah_number: 1, surah_name_arabic: "الفاتحة", surah_name_english: "Al-Fatiha", reciter: "Mishary Rashid Alafasy", audio_url: "https://server8.mp3quran.net/afs/001.mp3", duration: "00:45", revelation_place: "Makki" },
@@ -92,6 +93,84 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const [books, setBooks] = useState(DEFAULT_BOOKS);
   const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
+
+  const [locationInfo, setLocationInfo] = useState(null);
+  const [ramadanCountdown, setRamadanCountdown] = useState(null);
+  const [hijriYear, setHijriYear] = useState('1448');
+
+  // Load cache on init
+  useEffect(() => {
+    const cachedLat = localStorage.getItem('user_lat');
+    const cachedLng = localStorage.getItem('user_lng');
+    const cachedCode = localStorage.getItem('user_country_code');
+    const cachedLabel = localStorage.getItem('user_location_name');
+    if (cachedLat && cachedLng) {
+      setLocationInfo({
+        hijri: { year: new Date().getFullYear() - 579 },
+        lat: parseFloat(cachedLat),
+        lng: parseFloat(cachedLng),
+        countryCode: cachedCode || '',
+        city: cachedLabel || 'Local City'
+      });
+    }
+  }, []);
+
+  const handleLocationOrDateUpdate = (info) => {
+    setLocationInfo(info);
+  };
+
+  useEffect(() => {
+    if (!locationInfo || !locationInfo.hijri) return;
+
+    const year = parseInt(locationInfo.hijri.year, 10) || 1448;
+    setHijriYear(year);
+
+    const loadRamadan = async () => {
+      try {
+        const { method, hijriAdjustment } = getPrayerMethodAndAdjustment(locationInfo.countryCode);
+        const lat = locationInfo.lat;
+        const lon = locationInfo.lng;
+
+        const url = lat && lon
+          ? `https://api.aladhan.com/v1/hToGCalendar/9/${year}?latitude=${lat}&longitude=${lon}&method=${method}&hijriAdjustment=${hijriAdjustment}`
+          : `https://api.aladhan.com/v1/hToGCalendar/9/${year}?hijriAdjustment=${hijriAdjustment}`;
+
+        const res = await fetch(url);
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          const firstDay = json.data[0].gregorian;
+          const lastDay = json.data[json.data.length - 1].gregorian;
+          const parseGregorian = (g) => new Date(`${g.year}-${String(g.month.number).padStart(2,'0')}-${String(g.day).padStart(2,'0')}`);
+
+          const ramStart = parseGregorian(firstDay);
+          const ramEnd = parseGregorian(lastDay);
+          const totalDays = json.data.length;
+
+          // Calculate countdown
+          const now = new Date();
+          now.setHours(0, 0, 0, 0);
+          ramStart.setHours(0, 0, 0, 0);
+          ramEnd.setHours(0, 0, 0, 0);
+
+          if (now < ramStart) {
+            const daysUntil = Math.ceil((ramStart - now) / (1000 * 60 * 60 * 24));
+            setRamadanCountdown({ state: 'upcoming', days: daysUntil, total: totalDays });
+          } else if (now <= ramEnd) {
+            const dayIn = Math.ceil((now - ramStart) / (1000 * 60 * 60 * 24)) + 1;
+            const daysLeft = Math.ceil((ramEnd - now) / (1000 * 60 * 60 * 24));
+            setRamadanCountdown({ state: 'active', dayIn, daysLeft, total: totalDays });
+          } else {
+            const daysAgo = Math.ceil((now - ramEnd) / (1000 * 60 * 60 * 24));
+            setRamadanCountdown({ state: 'passed', daysAgo });
+          }
+        }
+      } catch (e) {
+        console.error("Error fetching Ramadan dates in HomeView:", e);
+      }
+    };
+
+    loadRamadan();
+  }, [locationInfo]);
 
   // Automatic Daily 12 AM Midnight Section Rotator Algorithm
   const getDailyRotatedSlice = (arr, count = 4) => {
@@ -566,9 +645,105 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         );
       })()}
 
+      {/* ═══ RAMADAN / RAMZAN COUNTDOWN CARD ═══ */}
+      {ramadanCountdown && (
+        <section className="container" style={{ marginTop: '2rem' }}>
+          <div style={{
+            borderRadius: '24px',
+            background: 'linear-gradient(135deg, #064e3b 0%, #022c22 50%, #0f172a 100%)',
+            border: '2px solid var(--accent-gold, #f59e0b)',
+            padding: '1.75rem',
+            boxShadow: '0 12px 32px rgba(5,150,105,0.15)',
+            position: 'relative',
+            overflow: 'hidden',
+            color: '#ffffff'
+          }}>
+            {/* Background pattern/glow */}
+            <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(245,158,11,0.06)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(245,158,11,0.2)', paddingBottom: '0.75rem', flexWrap: 'wrap' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>🌙</div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
+                  Blessed Month of Ramzan {hijriYear || '1448'}
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1' }}>
+                  Islamic Calendar &amp; Fasting Countdown
+                </p>
+              </div>
+              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: '12px', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399', whiteSpace: 'nowrap' }}>
+                📍 {locationInfo?.city || 'Local Region'}
+              </span>
+            </div>
+
+            {ramadanCountdown.state === 'upcoming' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--accent-gold)', lineHeight: 1, fontFamily: 'monospace' }}>
+                    {ramadanCountdown.days}
+                  </span>
+                  <span style={{ fontSize: '1.25rem', color: '#fcd34d', fontWeight: 800 }}>Days Remaining</span>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.6 }}>
+                  until the sacred month of Ramzan begins. Prepare your mind and soul for {ramadanCountdown.total} days of spiritual growth and devotion.
+                </p>
+                <div style={{ marginTop: '0.5rem', height: '8px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: '6px',
+                    background: 'linear-gradient(90deg, #f59e0b, #10b981)',
+                    width: `${Math.max(5, 100 - (ramadanCountdown.days / 365) * 100)}%`
+                  }} />
+                </div>
+              </div>
+            )}
+
+            {ramadanCountdown.state === 'active' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'baseline' }}>
+                  <div>
+                    <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#34d399', lineHeight: 1, fontFamily: 'monospace' }}>
+                      Day {ramadanCountdown.dayIn}
+                    </span>
+                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>of Ramzan</p>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--accent-gold)', lineHeight: 1, fontFamily: 'monospace' }}>
+                      {ramadanCountdown.daysLeft}
+                    </span>
+                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>Days Left</p>
+                  </div>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.6 }}>
+                  🤲 You are currently in the blessed month of Ramzan. May Allah accept your fasts, prayers, and charity!
+                </p>
+                <div style={{ marginTop: '0.5rem', height: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: '6px',
+                    background: 'linear-gradient(90deg, #f59e0b, #34d399)',
+                    width: `${(ramadanCountdown.dayIn / ramadanCountdown.total) * 100}%`,
+                    transition: 'width 1s ease'
+                  }} />
+                </div>
+              </div>
+            )}
+
+            {ramadanCountdown.state === 'passed' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <p style={{ margin: 0, fontSize: '1rem', color: '#cbd5e1', fontWeight: 600 }}>
+                  Ramadan has passed {ramadanCountdown.daysAgo} days ago. May Allah accept your fasts and deeds! 🤲
+                </p>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
+                  Next Ramzan countdown will appear as the new Hijri year approaches. Stay connected to your daily prayers.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Live Prayer Times & Hijri Date Widget */}
       <section className="container" style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <PrayerTimesWidget />
+        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
       </section>
 
       {/* Continue Reading Quick Banner if saved position exists */}

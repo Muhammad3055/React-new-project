@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
 
-export default function PrayerTimesWidget() {
+export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   const [timings, setTimings] = useState(null);
   const [hijriDate, setHijriDate] = useState('');
   const [gregorianDate, setGregorianDate] = useState('');
@@ -11,10 +12,11 @@ export default function PrayerTimesWidget() {
   const [monthlyTimings, setMonthlyTimings] = useState([]);
   
   // User Location State
-  const [locationName, setLocationName] = useState('Detecting location...');
+  const [locationName, setLocationName] = useState(localStorage.getItem('user_location_name') || 'Detecting location...');
   const [locationType, setLocationType] = useState('ip'); // 'gps' | 'ip' | 'custom'
   const [customCity, setCustomCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
+  const [countryCode, setCountryCode] = useState(localStorage.getItem('user_country_code') || '');
 
   const [countdownText, setCountdownText] = useState('');
   const [sehriCountdown, setSehriCountdown] = useState('');
@@ -83,23 +85,73 @@ export default function PrayerTimesWidget() {
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
+    // Try reading cached location first
+    const cachedLat = localStorage.getItem('user_lat');
+    const cachedLng = localStorage.getItem('user_lng');
+    const cachedCode = localStorage.getItem('user_country_code');
+    const cachedLabel = localStorage.getItem('user_location_name');
+
+    if (cachedLat && cachedLng) {
+      const lat = parseFloat(cachedLat);
+      const lng = parseFloat(cachedLng);
+      fetchTimingsByCoords(lat, lng, month, year, cachedLabel || 'Cached Location', 'gps', cachedCode || '');
+      // Still fetch in background/refresh GPS silently
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const newLat = pos.coords.latitude;
+            const newLng = pos.coords.longitude;
+            if (Math.abs(newLat - lat) > 0.01 || Math.abs(newLng - lng) > 0.01) {
+              reverseGeocodeAndFetch(newLat, newLng, month, year);
+            }
+          },
+          null,
+          { timeout: 8000 }
+        );
+      }
+      return;
+    }
+
     // 1. Try Browser GPS Geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
-          fetchTimingsByCoords(lat, lng, month, year, 'GPS Location');
+          reverseGeocodeAndFetch(lat, lng, month, year);
         },
         () => {
           // 2. Fallback to IP-based Auto Detection
           fetchLocationByIP(month, year);
         },
-        { timeout: 5000 }
+        { timeout: 8000 }
       );
     } else {
       fetchLocationByIP(month, year);
     }
+  };
+
+  const reverseGeocodeAndFetch = (lat, lng, month, year) => {
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+      .then(res => res.json())
+      .then(geoJson => {
+        const city = geoJson.address?.city || geoJson.address?.town || geoJson.address?.state || geoJson.address?.country || 'GPS Location';
+        const code = geoJson.address?.country_code?.toUpperCase() || '';
+        if (code) {
+          setCountryCode(code);
+          localStorage.setItem('user_country_code', code);
+        }
+        localStorage.setItem('user_lat', lat);
+        localStorage.setItem('user_lng', lng);
+        localStorage.setItem('user_location_name', city);
+        fetchTimingsByCoords(lat, lng, month, year, city, 'gps', code);
+      })
+      .catch(() => {
+        localStorage.setItem('user_lat', lat);
+        localStorage.setItem('user_lng', lng);
+        localStorage.setItem('user_location_name', 'GPS Location');
+        fetchTimingsByCoords(lat, lng, month, year, 'GPS Location', 'gps', countryCode);
+      });
   };
 
   const fetchLocationByIP = (month, year) => {
@@ -108,7 +160,15 @@ export default function PrayerTimesWidget() {
       .then(ipData => {
         if (ipData && ipData.latitude && ipData.longitude) {
           const cityCountry = `${ipData.city || 'Local City'}, ${ipData.country_name || ''}`;
-          fetchTimingsByCoords(ipData.latitude, ipData.longitude, month, year, cityCountry, 'ip');
+          const code = ipData.country_code || '';
+          if (code) {
+            setCountryCode(code);
+            localStorage.setItem('user_country_code', code);
+          }
+          localStorage.setItem('user_lat', ipData.latitude);
+          localStorage.setItem('user_lng', ipData.longitude);
+          localStorage.setItem('user_location_name', cityCountry);
+          fetchTimingsByCoords(ipData.latitude, ipData.longitude, month, year, cityCountry, 'ip', code);
         } else {
           fetchTimingsByCity('Karachi', 'Pakistan', month, year);
         }
@@ -120,7 +180,15 @@ export default function PrayerTimesWidget() {
           .then(ipData => {
             if (ipData && ipData.lat && ipData.lon) {
               const cityCountry = `${ipData.city || 'Local City'}, ${ipData.country || ''}`;
-              fetchTimingsByCoords(ipData.lat, ipData.lon, month, year, cityCountry, 'ip');
+              const code = ipData.countryCode || '';
+              if (code) {
+                setCountryCode(code);
+                localStorage.setItem('user_country_code', code);
+              }
+              localStorage.setItem('user_lat', ipData.lat);
+              localStorage.setItem('user_lng', ipData.lon);
+              localStorage.setItem('user_location_name', cityCountry);
+              fetchTimingsByCoords(ipData.lat, ipData.lon, month, year, cityCountry, 'ip', code);
             } else {
               fetchTimingsByCity('Karachi', 'Pakistan', month, year);
             }
@@ -129,12 +197,20 @@ export default function PrayerTimesWidget() {
       });
   };
 
-  const fetchTimingsByCoords = (lat, lng, month, year, label = 'Auto-Detected', type = 'gps') => {
+  const fetchTimingsByCoords = (lat, lng, month, year, label = 'Auto-Detected', type = 'gps', code = '') => {
     setLocationName(label);
     setLocationType(type);
 
+    const activeCode = code || countryCode;
+    const { method, hijriAdjustment, countryCode: detectedCode } = getPrayerMethodAndAdjustment(activeCode);
+    
+    if (detectedCode && detectedCode !== countryCode) {
+      setCountryCode(detectedCode);
+      localStorage.setItem('user_country_code', detectedCode);
+    }
+
     // Daily Timings
-    fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=4`)
+    fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}&hijriAdjustment=${hijriAdjustment}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) {
@@ -144,13 +220,23 @@ export default function PrayerTimesWidget() {
           setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
           setGregorianDate(`${g.weekday.en}, ${g.day} ${g.month.en} ${g.year}`);
           calculateNextPrayer(data.data.timings);
+
+          if (onLocationOrDateUpdate) {
+            onLocationOrDateUpdate({
+              hijri: h,
+              lat: lat,
+              lng: lng,
+              countryCode: detectedCode || activeCode,
+              city: label
+            });
+          }
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
 
     // Monthly Calendar
-    fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=4&month=${month}&year=${year}`)
+    fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=${method}&hijriAdjustment=${hijriAdjustment}&month=${month}&year=${year}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) setMonthlyTimings(data.data);
@@ -158,26 +244,64 @@ export default function PrayerTimesWidget() {
       .catch(() => {});
   };
 
-  const fetchTimingsByCity = (city, country, month, year) => {
-    setLocationName(`${city}, ${country}`);
+  const fetchTimingsByCity = (city, country, month, year, forceCode = '') => {
+    setLocationName(`${city}${country ? ', ' + country : ''}`);
     setLocationType('custom');
 
-    fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=4`)
+    const activeCode = forceCode || countryCode;
+    const { method, hijriAdjustment } = getPrayerMethodAndAdjustment(activeCode);
+
+    fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country || '')}&method=${method}&hijriAdjustment=${hijriAdjustment}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) {
+          const tz = data.data.meta.timezone || '';
+          let detectedCode = activeCode;
+          if (tz.includes('Karachi')) detectedCode = 'PK';
+          else if (tz.includes('Kolkata') || tz.includes('Calcutta')) detectedCode = 'IN';
+          else if (tz.includes('Dhaka')) detectedCode = 'BD';
+          else if (tz.includes('Casablanca')) detectedCode = 'MA';
+          else if (tz.includes('London')) detectedCode = 'GB';
+          else if (tz.startsWith('America/')) detectedCode = 'US';
+          else if (tz.includes('Cairo')) detectedCode = 'EG';
+
+          if (detectedCode !== activeCode && !forceCode) {
+            setCountryCode(detectedCode);
+            localStorage.setItem('user_country_code', detectedCode);
+            fetchTimingsByCity(city, country, month, year, detectedCode);
+            return;
+          }
+
           setTimings(data.data.timings);
           const h = data.data.date.hijri;
           const g = data.data.date.gregorian;
           setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
           setGregorianDate(`${g.weekday.en}, ${g.day} ${g.month.en} ${g.year}`);
           calculateNextPrayer(data.data.timings);
+
+          const lat = data.data.meta.latitude;
+          const lng = data.data.meta.longitude;
+          if (lat && lng) {
+            localStorage.setItem('user_lat', lat);
+            localStorage.setItem('user_lng', lng);
+            localStorage.setItem('user_location_name', `${city}${country ? ', ' + country : ''}`);
+          }
+
+          if (onLocationOrDateUpdate) {
+            onLocationOrDateUpdate({
+              hijri: h,
+              lat: lat || null,
+              lng: lng || null,
+              countryCode: detectedCode,
+              city: city
+            });
+          }
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
 
-    fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=4&month=${month}&year=${year}`)
+    fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country || '')}&method=${method}&hijriAdjustment=${hijriAdjustment}&month=${month}&year=${year}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) setMonthlyTimings(data.data);
