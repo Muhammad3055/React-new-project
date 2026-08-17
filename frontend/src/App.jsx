@@ -14,6 +14,7 @@ const FridaySpecialModal = lazy(() => import('./components/FridaySpecialModal'))
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HomeView from './views/HomeView'; // Statically imported for instant initial paint
+import ChatbotSidebar from './components/ChatbotSidebar'; // Always-visible left AI sidebar
 
 // Lazy load remaining sub-views for performance & bundle splitting
 const ReadView = lazy(() => import('./views/ReadView'));
@@ -487,7 +488,11 @@ function MainAppContent() {
 
       {/* Floating Admin Studio Bar (Only visible when logged in as admin) */}
       <AdminFloatingBar user={user} navigateToTab={navigateToTab} />
+
+      {/* Always-visible Left Sidebar AI Chatbot (slides in from left edge) */}
+      <ChatbotSidebar />
     </div>
+
 
 
   );

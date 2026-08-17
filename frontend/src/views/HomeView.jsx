@@ -210,6 +210,25 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
   const slide = CAROUSEL_SLIDES[currentSlide];
 
+  const isFriday = new Date().getDay() === 5;
+  const FRIDAY_INLINE_AYAT = [
+    {
+      surah: "Surah Al-Kahf (18:10)", num: 18,
+      arabic: "\u0625\u0630\u0652 \u0623\u064e\u0648\u0649 \u0627\u0644\u0652\u0641\u0650\u062a\u0652\u064a\u064e\u0629\u064f \u0625\u0650\u0644\u064e\u0649 \u0627\u0644\u0652\u0643\u064e\u0647\u0652\u0641\u0650 \u0641\u064e\u0642\u064e\u0627\u0644\u064f\u0648\u0627 \u0631\u064e\u0628\u064e\u0651\u0646\u064e\u0627 \u0622\u062a\u0650\u0646\u064e\u0627 \u0645\u0650\u0646 \u0644\u064e\u0651\u062f\u064f\u0646\u0643\u064e \u0631\u064e\u062d\u0652\u0645\u064e\u0629\u064b \u0648\u064e\u0647\u064e\u064a\u0651\u0650\u0626\u0652 \u0644\u064e\u0646\u064e\u0627 \u0645\u0650\u0646\u0652 \u0623\u064e\u0645\u0652\u0631\u0650\u0646\u064e\u0627 \u0631\u064e\u0634\u064e\u062f\u064b\u0627",
+      urdu: "\u062c\u0628 \u0627\u0646 \u0646\u0648\u062c\u0648\u0627\u0646\u0648\u06ba \u0646\u06d2 \u063a\u0627\u0631 \u0645\u06cc\u06ba \u067e\u0646\u0627\u06c1 \u0644\u06cc \u062a\u0648 \u06a9\u06c1\u0627: \u0627\u06d2 \u06c1\u0645\u0627\u0631\u06d2 \u0631\u0628! \u06c1\u0645\u06cc\u06ba \u0631\u062d\u0645\u062a \u0639\u0637\u0627 \u0641\u0631\u0645\u0627 \u0627\u0648\u0631 \u06c1\u0645\u0627\u0631\u06d2 \u0645\u0639\u0627\u0645\u0644\u06d2 \u0645\u06cc\u06ba \u06c1\u062f\u0627\u06cc\u062a \u0639\u0637\u0627 \u0641\u0631\u0645\u0627\u06d4",
+      english: "When the youths retreated to the cave, they said: Our Lord, grant us mercy and guide us rightly.",
+      audio: "https://server8.mp3quran.net/afs/018.mp3"
+    },
+    {
+      surah: "Surah Al-Jumu'ah (62:9)", num: 62,
+      arabic: "\u064a\u064e\u0627 \u0623\u064e\u064a\u064f\u0651\u0647\u064e\u0627 \u0627\u0644\u064e\u0651\u0630\u0650\u064a\u0646\u064e \u0622\u0645\u064e\u0646\u064f\u0648\u0627 \u0625\u0650\u0630\u064e\u0627 \u0646\u064f\u0648\u062f\u0650\u064a\u064e \u0644\u0650\u0644\u0635\u064e\u0651\u0644\u064e\u0627\u0629\u0650 \u0645\u0650\u0646 \u064a\u064e\u0648\u0652\u0645\u0650 \u0627\u0644\u0652\u062c\u064f\u0645\u064f\u0639\u064e\u0629\u0650 \u0641\u064e\u0627\u0633\u0652\u0639\u064e\u0648\u0652\u0627 \u0625\u0650\u0644\u064e\u0649\u0670 \u0630\u0650\u0643\u0652\u0631\u0650 \u0627\u0644\u0644\u064e\u0651\u0647\u0650 \u0648\u064e\u0630\u064e\u0631\u064f\u0648\u0627 \u0627\u0644\u0652\u0628\u064e\u064a\u0652\u0639\u064e",
+      urdu: "\u0627\u06d2 \u0627\u06cc\u0645\u0627\u0646 \u0648\u0627\u0644\u0648! \u062c\u0628 \u062c\u0645\u0639\u06c1 \u06a9\u06d2 \u062f\u0646 \u0646\u0645\u0627\u0632 \u06a9\u06d2 \u0644\u06cc\u06d2 \u0627\u0630\u0627\u0646 \u062f\u06cc \u062c\u0627\u0626\u06d2 \u062a\u0648 \u0627\u0644\u0644\u06c1 \u06a9\u06d2 \u0630\u06a9\u0631 \u06a9\u06cc \u0637\u0631\u0641 \u062f\u0648\u0691\u0648 \u0627\u0648\u0631 \u062e\u0631\u06cc\u062f \u0648 \u0641\u0631\u0648\u062e\u062a \u0686\u06be\u0648\u0691 \u062f\u0648\u06d4",
+      english: "O believers! When called to Friday prayer, hurry to the remembrance of Allah and leave all business.",
+      audio: "https://server8.mp3quran.net/afs/062.mp3"
+    },
+  ];
+
+
   return (
     <div style={{ background: '#fdfbf7', minHeight: '100vh', paddingBottom: '3rem' }}>
       {/* Hero Carousel Banner Section */}
@@ -305,7 +324,72 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           </div>
         </div>
 
+        {/* ═══ FRIDAY JUMU'AH SECTION (only on Fridays) ═══ */}
+        {isFriday && (
+          <div style={{
+            marginTop: '1.75rem',
+            borderRadius: '22px',
+            background: 'linear-gradient(135deg, #0d1f14 0%, #0f172a 60%, #1a0a2e 100%)',
+            border: '2px solid rgba(245,158,11,0.5)',
+            padding: '1.5rem',
+            boxShadow: '0 8px 32px rgba(245,158,11,0.1)',
+            overflow: 'hidden',
+            position: 'relative',
+          }}>
+            {/* Glow effect */}
+            <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(245,158,11,0.08)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.1rem' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(245,158,11,0.3), rgba(5,150,105,0.3))', border: '1.5px solid rgba(245,158,11,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>☀️</div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>یوم الجمعہ — Jumu'ah Mubarak!</h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Today is Friday · Recite Surah Al-Kahf &amp; Al-Jumu'ah</p>
+              </div>
+              <span style={{ marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: '10px', background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)', color: '#fcd34d', whiteSpace: 'nowrap' }}>📅 Today is Friday</span>
+            </div>
+
+            {/* Fazeelat banner */}
+            <div style={{ padding: '0.8rem 1rem', borderRadius: '14px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+              <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>✨</span>
+              <div>
+                <p style={{ margin: '0 0 0.25rem', fontSize: '0.88rem', color: '#fcd34d', fontWeight: 700, fontFamily: 'serif', direction: 'rtl', textAlign: 'right' }}>
+                  مَنْ قَرَأَ سُورَةَ الْكَهْفِ يَوْمَ الْجُمُعَةِ، أَضَاءَ لَهُ مِنَ النُّورِ مَا بَيْنَ الْجُمُعَتَيْنِ
+                </p>
+                <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
+                  &quot;Whoever reads Surah Al-Kahf on Friday, light will shine for him until the next Friday.&quot; — <em style={{ color: '#94a3b8' }}>Sunan Al-Bayhaqi</em>
+                </p>
+              </div>
+            </div>
+
+            {/* Ayat cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+              {FRIDAY_INLINE_AYAT.map((ayah, idx) => (
+                <div key={idx} style={{ padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.15)', padding: '2px 8px', borderRadius: '8px' }}>📖 {ayah.surah}</span>
+                    <button
+                      onClick={() => playTrack && playTrack(ayah.audio, ayah.surah, 'Mishary Alafasy')}
+                      style={{ background: 'rgba(5,150,105,0.2)', border: '1px solid rgba(5,150,105,0.4)', color: '#34d399', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}
+                      title="Play audio"
+                    >▶</button>
+                  </div>
+                  <p style={{ margin: '0 0 0.5rem', textAlign: 'right', direction: 'rtl', fontSize: '1.1rem', lineHeight: 2, color: '#fde68a', fontFamily: 'serif' }}>{ayah.arabic}</p>
+                  <p style={{ margin: '0 0 0.3rem', fontSize: '0.82rem', color: '#e2e8f0', direction: 'rtl', textAlign: 'right', lineHeight: 1.7 }}>{ayah.urdu}</p>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.5 }}>{ayah.english}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Salawat reminder */}
+            <p style={{ margin: '1rem 0 0', textAlign: 'center', fontSize: '0.8rem', color: '#fcd34d' }}>
+              🤲 Also send abundant Salawat on the Prophet ﷺ today · <em style={{ color: '#94a3b8' }}>"The best day is Friday" — Sunan Abu Dawood</em>
+            </p>
+          </div>
+        )}
+
         {/* Interactive Islamic Tools & Services Section */}
+
         <div style={{ marginTop: '1.75rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>

@@ -1,3 +1,4 @@
+import base64
 import json
 import re
 import urllib.request
@@ -1155,3 +1156,175 @@ def api_hifz_tracker(request):
             'hifz_list': list(items)
         }
     )
+
+
+# ============================================================
+# FILE ANALYSIS ENDPOINT  (/api/ai-assistant/file/)
+# Accepts: base64-encoded image or PDF
+# Does:   translate, check, verify Hadith authenticity
+# ============================================================
+
+@csrf_exempt
+def ai_assistant_file_api(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST request required'}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except Exception:
+        return JsonResponse({'error': 'Invalid JSON body'}, status=400)
+
+    user_prompt = body.get('prompt', '').strip()
+    file_data_url = body.get('file_data', '')   # data:image/png;base64,xxxxx  OR  data:application/pdf;base64,xxxxx
+    file_name = body.get('file_name', 'uploaded_file')
+    file_type = body.get('file_type', 'application/octet-stream')
+    req_lang = body.get('language', '').strip()
+
+    if not file_data_url:
+        return JsonResponse({'error': 'No file data provided'}, status=400)
+
+    # Strip the data-URL prefix to get raw base64
+    if ',' in file_data_url:
+        raw_b64 = file_data_url.split(',', 1)[1]
+    else:
+        raw_b64 = file_data_url
+
+    # Validate size (30 MB max)
+    try:
+        decoded_bytes = base64.b64decode(raw_b64)
+    except Exception:
+        return JsonResponse({'error': 'Invalid base64 file data'}, status=400)
+
+    MAX_BYTES = 30 * 1024 * 1024  # 30 MB
+    if len(decoded_bytes) > MAX_BYTES:
+        return JsonResponse({'error': f'File too large. Max 30MB allowed. Got {len(decoded_bytes)/(1024*1024):.1f}MB'}, status=413)
+
+    # Build the AI instruction
+    is_pdf = 'pdf' in file_type.lower()
+    is_image = file_type.startswith('image/')
+
+    if not user_prompt:
+        if is_image:
+            user_prompt = (
+                'Please analyze this image carefully. '
+                'If it contains Arabic text, provide a full translation into English and Urdu. '
+                'If it contains any Hadith, verify its authenticity (Sahih, Hasan, Daif, Mawdu) '
+                'with chain of narration (isnad) information and book reference. '
+                'If it contains Quranic Ayat, provide Tafsir. '
+                'Summarize all findings clearly.'
+            )
+        else:
+            user_prompt = (
+                'Please analyze this PDF document carefully. '
+                'Extract the main text content and: '
+                '1) Translate any Arabic text into English and Urdu. '
+                '2) Identify and verify any Hadith for authenticity (Sahih, Hasan, Daif, Mawdu). '
+                '3) Provide the book reference and narrator chain for each Hadith. '
+                '4) Summarize the document content. '
+                'Format your response clearly with headings.'
+            )
+
+    lang_instruction = ''
+    if req_lang == 'ur':
+        lang_instruction = ' Respond primarily in Urdu (اردو). '
+    elif req_lang == 'ar':
+        lang_instruction = ' Respond primarily in Arabic. '
+    else:
+        lang_instruction = ' Respond in English with Urdu translation where relevant. '
+
+    full_instruction = user_prompt + lang_instruction
+
+    # ── Try Gemini Vision (best for image/PDF analysis) ──
+    gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
+    if gemini_api_key and genai:
+        try:
+            genai.configure(api_key=gemini_api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+
+            mime_type = file_type if file_type else 'application/octet-stream'
+            # Gemini accepts inline image data directly
+            import google.generativeai as genai_inner
+            file_part = {
+                'mime_type': mime_type,
+                'data': raw_b64,
+            }
+
+            response = model.generate_content([
+                full_instruction,
+                genai_inner.Part.from_bytes(data=decoded_bytes, mime_type=mime_type)
+            ])
+
+            answer_text = response.text.strip() if response and response.text else None
+
+            if answer_text:
+                return JsonResponse({
+                    'answer': answer_text,
+                    'language': req_lang or 'en',
+                    'source': 'Gemini 1.5 Flash Vision',
+                    'file_analysis': f'Analyzed: {file_name} ({file_type})',
+                    'quran': [],
+                    'hadith': [],
+                    'suggested_questions': [
+                        'Are there any other Hadith related to this topic?',
+                        'What does the Quran say about this subject?',
+                    ]
+                })
+        except Exception as e:
+            print(f'Gemini Vision Error: {e}')
+
+    # ── Fallback: GPT-4o Vision ──
+    openai_api_key = getattr(settings, 'OPENAI_API_KEY', '')
+    if openai_api_key and OpenAI and is_image:
+        try:
+            client = OpenAI(api_key=openai_api_key)
+            completion = client.chat.completions.create(
+                model='gpt-4o',
+                max_tokens=2000,
+                messages=[{
+                    'role': 'user',
+                    'content': [
+                        {'type': 'text', 'text': full_instruction},
+                        {'type': 'image_url', 'image_url': {'url': file_data_url, 'detail': 'high'}}
+                    ]
+                }]
+            )
+            answer_text = completion.choices[0].message.content
+            if answer_text:
+                return JsonResponse({
+                    'answer': answer_text,
+                    'language': req_lang or 'en',
+                    'source': 'GPT-4o Vision',
+                    'file_analysis': f'Analyzed: {file_name}',
+                    'quran': [], 'hadith': [],
+                    'suggested_questions': []
+                })
+        except Exception as e:
+            print(f'GPT-4o Vision Error: {e}')
+
+    # ── Fallback: Groq (text only — extract text from prompt context) ──
+    groq_api_key = getattr(settings, 'GROQ_API_KEY', '')
+    if groq_api_key:
+        try:
+            client = Groq(api_key=groq_api_key)
+            note = '[Note: File binary content could not be read by this model. Responding based on user question only.]'
+            chat = client.chat.completions.create(
+                model='llama-3.3-70b-versatile',
+                temperature=0.1,
+                max_tokens=1500,
+                messages=[
+                    {'role': 'system', 'content': 'You are an Islamic scholar AI. Help with Quranic translation, Hadith verification, and Islamic knowledge.'},
+                    {'role': 'user', 'content': f'{note}\n\n{full_instruction}'}
+                ]
+            )
+            answer = chat.choices[0].message.content
+            return JsonResponse({
+                'answer': answer,
+                'language': req_lang or 'en',
+                'source': 'Groq Llama',
+                'file_analysis': f'Text analysis only (vision model unavailable) for: {file_name}',
+                'quran': [], 'hadith': [], 'suggested_questions': []
+            })
+        except Exception as e:
+            print(f'Groq Error: {e}')
+
+    return JsonResponse({'error': 'All AI models failed to process the file.'}, status=500)

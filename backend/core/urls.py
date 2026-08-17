@@ -16,6 +16,7 @@ urlpatterns = [
     
     # AI Assistant & Special Features API
     path('api/ai-assistant/', ai_views.ai_assistant_api, name='ai_assistant_api'),
+    path('api/ai-assistant/file/', ai_views.ai_assistant_file_api, name='ai_assistant_file_api'),
     path('api/playlists/', ai_views.api_playlists, name='api_playlists'),
     path('api/hifz/', ai_views.api_hifz_tracker, name='api_hifz_tracker'),
 
