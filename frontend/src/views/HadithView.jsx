@@ -271,9 +271,11 @@ export default function HadithView({ openReportModal, user }) {
           ))}
 
           {hadiths.length === 0 && (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: '#ffffff', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
               <i className="fas fa-info-circle fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
-              <p>No Hadiths found matching your selected criteria.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
+                Authentic Hadith text collections are currently being compiled and verified, and will be uploaded soon.
+              </p>
             </div>
           )}
         </div>

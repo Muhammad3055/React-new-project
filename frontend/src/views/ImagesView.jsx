@@ -143,9 +143,9 @@ export default function ImagesView() {
             borderRadius: '20px', border: '1px dashed #cbd5e1'
           }}>
             <ImageIcon size={48} style={{ color: '#cbd5e1', marginBottom: '1rem' }} />
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.15rem', color: '#1e293b' }}>No Images Found</h3>
-            <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
-              We couldn't find any images matching your filters. Try clearing search or category filters.
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.15rem', color: '#1e293b' }}>Islamic Images &amp; Calligraphy</h3>
+            <p style={{ margin: 0, color: '#64748b', fontSize: '0.92rem', fontWeight: 600 }}>
+              Beautiful Islamic wallpapers, quotes, and calligraphies are being curated, and will be uploaded soon.
             </p>
           </div>
         ) : (
