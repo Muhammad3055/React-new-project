@@ -31,6 +31,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
+    { label: t('islamicImages'), icon: 'fas fa-image', action: () => { navigateToTab('images'); setShowExtrasMenu(false); } },
     { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
     { label: t('islamicCalendar'), icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
     { label: '🌟 Friday Jumu\'ah Special', icon: 'fas fa-sun', action: () => { if (openFriday) openFriday(); setShowExtrasMenu(false); } },
@@ -44,7 +46,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: t('duas'), icon: 'fas fa-hands', action: () => { navigateToTab('duas'); setShowExtrasMenu(false); } },
     { label: t('hadith'), icon: 'fas fa-scroll', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
     { label: t('tafseer'), icon: 'fas fa-bookmark', action: () => { navigateToTab('tafseer'); setShowExtrasMenu(false); } },
-    { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
     { label: t('aboutUs'), icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
     { label: t('contact'), icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
   ];

@@ -467,7 +467,7 @@ export default function UploadView({ user }) {
         {activeTab === 'book' && (
           <form onSubmit={handleBookSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3><i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Add New PDF, Word (.docx), or PPT (.pptx) Document</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div>
                 <label className="form-label">Document Title *</label>
                 <input type="text" className="form-input" required value={bookData.title} onChange={e => setBookData({ ...bookData, title: e.target.value })} placeholder="e.g. Tafsir Ibn Kathir / Tajweed Guide" />
@@ -475,6 +475,16 @@ export default function UploadView({ user }) {
               <div>
                 <label className="form-label">Author / Scholar *</label>
                 <input type="text" className="form-input" required value={bookData.author} onChange={e => setBookData({ ...bookData, author: e.target.value })} placeholder="e.g. Hafiz Ibn Kathir" />
+              </div>
+              <div>
+                <label className="form-label">File Type *</label>
+                <select className="form-select" value={bookData.file_type} onChange={e => setBookData({ ...bookData, file_type: e.target.value })}>
+                  <option value="pdf">PDF Document</option>
+                  <option value="image">Image Resource (Calligraphy/Wallpaper)</option>
+                  <option value="doc">Word Document (.docx)</option>
+                  <option value="ppt">PowerPoint (.pptx)</option>
+                  <option value="book">Printed Book / E-Book</option>
+                </select>
               </div>
               <div>
                 <label className="form-label">Language *</label>

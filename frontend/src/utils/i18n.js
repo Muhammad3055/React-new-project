@@ -83,6 +83,7 @@ export const translations = {
 
     // Video Lectures, Calendar, Hifz, Navigation & Buttons
     videoLectures: "Video Lectures",
+    islamicImages: "Islamic Images",
     islamicCalendar: "Islamic Calendar",
     hifzTracker: "Hifz Memorization",
     aiChatbot: "Quran AI Assistant",
@@ -377,6 +378,7 @@ export const translations = {
 
     // Video Lectures, Calendar, Hifz, Navigation & Buttons
     videoLectures: "ویڈیو بیانات",
+    islamicImages: "اسلامی تصاویر",
     islamicCalendar: "اسلامی کیلنڈر",
     hifzTracker: "حفظ قرآن ٹریکر",
     aiChatbot: "قرآن اے آئی اسسٹنٹ",
@@ -662,6 +664,7 @@ export const translations = {
 
     // Video Lectures, Calendar, Hifz, Navigation & Buttons
     videoLectures: "ویڈیو تقریر آک",
+    islamicImages: "اسلامی تصاویر",
     islamicCalendar: "اسلامی کیلنڈر",
     hifzTracker: "حفظ قرآن ٹریکر",
     aiChatbot: "قرآن اے آئی ہیلپر",
@@ -947,6 +950,7 @@ export const translations = {
 
     // Video Lectures, Calendar, Hifz, Navigation & Buttons
     videoLectures: "محاضرات فيديو",
+    islamicImages: "صور إسلامية",
     islamicCalendar: "التقويم الهجري",
     hifzTracker: "متابع حفظ القرآن",
     aiChatbot: "مساعد الذكاء الاصطناعي",

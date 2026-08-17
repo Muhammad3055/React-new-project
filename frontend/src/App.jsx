@@ -21,6 +21,7 @@ const ReadView = lazy(() => import('./views/ReadView'));
 const QuranView = lazy(() => import('./views/QuranView'));
 const QarisView = lazy(() => import('./views/QarisView'));
 const BooksView = lazy(() => import('./views/BooksView'));
+const ImagesView = lazy(() => import('./views/ImagesView'));
 const VideosView = lazy(() => import('./views/VideosView'));
 const TafseerView = lazy(() => import('./views/TafseerView'));
 const HadithView = lazy(() => import('./views/HadithView'));
@@ -58,6 +59,7 @@ function MainAppContent() {
     quran: '/quran',
     qaris: '/qaris',
     books: '/books',
+    images: '/images',
     videos: '/videos',
     tafseer: '/tafseer',
 
@@ -154,6 +156,11 @@ function MainAppContent() {
         title: 'Islamic Digital Library - Free PDF Books & Documents | Maktaba tul Muslim',
         desc: 'Browse and download authentic Islamic PDF books, Hadith collections (Bukhari, Muslim, Tirmidhi, Abu Dawood), Tafseer commentary, Seerah of Prophet Muhammad (SAW), and Brahui/Urdu Islamic literature.',
         keywords: 'Islamic Books PDF, Sahih Bukhari PDF, Sahih Muslim PDF, Tafseer Ibn Kathir PDF, Free Islamic PDF Books, Urdu Islamic Books, Brahui Islamic Literature'
+      },
+      images: {
+        title: 'Islamic Visual Gallery - Free Calligraphy & Wallpapers | Maktaba tul Muslim',
+        desc: 'Download authentic Islamic images, beautiful Arabic calligraphy wallpapers, Quran verses quotes, and free educational graphics resources.',
+        keywords: 'Islamic Images, Arabic Calligraphy Wallpaper, Quran Quotes Images, Free Islamic Wallpapers, Islamic Graphics'
       },
       tafseer: {
         title: 'Authentic Quran Tafseer Commentary & Explanation | Maktaba tul Muslim',
@@ -350,6 +357,10 @@ function MainAppContent() {
 
           {activeTab === 'books' && (
             <BooksView openReportModal={openReportModal} user={user} />
+          )}
+
+          {activeTab === 'images' && (
+            <ImagesView />
           )}
 
           {activeTab === 'videos' && (
