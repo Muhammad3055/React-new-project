@@ -10,6 +10,7 @@ const AIChatbotModal = lazy(() => import('./components/AIChatbotModal'));
 const IslamicCalendarModal = lazy(() => import('./components/IslamicCalendarModal'));
 const MemorizationTrackerModal = lazy(() => import('./components/MemorizationTrackerModal'));
 const AITajweedModal = lazy(() => import('./components/AITajweedModal'));
+const FridaySpecialModal = lazy(() => import('./components/FridaySpecialModal'));
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HomeView from './views/HomeView'; // Statically imported for instant initial paint
@@ -93,6 +94,7 @@ function MainAppContent() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHifzOpen, setIsHifzOpen] = useState(false);
   const [isTajweedOpen, setIsTajweedOpen] = useState(false);
+  const [isFridayOpen, setIsFridayOpen] = useState(false);
 
   // Register PWA Service Worker & sync browser URL
   useEffect(() => {
@@ -107,6 +109,21 @@ function MainAppContent() {
     handlePopState();
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Auto-show Friday Special modal once per session on Fridays
+  useEffect(() => {
+    const today = new Date();
+    if (today.getDay() === 5) { // 5 = Friday
+      const key = 'friday_modal_shown_' + today.toDateString();
+      if (!sessionStorage.getItem(key)) {
+        const timer = setTimeout(() => {
+          setIsFridayOpen(true);
+          sessionStorage.setItem(key, '1');
+        }, 1800);
+        return () => clearTimeout(timer);
+      }
+    }
   }, []);
 
   // Dynamic SEO Page Title & Meta Tags Handler for All Pages
@@ -289,6 +306,7 @@ function MainAppContent() {
         openHifz={() => setIsHifzOpen(true)}
         openTajweed={() => setIsTajweedOpen(true)}
         openAIChat={() => setIsAIChatOpen(true)}
+        openFriday={() => setIsFridayOpen(true)}
       />
 
       <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
@@ -427,6 +445,7 @@ function MainAppContent() {
         {isCalendarOpen && <IslamicCalendarModal isOpen={isCalendarOpen} onClose={() => setIsCalendarOpen(false)} />}
         {isHifzOpen && <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />}
         {isTajweedOpen && <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />}
+        {isFridayOpen && <FridaySpecialModal isOpen={isFridayOpen} onClose={() => setIsFridayOpen(false)} playTrack={playTrack} />}
       </Suspense>
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}

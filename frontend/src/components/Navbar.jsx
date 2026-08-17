@@ -4,7 +4,7 @@ import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
 import UserProfileModal from './UserProfileModal';
 
-export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat }) {
+export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday }) {
   const { lang, setLang, t } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,6 +33,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const extraMenuItems = [
     { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
     { label: t('islamicCalendar'), icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
+    { label: '🌟 Friday Jumu\'ah Special', icon: 'fas fa-sun', action: () => { if (openFriday) openFriday(); setShowExtrasMenu(false); } },
     { label: t('hifzTracker'), icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
 
     { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },
