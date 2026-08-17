@@ -451,7 +451,9 @@ def api_hadith_list(request):
     grade_filter = request.GET.get('grade', '').strip()
     page_number = request.GET.get('page', 1)
     
-    hadiths = Hadith.objects.all()
+    hadiths = Hadith.objects.exclude(
+        Q(grade__icontains='da') | Q(grade__icontains='weak')
+    )
     if query:
         hadiths = hadiths.filter(
             Q(translation__icontains=query) | Q(arabic_text__icontains=query) |

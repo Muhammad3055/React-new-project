@@ -484,7 +484,6 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                       <option value="Sahih">Sahih (صحيح)</option>
                       <option value="Hasan">Hasan (حسن)</option>
                       <option value="Muttafaq Alayh">Muttafaq Alayh (متفق عليه)</option>
-                      <option value="Da'if">Da'if (ضعيف)</option>
                     </select>
                   </div>
                 </div>

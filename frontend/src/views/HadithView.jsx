@@ -112,13 +112,6 @@ export default function HadithView({ openReportModal, user }) {
         </span>
       );
     }
-    if (g.includes('da') || g.includes('weak')) {
-      return (
-        <span style={{ fontSize: '0.78rem', color: '#b91c1c', fontWeight: 700, background: '#fee2e2', border: '1px solid #fca5a5', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-          <i className="fas fa-exclamation-triangle"></i> Da'if (Weak)
-        </span>
-      );
-    }
     return (
       <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(245, 158, 11, 0.15)', padding: '3px 10px', borderRadius: '15px' }}>
         {grade}
@@ -130,7 +123,6 @@ export default function HadithView({ openReportModal, user }) {
     { value: '', label: 'All Grades', icon: 'fas fa-layer-group' },
     { value: 'Sahih', label: 'Sahih (Authentic)', icon: 'fas fa-check-circle', color: '#15803d' },
     { value: 'Hasan', label: 'Hasan (Good)', icon: 'fas fa-star', color: '#0369a1' },
-    { value: 'Da\'if', label: 'Da\'if (Weak)', icon: 'fas fa-exclamation-triangle', color: '#b91c1c' },
   ];
 
   return (
@@ -140,7 +132,7 @@ export default function HadithView({ openReportModal, user }) {
           <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Hadith Collections & Authenticity Grades
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem', maxWidth: '650px', marginInline: 'auto' }}>
-          Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings: <strong>Sahih</strong> (Authentic), <strong>Hasan</strong> (Good), and <strong>Da'if</strong> (Weak).
+          Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings: <strong>Sahih</strong> (Authentic) and <strong>Hasan</strong> (Good).
         </p>
       </div>
 
