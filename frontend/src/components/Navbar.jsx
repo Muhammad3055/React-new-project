@@ -296,8 +296,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
             {/* Desktop Extras Menu Toggle */}
             <div className="desktop-extras-menu">
-
-
               <button
                 className={`extras-menu-toggle ${showExtrasMenu ? 'active' : ''}`}
                 onClick={(e) => { e.stopPropagation(); setShowExtrasMenu(!showExtrasMenu); }}
@@ -306,90 +304,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 <i className="fas fa-th-large"></i>
                 <span className="more-text">{t('more')}</span>
               </button>
-              {showExtrasMenu && (
-                <>
-                  <div className="desktop-extras-overlay" onClick={() => setShowExtrasMenu(false)} />
-                  <aside className="desktop-extras-sidepanel" onClick={(e) => e.stopPropagation()}>
-                    <div className="desktop-extras-header">
-                      <div>
-                        <p className="extras-title">{t('exploreMore')}</p>
-                        <p className="extras-subtitle">{t('subExploreSubtitle')}</p>
-                      </div>
-                      <button className="extras-close-btn" onClick={() => setShowExtrasMenu(false)} aria-label="Close menu">
-                        <i className="fas fa-times"></i>
-                      </button>
-                    </div>
-
-                    {/* Language & Theme selectors in Sidebar for smaller screens */}
-                    <div className="extras-sidebar-selectors" style={{ display: 'none', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border-color)' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                        <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <i className="fas fa-globe"></i> {t('language', 'Language')}
-                        </span>
-                        <select
-                          value={lang}
-                          onChange={(e) => setLang(e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            borderRadius: '10px',
-                            border: '1.5px solid var(--border-color)',
-                            background: 'var(--bg-card)',
-                            color: 'var(--text-main)',
-                            fontWeight: 700,
-                            fontSize: '0.85rem',
-                            outline: 'none',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <option value="en">🇬🇧 English</option>
-                          <option value="ur">🇵🇰 اردو</option>
-                          <option value="br">📜 براہموئی</option>
-                          <option value="ar">🇸🇦 العربية</option>
-                        </select>
-                      </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                        <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <i className="fas fa-palette"></i> {t('theme', 'Website Theme')}
-                        </span>
-                        <select
-                          value={globalTheme}
-                          onChange={(e) => setGlobalTheme(e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            borderRadius: '10px',
-                            border: '1.5px solid var(--border-color)',
-                            background: 'var(--bg-card)',
-                            color: 'var(--text-main)',
-                            fontWeight: 700,
-                            fontSize: '0.85rem',
-                            outline: 'none',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <option value="light">☀️ Light</option>
-                          <option value="sepia">📜 Sepia</option>
-                          <option value="black">🌙 Black</option>
-                          <option value="auto">🌓 Auto</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="desktop-extras-body">
-                      {extraMenuItems.map((item) => (
-                        <button key={item.label} className="desktop-extras-card" onClick={item.action}>
-                          <div className="desktop-extras-card-icon"><i className={item.icon}></i></div>
-                          <div>
-                            <p>{item.label}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </aside>
-                </>
-              )}
             </div>
 
             {/* Persistent Header Auth Area */}
@@ -679,6 +593,92 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           />
         )}
       </header>
+
+      {/* Sidebar Extras Panel rendered outside of header/navbar to prevent overflow clipping */}
+      {showExtrasMenu && (
+        <>
+          <div className="desktop-extras-overlay" onClick={() => setShowExtrasMenu(false)} />
+          <aside className="desktop-extras-sidepanel" onClick={(e) => e.stopPropagation()}>
+            <div className="desktop-extras-header">
+              <div>
+                <p className="extras-title">{t('exploreMore')}</p>
+                <p className="extras-subtitle">{t('subExploreSubtitle')}</p>
+              </div>
+              <button className="extras-close-btn" onClick={() => setShowExtrasMenu(false)} aria-label="Close menu">
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Language & Theme selectors in Sidebar for smaller screens */}
+            <div className="extras-sidebar-selectors" style={{ display: 'none', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <i className="fas fa-globe"></i> {t('language', 'Language')}
+                </span>
+                <select
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '10px',
+                    border: '1.5px solid var(--border-color)',
+                    background: 'var(--bg-card)',
+                    color: 'var(--text-main)',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="en">🇬🇧 English</option>
+                  <option value="ur">🇵🇰 اردو</option>
+                  <option value="br">📜 براہموئی</option>
+                  <option value="ar">🇸🇦 العربية</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <i className="fas fa-palette"></i> {t('theme', 'Website Theme')}
+                </span>
+                <select
+                  value={globalTheme}
+                  onChange={(e) => setGlobalTheme(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '10px',
+                    border: '1.5px solid var(--border-color)',
+                    background: 'var(--bg-card)',
+                    color: 'var(--text-main)',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="light">☀️ Light</option>
+                  <option value="sepia">📜 Sepia</option>
+                  <option value="black">🌙 Black</option>
+                  <option value="auto">🌓 Auto</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="desktop-extras-body">
+              {extraMenuItems.map((item) => (
+                <button key={item.label} className="desktop-extras-card" onClick={item.action}>
+                  <div className="desktop-extras-card-icon"><i className={item.icon}></i></div>
+                  <div>
+                    <p>{item.label}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </aside>
+        </>
+      )}
     </>
   );
 }
