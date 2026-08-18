@@ -31,6 +31,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: '🧠 Daily Islamic Quiz', icon: 'fas fa-brain', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
+    { label: '📜 Seerah Timeline', icon: 'fas fa-scroll', action: () => { navigateToTab('seerah'); setShowExtrasMenu(false); } },
     { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
     { label: t('islamicImages'), icon: 'fas fa-image', action: () => { navigateToTab('images'); setShowExtrasMenu(false); } },
     { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
@@ -119,8 +121,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
-    { id: 'quiz', label: 'Daily Quiz', icon: 'fas fa-brain' },
-    { id: 'seerah', label: 'Seerah Timeline', icon: 'fas fa-scroll' },
   ];
 
 
