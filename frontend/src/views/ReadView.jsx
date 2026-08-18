@@ -112,22 +112,19 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   // Selected Qari for MP3 Tilawat
   const [selectedQari, setSelectedQari] = useState('ar.alafasy');
 
-  // Active Translations (English, Urdu, Brahui)
+  // Active Translations (English, Urdu)
   const [translations, setTranslations] = useState(() => ({
     en: lang === 'en',
-    ur: lang === 'ur' || lang === 'br',
-    br: lang === 'br'
+    ur: lang === 'ur' || lang === 'br'
   }));
 
   useEffect(() => {
-    if (lang === 'ur') {
-      setTranslations({ en: false, ur: true, br: false });
-    } else if (lang === 'br') {
-      setTranslations({ en: false, ur: true, br: true });
+    if (lang === 'ur' || lang === 'br') {
+      setTranslations({ en: false, ur: true });
     } else if (lang === 'ar') {
-      setTranslations({ en: false, ur: false, br: false });
+      setTranslations({ en: false, ur: false });
     } else {
-      setTranslations({ en: true, ur: false, br: false });
+      setTranslations({ en: true, ur: false });
     }
   }, [lang]);
 
@@ -752,7 +749,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                 <i className="fas fa-clock"></i> Reading: {Math.floor(readingSeconds / 60)}m {readingSeconds % 60}s
               </div>
 
-              {/* Translation Languages Selection (English, Urdu, Brahui) */}
+              {/* Translation Languages Selection (English, Urdu) */}
               {readMode === 'with_translation' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', flexWrap: 'wrap', background: '#f8fafc', padding: '4px 10px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-dark)' }}>Translations:</span>
@@ -761,9 +758,6 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                   </label>
                   <label style={{ cursor: 'pointer', fontWeight: 600, color: '#047857' }}>
                     <input type="checkbox" checked={translations.ur} onChange={(e) => setTranslations({ ...translations, ur: e.target.checked })} /> Urdu
-                  </label>
-                  <label style={{ cursor: 'pointer', fontWeight: 700, color: '#b45309' }}>
-                    <input type="checkbox" checked={translations.br} onChange={(e) => setTranslations({ ...translations, br: e.target.checked })} /> Brahui (براہوئی)
                   </label>
                 </div>
               )}
@@ -882,6 +876,8 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                   <p className="arabic-font" style={{ fontSize: '2.2rem', color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-emerald)', fontWeight: 700 }}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
                 </div>
               )}
+
+
 
               <div className="card" style={{ background: readerBgColor, color: arabicTextColor, border: '1px solid #cbd5e1', transition: 'all 0.3s ease' }}>
                 {loading ? (
@@ -1020,18 +1016,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                               </p>
                             )}
 
-                            {/* Brahui Translation */}
-                            {translations.br && (
-                              <p className="translation-item arabic-font" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', color: translationTextColor }}>
-                                <span className="lang-tag" style={{ background: '#b45309', color: '#fff', fontSize: '0.7rem' }}>BR</span>
-                                <span style={{ flex: 1, color: translationTextColor }}>{brTranslationText}</span>
-                                {translationSubMode === 'audio_and_text' && (
-                                  <button className="verse-btn" onClick={() => speakTranslationText(brTranslationText, 'ur-PK')} title="Listen to Brahui voice">
-                                    <i className="fas fa-volume-up"></i>
-                                  </button>
-                                )}
-                              </p>
-                            )}
+
                           </div>
                         )}
                       </div>

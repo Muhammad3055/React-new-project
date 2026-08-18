@@ -134,12 +134,37 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
       )}
 
+      {/* Top Header Announcement: Under Development */}
+      <div className="under-dev-header-banner" style={{
+        background: 'linear-gradient(90deg, #b45309 0%, #d97706 50%, #b45309 100%)',
+        color: '#ffffff',
+        fontSize: '0.78rem',
+        fontWeight: 700,
+        padding: '5px 12px',
+        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.5rem',
+        boxShadow: '0 2px 8px rgba(180,83,9,0.3)',
+        zIndex: 10000,
+        position: 'relative',
+        letterSpacing: '0.2px'
+      }}>
+        <i className="fas fa-tools" style={{ fontSize: '0.82rem' }}></i>
+        <span>Website Under Development — Maktaba tul Muslim (مكتبة المسلم — زیرِ تعمیر)</span>
+        <span style={{ background: 'rgba(255,255,255,0.22)', padding: '1px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800 }}>In Development</span>
+      </div>
+
       <header className="navbar">
         <div className="nav-container">
           <div className="navbar-left-group">
             <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}>
               <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
               <span className="brand-text">{t('brandName')}</span>
+              <span className="under-dev-badge" style={{ background: 'rgba(245, 158, 11, 0.18)', color: 'var(--accent-gold)', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800, whiteSpace: 'nowrap' }}>
+                Under Development
+              </span>
             </div>
 
 
@@ -163,7 +188,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           <div className="navbar-right-group">
             {/* Search */}
             <div className="search-wrapper">
-              <i className="fas fa-search search-icon"></i>
+              <img src="/favicon.svg" alt="Search Icon" className="search-icon" style={{ width: '16px', height: '16px', borderRadius: '4px', objectFit: 'contain', flexShrink: 0 }} />
               <input
                 type="text"
                 className="search-input"

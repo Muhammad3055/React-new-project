@@ -4,13 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-  <link rel="icon" type="image/png" sizes="48x48" href="{% static 'favicon-48x48.png' %}">
-  <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon-96x96.png' %}">
-  <link rel="icon" type="image/png" sizes="192x192" href="{% static 'pwa-192x192.png' %}">
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
-  <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+  <link rel="alternate icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="apple-touch-icon" href="{% static 'favicon.svg' %}">
+  <link rel="shortcut icon" href="{% static 'favicon.svg' %}">
   <title>{% block title %}Quran Portal - Audios, Videos, Books, Tafseer & Hadith{% endblock %}</title>
   <meta name="description" content="Explore Quran recitations (MP3), Islamic videos, books & PDFs, Tafseer, and Hadith collections in a beautiful modern portal.">
   
@@ -25,12 +22,12 @@
   <header class="navbar">
     <div class="nav-container">
       <a href="{% url 'home' %}" class="brand-logo">
-        <i class="fas fa-quran"></i>
+        <img src="{% static 'favicon.svg' %}" alt="Maktaba Logo" style="width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;" />
         <span>Quran <span class="gold-text">Portal</span></span>
       </a>
 
       <div class="search-wrapper">
-        <i class="fas fa-search search-icon"></i>
+        <img src="{% static 'favicon.svg' %}" alt="Search Icon" class="search-icon" style="width: 16px; height: 16px; border-radius: 4px; object-fit: contain; flex-shrink: 0;" />
         <input type="text" id="global-search-input" class="search-input" placeholder="Search Quran, Lectures, Books..." data-i18n-placeholder="search_placeholder" autocomplete="off">
         <div id="global-search-results" class="search-results-dropdown"></div>
       </div>
@@ -142,7 +139,7 @@
         <!-- Col 1: Brand & About -->
         <div class="footer-col brand-col">
           <a href="{% url 'home' %}" class="brand-logo" style="margin-bottom: 0.75rem;">
-            <i class="fas fa-quran"></i>
+            <img src="{% static 'favicon.svg' %}" alt="Maktaba Logo" style="width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;" />
             <span>Quran <span class="gold-text">Portal</span></span>
           </a>
           <p class="footer-desc">Your modern portal for reading, listening, and learning the Holy Quran with recitations, authentic Tafseer commentary, and Hadith collections.</p>

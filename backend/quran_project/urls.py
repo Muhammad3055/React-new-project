@@ -42,6 +42,12 @@ urlpatterns = [
     path('favicon.ico', lambda req: redirect('/static/favicon.svg', permanent=True)),
     path('favicon.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
     path('favicon.svg', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('logo.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('apple-touch-icon.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon-16x16.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon-32x32.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon-48x48.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon-96x96.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
     path('admin', lambda req: redirect('/admin/', permanent=True)),
     path('admin/', admin.site.urls),
     

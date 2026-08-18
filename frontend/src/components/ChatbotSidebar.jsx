@@ -309,9 +309,7 @@ export default function ChatbotSidebar() {
         {/* Header */}
         <div style={{ padding: '16px', background: '#ffffff', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#0066FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-              <Bot size={24} />
-            </div>
+            <img src="/favicon.svg" alt="Maktaba AI Logo" style={{ width: '36px', height: '36px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(245,158,11,0.4)', flexShrink: 0 }} />
             <div>
               <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#111827' }}>Maktaba tul Muslim AI</h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#059669' }}>

@@ -267,13 +267,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '40px', height: '40px', borderRadius: '12px',
-            background: '#0066FF', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', color: '#fff'
-          }}>
-            <Bot size={24} />
-          </div>
+          <img src="/favicon.svg" alt="Maktaba AI Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(245,158,11,0.4)', flexShrink: 0 }} />
           <div>
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#111827' }}>
               Maktaba tul Muslim AI

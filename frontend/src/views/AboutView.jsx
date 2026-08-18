@@ -26,27 +26,39 @@ export default function AboutView({ navigateToTab }) {
           بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
         </p>
 
-        <span style={{
-          background: 'rgba(245, 158, 11, 0.15)',
-          color: 'var(--accent-gold)',
-          border: '1px solid rgba(245, 158, 11, 0.4)',
-          padding: '4px 16px',
-          borderRadius: '20px',
-          fontSize: '0.85rem',
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          display: 'inline-block',
-          marginBottom: '1rem'
-        }}>
-          About Our Platform
-        </span>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          <span style={{
+            background: 'rgba(245, 158, 11, 0.15)',
+            color: 'var(--accent-gold)',
+            border: '1px solid rgba(245, 158, 11, 0.4)',
+            padding: '4px 16px',
+            borderRadius: '20px',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+          }}>
+            About Our Platform
+          </span>
+          <span style={{
+            background: 'rgba(5, 150, 105, 0.2)',
+            color: '#34d399',
+            border: '1px solid rgba(5, 150, 105, 0.5)',
+            padding: '4px 16px',
+            borderRadius: '20px',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            letterSpacing: '0.5px'
+          }}>
+            🗓️ Started in 2026
+          </span>
+        </div>
 
         <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0.5rem 0 1rem 0', letterSpacing: '-0.5px' }}>
           Maktaba Tul Muslim
         </h1>
         <p style={{ color: '#e2e8f0', maxWidth: '800px', margin: '0 auto', fontSize: '1.15rem', lineHeight: '1.8' }}>
-          A modern, ad-free Islamic digital portal dedicated to facilitating the study, recitation, and understanding of the Holy Quran, authentic Hadiths, Tafseer, and Islamic literature worldwide.
+          Established and started in <strong>2026</strong>, Maktaba Tul Muslim is a modern, ad-free Islamic digital portal dedicated to facilitating the study, recitation, and understanding of the Holy Quran, authentic Hadiths, Tafseer, and Islamic literature worldwide.
         </p>
       </section>
 
@@ -146,6 +158,10 @@ export default function AboutView({ navigateToTab }) {
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--primary-emerald)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>20+</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Famous Reciters</p>
+            </div>
+            <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid #b45309' }}>
+              <h3 style={{ fontSize: '2.4rem', color: '#b45309', fontWeight: 800, margin: 0 }}>2026</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Started & Founded</p>
             </div>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--accent-gold)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>100%</h3>
