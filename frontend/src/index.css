@@ -3330,3 +3330,62 @@ img {
 }
 
 
+/* =========================================================
+   NAVBAR RESPONSIVELY SCALING WIDTH CORRECTIONS
+   ========================================================= */
+
+/* Under-dev badge hidden on smaller laptops to make room */
+@media (max-width: 1350px) {
+  .under-dev-badge {
+    display: none !important;
+  }
+}
+
+/* Hide language/theme in navbar & show in More sidebar on screens < 1250px */
+@media (max-width: 1250px) {
+  .header-language-selector,
+  .header-theme-selector {
+    display: none !important;
+  }
+  .extras-sidebar-selectors {
+    display: flex !important;
+  }
+  .navbar-left-group {
+    gap: 0.6rem !important;
+  }
+  .navbar-right-group {
+    gap: 0.4rem !important;
+  }
+  .nav-links.desktop-nav {
+    gap: 0.25rem !important;
+  }
+  .nav-link {
+    padding: 0.25rem 0.35rem !important;
+    font-size: 0.76rem !important;
+  }
+}
+
+/* Hide text in auth buttons on small screens so they fit perfectly */
+@media (max-width: 1100px) {
+  .desktop-login-signup .auth-btn-text {
+    display: none !important;
+  }
+  .desktop-login-signup .auth-btn {
+    padding: 0.4rem 0.6rem !important;
+  }
+}
+
+/* Prevent horizontal overflow on navbar root container */
+.navbar {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+.nav-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 1rem !important;
+}
+
+
