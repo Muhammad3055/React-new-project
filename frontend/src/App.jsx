@@ -11,6 +11,7 @@ const IslamicCalendarModal = lazy(() => import('./components/IslamicCalendarModa
 const MemorizationTrackerModal = lazy(() => import('./components/MemorizationTrackerModal'));
 const AITajweedModal = lazy(() => import('./components/AITajweedModal'));
 const FridaySpecialModal = lazy(() => import('./components/FridaySpecialModal'));
+const ProtectionSurahsModal = lazy(() => import('./components/ProtectionSurahsModal'));
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HomeView from './views/HomeView'; // Statically imported for instant initial paint
@@ -101,6 +102,7 @@ function MainAppContent() {
   const [isHifzOpen, setIsHifzOpen] = useState(false);
   const [isTajweedOpen, setIsTajweedOpen] = useState(false);
   const [isFridayOpen, setIsFridayOpen] = useState(false);
+  const [isProtectionOpen, setIsProtectionOpen] = useState(false);
 
   // Register PWA Service Worker & sync browser URL
   useEffect(() => {
@@ -326,6 +328,7 @@ function MainAppContent() {
         openTajweed={() => setIsTajweedOpen(true)}
         openAIChat={() => setIsAIChatOpen(true)}
         openFriday={() => setIsFridayOpen(true)}
+        openProtection={() => setIsProtectionOpen(true)}
       />
 
       <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
@@ -478,6 +481,7 @@ function MainAppContent() {
         {isHifzOpen && <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />}
         {isTajweedOpen && <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />}
         {isFridayOpen && <FridaySpecialModal isOpen={isFridayOpen} onClose={() => setIsFridayOpen(false)} playTrack={playTrack} />}
+        {isProtectionOpen && <ProtectionSurahsModal isOpen={isProtectionOpen} onClose={() => setIsProtectionOpen(false)} playTrack={playTrack} />}
       </Suspense>
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}

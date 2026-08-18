@@ -4,7 +4,7 @@ import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
 import UserProfileModal from './UserProfileModal';
 
-export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday }) {
+export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection }) {
   const { lang, setLang, t } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +31,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: '🛡️ Daily Protection (Nazar)', icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
     { label: '🧠 Daily Islamic Quiz', icon: 'fas fa-brain', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
     { label: '📜 Seerah Timeline', icon: 'fas fa-scroll', action: () => { navigateToTab('seerah'); setShowExtrasMenu(false); } },
     { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
