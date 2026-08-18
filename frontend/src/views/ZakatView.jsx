@@ -307,7 +307,7 @@ export default function ZakatView({ user, openAuthModal, navigateToTab }) {
                     padding: '4px 8px',
                     borderRadius: '8px',
                     border: '1px solid var(--accent-gold)',
-                    background: '#022c22',
+                    background: 'var(--bg-card)',
                     color: 'var(--accent-gold)',
                     fontWeight: 700,
                     outline: 'none',

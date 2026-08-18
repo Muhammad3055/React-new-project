@@ -873,19 +873,24 @@ a {
   gap: 0.4rem;
 }
 .mobile-login-btn {
-  background: #ffffff;
-  border: 2px solid var(--accent-gold);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
   color: var(--accent-gold);
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-.mobile-login-btn:hover { background: #fef3c7; }
-.mobile-signup-btn {
-  background: #ffffff;
-  border: 2px solid var(--accent-gold);
-  color: var(--accent-gold);
-  box-shadow: 0 3px 12px rgba(180,83,9,0.15);
+.mobile-login-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
 }
-.mobile-signup-btn:hover { transform: translateY(-1px); background: #fef3c7; }
+.mobile-signup-btn {
+  background: linear-gradient(135deg, var(--accent-gold), #d97706);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 3px 12px rgba(180,83,9,0.25);
+}
+.mobile-signup-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #fbbf24, var(--accent-gold));
+}
 .mobile-logout-btn {
   width: 100%;
   background: #ffffff;

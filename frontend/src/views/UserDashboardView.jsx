@@ -179,7 +179,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
   if (!user) {
     return (
       <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', padding: '3rem 2rem', borderRadius: '24px', border: '2px solid var(--accent-gold)', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff' }}>
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', padding: '3rem 2rem', borderRadius: '24px', border: '2px solid var(--accent-gold)', background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)', color: '#fff' }}>
           <i className="fas fa-user-lock fa-4x" style={{ color: 'var(--accent-gold)', marginBottom: '1.25rem' }}></i>
           <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>
             Personal Islamic Portal & Dashboard
@@ -190,7 +190,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           <button
             onClick={() => openAuthModal ? openAuthModal('login') : null}
             className="btn-play"
-            style={{ padding: '0.85rem 2.25rem', fontSize: '1.05rem', background: 'var(--accent-gold)', color: '#022c22', fontWeight: 800, margin: '0 auto', borderRadius: '30px' }}
+            style={{ padding: '0.85rem 2.25rem', fontSize: '1.05rem', background: 'var(--accent-gold)', color: 'var(--primary-dark)', fontWeight: 800, margin: '0 auto', borderRadius: '30px' }}
           >
             <i className="fas fa-sign-in-alt"></i> Sign In to Your Islamic Dashboard
           </button>
@@ -217,7 +217,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '4rem' }}>
       
       {/* 🌟 HERO DASHBOARD HEADER */}
-      <div className="card" style={{ padding: '2rem', marginBottom: '1.75rem', background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+      <div className="card" style={{ padding: '2rem', marginBottom: '1.75rem', background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
             <span style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -349,7 +349,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
             
             {/* Daily Quran Verse */}
-            <div className="card" style={{ padding: '1.5rem', background: '#064e3b', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.4)', color: '#fff' }}>
+            <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-dark)', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.4)', color: '#fff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(245,158,11,0.2)', color: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>
                   📖 DAILY QURAN VERSE
@@ -368,7 +368,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </div>
 
             {/* Daily Hadith */}
-            <div className="card" style={{ padding: '1.5rem', background: '#022c22', borderRadius: '20px', border: '1px solid rgba(99,102,241,0.4)', color: '#fff' }}>
+            <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-emerald)', borderRadius: '20px', border: '1px solid rgba(99,102,241,0.4)', color: '#fff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(99,102,241,0.2)', color: '#818cf8', padding: '3px 10px', borderRadius: '12px' }}>
                   📜 DAILY HADITH
@@ -447,7 +447,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
           {/* Resume Reading Banner */}
-          <div className="card" style={{ padding: '1.5rem', background: '#064e3b', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-dark)', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <span style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', fontWeight: 800, textTransform: 'uppercase' }}>CONTINUE READING</span>
               <h3 style={{ margin: '0.2rem 0', fontSize: '1.3rem', fontWeight: 800 }}>Surah Al-Kahf (18:10)</h3>
@@ -455,7 +455,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </div>
             <button
               onClick={() => navigateToTab('read')}
-              style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '14px', fontWeight: 800, cursor: 'pointer', fontSize: '0.95rem' }}
+              style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: 'var(--primary-dark)', border: 'none', borderRadius: '14px', fontWeight: 800, cursor: 'pointer', fontSize: '0.95rem' }}
             >
               <i className="fas fa-book-open"></i> Open Surah Reader
             </button>
@@ -630,7 +630,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* Monthly Completion Stats */}
-          <div className="card" style={{ padding: '1.5rem', background: '#022c22', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-emerald)', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '1rem' }}>
               <i className="fas fa-chart-line"></i> Monthly Prayer Completion Stats
             </h3>
@@ -751,7 +751,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       {activeTab === 'calendar' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
           
-          <div className="card" style={{ padding: '1.5rem', background: '#022c22', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-emerald)', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>
               <i className="fas fa-moon"></i> Ramadan 1448 AH Countdown
             </h3>
@@ -763,7 +763,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </p>
           </div>
 
-          <div className="card" style={{ padding: '1.5rem', background: '#064e3b', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-dark)', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>
               <i className="fas fa-star"></i> Eid al-Adha Countdown
             </h3>

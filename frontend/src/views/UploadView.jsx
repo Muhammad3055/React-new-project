@@ -721,7 +721,7 @@ export default function UploadView({ user }) {
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', color: '#fff', fontSize: '0.88rem' }}>
                 <thead>
-                  <tr style={{ background: '#064e3b', borderBottom: '2px solid var(--accent-gold)', textAlign: 'left' }}>
+                  <tr style={{ background: 'var(--primary-dark)', borderBottom: '2px solid var(--accent-gold)', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Title</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Type / Destination</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Author / Speaker</th>

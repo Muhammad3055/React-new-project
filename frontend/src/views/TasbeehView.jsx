@@ -109,7 +109,7 @@ export default function TasbeehView() {
 
       {/* Main Counter Display Card */}
       <div style={{
-        background: 'linear-gradient(135deg, #022c22 0%, #011c16 100%)',
+        background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)',
         borderRadius: '24px',
         padding: '2.5rem 1.5rem',
         textAlign: 'center',

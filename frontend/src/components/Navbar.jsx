@@ -386,51 +386,19 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   </button>
                 </div>
               ) : (
-                <div className="desktop-login-signup" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="desktop-login-signup">
                   <button
                     className="auth-btn login-btn"
                     onClick={() => openAuthModal('login')}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      padding: '0.42rem 0.95rem',
-                      borderRadius: '20px',
-                      border: '2px solid var(--accent-gold)',
-                      background: '#ffffff',
-                      color: 'var(--accent-gold)',
-                      fontWeight: 800,
-                      fontSize: '0.82rem',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-                    }}
                   >
-                    <i className="fas fa-sign-in-alt" style={{ color: 'var(--accent-gold)' }}></i>
+                    <i className="fas fa-sign-in-alt"></i>
                     <span className="auth-btn-text">{t('login')}</span>
                   </button>
                   <button
                     className="auth-btn signup-btn"
                     onClick={() => openAuthModal('signup')}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      padding: '0.42rem 1rem',
-                      borderRadius: '20px',
-                      border: '2px solid var(--accent-gold)',
-                      background: '#ffffff',
-                      color: 'var(--accent-gold)',
-                      fontWeight: 800,
-                      fontSize: '0.82rem',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 3px 12px rgba(180, 83, 9, 0.15)'
-                    }}
                   >
-                    <i className="fas fa-user-plus" style={{ color: 'var(--accent-gold)' }}></i>
+                    <i className="fas fa-user-plus"></i>
                     <span className="auth-btn-text">{t('signup')}</span>
                   </button>
                 </div>

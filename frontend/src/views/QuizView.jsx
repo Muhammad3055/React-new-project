@@ -119,10 +119,10 @@ export default function QuizView() {
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1.5rem 1rem', color: '#fff' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1.5rem 1rem', color: 'var(--text-main)' }}>
       {/* Header Banner */}
       <div style={{
-        background: 'linear-gradient(135deg, #022c22 0%, #064e3b 50%, #022c22 100%)',
+        background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)',
         border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '20px', padding: '1.75rem',
         marginBottom: '2rem', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
       }}>

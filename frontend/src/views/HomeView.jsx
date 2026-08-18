@@ -656,7 +656,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         <section className="container" style={{ marginTop: '2rem' }}>
           <div style={{
             borderRadius: '24px',
-            background: 'linear-gradient(135deg, #064e3b 0%, #022c22 50%, #0f172a 100%)',
+            background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)',
             border: '2px solid var(--accent-gold, #f59e0b)',
             padding: '1.75rem',
             boxShadow: '0 12px 32px rgba(5,150,105,0.15)',
