@@ -4,7 +4,7 @@ import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
 import UserProfileModal from './UserProfileModal';
 
-export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection }) {
+export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection, openDailySurahs }) {
   const { lang, setLang, t } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,6 +39,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
     { label: t('islamicCalendar'), icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
     { label: '🌟 Friday Jumu\'ah Special', icon: 'fas fa-sun', action: () => { if (openFriday) openFriday(); setShowExtrasMenu(false); } },
+    { label: '📅 Daily Surahs', icon: 'fas fa-calendar-day', action: () => { if (openDailySurahs) openDailySurahs(); setShowExtrasMenu(false); } },
     { label: t('hifzTracker'), icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
 
     { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },

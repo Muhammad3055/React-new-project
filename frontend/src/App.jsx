@@ -12,6 +12,7 @@ const MemorizationTrackerModal = lazy(() => import('./components/MemorizationTra
 const AITajweedModal = lazy(() => import('./components/AITajweedModal'));
 const FridaySpecialModal = lazy(() => import('./components/FridaySpecialModal'));
 const ProtectionSurahsModal = lazy(() => import('./components/ProtectionSurahsModal'));
+const DailySurahsModal = lazy(() => import('./components/DailySurahsModal'));
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HomeView from './views/HomeView'; // Statically imported for instant initial paint
@@ -103,6 +104,7 @@ function MainAppContent() {
   const [isTajweedOpen, setIsTajweedOpen] = useState(false);
   const [isFridayOpen, setIsFridayOpen] = useState(false);
   const [isProtectionOpen, setIsProtectionOpen] = useState(false);
+  const [isDailySurahsOpen, setIsDailySurahsOpen] = useState(false);
 
   // Register PWA Service Worker & sync browser URL
   useEffect(() => {
@@ -329,6 +331,7 @@ function MainAppContent() {
         openAIChat={() => setIsAIChatOpen(true)}
         openFriday={() => setIsFridayOpen(true)}
         openProtection={() => setIsProtectionOpen(true)}
+        openDailySurahs={() => setIsDailySurahsOpen(true)}
       />
 
       <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
@@ -482,6 +485,7 @@ function MainAppContent() {
         {isTajweedOpen && <AITajweedModal isOpen={isTajweedOpen} onClose={() => setIsTajweedOpen(false)} />}
         {isFridayOpen && <FridaySpecialModal isOpen={isFridayOpen} onClose={() => setIsFridayOpen(false)} playTrack={playTrack} />}
         {isProtectionOpen && <ProtectionSurahsModal isOpen={isProtectionOpen} onClose={() => setIsProtectionOpen(false)} playTrack={playTrack} />}
+        {isDailySurahsOpen && <DailySurahsModal isOpen={isDailySurahsOpen} onClose={() => setIsDailySurahsOpen(false)} playTrack={playTrack} />}
       </Suspense>
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}
