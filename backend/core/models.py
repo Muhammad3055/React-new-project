@@ -442,6 +442,13 @@ class HifzTracker(models.Model):
     def __str__(self):
         return f"Hifz {self.user.username} - Surah {self.surah_number} ({self.get_status_display()})"
 
+class DailyQuiz(models.Model):
+    date = models.DateField(unique=True, db_index=True)
+    questions_json = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-date']
 
-
+    def __str__(self):
+        return f"Daily Quiz - {self.date}"

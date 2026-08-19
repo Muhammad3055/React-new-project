@@ -1425,3 +1425,85 @@ def ai_assistant_file_api(request):
             print(f'Groq Error: {e}')
 
     return JsonResponse({'error': 'All AI models failed to process the file.'}, status=500)
+
+# ============================================================
+# AUTOMATIC DAILY QUIZ GENERATOR
+# ============================================================
+
+def generate_daily_quiz_questions():
+    from django.conf import settings
+    from groq import Groq
+    import json
+    
+    system_prompt = """You are an expert Islamic Scholar.
+Generate 10 unique, authentic Islamic quiz questions.
+Topics: Quran, Hadith, Seerah, Islamic History, Prophets.
+You MUST output ONLY a valid JSON object matching this schema perfectly, without markdown or backticks:
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": {
+        "en": "English question",
+        "ur": "Urdu translation",
+        "ar": "Arabic translation"
+      },
+      "options": {
+        "en": ["Opt 1", "Opt 2", "Opt 3", "Opt 4"],
+        "ur": ["...", "...", "...", "..."],
+        "ar": ["...", "...", "...", "..."]
+      },
+      "correctIndex": 0,
+      "explanation": {
+        "en": "English explanation",
+        "ur": "Urdu explanation",
+        "ar": "Arabic explanation"
+      }
+    }
+  ]
+}
+"""
+    try:
+        groq_api_key = getattr(settings, 'GROQ_API_KEY', '')
+        if groq_api_key:
+            client = Groq(api_key=groq_api_key)
+            completion = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                temperature=0.7,
+                max_tokens=3000,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": "Generate today's 10 Islamic quiz questions."},
+                ],
+            )
+            data = json.loads(completion.choices[0].message.content)
+            return data.get('questions', [])
+    except Exception as e:
+        print(f"Quiz Generation Error: {e}")
+        return []
+    
+    return []
+
+@csrf_exempt
+def get_daily_quiz(request):
+    import json
+    from django.http import JsonResponse
+    from django.utils import timezone
+    from .models import DailyQuiz
+    
+    if request.method != 'GET':
+        return JsonResponse({'error': 'GET request required'}, status=405)
+        
+    today = timezone.localtime().date()
+    
+    quiz = DailyQuiz.objects.filter(date=today).first()
+    if quiz and quiz.questions_json:
+        return JsonResponse({'questions': quiz.questions_json})
+        
+    questions = generate_daily_quiz_questions()
+    if not questions:
+        return JsonResponse({'error': 'Failed to generate quiz'}, status=500)
+        
+    quiz = DailyQuiz.objects.create(date=today, questions_json=questions)
+    return JsonResponse({'questions': quiz.questions_json})

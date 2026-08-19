@@ -1,92 +1,106 @@
 import React, { useState, useEffect } from 'react';
-
-const QUIZ_QUESTIONS = [
-  {
-    id: 1,
-    question: "Which Surah of the Holy Quran is known as 'The Heart of the Quran'?",
-    options: ["Surah Yaseen", "Surah Al-Rahman", "Surah Al-Mulk", "Surah Al-Baqarah"],
-    correctIndex: 0,
-    explanation: "Surah Yaseen (36) is referred to as the heart of the Quran in famous Hadith literature due to its profound themes of Tawheed, Resurrection, and Prophethood."
-  },
-  {
-    id: 2,
-    question: "How many Surahs are there in the Holy Quran?",
-    options: ["112", "114", "110", "120"],
-    correctIndex: 1,
-    explanation: "The Holy Quran contains 114 Surahs, starting with Surah Al-Fatiha and ending with Surah An-Nas."
-  },
-  {
-    id: 3,
-    question: "Which Prophet was swallowed by a large fish/whale and prayed inside its belly?",
-    options: ["Prophet Yunus (AS)", "Prophet Musa (AS)", "Prophet Ibrahim (AS)", "Prophet Nuh (AS)"],
-    correctIndex: 0,
-    explanation: "Prophet Yunus (Jonah) AS prayed 'La ilaha illa anta subhanaka inni kuntu minaz-zalimin' inside the fish and Allah rescued him."
-  },
-  {
-    id: 4,
-    question: "Which Sahabi was known as 'Saifullah' (The Sword of Allah)?",
-    options: ["Khalid ibn al-Walid (RA)", "Ali ibn Abi Talib (RA)", "Umar ibn al-Khattab (RA)", "Hamza ibn Abdul-Muttalib (RA)"],
-    correctIndex: 0,
-    explanation: "Prophet Muhammad (PBUH) bestowed the title 'Saifullah' (The Drawn Sword of Allah) upon Khalid ibn al-Walid (RA)."
-  },
-  {
-    id: 5,
-    question: "In which Islamic month was the Holy Quran first revealed?",
-    options: ["Ramadan", "Muharram", "Rabi al-Awwal", "Dhul Hijjah"],
-    correctIndex: 0,
-    explanation: "The Quran was revealed in the blessed month of Ramadan on Laylat al-Qadr (The Night of Decree)."
-  },
-  {
-    id: 6,
-    question: "Which Prophet is known as 'Khalilullah' (The Friend of Allah)?",
-    options: ["Prophet Ibrahim (AS)", "Prophet Isa (AS)", "Prophet Musa (AS)", "Prophet Adam (AS)"],
-    correctIndex: 0,
-    explanation: "Prophet Ibrahim (Abraham) AS earned the noble status of Khalilullah (Friend of Allah)."
-  },
-  {
-    id: 7,
-    question: "What is the longest Surah in the Holy Quran?",
-    options: ["Surah Al-Baqarah", "Surah Aal-Imran", "Surah An-Nisa", "Surah Al-Ma'idah"],
-    correctIndex: 0,
-    explanation: "Surah Al-Baqarah is the longest Surah in the Quran containing 286 verses."
-  },
-  {
-    id: 8,
-    question: "Which prayer is performed specifically during the night in the month of Ramadan?",
-    options: ["Taraweeh", "Tahajjud", "Ishraq", "Chasht"],
-    correctIndex: 0,
-    explanation: "Taraweeh prayers are special sunnah prayers performed every night after Isha during Ramadan."
-  },
-  {
-    id: 9,
-    question: "How many Sajdahs (prostrations of recitation) are there in the Holy Quran?",
-    options: ["14", "12", "15", "10"],
-    correctIndex: 0,
-    explanation: "There are 14 agreed-upon Ayahs of Sajdah (Sajdah Tilawat) in the Holy Quran."
-  },
-  {
-    id: 10,
-    question: "Which city is home to Al-Aqsa Mosque, the third holiest site in Islam?",
-    options: ["Jerusalem (Al-Quds)", "Makkah", "Madinah", "Damascus"],
-    correctIndex: 0,
-    explanation: "Masjid Al-Aqsa is situated in Jerusalem (Al-Quds) and was the first Qibla of Muslims."
-  }
-];
+import { useLanguage } from '../context/LanguageContext';
 
 export default function QuizView() {
+  const { lang } = useLanguage();
+  
+  const [dailyQuestions, setDailyQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [score, setScore] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [quizLocked, setQuizLocked] = useState(false);
   const [streak, setStreak] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Translation helpers
+  const getTrans = (obj) => {
+    if (!obj) return "";
+    if (typeof obj === 'string') return obj;
+    return obj[lang] || obj['en'] || obj['ur'] || obj['ar'];
+  };
+
+  const getTransArray = (arrObj) => {
+    if (!arrObj) return [];
+    if (Array.isArray(arrObj)) return arrObj;
+    return arrObj[lang] || arrObj['en'] || arrObj['ur'] || arrObj['ar'];
+  };
 
   useEffect(() => {
-    const savedStreak = parseInt(localStorage.getItem('maktaba_quiz_streak') || '1', 10);
-    setStreak(savedStreak);
+    const savedStreak = parseInt(localStorage.getItem('maktaba_quiz_streak') || '0', 10);
+    const lastDate = localStorage.getItem('maktaba_quiz_last_date');
+    const currentDateStr = new Date().toISOString().split('T')[0];
+
+    // Streak logic
+    if (lastDate === currentDateStr) {
+      setQuizLocked(true); // Already played today
+      setStreak(savedStreak);
+      setLoading(false);
+      return;
+    } else {
+      // Check if streak is broken (missed yesterday)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      
+      if (lastDate === yesterdayStr) {
+        setStreak(savedStreak);
+      } else if (lastDate && lastDate !== yesterdayStr) {
+        setStreak(0); // broken streak
+        localStorage.setItem('maktaba_quiz_streak', '0');
+      } else {
+        setStreak(savedStreak);
+      }
+    }
+
+    // Fetch the automatic daily quiz from the API
+    const fetchDailyQuiz = async () => {
+      try {
+        const response = await fetch('/api/quiz/daily/');
+        if (!response.ok) {
+          throw new Error('Failed to load quiz');
+        }
+        const data = await response.json();
+        setDailyQuestions(data.questions || []);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load today's quiz. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDailyQuiz();
   }, []);
 
-  const currentQ = QUIZ_QUESTIONS[currentIndex];
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '5rem 1rem', color: '#f59e0b' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem', animation: 'spin 2s linear infinite' }}>⏳</div>
+        <style>
+          {`@keyframes spin { 100% { transform: rotate(360deg); } }`}
+        </style>
+        <h2>Generating Today's Quiz...</h2>
+        <p style={{ color: '#94a3b8' }}>Our AI is preparing fresh Islamic questions for you. This might take a few seconds!</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', padding: '5rem 1rem', color: '#ef4444' }}>
+        <h2>Oops!</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  // If locked, we don't need questions
+  if (!quizLocked && dailyQuestions.length === 0) return null;
+
+  const currentQ = dailyQuestions[currentIndex];
 
   const handleSelectOption = (index) => {
     if (selectedOption !== null) return;
@@ -98,7 +112,7 @@ export default function QuizView() {
   };
 
   const handleNextQuestion = () => {
-    if (currentIndex < QUIZ_QUESTIONS.length - 1) {
+    if (currentIndex < dailyQuestions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setShowExplanation(false);
@@ -107,19 +121,16 @@ export default function QuizView() {
       const newStreak = streak + 1;
       setStreak(newStreak);
       localStorage.setItem('maktaba_quiz_streak', newStreak.toString());
+      localStorage.setItem('maktaba_quiz_last_date', new Date().toISOString().split('T')[0]);
     }
   };
 
   const handleRestartQuiz = () => {
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setScore(0);
-    setShowExplanation(false);
-    setQuizCompleted(false);
+    setQuizLocked(true);
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1.5rem 1rem', color: 'var(--text-main)' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1.5rem 1rem', color: 'var(--text-main)', direction: lang === 'ur' || lang === 'ar' ? 'rtl' : 'ltr' }}>
       {/* Header Banner */}
       <div style={{
         background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)',
@@ -137,28 +148,44 @@ export default function QuizView() {
         </p>
       </div>
 
-      {!quizCompleted ? (
+      {quizLocked ? (
+         <div style={{
+          background: '#09090b', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '20px',
+          padding: '3rem 2rem', textAlign: 'center', boxShadow: '0 15px 40px rgba(0,0,0,0.7)'
+        }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>⏳</div>
+          <h2 style={{ color: '#10b981', fontSize: '2rem', fontWeight: '800', margin: '0 0 1rem 0' }}>
+            Come Back Tomorrow!
+          </h2>
+          <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem', maxWidth: '500px', margin: '0 auto 2rem auto' }}>
+            You have already completed your daily 10 questions. Take a rest, review what you learned, and come back tomorrow for a new set of questions!
+          </p>
+          <div style={{ display: 'inline-block', background: 'rgba(245,158,11,0.1)', border: '1px solid #f59e0b', borderRadius: '12px', padding: '0.8rem 1.5rem', color: '#f59e0b', fontWeight: '700' }}>
+             Current Streak: {streak} Days 🔥
+          </div>
+        </div>
+      ) : !quizCompleted && currentQ ? (
         <div style={{
           background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px',
           padding: '2rem', boxShadow: '0 15px 35px rgba(0,0,0,0.6)'
         }}>
           {/* Progress Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', color: '#94a3b8', fontSize: '0.88rem', fontWeight: '600' }}>
-            <span>Question {currentIndex + 1} of {QUIZ_QUESTIONS.length}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', color: '#94a3b8', fontSize: '0.88rem', fontWeight: '600', direction: 'ltr' }}>
+            <span>Question {currentIndex + 1} of {dailyQuestions.length}</span>
             <span>Current Score: <strong style={{ color: '#f59e0b' }}>{score}</strong></span>
           </div>
-          <div style={{ height: '8px', background: '#18181b', borderRadius: '4px', overflow: 'hidden', marginBottom: '1.75rem' }}>
-            <div style={{ height: '100%', width: `${((currentIndex + 1) / QUIZ_QUESTIONS.length) * 100}%`, background: 'linear-gradient(90deg, #f59e0b, #10b981)', transition: 'width 0.3s ease' }}></div>
+          <div style={{ height: '8px', background: '#18181b', borderRadius: '4px', overflow: 'hidden', marginBottom: '1.75rem', direction: 'ltr' }}>
+            <div style={{ height: '100%', width: `${((currentIndex + 1) / dailyQuestions.length) * 100}%`, background: 'linear-gradient(90deg, #f59e0b, #10b981)', transition: 'width 0.3s ease' }}></div>
           </div>
 
           {/* Question Text */}
           <h3 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#f8fafc', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-            {currentQ.question}
+            {getTrans(currentQ.question)}
           </h3>
 
           {/* Options Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.85rem', marginBottom: '1.5rem' }}>
-            {currentQ.options.map((option, idx) => {
+            {getTransArray(currentQ.options).map((option, idx) => {
               let bg = '#18181b';
               let border = '1px solid rgba(255,255,255,0.1)';
               let color = '#e2e8f0';
@@ -182,8 +209,9 @@ export default function QuizView() {
                   disabled={selectedOption !== null}
                   style={{
                     padding: '1rem 1.25rem', borderRadius: '12px', background: bg, border: border,
-                    color: color, fontWeight: '600', fontSize: '1rem', textAlign: 'left', cursor: selectedOption === null ? 'pointer' : 'default',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s ease'
+                    color: color, fontWeight: '600', fontSize: '1rem', textAlign: lang === 'ur' || lang === 'ar' ? 'right' : 'left', cursor: selectedOption === null ? 'pointer' : 'default',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s ease',
+                    fontFamily: lang === 'ur' ? 'Jameel Noori Nastaleeq, sans-serif' : lang === 'ar' ? 'Amiri, serif' : 'inherit'
                   }}
                 >
                   <span>{option}</span>
@@ -203,7 +231,7 @@ export default function QuizView() {
               <strong style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.3rem' }}>
                 <i className="fas fa-info-circle"></i> Explanation & Context:
               </strong>
-              {currentQ.explanation}
+              {getTrans(currentQ.explanation)}
             </div>
           )}
 
@@ -217,7 +245,7 @@ export default function QuizView() {
                 fontSize: '1rem', boxShadow: '0 4px 15px rgba(245,158,11,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
               }}
             >
-              {currentIndex < QUIZ_QUESTIONS.length - 1 ? 'Next Question ▶' : 'View Quiz Summary 🏆'}
+              {currentIndex < dailyQuestions.length - 1 ? 'Next Question ▶' : 'View Quiz Summary 🏆'}
             </button>
           )}
         </div>
@@ -232,17 +260,17 @@ export default function QuizView() {
             Quiz Completed!
           </h2>
           <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-            You scored <strong style={{ color: '#10b981', fontSize: '1.4rem' }}>{score}</strong> out of <strong style={{ color: '#fff' }}>{QUIZ_QUESTIONS.length}</strong> ({Math.round((score / QUIZ_QUESTIONS.length) * 100)}%)
+            You scored <strong style={{ color: '#10b981', fontSize: '1.4rem' }}>{score}</strong> out of <strong style={{ color: '#fff' }}>{dailyQuestions.length}</strong> ({Math.round((score / dailyQuestions.length) * 100)}%)
           </p>
 
           <div style={{
             display: 'inline-flex', gap: '1rem', background: '#18181b', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '16px', padding: '1rem 2rem', marginBottom: '2rem'
+            borderRadius: '16px', padding: '1rem 2rem', marginBottom: '2rem', direction: 'ltr'
           }}>
             <div>
               <span style={{ display: 'block', color: '#94a3b8', fontSize: '0.8rem' }}>Badge Earned</span>
               <strong style={{ color: '#f59e0b', fontSize: '1.1rem' }}>
-                {score >= 8 ? '🏅 Quran Scholar' : score >= 5 ? '⭐ Islamic Explorer' : '🌱 Knowledge Seeker'}
+                {score >= 8 ? '🏅 Scholar' : score >= 5 ? '⭐ Explorer' : '🌱 Seeker'}
               </strong>
             </div>
             <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
@@ -256,11 +284,11 @@ export default function QuizView() {
             <button
               onClick={handleRestartQuiz}
               style={{
-                padding: '0.8rem 1.5rem', background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#000',
+                padding: '0.8rem 1.5rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff',
                 fontWeight: '700', borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '0.95rem'
               }}
             >
-              <i className="fas fa-redo"></i> Retake Quiz
+              <i className="fas fa-check"></i> Finish for Today
             </button>
           </div>
         </div>
