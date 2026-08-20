@@ -240,10 +240,10 @@ function MainAppContent() {
     if (ogDesc) ogDesc.setAttribute('content', currentSeo.desc);
 
     let ogImage = document.querySelector('meta[property="og:image"]');
-    if (ogImage) ogImage.setAttribute('content', 'https://maktabatulmuslim.com/favicon.svg');
+    if (ogImage) ogImage.setAttribute('content', 'https://maktabatulmuslim.com/pwa-512x512.png');
 
     let twitterImage = document.querySelector('meta[property="twitter:image"]');
-    if (twitterImage) twitterImage.setAttribute('content', 'https://maktabatulmuslim.com/favicon.svg');
+    if (twitterImage) twitterImage.setAttribute('content', 'https://maktabatulmuslim.com/pwa-512x512.png');
 
     let canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute('href', `https://maktabatulmuslim.com${tabPathMap[activeTab] || '/'}`);

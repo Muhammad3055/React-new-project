@@ -36,18 +36,34 @@ def root_health_view(request):
         'total_hadith': 7000
     })
 
+import os
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect
 
+def serve_static_root_file(filename, content_type):
+    def view(request):
+        file_path = os.path.join(settings.BASE_DIR, 'static', filename)
+        if not os.path.exists(file_path):
+            file_path = os.path.join(settings.BASE_DIR, '..', 'frontend', 'public', filename)
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, 'rb'), content_type=content_type)
+        raise Http404(f"{filename} not found")
+    return view
+
 urlpatterns = [
-    path('favicon.ico', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('favicon.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('favicon.svg', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('logo.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('apple-touch-icon.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('favicon-16x16.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('favicon-32x32.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('favicon-48x48.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
-    path('favicon-96x96.png', lambda req: redirect('/static/favicon.svg', permanent=True)),
+    path('favicon.ico', serve_static_root_file('favicon.ico', 'image/x-icon')),
+    path('favicon.svg', serve_static_root_file('favicon.svg', 'image/svg+xml')),
+    path('favicon.png', serve_static_root_file('favicon-96x96.png', 'image/png')),
+    path('favicon-16x16.png', serve_static_root_file('favicon-16x16.png', 'image/png')),
+    path('favicon-32x32.png', serve_static_root_file('favicon-32x32.png', 'image/png')),
+    path('favicon-48x48.png', serve_static_root_file('favicon-48x48.png', 'image/png')),
+    path('favicon-96x96.png', serve_static_root_file('favicon-96x96.png', 'image/png')),
+    path('apple-touch-icon.png', serve_static_root_file('apple-touch-icon.png', 'image/png')),
+    path('pwa-192x192.png', serve_static_root_file('pwa-192x192.png', 'image/png')),
+    path('pwa-512x512.png', serve_static_root_file('pwa-512x512.png', 'image/png')),
+    path('logo.png', serve_static_root_file('logo.png', 'image/png')),
+    path('robots.txt', serve_static_root_file('robots.txt', 'text/plain')),
+    path('sitemap.xml', serve_static_root_file('sitemap.xml', 'application/xml')),
     path('admin', lambda req: redirect('/admin/', permanent=True)),
     path('admin/', admin.site.urls),
     
