@@ -14,9 +14,11 @@
     </filter>
   </defs>
 
-  <!-- Background Circle with Emerald Gradient & Golden Border -->
-  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
-  <rect x="12" y="12" width="488" height="488" rx="116" fill="none" stroke="url(#goldGrad)" stroke-width="12" filter="url(#goldGlow)"/>
+  <!-- Full Square Dark Emerald Background Fill -->
+  <rect width="512" height="512" fill="url(#bgGrad)"/>
+  
+  <!-- Inner Golden Accent Border -->
+  <rect x="16" y="16" width="480" height="480" rx="64" fill="none" stroke="url(#goldGrad)" stroke-width="14" filter="url(#goldGlow)"/>
 
   <!-- Outer Crescent Accent -->
   <path d="M 380,130 A 180,180 0 1,1 250,70 A 150,150 0 1,0 380,130 Z" fill="url(#goldGrad)" opacity="0.95"/>
