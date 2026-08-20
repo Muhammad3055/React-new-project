@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Radio, Video, Play, Pause, Volume2, Sparkles, Tv, Compass, RefreshCw, ExternalLink } from 'lucide-react';
+import { Radio, Video, Play, Pause, Volume2, Sparkles, Tv, Compass, RefreshCw, ExternalLink, ShieldAlert } from 'lucide-react';
 
 export default function LiveView() {
   const { t } = useLanguage();
@@ -9,19 +9,18 @@ export default function LiveView() {
   const [isPlayingRadio, setIsPlayingRadio] = useState(false);
 
   const makkahStreams = [
-    { id: 1, name: 'Saudi Quran TV (Official HD Live)', embed: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL_Jk6Xm9-f-pM5a9z2Vn8yW4m-b9-zJ1e' },
-    { id: 2, name: 'Makkah Haram Live Stream 2', embed: 'https://www.youtube-nocookie.com/embed/5a6qJ_W8Xn0' },
-    { id: 3, name: 'Al-Masjid Al-Haram Tawaf Stream', embed: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCv-Mh2Q_X_1e7X9_wQeX-Xg' }
+    { id: 1, name: 'Saudi Quran TV (Official 24/7 Channel)', embed: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC_2o20J597F-rV1_u-M9PZA', directUrl: 'https://www.youtube.com/@SaudiQuranTv/live' },
+    { id: 2, name: 'Makkah Live Haram Mirror 2', embed: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCv-Mh2Q_X_1e7X9_wQeX-Xg', directUrl: 'https://www.youtube.com/results?search_query=makkah+live+stream+24/7' }
   ];
 
   const madinahStreams = [
-    { id: 1, name: 'Saudi Sunnah TV (Official HD Live)', embed: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL_Jk6Xm9-f-qM5a9z2Vn8yW4m-b9-zJ1f' },
-    { id: 2, name: 'Madinah An-Nabawi Live Stream 2', embed: 'https://www.youtube-nocookie.com/embed/7X8m1Z-Q8Xn' }
+    { id: 1, name: 'Saudi Sunnah TV (Official 24/7 Channel)', embed: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCyJv_w_Vq-1e7X9_wQeX-Xg', directUrl: 'https://www.youtube.com/@SaudiSunnahTv/live' },
+    { id: 2, name: 'Madinah Live An-Nabawi Mirror 2', embed: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC_2o20J597F-rV1_u-M9PZA', directUrl: 'https://www.youtube.com/results?search_query=madinah+live+stream+24/7' }
   ];
 
-  const currentEmbed = activeTab === 'makkah' 
-    ? (makkahStreams.find(s => s.id === streamServer)?.embed || 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCv-Mh2Q_X_1e7X9_wQeX-Xg')
-    : (madinahStreams.find(s => s.id === streamServer)?.embed || 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCyJv_w_Vq-1e7X9_wQeX-Xg');
+  const currentStreamObj = activeTab === 'makkah' 
+    ? (makkahStreams.find(s => s.id === streamServer) || makkahStreams[0])
+    : (madinahStreams.find(s => s.id === streamServer) || madinahStreams[0]);
 
   return (
     <div style={{ background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem' }}>
@@ -37,14 +36,14 @@ export default function LiveView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Tv size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              24/7 Official HD Broadcast
+              24/7 Official Saudi HD Broadcast
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Makkah &amp; Madinah 24/7 Live Video &amp; Quran Radio
+            Makkah &amp; Madinah Live Streams &amp; Quran Radio
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Watch live 24/7 HD video streams from Al-Masjid Al-Haram (Holy Kaaba Tawaf &amp; Nimaz) and Al-Masjid An-Nabawi (Madinah Munawwarah), and listen to non-stop Tilawat radio streams.
+            Watch 24/7 live video broadcasts from Al-Masjid Al-Haram (Holy Kaaba Tawaf) and Al-Masjid An-Nabawi (Madinah Munawwarah).
           </p>
         </div>
 
@@ -96,7 +95,7 @@ export default function LiveView() {
             marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem'
           }}>
             <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <RefreshCw size={16} style={{ color: '#059669' }} /> Stream Mirror Server:
+              <RefreshCw size={16} style={{ color: '#059669' }} /> Stream Mirror Source:
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {(activeTab === 'makkah' ? makkahStreams : madinahStreams).map(s => (
@@ -117,13 +116,13 @@ export default function LiveView() {
         )}
 
         {/* ── Main Stream Player Box ── */}
-        <div style={{ background: '#000000', borderRadius: '24px', overflow: 'hidden', border: '2px solid #f59e0b', boxShadow: '0 15px 40px rgba(0,0,0,0.35)', marginBottom: '3rem' }}>
+        <div style={{ background: '#000000', borderRadius: '24px', overflow: 'hidden', border: '2px solid #f59e0b', boxShadow: '0 15px 40px rgba(0,0,0,0.35)', marginBottom: '1.5rem' }}>
           {(activeTab === 'makkah' || activeTab === 'madinah') && (
             <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
               <iframe
-                src={`${currentEmbed}?autoplay=1&mute=0`}
+                src={currentStreamObj.embed}
                 title={`${activeTab === 'makkah' ? 'Makkah' : 'Madinah'} 24/7 Live Stream`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
               />
@@ -165,20 +164,32 @@ export default function LiveView() {
           )}
         </div>
 
-        {/* ── Information Banner Card ── */}
-        <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <h3 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-              Official Saudi Ministry Broadcast Feeds
-            </h3>
-            <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
-              Broadcast live 24/7 direct from Saudi Quran Channel &amp; Saudi Sunnah Channel.
-            </p>
+        {/* ── Direct Live Watch Action Bar ── */}
+        {(activeTab === 'makkah' || activeTab === 'madinah') && (
+          <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+            <div>
+              <h3 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                {activeTab === 'makkah' ? '🕌 Official Saudi Quran Channel (Makkah)' : '💚 Official Saudi Sunnah Channel (Madinah)'}
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+                If browser iframe playback is restricted by YouTube, click below to open full HD 1080p stream.
+              </p>
+            </div>
+            <a
+              href={currentStreamObj.directUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '12px 24px',
+                borderRadius: '16px', background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                color: '#ffffff', fontWeight: 800, fontSize: '0.95rem', textDecoration: 'none',
+                boxShadow: '0 6px 20px rgba(5,150,105,0.3)'
+              }}
+            >
+              ▶ Open 1080p Official Live Stream <ExternalLink size={16}/>
+            </a>
           </div>
-          <a href="https://www.youtube.com/@SaudiQuranTv" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '10px 18px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none' }}>
-            Visit Official Channel <ExternalLink size={14}/>
-          </a>
-        </div>
+        )}
 
       </div>
     </div>
