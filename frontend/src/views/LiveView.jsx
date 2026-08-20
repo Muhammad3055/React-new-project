@@ -14,8 +14,8 @@ export default function LiveView() {
       desc: 'Watch 24/7 live HD broadcast of Tawaf around the Holy Kaaba, daily prayers (Salah), and Azan from Makkah.',
       channelName: 'Official Saudi Quran TV (قناة القرآن الكريم)',
       youtubeUrl: 'https://www.youtube.com/@SaudiQuranTv/live',
-      embedUrl: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL_Jk6Xm9-f-pM5a9z2Vn8yW4m-b9-zJ1e',
-      altEmbedUrl: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC_2o20J597F-rV1_u-M9PZA'
+      embedUrl: 'https://www.youtube.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A',
+      altEmbedUrl: 'https://www.youtube.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A'
     },
     madinah: {
       title: 'Al-Masjid An-Nabawi (Madinah Munawwarah)',
@@ -23,8 +23,8 @@ export default function LiveView() {
       desc: 'Watch 24/7 live HD broadcast from the Prophet\'s Mosque in Madinah, Rawdah Rasool (SAW), and daily prayers.',
       channelName: 'Official Saudi Sunnah TV (قناة السنة النبوية)',
       youtubeUrl: 'https://www.youtube.com/@SaudiSunnahTv/live',
-      embedUrl: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL_Jk6Xm9-f-qM5a9z2Vn8yW4m-b9-zJ1f',
-      altEmbedUrl: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCyJv_w_Vq-1e7X9_wQeX-Xg'
+      embedUrl: 'https://www.youtube.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw',
+      altEmbedUrl: 'https://www.youtube.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw'
     }
   };
 
