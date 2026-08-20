@@ -200,8 +200,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           {/* Right side controls group */}
           <div className="navbar-right-group">
             {/* Search */}
-            <div className="search-wrapper">
-              <img src="/favicon.svg" alt="Search Icon" className="search-icon" style={{ width: '16px', height: '16px', borderRadius: '4px', objectFit: 'contain', flexShrink: 0 }} />
+            <div className="search-wrapper" style={{ position: 'relative' }}>
+              <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
               <input
                 type="text"
                 className="search-input"
@@ -210,6 +210,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                style={{ paddingLeft: '2.1rem' }}
               />
               {showDropdown && searchResults.length > 0 && (
                 <div className="search-results-dropdown" style={{ minWidth: '320px', borderRadius: '14px', boxShadow: '0 12px 30px rgba(0,0,0,0.35)', border: '1px solid var(--accent-gold)', overflow: 'hidden', background: 'var(--bg-card)' }}>
@@ -224,7 +225,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
                         <img src="/favicon.svg" alt="Maktaba Logo" style={{ width: '18px', height: '18px', borderRadius: '4px', flexShrink: 0, boxShadow: '0 1px 4px rgba(245,158,11,0.3)' }} />
                         <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          maktabatulmuslim.com <i className="fas fa-chevron-right" style={{ fontSize: '0.55rem', opacity: 0.6 }}></i> <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>{item.type}</span>
+                          Maktaba tul Muslim (مكتبة المسلم) <i className="fas fa-chevron-right" style={{ fontSize: '0.55rem', opacity: 0.6 }}></i> <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>{item.type}</span>
                         </span>
                       </div>
 

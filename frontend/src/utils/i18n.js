@@ -3,8 +3,8 @@
 export const translations = {
   en: {
     // Portal Brand & Navigation
-    brandName: "Maktaba tul Muslim",
-    portalTitle: "Maktaba tul Muslim",
+    brandName: "Maktaba tul Muslim (مكتبة المسلم)",
+    portalTitle: "Maktaba tul Muslim (مكتبة المسلم)",
     portalSubtitle: "Digital Quran & Islamic Portal",
     home: "Home",
     quran: "Holy Quran",
@@ -289,8 +289,8 @@ export const translations = {
 
   ur: {
     // Portal Brand & Navigation
-    brandName: "Maktaba tul Muslim",
-    portalTitle: "Maktaba tul Muslim",
+    brandName: "Maktaba tul Muslim (مكتبة المسلم)",
+    portalTitle: "Maktaba tul Muslim (مكتبة المسلم)",
     portalSubtitle: "ڈیجیٹل قرآن و اسلامی پورٹل",
     home: "ہوم پیج",
     quran: "قرآن مجید",
@@ -575,8 +575,8 @@ export const translations = {
 
   br: {
     // Portal Brand & Navigation
-    brandName: "Maktaba tul Muslim",
-    portalTitle: "Maktaba tul Muslim",
+    brandName: "Maktaba tul Muslim (مكتبة المسلم)",
+    portalTitle: "Maktaba tul Muslim (مكتبة المسلم)",
     portalSubtitle: "براہوئی ڈیجیٹل قرآن و اسلامی پورٹل",
     home: "باغ (ہوم)",
     quran: "قرآن پاک",
