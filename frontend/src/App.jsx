@@ -49,7 +49,6 @@ const InheritanceView = lazy(() => import('./views/InheritanceView'));
 const RamadanView = lazy(() => import('./views/RamadanView'));
 const CardCreatorView = lazy(() => import('./views/CardCreatorView'));
 const LiveView = lazy(() => import('./views/LiveView'));
-const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
 const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
 const WorldClockView = lazy(() => import('./views/WorldClockView'));
 import SocialCardModal from './components/SocialCardModal';
@@ -95,7 +94,6 @@ function MainAppContent() {
     ramadan: '/ramadan',
     cardCreator: '/card-creator',
     live: '/live',
-    quranWords: '/quran-words',
     brahui: '/brahui',
     worldClock: '/world-clock',
     contact: '/contact',
@@ -270,11 +268,6 @@ function MainAppContent() {
         title: '24/7 Makkah & Madinah Live Stream & Quran MP3 Radio | Maktaba tul Muslim',
         desc: 'Watch live 24/7 HD video streams from Al-Masjid Al-Haram (Makkah Live) and Al-Masjid An-Nabawi (Madinah Live) and listen to 24/7 Quran Radio.',
         keywords: 'Makkah Live Stream, Madinah Live HD, 24/7 Quran Radio, Live Kaaba Stream, Qari Sudais Live Audio'
-      },
-      quranWords: {
-        title: '80% Quranic Vocabulary Flashcards & Root Words Trainer | Maktaba tul Muslim',
-        desc: 'Learn the most frequent 80% Quranic Arabic vocabulary words with interactive flashcards, audio pronunciations, and root letter breakdowns.',
-        keywords: 'Quran Vocabulary Flashcards, Learn Quranic Arabic, Most Frequent Quran Words, Arabic Root Words, Quran Word Meanings'
       },
       brahui: {
         title: 'Brahui (Brohi) Digital Islamic Heritage & Literature Hub | Maktaba tul Muslim',
@@ -538,10 +531,6 @@ function MainAppContent() {
 
           {activeTab === 'live' && (
             <LiveView />
-          )}
-
-          {activeTab === 'quranWords' && (
-            <QuranWordsView />
           )}
 
           {activeTab === 'brahui' && (

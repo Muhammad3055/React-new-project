@@ -40,7 +40,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: '🎨 Quote Card Creator', icon: 'fas fa-palette', action: () => { navigateToTab('cardCreator'); setShowExtrasMenu(false); } },
     { label: '📺 24/7 Makkah & Madinah Live', icon: 'fas fa-broadcast-tower', action: () => { navigateToTab('live'); setShowExtrasMenu(false); } },
     { label: '🌐 World Clock & Todo List', icon: 'fas fa-globe', action: () => { navigateToTab('worldClock'); setShowExtrasMenu(false); } },
-    { label: '🧠 80% Quran Vocabulary', icon: 'fas fa-brain', action: () => { navigateToTab('quranWords'); setShowExtrasMenu(false); } },
     { label: '📜 Brahui Heritage Hub', icon: 'fas fa-scroll', action: () => { navigateToTab('brahui'); setShowExtrasMenu(false); } },
 
     { label: '🛡️ Daily Protection (Nazar)', icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },

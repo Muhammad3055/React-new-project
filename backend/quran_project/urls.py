@@ -86,7 +86,6 @@ urlpatterns = [
     path('card-creator/', root_health_view, name='card_creator'),
     path('live/', root_health_view, name='live'),
     path('world-clock/', root_health_view, name='world_clock'),
-    path('quran-words/', root_health_view, name='quran_words'),
     path('brahui/', root_health_view, name='brahui'),
     path('contact/', root_health_view, name='contact'),
     path('upload/', root_health_view, name='upload'),
