@@ -128,6 +128,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'tajweed', label: 'Tajweed', icon: 'fas fa-book-reader' },
     { id: 'ramadan', label: 'Ramadan', icon: 'fas fa-moon' },
     { id: 'live', label: '24/7 Live', icon: 'fas fa-podcast' },
+    { id: 'worldClock', label: 'World Clock', icon: 'fas fa-globe' },
   ];
 
 

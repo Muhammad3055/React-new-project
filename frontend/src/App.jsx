@@ -51,6 +51,7 @@ const CardCreatorView = lazy(() => import('./views/CardCreatorView'));
 const LiveView = lazy(() => import('./views/LiveView'));
 const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
 const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
+const WorldClockView = lazy(() => import('./views/WorldClockView'));
 import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
@@ -96,6 +97,7 @@ function MainAppContent() {
     live: '/live',
     quranWords: '/quran-words',
     brahui: '/brahui',
+    worldClock: '/world-clock',
     contact: '/contact',
     about: '/about',
     bookmarks: '/bookmarks',
@@ -278,6 +280,11 @@ function MainAppContent() {
         title: 'Brahui (Brohi) Digital Islamic Heritage & Literature Hub | Maktaba tul Muslim',
         desc: 'Preserving and digitizing authentic Brahui Quran translations, Tafseer manuscripts, Taqreer lectures, and classical Islamic literature.',
         keywords: 'Brahui Quran, Brohi Islamic Books, Brahui Taqreer MP3, Brahui Tafseer, Brahui Islamic Literature'
+      },
+      worldClock: {
+        title: 'Islamic World Clock & Daily Todo List Tracker | Maktaba tul Muslim',
+        desc: 'Track live local times and prayer schedules for world cities, customize your saved city dashboard, and manage your daily Islamic spiritual checklist.',
+        keywords: 'Islamic World Clock, Makkah Time Live, Madinah Time, World Prayer Times, Daily Islamic Todo List, Muslim Task Checklist'
       },
       contact: {
         title: 'Contact Us & Send Feedback | Maktaba tul Muslim',
@@ -539,6 +546,10 @@ function MainAppContent() {
 
           {activeTab === 'brahui' && (
             <BrahuiHeritageView />
+          )}
+
+          {activeTab === 'worldClock' && (
+            <WorldClockView />
           )}
 
           {activeTab === 'contact' && (
