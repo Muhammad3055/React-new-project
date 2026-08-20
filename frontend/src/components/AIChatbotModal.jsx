@@ -44,7 +44,14 @@ const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
 export default function AIChatbotModal({ isOpen, onClose }) {
   const { lang: siteLang } = useLanguage();
   const [selectedLang, setSelectedLang] = useState('auto');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('quran_portal_chat_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   const [inputPrompt, setInputPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [agentStep, setAgentStep] = useState('');
@@ -58,6 +65,24 @@ export default function AIChatbotModal({ isOpen, onClose }) {
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // Automatically persist messages
+  useEffect(() => {
+    try {
+      localStorage.setItem('quran_portal_chat_history', JSON.stringify(messages));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [messages]);
+
+  const clearChatHistory = () => {
+    if (window.confirm("Are you sure you want to clear your chat history?")) {
+      setMessages([]);
+      try {
+        localStorage.removeItem('quran_portal_chat_history');
+      } catch (e) {}
+    }
+  };
 
 
   useEffect(() => {
@@ -279,6 +304,15 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {messages.length > 0 && (
+            <button onClick={clearChatHistory} title="Clear Chat History" style={{
+              background: '#fef2f2', border: 'none', color: '#ef4444', borderRadius: '50%',
+              width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s'
+            }}>
+              <RefreshCw size={15} />
+            </button>
+          )}
           <button onClick={onClose} style={{
             background: '#f1f5f9', border: 'none', color: '#64748b', borderRadius: '50%',
             width: '32px', height: '32px', display: 'flex', alignItems: 'center',

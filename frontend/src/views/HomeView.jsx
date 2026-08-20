@@ -80,6 +80,65 @@ const DAILY_VERSES_COLLECTION = [
   }
 ];
 
+const HADITH_OF_THE_DAY_COLLECTION = [
+  {
+    book: "Sahih Bukhari",
+    number: 1,
+    grade: "Sahih",
+    arabic: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
+    translation_en: "Actions are judged by intentions, and every person will get what they intended.",
+    translation_ur: "اعمال کا دارومدار نیتوں پر ہے، اور ہر انسان کو وہی ملے گا جس کی اس نے نیت کی تھی۔"
+  },
+  {
+    book: "Sahih Muslim",
+    number: 223,
+    grade: "Sahih",
+    arabic: "الطَّهُورُ شَطْرُ الإِيمَانِ",
+    translation_en: "Purity is half of faith.",
+    translation_ur: "پاکیزگی اور طہارت نصف ایمان ہے۔"
+  },
+  {
+    book: "Sahih Bukhari",
+    number: 6412,
+    grade: "Sahih",
+    arabic: "كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ",
+    translation_en: "Be in this world as if you were a stranger or a traveler on a path.",
+    translation_ur: "دنیا میں اس طرح رہو گویا تم ایک مسافر یا راہ چلتے راہگیر ہو۔"
+  },
+  {
+    book: "Sahih Bukhari",
+    number: 5027,
+    grade: "Sahih",
+    arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
+    translation_en: "The best among you are those who learn the Quran and teach it.",
+    translation_ur: "تم میں سے سب سے بہتر وہ شخص ہے جو قرآن سیکھے اور اسے دوسروں کو سکھائے۔"
+  },
+  {
+    book: "Sahih Bukhari",
+    number: 13,
+    grade: "Sahih",
+    arabic: "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    translation_en: "None of you will have true faith until he wishes for his brother what he wishes for himself.",
+    translation_ur: "تم میں سے کوئی بھی اس وقت تک سچا مؤمن نہیں ہو سکتا جب تک وہ اپنے بھائی کے لیے بھی وہی پسند نہ کرے جو اپنے لیے کرتا ہے۔"
+  },
+  {
+    book: "Sahih Bukhari",
+    number: 6011,
+    grade: "Sahih",
+    arabic: "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    translation_en: "Whoever believes in Allah and the Last Day should speak good things or keep silent.",
+    translation_ur: "جو شخص اللہ اور آخرت کے دن پر ایمان رکھتا ہو، اسے چاہیے کہ اچھی بات کہے یا خاموش رہے۔"
+  },
+  {
+    book: "Sahih Muslim",
+    number: 2564,
+    grade: "Sahih",
+    arabic: "الْمُسْلِمُ أَخُو الْمُسْلِمِ لاَ يَظْلِمُهُ وَلاَ يَخْذُلُهُ وَلاَ يَحْقِرُهُ",
+    translation_en: "A Muslim is the brother of a Muslim. He does not oppress him, nor does he abandon him, nor does he humiliate him.",
+    translation_ur: "مسلمان مسلمان کا بھائی ہے، وہ نہ اس پر ظلم کرتا ہے، نہ اسے بے یار و مددگار چھوڑتا ہے، اور نہ ہی اسے حقیر سمجھتا ہے۔"
+  }
+];
+
 export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal }) {
   const { t } = useLanguage();
   const handleNav = (tab) => {
@@ -93,6 +152,15 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const [books, setBooks] = useState(DEFAULT_BOOKS);
   const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
+
+  const [copiedHadith, setCopiedHadith] = useState(false);
+  const getDailyHadith = () => {
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const index = dayOfYear % HADITH_OF_THE_DAY_COLLECTION.length;
+    return HADITH_OF_THE_DAY_COLLECTION[index];
+  };
+  const dailyHadith = getDailyHadith();
 
   const [locationInfo, setLocationInfo] = useState(null);
   const [ramadanCountdown, setRamadanCountdown] = useState(null);
@@ -472,6 +540,64 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             </p>
           </div>
         )}
+
+        {/* ═══ HADITH OF THE DAY BANNER ═══ */}
+        <div style={{
+          marginTop: '1.75rem',
+          borderRadius: '24px',
+          background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
+          border: '2px solid var(--accent-gold)',
+          padding: '1.8rem 2rem',
+          color: '#ffffff',
+          boxShadow: '0 12px 35px rgba(2, 44, 34, 0.25)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Decorative gold graphic background */}
+          <div style={{ position: 'absolute', right: '-40px', bottom: '-40px', fontSize: '9rem', opacity: 0.05, pointerEvents: 'none', transform: 'rotate(-15deg)' }}>🕌</div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>📜</span>
+              <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                Hadith of the Day &bull; {dailyHadith.book} #{dailyHadith.number}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '3px 10px', borderRadius: '10px', background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0' }}>
+                ✓ {dailyHadith.grade}
+              </span>
+              <button
+                onClick={() => {
+                  const shareText = `📜 Hadith of the Day (${dailyHadith.book} #${dailyHadith.number}):\n\nArabic: ${dailyHadith.arabic}\n\nEnglish: ${dailyHadith.translation_en}\n\nUrdu: ${dailyHadith.translation_ur}\n\nRead more at Maktaba tul Muslim`;
+                  navigator.clipboard.writeText(shareText);
+                  setCopiedHadith(true);
+                  setTimeout(() => setCopiedHadith(false), 2000);
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+                  color: '#ffffff', padding: '4px 12px', borderRadius: '8px', fontSize: '0.75rem',
+                  fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s'
+                }}
+              >
+                {copiedHadith ? '✓ Copied' : '📋 Copy Hadith'}
+              </button>
+            </div>
+          </div>
+
+          <p className="arabic-font" style={{ fontSize: '1.5rem', lineHeight: '2', color: '#fcd34d', textAlign: 'right', direction: 'rtl', marginBottom: '1.25rem', fontFamily: "'Amiri', serif" }}>
+            {dailyHadith.arabic}
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '1rem' }}>
+            <p style={{ margin: 0, fontSize: '0.98rem', color: '#cbd5e1', lineHeight: '1.6' }}>
+              <b>English:</b> "{dailyHadith.translation_en}"
+            </p>
+            <p style={{ margin: 0, fontSize: '0.98rem', color: '#cbd5e1', lineHeight: '1.6', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', serif" }}>
+              <b>اردو:</b> "{dailyHadith.translation_ur}"
+            </p>
+          </div>
+        </div>
 
         {/* Interactive Islamic Tools & Services Section */}
 
