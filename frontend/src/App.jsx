@@ -41,6 +41,16 @@ const UserDashboardView = lazy(() => import('./views/UserDashboardView'));
 const PrayersView = lazy(() => import('./views/PrayersView'));
 const QuizView = lazy(() => import('./views/QuizView'));
 const SeerahView = lazy(() => import('./views/SeerahView'));
+const ZakatView = lazy(() => import('./views/ZakatView'));
+const HajjUmrahView = lazy(() => import('./views/HajjUmrahView'));
+const TajweedView = lazy(() => import('./views/TajweedView'));
+const IslamicNamesView = lazy(() => import('./views/IslamicNamesView'));
+const InheritanceView = lazy(() => import('./views/InheritanceView'));
+const RamadanView = lazy(() => import('./views/RamadanView'));
+const CardCreatorView = lazy(() => import('./views/CardCreatorView'));
+const LiveView = lazy(() => import('./views/LiveView'));
+const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
+const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
 import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
@@ -76,6 +86,16 @@ function MainAppContent() {
     tasbeeh: '/tasbeeh',
     duas: '/duas',
     khatam: '/khatam-tracker',
+    zakat: '/zakat',
+    hajjUmrah: '/hajj-umrah',
+    tajweed: '/tajweed',
+    names: '/names',
+    inheritance: '/inheritance',
+    ramadan: '/ramadan',
+    cardCreator: '/card-creator',
+    live: '/live',
+    quranWords: '/quran-words',
+    brahui: '/brahui',
     contact: '/contact',
     about: '/about',
     bookmarks: '/bookmarks',
@@ -208,6 +228,56 @@ function MainAppContent() {
         title: 'Quran Khatam Progress Tracker & Goal Planner | Maktaba tul Muslim',
         desc: 'Track your daily Quran reading progress, set 30-day Ramadan Quran Khatam goals, and manage completed Juz and Surahs with personalized progress analytics.',
         keywords: 'Quran Khatam Tracker, Ramadan Quran Goal, Quran Reading Progress, Daily Juz Tracker'
+      },
+      zakat: {
+        title: 'Zakat & Nisab Calculator (زكاة) - Multi-Currency Sharia Engine | Maktaba tul Muslim',
+        desc: 'Calculate your annual Zakat (2.5%) for Cash, Gold, Silver, Stocks, Crypto, Real Estate, and Business assets based on authentic Nisab thresholds.',
+        keywords: 'Zakat Calculator, Nisab Gold Silver, Zakat in PKR USD SAR, Zakat on Cash Gold Stocks, Calculate Zakat Online'
+      },
+      hajjUmrah: {
+        title: 'Hajj & Umrah Interactive Pilgrim Guide (عمرة وحج) | Maktaba tul Muslim',
+        desc: 'Step-by-step interactive guide for Umrah and Hajj with audio duas, Tawaf & Sa\'i digital counters, and pilgrim readiness checklists.',
+        keywords: 'Umrah Guide, Hajj Guide, Tawaf Counter, Sa\'i Counter, Duas for Umrah, Step by Step Umrah, How to Perform Umrah'
+      },
+      tajweed: {
+        title: 'Tajweed Rules & Quranic Makharij Pronunciation Guide | Maktaba tul Muslim',
+        desc: 'Learn Tajweed rules of Noon Sakinah, Tanween, Qalqalah, Ghunnah, and makharij points with color-coded examples and audio samples.',
+        keywords: 'Tajweed Rules, Noon Sakinah Rules, Qalqalah, Ikhfa, Idgham, Izhar, Arabic Makharij, Learn Quran Tajweed'
+      },
+      names: {
+        title: 'Islamic Baby Names & Meanings Dictionary (أسماء إسلامية) | Maktaba tul Muslim',
+        desc: 'Search 5,000+ authentic Arabic, Urdu, and Brahui Islamic baby boy & girl names with Quranic meanings, Arabic script, and origins.',
+        keywords: 'Islamic Baby Names, Muslim Names for Boys, Muslim Names for Girls, Arabic Baby Names, Urdu Islamic Names, Brahui Names'
+      },
+      inheritance: {
+        title: 'Islamic Inheritance Shares Calculator (علم الفرائض) | Maktaba tul Muslim',
+        desc: 'Calculate legal Sharia inheritance distribution (Mirath) for deceased estate heirs based on Quranic jurisprudence (Surah An-Nisa).',
+        keywords: 'Islamic Inheritance Calculator, Mirath Shares, Surah Nisa Inheritance, Sharia Estate Distribution, Faraid Calculator'
+      },
+      ramadan: {
+        title: 'Ramadan Mubarak Hub - Fasting Tracker & Laylatul Qadr Duas | Maktaba tul Muslim',
+        desc: 'Track your 30-day Ramadan fasts, Taraweeh goals, Suhoor & Iftar timing guides, Laylatul Qadr supplications, and I\'tekaf checklist.',
+        keywords: 'Ramadan Tracker, Ramadan Fasting Goal, Suhoor Iftar Time, Laylatul Qadr Dua, Ramadan Planner'
+      },
+      cardCreator: {
+        title: 'Quran Verse & Hadith Quote Card Image Generator | Maktaba tul Muslim',
+        desc: 'Create, style, and download custom Quranic verse and Hadith quote image cards with calligraphy wallpapers for WhatsApp and Instagram.',
+        keywords: 'Quran Quote Card Generator, Islamic Card Creator, Verse Image Generator, Islamic Wallpaper Quote, Download Quran Quotes'
+      },
+      live: {
+        title: '24/7 Makkah & Madinah Live Stream & Quran MP3 Radio | Maktaba tul Muslim',
+        desc: 'Watch live 24/7 HD video streams from Al-Masjid Al-Haram (Makkah Live) and Al-Masjid An-Nabawi (Madinah Live) and listen to 24/7 Quran Radio.',
+        keywords: 'Makkah Live Stream, Madinah Live HD, 24/7 Quran Radio, Live Kaaba Stream, Qari Sudais Live Audio'
+      },
+      quranWords: {
+        title: '80% Quranic Vocabulary Flashcards & Root Words Trainer | Maktaba tul Muslim',
+        desc: 'Learn the most frequent 80% Quranic Arabic vocabulary words with interactive flashcards, audio pronunciations, and root letter breakdowns.',
+        keywords: 'Quran Vocabulary Flashcards, Learn Quranic Arabic, Most Frequent Quran Words, Arabic Root Words, Quran Word Meanings'
+      },
+      brahui: {
+        title: 'Brahui (Brohi) Digital Islamic Heritage & Literature Hub | Maktaba tul Muslim',
+        desc: 'Preserving and digitizing authentic Brahui Quran translations, Tafseer manuscripts, Taqreer lectures, and classical Islamic literature.',
+        keywords: 'Brahui Quran, Brohi Islamic Books, Brahui Taqreer MP3, Brahui Tafseer, Brahui Islamic Literature'
       },
       contact: {
         title: 'Contact Us & Send Feedback | Maktaba tul Muslim',
@@ -429,6 +499,46 @@ function MainAppContent() {
 
           {activeTab === 'khatam' && (
             <KhatamTrackerView navigateToTab={navigateToTab} user={user} openAuthModal={openAuthModal} />
+          )}
+
+          {activeTab === 'zakat' && (
+            <ZakatView />
+          )}
+
+          {activeTab === 'hajjUmrah' && (
+            <HajjUmrahView />
+          )}
+
+          {activeTab === 'tajweed' && (
+            <TajweedView />
+          )}
+
+          {activeTab === 'names' && (
+            <IslamicNamesView />
+          )}
+
+          {activeTab === 'inheritance' && (
+            <InheritanceView />
+          )}
+
+          {activeTab === 'ramadan' && (
+            <RamadanView />
+          )}
+
+          {activeTab === 'cardCreator' && (
+            <CardCreatorView />
+          )}
+
+          {activeTab === 'live' && (
+            <LiveView />
+          )}
+
+          {activeTab === 'quranWords' && (
+            <QuranWordsView />
+          )}
+
+          {activeTab === 'brahui' && (
+            <BrahuiHeritageView />
           )}
 
           {activeTab === 'contact' && (

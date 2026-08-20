@@ -123,6 +123,11 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
+    { id: 'zakat', label: 'Zakat', icon: 'fas fa-calculator' },
+    { id: 'hajjUmrah', label: 'Hajj & Umrah', icon: 'fas fa-[#f59e0b] fa-kaaba' },
+    { id: 'tajweed', label: 'Tajweed', icon: 'fas fa-book-reader' },
+    { id: 'ramadan', label: 'Ramadan', icon: 'fas fa-moon' },
+    { id: 'live', label: '24/7 Live', icon: 'fas fa-podcast' },
   ];
 
 
