@@ -31,13 +31,25 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: '💰 Zakat Calculator', icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
+    { label: '🕋 Hajj & Umrah Guide', icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },
+    { label: '📖 Tajweed & Makharij', icon: 'fas fa-book-reader', action: () => { navigateToTab('tajweed'); setShowExtrasMenu(false); } },
+    { label: '👶 Islamic Baby Names', icon: 'fas fa-signature', action: () => { navigateToTab('names'); setShowExtrasMenu(false); } },
+    { label: '⚖️ Mirath Inheritance', icon: 'fas fa-balance-scale', action: () => { navigateToTab('inheritance'); setShowExtrasMenu(false); } },
+    { label: '🌙 Ramadan Hub & Tracker', icon: 'fas fa-moon', action: () => { navigateToTab('ramadan'); setShowExtrasMenu(false); } },
+    { label: '🎨 Quote Card Creator', icon: 'fas fa-palette', action: () => { navigateToTab('cardCreator'); setShowExtrasMenu(false); } },
+    { label: '📺 24/7 Makkah & Madinah Live', icon: 'fas fa-broadcast-tower', action: () => { navigateToTab('live'); setShowExtrasMenu(false); } },
+    { label: '🌐 World Clock & Todo List', icon: 'fas fa-globe', action: () => { navigateToTab('worldClock'); setShowExtrasMenu(false); } },
+    { label: '🧠 80% Quran Vocabulary', icon: 'fas fa-brain', action: () => { navigateToTab('quranWords'); setShowExtrasMenu(false); } },
+    { label: '📜 Brahui Heritage Hub', icon: 'fas fa-scroll', action: () => { navigateToTab('brahui'); setShowExtrasMenu(false); } },
+
     { label: '🛡️ Daily Protection (Nazar)', icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
-    { label: '🧠 Daily Islamic Quiz', icon: 'fas fa-brain', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
-    { label: '📜 Seerah Timeline', icon: 'fas fa-scroll', action: () => { navigateToTab('seerah'); setShowExtrasMenu(false); } },
+    { label: '🧠 Daily Islamic Quiz', icon: 'fas fa-question-circle', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
+    { label: '📜 Seerah Timeline', icon: 'fas fa-history', action: () => { navigateToTab('seerah'); setShowExtrasMenu(false); } },
     { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
     { label: t('islamicImages'), icon: 'fas fa-image', action: () => { navigateToTab('images'); setShowExtrasMenu(false); } },
     { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
-    { label: t('islamicCalendar'), icon: 'fas fa-moon', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
+    { label: t('islamicCalendar'), icon: 'fas fa-calendar-alt', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
     { label: '🌟 Friday Jumu\'ah Special', icon: 'fas fa-sun', action: () => { if (openFriday) openFriday(); setShowExtrasMenu(false); } },
     { label: '📅 Daily Surahs', icon: 'fas fa-calendar-day', action: () => { if (openDailySurahs) openDailySurahs(); setShowExtrasMenu(false); } },
     { label: t('hifzTracker'), icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
@@ -48,10 +60,16 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: t('namesOfAllah'), icon: 'fas fa-star', action: () => { navigateToTab('namesOfAllah'); setShowExtrasMenu(false); } },
     { label: t('tasbeeh'), icon: 'fas fa-hand-holding-heart', action: () => { navigateToTab('tasbeeh'); setShowExtrasMenu(false); } },
     { label: t('duas'), icon: 'fas fa-hands', action: () => { navigateToTab('duas'); setShowExtrasMenu(false); } },
-    { label: t('hadith'), icon: 'fas fa-scroll', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
+    { label: t('hadith'), icon: 'fas fa-quote-left', action: () => { navigateToTab('hadith'); setShowExtrasMenu(false); } },
     { label: t('tafseer'), icon: 'fas fa-bookmark', action: () => { navigateToTab('tafseer'); setShowExtrasMenu(false); } },
     { label: t('aboutUs'), icon: 'fas fa-info-circle', action: () => { navigateToTab('about'); setShowExtrasMenu(false); } },
     { label: t('contact'), icon: 'fas fa-envelope', action: () => { navigateToTab('contact'); setShowExtrasMenu(false); } },
+  ];
+
+  const navItems = [
+    { id: 'home', label: t('home'), icon: 'fas fa-home' },
+    { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
+    { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
   ];
 
 
@@ -118,18 +136,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         window.location.href = '/';
       });
   };
-
-  const navItems = [
-    { id: 'home', label: t('home'), icon: 'fas fa-home' },
-    { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
-    { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
-    { id: 'zakat', label: 'Zakat', icon: 'fas fa-calculator' },
-    { id: 'hajjUmrah', label: 'Hajj & Umrah', icon: 'fas fa-[#f59e0b] fa-kaaba' },
-    { id: 'tajweed', label: 'Tajweed', icon: 'fas fa-book-reader' },
-    { id: 'ramadan', label: 'Ramadan', icon: 'fas fa-moon' },
-    { id: 'live', label: '24/7 Live', icon: 'fas fa-podcast' },
-    { id: 'worldClock', label: 'World Clock', icon: 'fas fa-globe' },
-  ];
 
 
 
