@@ -214,6 +214,28 @@ def seed_database():
             "pages_count": 640,
             "language": "Arabic / English",
             "category": cat_hadith_cat
+        },
+        {
+            "title": "Sahih Al-Bukhari (Complete English Translation)",
+            "author": "Imam Muhammad al-Bukhari",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Sahih-Al-Bukhari.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "The most authentic compilation of Hadiths of the Prophet Muhammad (peace be upon him) containing the complete Arabic text and English translation.",
+            "pages_count": 3800,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Sahih Muslim (Complete English Translation)",
+            "author": "Imam Muslim ibn al-Hajjaj",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Sahih-Muslim.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "The second of the two most authentic collections of Hadiths, compiled by Imam Muslim, detailing the Sunnah of Prophet Muhammad (peace be upon him).",
+            "pages_count": 2900,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
         }
     ]
 
