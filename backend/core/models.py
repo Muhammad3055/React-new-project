@@ -57,7 +57,7 @@ class TaqreerAudio(models.Model):
         ('arabic', 'Arabic (عربي)'),
         ('brahui', 'Brahui (براہوئی)'),
         ('urdu', 'Urdu (اردو)'),
-        ('mixed', 'Mixed Collection (مکسڈ تقارير)'),
+        ('mixed', 'Mixed Collection (مکسڈ محاضرات)'),
     ]
 
 
@@ -73,8 +73,8 @@ class TaqreerAudio(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        verbose_name = "Taqreer Audio"
-        verbose_name_plural = "Taqreer Audios"
+        verbose_name = "Muhazirah (Lecture)"
+        verbose_name_plural = "Muhazirat (Lectures)"
 
     def __str__(self):
         return f"[{self.get_language_display()}] {self.title} - {self.speaker}"

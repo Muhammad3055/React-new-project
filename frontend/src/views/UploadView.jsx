@@ -285,7 +285,7 @@ export default function UploadView({ user }) {
           <i className="fas fa-cloud-upload-alt" style={{ color: 'var(--accent-gold)' }}></i> Admin Content Upload & Portal
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
-          Upload MP3 Taqreer voice notes, PDF books, Hadith Text, Tafseer Commentary & External Links directly to the library.
+          Upload MP3 Lectures (Muhazirat), PDF books, Hadith Text, Tafseer Commentary & External Links directly to the library.
         </p>
       </div>
 
@@ -312,7 +312,7 @@ export default function UploadView({ user }) {
             gap: '0.4rem'
           }}
         >
-          <i className="fas fa-headphones" style={{ color: '#10b981' }}></i> Taqreer MP3 Audio
+          <i className="fas fa-headphones" style={{ color: '#10b981' }}></i> Muhazirat (Lectures) MP3
         </button>
 
         <button
@@ -411,10 +411,10 @@ export default function UploadView({ user }) {
         {/* --- TAB 1: TAQREER MP3 AUDIO --- */}
         {activeTab === 'taqreer' && (
           <form onSubmit={handleTaqreerSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3><i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> Add New Taqreer MP3 Audio</h3>
+            <h3><i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> Add New Lecture (Muhazirah) MP3</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Taqreer Title *</label>
+                <label className="form-label">Lecture (Muhazirah) Title *</label>
                 <input type="text" className="form-input" required value={taqreerData.title} onChange={e => setTaqreerData({ ...taqreerData, title: e.target.value })} placeholder="e.g. Virtue of Reflecting on Quran" />
               </div>
               <div>
@@ -454,11 +454,11 @@ export default function UploadView({ user }) {
 
             <div>
               <label className="form-label">Description</label>
-              <textarea className="form-textarea" rows="3" value={taqreerData.description} onChange={e => setTaqreerData({ ...taqreerData, description: e.target.value })} placeholder="Brief summary of the Taqreer voice note..."></textarea>
+              <textarea className="form-textarea" rows="3" value={taqreerData.description} onChange={e => setTaqreerData({ ...taqreerData, description: e.target.value })} placeholder="Brief summary of the lecture..."></textarea>
             </div>
 
             <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-upload"></i> Save & Upload Taqreer MP3
+              <i className="fas fa-upload"></i> Save & Upload Lecture MP3
             </button>
           </form>
         )}
