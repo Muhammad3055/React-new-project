@@ -17,12 +17,19 @@
       #changelist {
         display: flex !important;
         flex-direction: row-reverse !important;
-        flex-wrap: nowrap !important;
+        flex-wrap: wrap !important;
         align-items: flex-start !important;
         gap: 24px !important;
         width: 100% !important;
         box-sizing: border-box !important;
       }
+      #changelist #toolbar {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        margin: 0 0 16px 0 !important;
+        box-sizing: border-box !important;
+      }
+      #changelist-form,
       #changelist.filtered .changelist-form-container {
         flex: 1 1 auto !important;
         width: auto !important;
