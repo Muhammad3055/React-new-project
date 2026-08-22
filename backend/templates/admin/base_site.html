@@ -12,33 +12,38 @@
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <style>
-    /* Fix Django Admin Changelist layout spacing and filter alignment on desktop */
+    /* Fix Django Admin Changelist layout using a robust CSS Grid on desktop */
     @media (min-width: 768px) {
-      #changelist {
-        display: flex !important;
-        flex-direction: row-reverse !important;
-        flex-wrap: wrap !important;
-        align-items: flex-start !important;
-        gap: 24px !important;
+      #changelist.filtered {
+        display: grid !important;
+        grid-template-columns: 240px 1fr !important;
+        grid-template-rows: auto auto !important;
+        gap: 20px !important;
         width: 100% !important;
         box-sizing: border-box !important;
       }
-      #changelist #toolbar {
-        flex: 0 0 100% !important;
+      #changelist.filtered #toolbar {
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
         width: 100% !important;
-        margin: 0 0 16px 0 !important;
+        margin: 0 0 10px 0 !important;
         box-sizing: border-box !important;
-      }
-      #changelist-form,
-      #changelist.filtered .changelist-form-container {
-        flex: 1 1 auto !important;
-        width: auto !important;
-        min-width: 0 !important;
       }
       #changelist-filter {
-        flex: 0 0 240px !important;
+        grid-column: 1 !important;
+        grid-row: 2 !important;
         margin: 0 !important;
-        position: static !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      #changelist.filtered #changelist-form,
+      #changelist.filtered .changelist-form-container {
+        grid-column: 2 !important;
+        grid-row: 2 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
       }
     }
     .main {
