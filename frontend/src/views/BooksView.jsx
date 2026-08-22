@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { fetchWithCache, getApiUrl } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import { useLanguage } from '../context/LanguageContext';
@@ -672,7 +673,7 @@ export default function BooksView({ openReportModal, user }) {
       {/* ========================================================= */}
       {/* High-Clarity Online Document Reader Modal Overlay         */}
       {/* ========================================================= */}
-      {previewDoc && (
+      {previewDoc && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -1018,7 +1019,8 @@ export default function BooksView({ openReportModal, user }) {
               </a>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
 
