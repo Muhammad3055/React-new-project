@@ -259,14 +259,6 @@ export default function BooksView({ openReportModal, user }) {
       return `https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`;
     }
 
-    if (viewerEngine === 'pdfjs') {
-      return `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(fullUrl)}`;
-    }
-
-    if (viewerEngine === 'office') {
-      return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
-    }
-
     // Default Direct Native Mode for PDF / Local files
     return fullUrl;
   };
@@ -274,16 +266,12 @@ export default function BooksView({ openReportModal, user }) {
   const handleOpenDocModal = (doc) => {
     setPreviewDoc(doc);
     setIsFullscreen(false);
-    const rawUrl = getDocRawUrl(doc);
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (isMobile && isPdfFormat(doc)) {
+    if (isMobile) {
       setViewerEngine('google');
-    } else if (isPdfFormat(doc) || isLocalUrl(rawUrl)) {
-      // Default to Mozilla PDF.js viewer engine for 100% reliable PDF page rendering across all OS & browsers
-      setViewerEngine('pdfjs');
     } else {
-      setViewerEngine('office');
+      setViewerEngine('direct');
     }
   };
 
@@ -862,22 +850,10 @@ export default function BooksView({ openReportModal, user }) {
                   Google
                 </button>
                 <button
-                  onClick={() => setViewerEngine('pdfjs')}
-                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'pdfjs' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'pdfjs' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                >
-                  PDF.js
-                </button>
-                <button
                   onClick={() => setViewerEngine('direct')}
                   style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                 >
                   Native
-                </button>
-                <button
-                  onClick={() => setViewerEngine('office')}
-                  style={{ padding: '1px 6px', borderRadius: '10px', border: 'none', background: viewerEngine === 'office' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'office' ? '#fff' : '#475569', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                >
-                  Office
                 </button>
               </div>
 
@@ -928,36 +904,7 @@ export default function BooksView({ openReportModal, user }) {
                       onClick={() => setViewerEngine('google')}
                       style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
                     >
-                      <i className="fab fa-google"></i> Google
-                    </button>
-                    <button
-                      onClick={() => setViewerEngine('office')}
-                      style={{ background: '#ea580c', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
-                    >
-                      <i className="fas fa-file-word"></i> Office
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {viewerEngine === 'office' && (
-                <div style={{ background: '#fff7ed', color: '#9a3412', borderBottom: '1px solid #ffedd5', padding: '0.25rem 0.65rem', fontSize: '0.65rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.25rem', flexWrap: 'wrap' }}>
-                  <span>
-                    <i className="fas fa-file-word" style={{ marginRight: '0.2rem', color: '#ea580c' }}></i>
-                    Office Web Reader Mode (.docx / .pptx):
-                  </span>
-                  <div style={{ display: 'flex', gap: '0.25rem' }}>
-                    <button
-                      onClick={() => setViewerEngine('direct')}
-                      style={{ background: '#059669', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
-                    >
-                      Native Direct
-                    </button>
-                    <button
-                      onClick={() => setViewerEngine('google')}
-                      style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '1px 5px', borderRadius: '3px', cursor: 'pointer', fontSize: '0.63rem', fontWeight: 700, whiteSpace: 'nowrap' }}
-                    >
-                      Google Viewer
+                      <i className="fab fa-google"></i> Google Viewer
                     </button>
                   </div>
                 </div>
