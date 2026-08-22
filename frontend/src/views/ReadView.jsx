@@ -97,7 +97,19 @@ const toArabicNumerals = (num) => {
 export default function ReadView({ user, playTrack, openReportModal, openSocialCardModal }) {
   const { lang, t } = useLanguage();
   const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
-  const [selectedSurah, setSelectedSurah] = useState(1);
+  const [selectedSurah, setSelectedSurah] = useState(() => {
+    if (user && user.preferences && user.preferences.last_read_surah) {
+      return user.preferences.last_read_surah;
+    }
+    try {
+      const saved = localStorage.getItem('quranLastRead');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.surahNumber) return parsed.surahNumber;
+      }
+    } catch (e) {}
+    return 1;
+  });
   const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
 
   // Main Modes: 'only_quran' (Pure Quran Pak Text, no voice) | 'with_translation' (Quran + Tarjuma)

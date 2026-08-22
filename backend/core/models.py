@@ -355,6 +355,21 @@ class UserProfilePreferences(models.Model):
     notif_daily_hadith = models.BooleanField(default=False)
     privacy_profile_visibility = models.CharField(max_length=20, default='public')
     privacy_show_activity = models.BooleanField(default=True)
+    
+    # Advanced Dashboard trackers & saved collections (JSON Fields)
+    saved_books = models.JSONField(default=list, blank=True)
+    saved_tafseers = models.JSONField(default=list, blank=True)
+    favorite_recitations = models.JSONField(default=list, blank=True)
+    quran_history = models.JSONField(default=list, blank=True)
+    book_history = models.JSONField(default=list, blank=True)
+    tafseer_history = models.JSONField(default=list, blank=True)
+    audio_history = models.JSONField(default=list, blank=True)
+    personal_collections = models.JSONField(default=list, blank=True)
+    user_notifications = models.JSONField(default=list, blank=True)
+    
+    # Extra settings
+    notif_new_content = models.BooleanField(default=True)
+    notif_system_announcements = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Preferences for {self.user.username}"

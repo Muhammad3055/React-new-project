@@ -363,12 +363,35 @@ function MainAppContent() {
   };
 
   const playTrack = (url, title, reciter, onEnded = null, onNext = null, onPrev = null) => {
-    if (typeof url === 'object' && url !== null) {
-      setCurrentTrack(url);
-    } else {
-      setCurrentTrack({ url, title, reciter, onEnded, onNext, onPrev });
-    }
+    const trackObj = (typeof url === 'object' && url !== null) ? url : { url, title, reciter, onEnded, onNext, onPrev };
+    setCurrentTrack(trackObj);
     setIsPlaying(true);
+
+    if (user) {
+      fetch(getApiUrl('/api/user/dashboard/'))
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            let history = data.audio_history || [];
+            const historyItem = {
+              track_title: trackObj.title || 'Unknown Track',
+              url: trackObj.url || '',
+              reciter: trackObj.reciter || 'Islamic Scholar',
+              timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            history = history.filter(h => h.track_title !== historyItem.track_title);
+            history.unshift(historyItem);
+            history = history.slice(0, 30);
+
+            fetch(getApiUrl('/api/user/preferences/update/'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ audio_history: history })
+            });
+          }
+        })
+        .catch(() => {});
+    }
   };
 
   const [socialCardData, setSocialCardData] = useState(null);
@@ -465,7 +488,7 @@ function MainAppContent() {
 
 
           {activeTab === 'tafseer' && (
-            <TafseerView openReportModal={openReportModal} />
+            <TafseerView openReportModal={openReportModal} user={user} />
           )}
 
           {activeTab === 'hadith' && (

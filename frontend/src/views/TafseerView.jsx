@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function TafseerView({ openReportModal }) {
+export default function TafseerView({ openReportModal, user }) {
   const [tafseers, setTafseers] = useState([]);
   const [surahList, setSurahList] = useState([]);
   const [query, setQuery] = useState('');
@@ -9,6 +9,78 @@ export default function TafseerView({ openReportModal }) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  const [userSavedTafseers, setUserSavedTafseers] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+    fetch('/api/user/dashboard/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          setUserSavedTafseers(data.saved_tafseers || []);
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
+  const toggleSaveTafseer = (surah, ayah, scholar) => {
+    if (!user) {
+      alert("Please sign in to save Tafseer comments.");
+      return;
+    }
+    const existing = [...userSavedTafseers];
+    const index = existing.findIndex(t => t.surah === surah && t.ayah === ayah);
+    let updated;
+    
+    if (index > -1) {
+      updated = existing.filter(t => !(t.surah === surah && t.ayah === ayah));
+    } else {
+      updated = [
+        ...existing,
+        {
+          surah: surah,
+          ayah: ayah,
+          scholar: scholar,
+          saved_at: new Date().toLocaleDateString()
+        }
+      ];
+    }
+    
+    setUserSavedTafseers(updated);
+    
+    fetch('/api/user/preferences/update/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ saved_tafseers: updated })
+    });
+  };
+
+  const logTafseerHistory = (surah, ayah) => {
+    if (!user) return;
+    
+    fetch('/api/user/dashboard/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          let history = data.tafseer_history || [];
+          const historyItem = {
+            surah: surah,
+            ayah: ayah,
+            timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          history = history.filter(h => !(h.surah === surah && h.ayah === ayah));
+          history.unshift(historyItem);
+          history = history.slice(0, 30);
+          
+          fetch('/api/user/preferences/update/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tafseer_history: history })
+          });
+        }
+      });
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -24,9 +96,14 @@ export default function TafseerView({ openReportModal }) {
         setSurahList(data.surah_list || []);
         setTotalPages(data.total_pages || 1);
         setLoading(false);
+
+        if (user && data.results && data.results.length > 0) {
+          const first = data.results[0];
+          logTafseerHistory(first.surah_number, first.ayah_number);
+        }
       })
       .catch(() => setLoading(false));
-  }, [debouncedQuery, selectedSurah, page]);
+  }, [debouncedQuery, selectedSurah, page, user]);
 
   return (
     <div className="container">
@@ -76,6 +153,18 @@ export default function TafseerView({ openReportModal }) {
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary-light)' }}>{item.scholar_name}</span>
+                  {user && (
+                    <button
+                      className="verse-btn"
+                      onClick={() => toggleSaveTafseer(item.surah_number, item.ayah_number, item.scholar_name)}
+                      style={{
+                        color: userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? '#3b82f6' : undefined
+                      }}
+                      title={userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? "Tafseer Saved" : "Save Tafseer"}
+                    >
+                      <i className={userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? "fas fa-bookmark" : "far fa-bookmark"}></i>
+                    </button>
+                  )}
                   <button
                     className="verse-btn"
                     title="Report Issue"

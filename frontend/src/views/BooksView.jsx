@@ -263,16 +263,126 @@ export default function BooksView({ openReportModal, user }) {
     return fullUrl;
   };
 
+  // Track user-saved books state
+  const [userSavedBooks, setUserSavedBooks] = useState([]);
+  
+  const fetchUserSavedBooks = () => {
+    if (!user) return;
+    fetch('/api/user/dashboard/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          setUserSavedBooks(data.saved_books || []);
+        }
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchUserSavedBooks();
+  }, [user]);
+
+  const toggleSaveBook = (bookId, favorite = false) => {
+    if (!user) {
+      alert("Please sign in to save books to your profile.");
+      return;
+    }
+    
+    const existing = [...userSavedBooks];
+    const index = existing.findIndex(b => b.book_id === bookId);
+    let updated;
+    
+    if (index > -1) {
+      if (favorite) {
+        // Toggle favorite status
+        existing[index].favorite = !existing[index].favorite;
+        updated = existing;
+      } else {
+        // Remove from library
+        updated = existing.filter(b => b.book_id !== bookId);
+      }
+    } else {
+      // Add new book to library
+      updated = [
+        ...existing,
+        {
+          book_id: bookId,
+          favorite: favorite,
+          progress_page: 1,
+          saved_at: new Date().toLocaleDateString()
+        }
+      ];
+    }
+    
+    setUserSavedBooks(updated);
+    
+    // Save to backend user preferences
+    fetch('/api/user/preferences/update/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ saved_books: updated })
+    });
+  };
+
+  const logBookHistory = (bookId, pageNum = 1) => {
+    if (!user) return;
+    
+    fetch('/api/user/dashboard/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          let history = data.book_history || [];
+          const historyItem = {
+            book_id: bookId,
+            page: pageNum,
+            timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          history = history.filter(h => h.book_id !== bookId);
+          history.unshift(historyItem);
+          history = history.slice(0, 30);
+          
+          fetch('/api/user/preferences/update/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_history: history })
+          });
+        }
+      });
+  };
+
+  const updateBookProgress = (bookId, pageNum) => {
+    if (!user) return;
+    const updated = userSavedBooks.map(b => {
+      if (b.book_id === bookId) {
+        return { ...b, progress_page: pageNum };
+      }
+      return b;
+    });
+    setUserSavedBooks(updated);
+    
+    fetch('/api/user/preferences/update/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ saved_books: updated })
+    });
+    
+    logBookHistory(bookId, pageNum);
+  };
+
   const handleOpenDocModal = (doc) => {
     setPreviewDoc(doc);
     setIsFullscreen(false);
+    
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
     if (isMobile) {
       setViewerEngine('google');
     } else {
       setViewerEngine('direct');
     }
+
+    // Automatically add to history when opened
+    const match = userSavedBooks.find(b => b.book_id === doc.id);
+    logBookHistory(doc.id, match ? match.progress_page : 1);
   };
 
 
@@ -554,6 +664,34 @@ export default function BooksView({ openReportModal, user }) {
                     <i className="far fa-flag"></i>
                   </button>
 
+                  {user && (
+                    <>
+                      <button
+                        onClick={() => toggleSaveBook(bk.id, false)}
+                        className="verse-btn"
+                        style={{
+                          padding: '0.5rem 0.7rem',
+                          color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : undefined
+                        }}
+                        title={userSavedBooks.some(b => b.book_id === bk.id) ? "Saved in Library" : "Save to Library"}
+                      >
+                        <i className={userSavedBooks.some(b => b.book_id === bk.id) ? "fas fa-bookmark" : "far fa-bookmark"}></i>
+                      </button>
+
+                      <button
+                        onClick={() => toggleSaveBook(bk.id, true)}
+                        className="verse-btn"
+                        style={{
+                          padding: '0.5rem 0.7rem',
+                          color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : undefined
+                        }}
+                        title={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "Favorited" : "Favorite Book"}
+                      >
+                        <i className={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "fas fa-star" : "far fa-star"}></i>
+                      </button>
+                    </>
+                  )}
+
                   {(user?.is_staff || user?.is_superuser || bk.addedByAdmin) && (
                     <>
                       <button
@@ -619,6 +757,32 @@ export default function BooksView({ openReportModal, user }) {
                   >
                     <i className="far fa-flag"></i>
                   </button>
+
+                  {user && (
+                    <>
+                      <button
+                        onClick={() => toggleSaveBook(bk.id, false)}
+                        className="verse-btn"
+                        style={{
+                          color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : undefined
+                        }}
+                        title={userSavedBooks.some(b => b.book_id === bk.id) ? "Saved in Library" : "Save to Library"}
+                      >
+                        <i className={userSavedBooks.some(b => b.book_id === bk.id) ? "fas fa-bookmark" : "far fa-bookmark"}></i>
+                      </button>
+
+                      <button
+                        onClick={() => toggleSaveBook(bk.id, true)}
+                        className="verse-btn"
+                        style={{
+                          color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : undefined
+                        }}
+                        title={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "Favorited" : "Favorite Book"}
+                      >
+                        <i className={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "fas fa-star" : "far fa-star"}></i>
+                      </button>
+                    </>
+                  )}
 
                   {(user?.is_staff || user?.is_superuser || bk.addedByAdmin) && (
                     <>
@@ -759,7 +923,28 @@ export default function BooksView({ openReportModal, user }) {
               </div>
 
               {/* Right Action Toolbar Column: Save File on top, Fullscreen below */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
+                {/* Page Tracker Widget (Only when user is logged in) */}
+                {user && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255,255,255,0.1)', padding: '0.3rem 0.5rem', borderRadius: '8px', color: '#fff', fontSize: '0.75rem', border: '1px solid rgba(255,255,255,0.15)' }}>
+                    <span style={{ fontWeight: 600 }}>Page:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={previewDoc.pages_count || previewDoc.pages || 1000}
+                      value={(() => {
+                        const match = userSavedBooks.find(b => b.book_id === previewDoc.id);
+                        return match ? match.progress_page : 1;
+                      })()}
+                      onChange={(e) => {
+                        const val = Math.max(1, Math.min(previewDoc.pages_count || 1000, parseInt(e.target.value, 10) || 1));
+                        updateBookProgress(previewDoc.id, val);
+                      }}
+                      style={{ width: '45px', background: '#022c22', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', borderRadius: '4px', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, padding: '1px 3px', outline: 'none' }}
+                    />
+                    <span>of {previewDoc.pages_count || previewDoc.pages || 1}</span>
+                  </div>
+                )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', alignItems: 'stretch' }}>
                   {/* Top: Save File Button */}
                   <a

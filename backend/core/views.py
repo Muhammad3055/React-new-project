@@ -1420,6 +1420,45 @@ def api_user_dashboard(request):
 
     khatm_percent = round((len(completed_surahs) / 114) * 100, 1)
 
+    # Resolve books in saved_books
+    resolved_saved_books = []
+    saved_books_list = pref.saved_books or []
+    for sb in saved_books_list:
+        book_id = sb.get('book_id')
+        book = BookMedia.objects.filter(id=book_id).first()
+        if book:
+            resolved_saved_books.append({
+                'book_id': book.id,
+                'title': book.title,
+                'author': book.author,
+                'file_type': book.file_type,
+                'cover_url': book.cover_url or (book.cover_image.url if book.cover_image else ''),
+                'pdf_url': book.get_document_url(),
+                'pages_count': book.pages_count,
+                'progress_page': sb.get('progress_page', 1),
+                'favorite': sb.get('favorite', False),
+                'saved_at': sb.get('saved_at', '')
+            })
+
+    # Resolve books in book_history
+    resolved_book_history = []
+    book_history_list = pref.book_history or []
+    for bh in book_history_list:
+        book_id = bh.get('book_id')
+        book = BookMedia.objects.filter(id=book_id).first()
+        if book:
+            resolved_book_history.append({
+                'book_id': book.id,
+                'title': book.title,
+                'author': book.author,
+                'file_type': book.file_type,
+                'cover_url': book.cover_url or (book.cover_image.url if book.cover_image else ''),
+                'pdf_url': book.get_document_url(),
+                'pages_count': book.pages_count,
+                'page': bh.get('page', 1),
+                'timestamp': bh.get('timestamp', '')
+            })
+
     return JsonResponse({
         'status': 'success',
         'authenticated': True,
@@ -1449,12 +1488,27 @@ def api_user_dashboard(request):
             'notif_daily_hadith': pref.notif_daily_hadith,
             'privacy_profile_visibility': pref.privacy_profile_visibility,
             'privacy_show_activity': pref.privacy_show_activity,
+            
+            # New notification settings
+            'notif_new_content': pref.notif_new_content,
+            'notif_system_announcements': pref.notif_system_announcements,
         },
         'bookmarks': bookmarks_data,
         'namaz_days': namaz_days,
         'namaz_streak': streak,
         'ayah_notes': notes_data,
         'zakat_history': zakat_data,
+        
+        # New advanced user data
+        'saved_books': resolved_saved_books,
+        'saved_tafseers': pref.saved_tafseers or [],
+        'favorite_recitations': pref.favorite_recitations or [],
+        'quran_history': pref.quran_history or [],
+        'book_history': resolved_book_history,
+        'tafseer_history': pref.tafseer_history or [],
+        'audio_history': pref.audio_history or [],
+        'personal_collections': pref.personal_collections or [],
+        'user_notifications': pref.user_notifications or [],
     })
 
 
@@ -1466,6 +1520,22 @@ def api_update_user_preferences(request):
         import json
         body = json.loads(request.body.decode('utf-8')) if request.body else {}
         pref, _ = UserProfilePreferences.objects.get_or_create(user=request.user)
+
+        # Handle Password Change security request
+        if 'change_password' in body and body['change_password']:
+            old_pass = body.get('old_password', '')
+            new_pass = body.get('new_password', '')
+            if not old_pass or not new_pass:
+                return JsonResponse({'status': 'error', 'message': 'Old and new passwords are required.'}, status=400)
+            if not request.user.check_password(old_pass):
+                return JsonResponse({'status': 'error', 'message': 'Incorrect old password.'}, status=400)
+            request.user.set_password(new_pass)
+            request.user.save()
+            
+            # Prevent logout after password change
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, request.user)
+            return JsonResponse({'status': 'success', 'message': 'Password updated successfully!'})
 
         if 'preferred_qari' in body: pref.preferred_qari = body['preferred_qari']
         if 'preferred_language' in body: pref.preferred_language = body['preferred_language']
@@ -1490,6 +1560,20 @@ def api_update_user_preferences(request):
         if 'notif_daily_hadith' in body: pref.notif_daily_hadith = bool(body['notif_daily_hadith'])
         if 'privacy_profile_visibility' in body: pref.privacy_profile_visibility = body['privacy_profile_visibility']
         if 'privacy_show_activity' in body: pref.privacy_show_activity = bool(body['privacy_show_activity'])
+        
+        # New advanced trackers JSON Fields
+        if 'saved_books' in body: pref.saved_books = body['saved_books']
+        if 'saved_tafseers' in body: pref.saved_tafseers = body['saved_tafseers']
+        if 'favorite_recitations' in body: pref.favorite_recitations = body['favorite_recitations']
+        if 'quran_history' in body: pref.quran_history = body['quran_history']
+        if 'book_history' in body: pref.book_history = body['book_history']
+        if 'tafseer_history' in body: pref.tafseer_history = body['tafseer_history']
+        if 'audio_history' in body: pref.audio_history = body['audio_history']
+        if 'personal_collections' in body: pref.personal_collections = body['personal_collections']
+        if 'user_notifications' in body: pref.user_notifications = body['user_notifications']
+        
+        if 'notif_new_content' in body: pref.notif_new_content = bool(body['notif_new_content'])
+        if 'notif_system_announcements' in body: pref.notif_system_announcements = bool(body['notif_system_announcements'])
 
         pref.save()
 
