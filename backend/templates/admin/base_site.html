@@ -11,6 +11,37 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <style>
+    /* Fix Django Admin Changelist layout spacing and filter alignment on desktop */
+    @media (min-width: 768px) {
+      #changelist {
+        display: flex !important;
+        flex-direction: row-reverse !important;
+        flex-wrap: nowrap !important;
+        align-items: flex-start !important;
+        gap: 24px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      #changelist.filtered .changelist-form-container {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+      }
+      #changelist-filter {
+        flex: 0 0 240px !important;
+        margin: 0 !important;
+        position: static !important;
+      }
+    }
+    .main {
+      display: flex !important;
+    }
+    #content {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+    }
+  </style>
 {% endblock %}
 
 {% block branding %}
