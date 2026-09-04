@@ -61,6 +61,189 @@ SUPPORTED_LANGUAGES = {
 }
 
 
+SURAH_LOOKUP = {
+    'fatiha': 1,
+    'al fatiha': 1,
+    'al-fatiha': 1,
+    'baqarah': 2,
+    'al baqarah': 2,
+    'al-baqarah': 2,
+    'imran': 3,
+    'al imran': 3,
+    'ali imran': 3,
+    'nisa': 4,
+    'an nisa': 4,
+    'an-nisa': 4,
+    'maidah': 5,
+    'al maidah': 5,
+    'al-maidah': 5,
+    'anam': 6,
+    'al anam': 6,
+    'al-anam': 6,
+    'araf': 7,
+    'al araf': 7,
+    'al-araf': 7,
+    'anfal': 8,
+    'al anfal': 8,
+    'al-anfal': 8,
+    'tawbah': 9,
+    'at tawbah': 9,
+    'at-tawbah': 9,
+    'yunus': 10,
+    'hud': 11,
+    'yusuf': 12,
+    'rad': 13,
+    'ar rad': 13,
+    'ar-rad': 13,
+    'ibrahim': 14,
+    'hijr': 15,
+    'al hijr': 15,
+    'al-hijr': 15,
+    'nahl': 16,
+    'an nahl': 16,
+    'an-nahl': 16,
+    'isra': 17,
+    'al isra': 17,
+    'al-isra': 17,
+    'kahf': 18,
+    'al kahf': 18,
+    'al-kahf': 18,
+    'maryam': 19,
+    'taha': 20,
+    'ta ha': 20,
+    'anbiya': 21,
+    'al anbiya': 21,
+    'al-anbiya': 21,
+    'hajj': 22,
+    'al hajj': 22,
+    'al-hajj': 22,
+    'muminun': 23,
+    'al muminun': 23,
+    'al-muminun': 23,
+    'nur': 24,
+    'an nur': 24,
+    'an-nur': 24,
+    'furqan': 25,
+    'al furqan': 25,
+    'al-furqan': 25,
+    'shuarah': 26,
+    'ash shuarah': 26,
+    'ash-shuarah': 26,
+    'naml': 27,
+    'an naml': 27,
+    'an-naml': 27,
+    'qasas': 28,
+    'al qasas': 28,
+    'al-qasas': 28,
+    'ankabut': 29,
+    'al ankabut': 29,
+    'al-ankabut': 29,
+    'rum': 30,
+    'ar rum': 30,
+    'ar-rum': 30,
+    'luqman': 31,
+    'sajdah': 32,
+    'as sajdah': 32,
+    'as-sajdah': 32,
+    'ahzab': 33,
+    'al ahzab': 33,
+    'al-ahzab': 33,
+    'saba': 34,
+    'fatir': 35,
+    'yasin': 36,
+    'ya sin': 36,
+    'saffat': 37,
+    'as saffat': 37,
+    'as-saffat': 37,
+    'sad': 38,
+    'zumar': 39,
+    'az zumar': 39,
+    'az-zumar': 39,
+    'ghafir': 40,
+    'fussilat': 41,
+    'shura': 42,
+    'ash shura': 42,
+    'ash-shura': 42,
+    'zukhruf': 43,
+    'ad dukhan': 44,
+    'ad-dukhan': 44,
+    'jathiyah': 45,
+    'ahqaf': 46,
+    'muhammad': 47,
+    'fath': 48,
+    'al fath': 48,
+    'al-fath': 48,
+    'hujurat': 49,
+    'qaf': 50,
+    'dhariyat': 51,
+    'tur': 52,
+    'najm': 53,
+    'qamar': 54,
+    'rahman': 55,
+    'waqiah': 56,
+    'hadid': 57,
+    'mujadila': 58,
+    'hashr': 59,
+    'mumtahanah': 60,
+    'saff': 61,
+    'jumuah': 62,
+    'munafiqun': 63,
+    'taghabun': 64,
+    'talaq': 65,
+    'tahrim': 66,
+    'mulk': 67,
+    'qalam': 68,
+    'haqqah': 69,
+    'maarij': 70,
+    'nuh': 71,
+    'jinn': 72,
+    'muzzammil': 73,
+    'muddathir': 74,
+    'qiyamah': 75,
+    'insan': 76,
+    'mursalat': 77,
+    'naba': 78,
+    'naziat': 79,
+    'abasa': 80,
+    'takwir': 81,
+    'infitar': 82,
+    'mutaffifin': 83,
+    'inshiqaq': 84,
+    'buruj': 85,
+    'tariq': 86,
+    'ala': 87,
+    'al ala': 87,
+    'al-ala': 87,
+    'ghashiyah': 88,
+    'fajr': 89,
+    'balad': 90,
+    'shams': 91,
+    'layl': 92,
+    'duha': 93,
+    'sharh': 94,
+    'tin': 95,
+    'alaq': 96,
+    'qadr': 97,
+    'bayyinah': 98,
+    'zilzal': 99,
+    'adiyat': 100,
+    'qariah': 101,
+    'takathur': 102,
+    'asr': 103,
+    'humazah': 104,
+    'fil': 105,
+    'quraysh': 106,
+    'maun': 107,
+    'kawthar': 108,
+    'kafirun': 109,
+    'nasr': 110,
+    'masad': 111,
+    'ikhlas': 112,
+    'falaq': 113,
+    'nas': 114,
+}
+
+
 # ============================================================
 # LANGUAGE DETECTION
 # ============================================================
@@ -348,6 +531,57 @@ Saved Bookmarks:
 # VERIFIED QURAN API
 # ============================================================
 
+def find_requested_surah_numbers(query):
+    query_lower = query.lower()
+    normalized = re.sub(r'[^a-z0-9\s-]', ' ', query_lower)
+    normalized = re.sub(r'\s+', ' ', normalized).strip()
+    found = []
+
+    number_matches = re.findall(
+        r'\b(?:surah|sura|chapter)\s+(\d{1,3})\b',
+        normalized
+    )
+    for number_text in number_matches:
+        number = int(number_text)
+        if 1 <= number <= 114 and number not in found:
+            found.append(number)
+
+    for name, number in sorted(SURAH_LOOKUP.items(), key=lambda item: len(item[0]), reverse=True):
+        pattern = r'\b(?:surah|sura|chapter)?\s*' + re.escape(name) + r'\b'
+        if re.search(pattern, normalized) and number not in found:
+            found.append(number)
+
+    return found[:3]
+
+
+def fetch_surah_from_quran_api(surah_number):
+    url = (
+        "https://api.alquran.cloud/v1/surah/"
+        f"{surah_number}/en.sahih"
+    )
+
+    request = urllib.request.Request(
+        url,
+        headers={
+            'User-Agent': 'MaktabaTulMuslim/1.0'
+        }
+    )
+
+    with urllib.request.urlopen(
+        request,
+        timeout=5
+    ) as response:
+
+        data = json.loads(
+            response.read().decode('utf-8')
+        )
+
+    if data.get('code') != 200 or not data.get('data'):
+        return None
+
+    return data['data']
+
+
 def search_level_2_external_apis(query):
 
     results = {
@@ -361,6 +595,43 @@ def search_level_2_external_apis(query):
     }
 
     try:
+        for surah_number in find_requested_surah_numbers(query):
+            surah_data = fetch_surah_from_quran_api(surah_number)
+            if not surah_data:
+                continue
+
+            surah_name = surah_data.get('englishName', '')
+            ayahs = surah_data.get('ayahs', [])
+            ayah_lines = []
+
+            for ayah in ayahs[:20]:
+                ayah_number = ayah.get('numberInSurah')
+                text = ayah.get('text', '')
+                ayah_lines.append(f"{surah_number}:{ayah_number} - {text}")
+
+                results['raw_data']['quran'].append({
+                    'surah_name': surah_name,
+                    'surah_number': surah_number,
+                    'ayah_number': ayah_number,
+                    'text': text
+                })
+
+            if ayah_lines:
+                results['found'] = True
+                results['items'].append(
+                    f"""
+SOURCE TYPE: Quran API
+
+Surah: {surah_name}
+Surah Number: {surah_number}
+
+Translation:
+{chr(10).join(ayah_lines)}
+""".strip()
+                )
+                results['citations'].append(
+                    f"Quran API — {surah_name} {surah_number}"
+                )
 
         encoded = urllib.parse.quote(query)
 
@@ -404,7 +675,7 @@ def search_level_2_external_apis(query):
 
                 results['items'].append(
                     f"""
-SOURCE TYPE: Quran
+SOURCE TYPE: Quran API
 
 Surah: {surah_name}
 Ayah: {surah_num}:{ayah_num}
@@ -625,25 +896,34 @@ SOURCE MATERIAL:
 {source_text}
 """
 
-    # 1. TRY GROQ (llama-3.3-70b-versatile)
+    # 1. TRY GROQ
     groq_api_key = getattr(settings, 'GROQ_API_KEY', '')
     if groq_api_key:
-        try:
-            client = Groq(api_key=groq_api_key)
-            completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                temperature=0.1,
-                max_tokens=1500,
-                response_format={"type": "json_object"},
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": query},
-                ],
-            )
-            response_text = completion.choices[0].message.content
-            return json.loads(response_text)
-        except Exception as e:
-            print(f"Groq Error, falling back: {e}")
+        groq_models = getattr(
+            settings,
+            'GROQ_CHAT_MODELS',
+            ['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'qwen/qwen3.6-27b', 'groq/compound']
+        )
+        if isinstance(groq_models, str):
+            groq_models = [m.strip() for m in groq_models.split(',') if m.strip()]
+
+        client = Groq(api_key=groq_api_key)
+        for model_name in groq_models:
+            try:
+                completion = client.chat.completions.create(
+                    model=model_name,
+                    temperature=0.1,
+                    max_tokens=1500,
+                    response_format={"type": "json_object"},
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": query},
+                    ],
+                )
+                response_text = completion.choices[0].message.content
+                return json.loads(response_text)
+            except Exception as e:
+                print(f"Groq Error ({model_name}), falling back: {e}")
 
     # 2. TRY DEEPSEEK (deepseek-chat)
     deepseek_api_key = getattr(settings, 'DEEPSEEK_API_KEY', '')
@@ -665,13 +945,14 @@ SOURCE MATERIAL:
         except Exception as e:
             print(f"DeepSeek Error, falling back: {e}")
 
-    # 3. TRY XAI GROK (grok-2-1212)
+    # 3. TRY XAI GROK
     xai_api_key = getattr(settings, 'XAI_API_KEY', '')
     if xai_api_key and OpenAI:
         try:
+            xai_model = getattr(settings, 'XAI_CHAT_MODEL', 'grok-4-latest')
             client = OpenAI(api_key=xai_api_key, base_url="https://api.x.ai/v1")
             completion = client.chat.completions.create(
-                model="grok-2-1212",
+                model=xai_model,
                 temperature=0.1,
                 max_tokens=1500,
                 response_format={"type": "json_object"},
@@ -685,10 +966,11 @@ SOURCE MATERIAL:
         except Exception as e:
             print(f"xAI Error, falling back: {e}")
 
-    # 4. TRY GEMINI (gemini-1.5-flash)
+    # 4. TRY GEMINI
     gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
     if gemini_api_key and genai:
         try:
+            gemini_model = getattr(settings, 'GEMINI_CHAT_MODEL', 'gemini-1.5-flash')
             genai.configure(api_key=gemini_api_key)
             generation_config = {
                 "temperature": 0.1,
@@ -697,7 +979,7 @@ SOURCE MATERIAL:
                 "response_mime_type": "application/json",
             }
             model = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
+                model_name=gemini_model,
                 generation_config=generation_config,
                 system_instruction=system_prompt
             )
@@ -706,13 +988,14 @@ SOURCE MATERIAL:
         except Exception as e:
             print(f"Gemini Error, falling back: {e}")
 
-    # 5. TRY OPENAI (gpt-4o-mini)
+    # 5. TRY OPENAI
     openai_api_key = getattr(settings, 'OPENAI_API_KEY', '')
     if openai_api_key and OpenAI:
         try:
+            openai_model = getattr(settings, 'OPENAI_CHAT_MODEL', 'gpt-4o-mini')
             client = OpenAI(api_key=openai_api_key)
             completion = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=openai_model,
                 temperature=0.1,
                 max_tokens=1500,
                 response_format={"type": "json_object"},
@@ -726,13 +1009,14 @@ SOURCE MATERIAL:
         except Exception as e:
             print(f"OpenAI Error, falling back: {e}")
 
-    # 6. TRY CLAUDE (claude-3-5-sonnet-20241022)
+    # 6. TRY CLAUDE
     claude_api_key = getattr(settings, 'CLAUDE_API_KEY', '')
     if claude_api_key and anthropic:
         try:
+            claude_model = getattr(settings, 'CLAUDE_CHAT_MODEL', 'claude-3-5-sonnet-20241022')
             client = anthropic.Anthropic(api_key=claude_api_key)
             message = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model=claude_model,
                 max_tokens=1500,
                 temperature=0.1,
                 system=system_prompt,
@@ -749,7 +1033,13 @@ SOURCE MATERIAL:
         except Exception as e:
             print(f"Claude Error: {e}")
 
-    return None
+    # If all API attempts fail, return a structured error response
+    return {
+        "intent": "SERVICE_UNAVAILABLE",
+        "answer": "The AI Chatbot service is temporarily unavailable. Please verify that your API key is correctly configured on the server, or try again in a few moments.",
+        "suggested_questions": [],
+        "actions": []
+    }
 
 
 # ============================================================
@@ -853,24 +1143,22 @@ def ai_assistant_api(request):
     # LEVEL 2
     # --------------------------------------------------------
 
-    if not local_result['found']:
+    quran_result = search_level_2_external_apis(
+        user_prompt
+    )
 
-        quran_result = search_level_2_external_apis(
-            user_prompt
+    if quran_result['found']:
+
+        source_items.extend(
+            quran_result['items']
         )
 
-        if quran_result['found']:
-
-            source_items.extend(
-                quran_result['items']
-            )
-
-            references.extend(
-                quran_result['citations']
-            )
-            
-            if 'quran' in quran_result.get('raw_data', {}):
-                raw_data_collection['quran'].extend(quran_result['raw_data']['quran'])
+        references.extend(
+            quran_result['citations']
+        )
+        
+        if 'quran' in quran_result.get('raw_data', {}):
+            raw_data_collection['quran'].extend(quran_result['raw_data']['quran'])
 
     # --------------------------------------------------------
     # LEVEL 3
