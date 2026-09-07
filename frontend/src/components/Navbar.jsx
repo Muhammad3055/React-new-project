@@ -321,7 +321,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </button>
             </div>
 
-            {/* Persistent Header Auth Area */}
+            {/* Persistent Header Auth Area - Always Visible Across All Screen Sizes & Zoom Levels */}
             <div className="desktop-auth-area">
               {user ? (
                 <div className="desktop-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -336,27 +336,27 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                       padding: '0.35rem 0.75rem',
                       borderRadius: '25px',
                       border: user?.frame ? (user.frame === 'emerald' ? '2px solid #10b981' : user.frame === 'royal' ? '2px solid #6366f1' : user.frame === 'noor' ? '2px solid #ec4899' : '2px solid var(--accent-gold)') : '1.5px solid var(--accent-gold)',
-                      background: 'rgba(245, 158, 11, 0.15)',
+                      background: 'rgba(245, 158, 11, 0.2)',
                       color: '#ffffff',
                       cursor: 'pointer',
-                      fontWeight: 700,
-                      fontSize: '0.85rem',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>
+                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.85rem' }}>
                       {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
                     </div>
-                    <span style={{ color: '#000000', fontWeight: 700 }}>{user.full_name || user.username}</span>
+                    <span style={{ color: '#ffffff', fontWeight: 800 }}>{user.full_name || user.username}</span>
                   </button>
 
                   {user.is_staff && (
                     <button
                       className="nav-action-btn"
-                      title="Upload"
+                      title="Upload Content Studio"
                       onClick={() => navigateToTab('upload')}
-                      style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
                     >
                       <i className="fas fa-cloud-upload-alt"></i>
                     </button>
@@ -366,7 +366,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                     className="nav-action-btn logout"
                     title={t('logout')}
                     onClick={handleLogout}
-                    style={{ background: 'transparent', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                    style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
                   >
                     <i className="fas fa-sign-out-alt"></i>
                   </button>
@@ -376,6 +376,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   <button
                     className="auth-btn login-btn"
                     onClick={() => openAuthModal('login')}
+                    title="Sign In to Maktaba"
                   >
                     <i className="fas fa-sign-in-alt"></i>
                     <span className="auth-btn-text">{t('login')}</span>
@@ -383,59 +384,12 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   <button
                     className="auth-btn signup-btn"
                     onClick={() => openAuthModal('signup')}
+                    title="Create Portal Account"
                   >
                     <i className="fas fa-user-plus"></i>
                     <span className="auth-btn-text">{t('signup')}</span>
                   </button>
                 </div>
-              )}
-            </div>
-
-            {/* Mobile Header Quick Profile Button */}
-            <div className="mobile-header-auth-bar" style={{ display: 'flex', alignItems: 'center' }}>
-              {user ? (
-                <button
-                  className="mobile-header-user-btn"
-                  onClick={() => navigateToTab('dashboard')}
-                  title={`Logged in as ${user.username}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.3rem',
-                    padding: '0.3rem 0.6rem',
-                    borderRadius: '16px',
-                    border: '1.5px solid var(--accent-gold)',
-                    background: '#ffffff',
-                    color: 'var(--accent-gold)',
-                    fontWeight: 800,
-                    fontSize: '0.75rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <i className="fas fa-user-circle"></i>
-                  <span style={{ color: '#000000' }}>{user.username}</span>
-                </button>
-              ) : (
-                <button
-                  className="mobile-header-login-btn"
-                  onClick={() => openAuthModal('login')}
-                  title="Sign In / Register"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.3rem',
-                    padding: '0.3rem 0.6rem',
-                    borderRadius: '16px',
-                    border: '1.5px solid var(--accent-gold)',
-                    background: '#ffffff',
-                    color: 'var(--accent-gold)',
-                    fontWeight: 800,
-                    fontSize: '0.75rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <i className="fas fa-user"></i>
-                </button>
               )}
             </div>
 
