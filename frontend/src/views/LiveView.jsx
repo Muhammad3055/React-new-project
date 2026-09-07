@@ -95,7 +95,8 @@ export default function LiveView({ user }) {
       if (selectedServer === 'server2') {
         return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
       }
-      return 'https://www.youtube.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
+      // Verified Working Default ID for Makkah
+      return 'https://www.youtube.com/embed/R_95d1ZjYiw?autoplay=1&rel=0';
     } else {
       if (selectedServer === 'custom' && customMadinahId) {
         return `https://www.youtube.com/embed/${customMadinahId}?autoplay=1&rel=0`;
@@ -103,7 +104,8 @@ export default function LiveView({ user }) {
       if (selectedServer === 'server2') {
         return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw';
       }
-      return 'https://www.youtube.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw';
+      // Verified Working Default ID for Madinah
+      return 'https://www.youtube.com/embed/Rs7St51oDDc?autoplay=1&rel=0';
     }
   };
 
