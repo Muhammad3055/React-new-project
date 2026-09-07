@@ -553,7 +553,7 @@ function MainAppContent() {
           )}
 
           {activeTab === 'live' && (
-            <LiveView />
+            <LiveView user={user} />
           )}
 
           {activeTab === 'brahui' && (
