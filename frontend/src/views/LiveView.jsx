@@ -96,7 +96,7 @@ export default function LiveView({ user }) {
         return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
       }
       // Verified Working Default ID for Makkah
-      return 'https://www.youtube.com/embed/R_95d1ZjYiw?autoplay=1&rel=0';
+      return 'https://www.youtube.com/embed/Jqr7aM-OwRg?autoplay=1&rel=0';
     } else {
       if (selectedServer === 'custom' && customMadinahId) {
         return `https://www.youtube.com/embed/${customMadinahId}?autoplay=1&rel=0`;
