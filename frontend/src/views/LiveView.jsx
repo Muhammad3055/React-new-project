@@ -7,9 +7,7 @@ export default function LiveView({ user }) {
   const [activeTab, setActiveTab] = useState('makkah'); // 'makkah', 'madinah', 'radio'
   const [selectedServer, setSelectedServer] = useState('server1'); // 'server1', 'server2', 'server3', 'custom'
   
-  // Radio State
-  const [isPlayingRadio, setIsPlayingRadio] = useState(false);
-  const [selectedStation, setSelectedStation] = useState(0);
+
 
   // Admin Custom Stream IDs / URLs stored in LocalStorage for zero-downtime updates
   const [customMakkahId, setCustomMakkahId] = useState(() => {
@@ -51,40 +49,7 @@ export default function LiveView({ user }) {
     setSelectedServer('custom');
   };
 
-  const radioStations = [
-    {
-      name: '🕋 Saudi Official Quran Radio (Makkah)',
-      desc: 'Live 24/7 Recitations from Al-Masjid Al-Haram',
-      url: 'https://stream.quranicaudio.com/radio/quran'
-    },
-    {
-      name: '🎙️ Qari Mishary Rashid Alafasy 24/7',
-      desc: 'High Definition Tilawat by Sheikh Mishary Alafasy',
-      url: 'https://qurango.net/radio/alafasy'
-    },
-    {
-      name: '🎙️ Qari Abdul Basit Abdul Samad',
-      desc: 'Classic Mojawwad Recitation by Sheikh Abdul Basit',
-      url: 'https://qurango.net/radio/abdulbasit_mjwd'
-    },
-    {
-      name: '🎙️ Sheikh Saud Al-Shuraim & Sudais',
-      desc: 'Taraweeh and Daily Salah Recitations from Kaaba',
-      url: 'https://qurango.net/radio/shuraym'
-    },
-    {
-      name: '📜 Urdu & Brahui Tarjuma Radio',
-      desc: 'Quran Translation with Audio Recitation',
-      url: 'https://qurango.net/radio/tarajm'
-    },
-    {
-      name: '🔊 Global Live Quran HD Radio',
-      desc: 'Continuous 24/7 High Quality Audio Feed',
-      url: 'https://n0a.radiojar.com/8smy151v80uvt'
-    }
-  ];
 
-  const currentStationObj = radioStations[selectedStation] || radioStations[0];
 
   // Helper to determine exact embed URL
   const getEmbedUrl = () => {
@@ -109,21 +74,7 @@ export default function LiveView({ user }) {
     }
   };
 
-  const getDirectYoutubeUrls = () => {
-    if (activeTab === 'makkah') {
-      return [
-        { label: 'Saudi Quran TV (@SaudiQuranTv)', url: 'https://www.youtube.com/@SaudiQuranTv/live' },
-        { label: 'KSA Quran Channel (@qurantvsa)', url: 'https://www.youtube.com/@qurantvsa/live' },
-        { label: 'Makkah Live Official 1080p', url: 'https://www.youtube.com/results?search_query=makkah+live+stream+24%2F7' }
-      ];
-    } else {
-      return [
-        { label: 'Saudi Sunnah TV (@SaudiSunnahTv)', url: 'https://www.youtube.com/@SaudiSunnahTv/live' },
-        { label: 'KSA Sunnah Channel (@sunnahtvsa)', url: 'https://www.youtube.com/@sunnahtvsa/live' },
-        { label: 'Madinah Live Official 1080p', url: 'https://www.youtube.com/results?search_query=madinah+live+stream+24%2F7' }
-      ];
-    }
-  };
+
 
   return (
     <div style={{ background: 'var(--bg-cream, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem' }}>
@@ -176,18 +127,7 @@ export default function LiveView({ user }) {
           >
             💚 Madinah Live (قناة السنة)
           </button>
-          <button
-            onClick={() => setActiveTab('radio')}
-            style={{
-              padding: '12px 24px', borderRadius: '18px', fontWeight: 900, fontSize: '1rem', cursor: 'pointer',
-              background: activeTab === 'radio' ? '#b45309' : '#ffffff',
-              color: activeTab === 'radio' ? '#ffffff' : 'var(--text-main)',
-              border: activeTab === 'radio' ? 'none' : '1.5px solid var(--border-color)',
-              boxShadow: activeTab === 'radio' ? '0 8px 20px rgba(180,83,9,0.3)' : 'none', transition: 'all 0.2s'
-            }}
-          >
-            📻 24/7 Quran Radio Stream
-          </button>
+
         </div>
 
         {/* ── Main Live Stream Container (Makkah or Madinah) ── */}
@@ -212,25 +152,7 @@ export default function LiveView({ user }) {
                 </p>
               </div>
 
-              {/* Direct YouTube Buttons */}
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {getDirectYoutubeUrls().map((ch, idx) => (
-                  <a
-                    key={idx}
-                    href={ch.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '8px 16px',
-                      borderRadius: '14px', background: idx === 0 ? 'linear-gradient(135deg, #059669, #047857)' : '#f1f5f9',
-                      color: idx === 0 ? '#ffffff' : '#334155', fontWeight: 800, fontSize: '0.82rem', textDecoration: 'none',
-                      boxShadow: idx === 0 ? '0 4px 12px rgba(5,150,105,0.3)' : 'none', transition: 'all 0.2s'
-                    }}
-                  >
-                    ▶ {ch.label} <ExternalLink size={14} />
-                  </a>
-                ))}
-              </div>
+              {/* Direct YouTube Buttons Removed as per request */}
             </div>
 
             {/* Stream Server Controls */}
@@ -354,83 +276,7 @@ export default function LiveView({ user }) {
           </div>
         )}
 
-        {/* ── 24/7 Quran Radio Stream Container ── */}
-        {activeTab === 'radio' && (
-          <div style={{ background: '#ffffff', borderRadius: '24px', padding: '2rem', border: '1.5px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', marginBottom: '3rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <Radio size={54} style={{ color: 'var(--accent-gold, #b45309)', marginBottom: '0.75rem', animation: isPlayingRadio ? 'pulse 2s infinite' : 'none' }} />
-              <h2 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--text-main)' }}>24/7 Global Quran Radio Stations</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem', maxWidth: '550px', margin: '0 auto' }}>
-                Listen to continuous, high-definition audio streams of the Holy Quran, reciter channels, and multi-language translations.
-              </p>
-            </div>
 
-            {/* Station Selector Cards Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-              {radioStations.map((st, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    setSelectedStation(idx);
-                    const player = document.getElementById('quran-radio-player');
-                    if (player) {
-                      player.src = st.url;
-                      player.play().then(() => setIsPlayingRadio(true)).catch(() => {});
-                    }
-                  }}
-                  style={{
-                    padding: '1.2rem 1rem', borderRadius: '18px', cursor: 'pointer',
-                    background: selectedStation === idx ? 'rgba(180,83,9,0.1)' : '#f8fafc',
-                    border: selectedStation === idx ? '2px solid var(--accent-gold, #b45309)' : '1px solid #e2e8f0',
-                    transition: 'all 0.25s ease', display: 'flex', alignItems: 'center', gap: '0.85rem'
-                  }}
-                >
-                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: selectedStation === idx ? 'var(--accent-gold, #b45309)' : '#e2e8f0', color: selectedStation === idx ? '#fff' : '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>
-                    {selectedStation === idx && isPlayingRadio ? <Volume2 size={20} /> : <Radio size={20} />}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--text-main)' }}>{st.name}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>{st.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Player Bar */}
-            <div style={{ background: 'linear-gradient(135deg, #022c22 0%, #1c1917 100%)', borderRadius: '20px', padding: '2rem', textAlign: 'center', color: '#ffffff', border: '2px solid var(--accent-gold, #b45309)' }}>
-              <div style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '0.3rem', color: '#fcd34d' }}>
-                {currentStationObj.name}
-              </div>
-              <div style={{ fontSize: '0.88rem', color: '#a7f3d0', marginBottom: '1.5rem' }}>
-                {currentStationObj.desc}
-              </div>
-
-              <audio id="quran-radio-player" src={currentStationObj.url} preload="none" />
-
-              <button
-                onClick={() => {
-                  const player = document.getElementById('quran-radio-player');
-                  if (player) {
-                    if (isPlayingRadio) {
-                      player.pause();
-                      setIsPlayingRadio(false);
-                    } else {
-                      player.play().then(() => setIsPlayingRadio(true)).catch(() => {});
-                    }
-                  }
-                }}
-                style={{
-                  padding: '16px 40px', borderRadius: '30px', fontWeight: 900, fontSize: '1.05rem', cursor: 'pointer',
-                  background: 'linear-gradient(135deg, var(--accent-gold, #b45309) 0%, #d97706 100%)', color: '#ffffff', border: 'none',
-                  display: 'inline-flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 8px 25px rgba(180,83,9,0.4)'
-                }}
-              >
-                {isPlayingRadio ? <><Pause size={22}/> Pause Radio Stream</> : <><Play size={22}/> Play Live Radio Station</>}
-              </button>
-            </div>
-
-          </div>
-        )}
 
       </div>
     </div>
