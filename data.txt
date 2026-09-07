@@ -2,6 +2,7 @@
 
 
 ssh: root@ip.address
+ssh root@169.58.117.130
 password :quranportal
 ---
 login
