@@ -159,24 +159,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   };
 
-  const handleDeleteAudio = async (audioId) => {
+  const handleDeleteAudio = async (audioId, title = '') => {
     if (!window.confirm("Are you sure you want to delete this MP3 audio track?")) return;
-    try {
-      const res = await fetch(`/api/quran/${audioId}/`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || ''}`,
-        }
-      });
-      if (res.ok || res.status === 204) {
-        alert("MP3 Audio deleted successfully!");
-        setTranslationAudios(prev => prev.filter(item => item.id !== audioId));
-      } else {
-        alert("Failed to delete audio.");
-      }
-    } catch (err) {
-      alert("Error deleting audio track.");
-    }
+    setTranslationAudios(prev => prev.filter(item => String(item.id) !== String(audioId)));
+    setTaqreers(prev => prev.filter(item => String(item.id) !== String(audioId)));
+    await deleteContentItem(audioId, 'audio', title);
   };
 
 
@@ -194,40 +181,60 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   }, [user]);
 
-  // Load Brahui or Urdu Quran Translation MP3s from database with 114 Surahs fallback
-  useEffect(() => {
+  // Load Brahui or Urdu Quran Translation MP3s from database with 114 Surahs fallback & admin items
+  const loadTranslationAudios = () => {
     if (subCategory === 'quran_brahui' || subCategory === 'quran_urdu') {
       const lang = subCategory === 'quran_brahui' ? 'brahui' : 'urdu';
       setLoadingTranslationAudios(true);
+      const adminAudios = getAdminItems(subCategory);
       fetch(`/api/quran/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
           const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
-          setTranslationAudios(apiResults);
+          setTranslationAudios(filterOutDeleted([...adminAudios, ...apiResults]));
         })
         .catch(() => {
-          setTranslationAudios([]);
+          setTranslationAudios(filterOutDeleted(adminAudios));
         })
         .finally(() => setLoadingTranslationAudios(false));
     }
+  };
+
+  useEffect(() => {
+    loadTranslationAudios();
   }, [subCategory]);
 
-  // Fetch Taqreers when subCategory changes to a Taqreer section
-  useEffect(() => {
+  // Fetch Taqreers when subCategory changes to a Taqreer section & merge local admin additions
+  const loadTaqreers = () => {
     if (subCategory.startsWith('taqreer_')) {
       const lang = subCategory.replace('taqreer_', '');
       setLoadingTaqreers(true);
+      const adminTaqreers = getAdminItems(subCategory);
       fetch(`/api/taqreer/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
           const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
-          setTaqreers(apiResults);
+          setTaqreers(filterOutDeleted([...adminTaqreers, ...apiResults]));
         })
         .catch(() => {
-          setTaqreers([]);
+          setTaqreers(filterOutDeleted(adminTaqreers));
         })
         .finally(() => setLoadingTaqreers(false));
     }
+  };
+
+  useEffect(() => {
+    loadTaqreers();
+  }, [subCategory]);
+
+  // Listen for admin content updates for instant zero-reload UI updates
+  useEffect(() => {
+    const handleUpdate = () => {
+      loadTranslationAudios();
+      loadTaqreers();
+    };
+    window.addEventListener('admin_content_updated', handleUpdate);
+    return () => window.removeEventListener('admin_content_updated', handleUpdate);
   }, [subCategory]);
 
   const activeQariObj = QARIS.find((q) => q.id === selectedQari) || QARIS[0];

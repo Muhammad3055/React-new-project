@@ -40,7 +40,7 @@ export function markItemAsDeleted(itemId) {
   try {
     const deleted = getDeletedItemIds();
     const strId = String(itemId);
-    if (!deleted.includes(strId)) {
+    if (strId && strId !== 'undefined' && strId !== 'null' && !deleted.includes(strId)) {
       deleted.push(strId);
       localStorage.setItem(DELETED_ITEMS_KEY, JSON.stringify(deleted));
     }
@@ -52,7 +52,12 @@ export function markItemAsDeleted(itemId) {
 export function filterOutDeleted(items = []) {
   const deleted = getDeletedItemIds();
   if (!deleted.length) return items;
-  return items.filter(item => !deleted.includes(String(item.id)));
+  return items.filter(item => {
+    if (!item) return false;
+    const strId = String(item.id || '');
+    const strTitle = String(item.title || '');
+    return !deleted.includes(strId) && (!strTitle || !deleted.includes(strTitle));
+  });
 }
 
 export function getAdminCustomFolders() {

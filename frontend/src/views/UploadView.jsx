@@ -25,6 +25,15 @@ export default function UploadView({ user }) {
   const [submittedMessage, setSubmittedMessage] = useState('');
   const [dbTaqreers, setDbTaqreers] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
+  const [adminItemsList, setAdminItemsList] = useState(getAdminItems());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAdminItemsList(getAdminItems());
+    };
+    window.addEventListener('admin_content_updated', handleUpdate);
+    return () => window.removeEventListener('admin_content_updated', handleUpdate);
+  }, []);
 
   // Load database Taqreers on mount and on new submission
   useEffect(() => {
@@ -763,7 +772,7 @@ export default function UploadView({ user }) {
                   ))}
 
                   {/* Local Custom Admin Items */}
-                  {getAdminItems().map((item, idx) => (
+                  {adminItemsList.map((item, idx) => (
                     <tr key={item.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', background: (idx + dbTaqreers.length) % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent' }}>
                       <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: 'var(--accent-gold)' }}>{item.title || 'Untitled'}</td>
                       <td style={{ padding: '0.75rem 1rem', textTransform: 'uppercase', fontSize: '0.78rem' }}>{item.destination || item.contentType || 'Custom'}</td>
@@ -776,7 +785,12 @@ export default function UploadView({ user }) {
                           <i className="fas fa-edit"></i> Edit
                         </button>
                         <button
-                          onClick={() => deleteContentItem(item.id, item.contentType || item.destination || 'book')}
+                          onClick={async () => {
+                            const done = await deleteContentItem(item.id, item.contentType || item.destination || 'book', item.title);
+                            if (done) {
+                              setAdminItemsList(prev => prev.filter(x => String(x.id) !== String(item.id)));
+                            }
+                          }}
                           style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                         >
                           <i className="fas fa-trash"></i> Delete
