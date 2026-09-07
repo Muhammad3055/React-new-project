@@ -109,6 +109,15 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
   const pwStrength = getPasswordStrength(newPassword);
 
+  // ---- Logout ----
+  const handleLogout = async () => {
+    try {
+      await fetch(getApiUrl('/api/auth/logout/'), { method: 'POST', credentials: 'include' });
+    } catch {}
+    localStorage.removeItem('quran_portal_user');
+    window.location.href = '/';
+  };
+
   // ---- Save Profile ----
   const handleSaveProfile = async (e) => {
     if (e) e.preventDefault();
@@ -265,11 +274,11 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
         {/* HERO HEADER WORLD CARD */}
         <div className="profile-glass-card" style={{ padding: '1.25rem', marginBottom: '1.25rem', borderLeft: activeFrameObj.border, background: 'linear-gradient(135deg, rgba(2,44,34,0.9) 0%, rgba(6,78,59,0.7) 100%)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.1rem', flexWrap: 'wrap', minWidth: 0, flex: '1 1 250px' }}>
               {/* LIVE AVATAR WITH VIP FRAME */}
-              <div style={{ position: 'relative' }}>
+              <div style={{ position: 'relative', flexShrink: 0 }}>
                 <div style={{
                   width: '68px', height: '68px', borderRadius: '50%', background: activeFrameObj.bg,
                   border: activeFrameObj.border, boxShadow: activeFrameObj.shadow,
@@ -281,25 +290,25 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                 <span title="Online Status" style={{ position: 'absolute', bottom: '2px', right: '2px', width: '15px', height: '15px', borderRadius: '50%', background: '#10b981', border: '2px solid #022c22', boxShadow: '0 0 8px #10b981' }}></span>
               </div>
 
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
                     {fullName || user?.username || 'Islamic Portal Member'}
                   </h3>
-                  <span title="Verified VIP Portal Account" style={{ fontSize: '1rem', color: '#38bdf8' }}><i className="fas fa-check-circle"></i></span>
+                  <span title="Verified VIP Portal Account" style={{ fontSize: '1rem', color: '#38bdf8', flexShrink: 0 }}><i className="fas fa-check-circle"></i></span>
                   {isAdmin && (
-                    <span style={{ fontSize: '0.7rem', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', color: '#fff', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <span style={{ fontSize: '0.7rem', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', color: '#fff', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>
                       <i className="fas fa-shield-alt" style={{ marginRight: '0.25rem' }}></i> SUPER ADMIN
                     </span>
                   )}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', fontWeight: 800 }}>
                     {nickname}
                   </span>
                   <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>&bull;</span>
-                  <span style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#cbd5e1', wordBreak: 'break-all' }}>
                     {user?.email || 'maktaba.vip@portal.net'}
                   </span>
                   <span style={{ background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.4)', color: 'var(--accent-gold)', padding: '0.15rem 0.55rem', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800 }}>
@@ -309,9 +318,23 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               </div>
             </div>
 
-            <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', transition: 'all 0.2s' }}>
-              <i className="fas fa-times"></i>
-            </button>
+            {/* ACTION & CLOSE BUTTONS */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+              <button 
+                onClick={handleLogout} 
+                title="Sign Out of Portal" 
+                style={{ padding: '0.45rem 0.85rem', background: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', transition: 'all 0.2s' }}
+              >
+                <i className="fas fa-sign-out-alt"></i> Sign Out
+              </button>
+              <button 
+                onClick={onClose} 
+                title="Close Profile Panel"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', transition: 'all 0.2s' }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
           </div>
 
           {/* QUICK STAT SUMMARY ROW */}
@@ -354,8 +377,8 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
           </div>
         )}
 
-        {/* TABS NAVIGATION BAR */}
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.35rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+        {/* TABS NAVIGATION GRID - 100% RESPONSIVE FOR ALL SCREEN WIDTHS & ZOOM LEVELS */}
+        <div className="profile-tabs-grid">
           <button className={`profile-tab-pill ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i className="fas fa-user-circle"></i> Profile</button>
           <button className={`profile-tab-pill ${activeTab === 'frame' ? 'active' : ''}`} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> VIP Frames</button>
           <button className={`profile-tab-pill ${activeTab === 'password' ? 'active' : ''}`} onClick={() => setActiveTab('password')}><i className="fas fa-shield-alt"></i> Security & 2FA</button>
@@ -376,7 +399,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               <i className="fas fa-id-card"></i> Personal Information Sub-World
             </h4>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={labelStyle}>{t('fullNameLabel', 'Full Name / Display Name')}</label>
                 <input type="text" style={inputStyle} value={fullName} onChange={e => setFullName(e.target.value)} placeholder="e.g. Muhammad Khidrani" />
@@ -387,7 +410,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={labelStyle}>{t('dobLabel', 'Date of Birth')}</label>
                 <input type="date" style={inputStyle} value={dob} onChange={e => setDob(e.target.value)} />
@@ -411,7 +434,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               <textarea rows="3" style={{ ...inputStyle, resize: 'vertical' }} value={bio} onChange={e => setBio(e.target.value)} placeholder="Share your favorite Ayah or personal Islamic reflection..." />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <label style={labelStyle}>Account Username (System ID)</label>
                 <input type="text" disabled style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} value={user?.username || 'root'} />
@@ -422,7 +445,10 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap' }}>
+              <button type="button" onClick={handleLogout} style={{ padding: '0.75rem 1.4rem', background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <i className="fas fa-sign-out-alt"></i> Sign Out Account
+              </button>
               <button type="submit" disabled={saving} style={{ padding: '0.75rem 1.8rem', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 14px rgba(245,158,11,0.3)' }}>
                 {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
                 {t('saveProfile', 'Save Profile Details')}
@@ -444,7 +470,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
             </p>
 
             {/* LIVE PREVIEW CANVAS BOX */}
-            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.35)', border: '1px dashed rgba(245,158,11,0.4)', borderRadius: '14px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.35)', border: '1px dashed rgba(245,158,11,0.4)', borderRadius: '14px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
               <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: activeFrameObj.bg, border: activeFrameObj.border, boxShadow: activeFrameObj.shadow, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.85rem', color: 'var(--accent-gold)', flexShrink: 0 }}>
                 {isAdmin ? '⚡' : (user?.username ? user.username.charAt(0).toUpperCase() : 'U')}
               </div>
@@ -548,7 +574,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
             {/* 2FA AUTHENTICATION CARD */}
             <div style={{ padding: '1.2rem', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
                   <h5 style={{ margin: 0, color: '#f59e0b', fontSize: '0.95rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <i className="fas fa-qrcode"></i> Two-Factor Authentication (2FA)
@@ -603,7 +629,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.5rem' }}>
               {sessions.map(s => (
-                <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.1rem', background: s.current ? 'rgba(16,185,129,0.12)' : 'rgba(0,0,0,0.3)', border: s.current ? '1.5px solid #10b981' : '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}>
+                <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.1rem', background: s.current ? 'rgba(16,185,129,0.12)' : 'rgba(0,0,0,0.3)', border: s.current ? '1.5px solid #10b981' : '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
                     <i className={`${s.icon} fa-xl`} style={{ color: s.color }}></i>
                     <div>
@@ -666,12 +692,12 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
                 {filteredActivity.map((item, idx) => {
                   const dt = new Date(item.timestamp);
                   return (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: 'rgba(0,0,0,0.25)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: 'rgba(0,0,0,0.25)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div>
                         <p style={{ margin: 0, fontWeight: 800, fontSize: '0.86rem', color: 'var(--accent-gold)' }}>{item.action}</p>
                         {item.detail && <p style={{ margin: '0.15rem 0 0', fontSize: '0.76rem', color: '#cbd5e1' }}>{item.detail}</p>}
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#94a3b8', whiteSpace: 'nowrap', marginLeft: '0.75rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>
                         {dt.toLocaleDateString()} {dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -680,7 +706,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               </div>
             )}
 
-            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap', gap: '0.5rem' }}>
               <button type="button" onClick={() => {
                 const blob = new Blob([JSON.stringify(activityLog, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -809,7 +835,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
               </select>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.1rem' }}>
               <div>
                 <label style={labelStyle}>Default Audio Qari Reciter</label>
                 <select style={inputStyle} value={favQari} onChange={e => setFavQari(e.target.value)}>
@@ -839,7 +865,7 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
             {isAdmin && (
               <div style={{ padding: '0.9rem 1.1rem', background: 'rgba(14,165,233,0.12)', border: '1px solid #0ea5e9', borderRadius: '12px', marginBottom: '1.25rem' }}>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#7dd3fc', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#7dd3fc', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <span><i className="fas fa-shield-alt" style={{ marginRight: '0.4rem' }}></i> Django Admin Management Studio</span>
                   <a href="/admin" target="_blank" rel="noreferrer" style={{ color: '#fff', background: '#0ea5e9', padding: '4px 12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 800, fontSize: '0.78rem' }}>Launch Studio &rarr;</a>
                 </p>
