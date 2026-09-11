@@ -414,7 +414,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           position: 'relative',
           zIndex: 99
         }}>
-          <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent-gold)', textShadow: '1px 1px 2px rgba(0,0,0,0.05)', fontFamily: '"Outfit", sans-serif' }}>
+          <h1 className="maktaba-title" style={{ margin: 0, fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent-gold)', textShadow: '1px 1px 2px rgba(0,0,0,0.05)', fontFamily: '"Outfit", sans-serif' }}>
              Maktaba Tul Muslim
           </h1>
         </div>
