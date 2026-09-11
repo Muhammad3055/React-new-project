@@ -405,18 +405,20 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
       </header>
 
       {/* Professional Site Header separated from Navbar (Below Navbar) */}
-      <div className="professional-site-header" style={{
-        padding: '0.8rem 1rem',
-        textAlign: 'center',
-        background: 'transparent',
-        color: 'var(--primary-dark)',
-        position: 'relative',
-        zIndex: 99
-      }}>
-        <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent-gold)', textShadow: '1px 1px 2px rgba(0,0,0,0.05)', fontFamily: '"Outfit", sans-serif' }}>
-           Maktaba Tul Muslim
-        </h1>
-      </div>
+      {activeTab === 'home' && (
+        <div className="professional-site-header" style={{
+          padding: '0.8rem 1rem',
+          textAlign: 'center',
+          background: 'transparent',
+          color: 'var(--primary-dark)',
+          position: 'relative',
+          zIndex: 99
+        }}>
+          <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent-gold)', textShadow: '1px 1px 2px rgba(0,0,0,0.05)', fontFamily: '"Outfit", sans-serif' }}>
+             Maktaba Tul Muslim
+          </h1>
+        </div>
+      )}
 
       {/* ===== FULL-SCREEN MOBILE MENU OVERLAY ===== */}
       <div className={`mobile-menu-overlay ${mobileActive ? 'mobile-menu-open' : ''}`}>

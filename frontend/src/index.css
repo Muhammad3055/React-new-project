@@ -711,7 +711,7 @@ a {
   opacity: 0;
   visibility: hidden;
   transform: scale(1.02);
-  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
 }
 
 .mobile-menu-overlay.mobile-menu-open {
@@ -3319,7 +3319,7 @@ a.btn-play:hover {
    PERFORMANCE TRANSITIONS & LAZY-LOADING SPINNER
    ========================================================= */
 .fade-in {
-  animation: fadeInEffect 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fadeInEffect 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fadeInEffect {
