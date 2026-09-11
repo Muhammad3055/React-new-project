@@ -471,7 +471,7 @@ a {
 
 /* Animated Hamburger Button */
 .mobile-toggle-btn {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 5px;
   background: transparent;
@@ -1001,7 +1001,7 @@ a {
 }
 
 .mobile-toggle-btn {
-  display: none;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -1073,17 +1073,10 @@ a {
 }
 
 @media (max-width: 950px) {
-  .nav-container { flex-wrap: wrap !important; }
-  .navbar-center-group { order: 3; width: 100%; margin-top: 0.4rem; }
   .nav-links.desktop-nav { 
     display: flex !important; 
-    justify-content: space-between; 
-    width: 100%; 
-    overflow-x: auto; 
-    padding-bottom: 0.3rem;
     gap: 0.5rem !important;
   }
-  .nav-links.desktop-nav::-webkit-scrollbar { display: none; }
   .mobile-toggle-btn { display: flex !important; flex-shrink: 0 !important; }
   .desktop-extras-menu,
   .header-language-selector,

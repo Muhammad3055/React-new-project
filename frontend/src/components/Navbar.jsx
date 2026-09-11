@@ -31,6 +31,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: t('mp3Audio'), icon: 'fas fa-headphones', action: () => { navigateToTab('quran'); setShowExtrasMenu(false); setMobileActive(false); } },
     { label: '💰 Zakat Calculator', icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
     { label: '🕋 Hajj & Umrah Guide', icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },
     { label: '📖 Tajweed & Makharij', icon: 'fas fa-book-reader', action: () => { navigateToTab('tajweed'); setShowExtrasMenu(false); } },
@@ -68,9 +69,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
-    { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones' },
     {id:'books',label:'Books',icon:'fa-solid fa-book'},
-
   ];
 
 
@@ -197,199 +196,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           </div>
 
           {/* RIGHT: Controls group */}
+          {/* RIGHT: Controls group */}
           <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end' }}>
-            {/* Search */}
-            <div className="search-wrapper" style={{ position: 'relative' }}>
-              <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
-              <input
-                type="text"
-                className="search-input"
-                placeholder={t('searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                style={{ paddingLeft: '2.1rem' }}
-              />
-              {showDropdown && searchResults.length > 0 && (
-                <div className="search-results-dropdown" style={{ minWidth: '320px', borderRadius: '14px', boxShadow: '0 12px 30px rgba(0,0,0,0.35)', border: '1px solid var(--accent-gold)', overflow: 'hidden', background: 'var(--bg-card)' }}>
-                  {searchResults.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="search-item"
-                      onClick={() => handleResultClick(item)}
-                      style={{ padding: '0.7rem 0.9rem', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', transition: 'background 0.2s ease' }}
-                    >
-                      {/* Google Search Style Breadcrumb Header with Site Favicon Logo */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
-                        <img src="/favicon.svg" alt="Maktaba Logo" style={{ width: '18px', height: '18px', borderRadius: '4px', flexShrink: 0, boxShadow: '0 1px 4px rgba(245,158,11,0.3)' }} />
-                        <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          Maktaba tul Muslim (مكتبة المسلم) <i className="fas fa-chevron-right" style={{ fontSize: '0.55rem', opacity: 0.6 }}></i> <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>{item.type}</span>
-                        </span>
-                      </div>
-
-                      {/* Main Title & Type Badge */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                        <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <i className={item.badge_icon || 'fas fa-search'} style={{ fontSize: '0.8rem' }}></i> {item.title}
-                        </div>
-                        <span className="search-item-type" style={{ fontSize: '0.68rem', padding: '2px 7px', borderRadius: '10px', background: 'rgba(245,158,11,0.18)', color: 'var(--accent-gold)', fontWeight: 800, whiteSpace: 'nowrap' }}>
-                          {item.type}
-                        </span>
-                      </div>
-
-                      {/* Subtitle / Description */}
-                      {item.subtitle && (
-                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.2rem', lineHeight: '1.3' }}>
-                          {item.subtitle}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Global Language Selector (English, Urdu, Brahui, Arabic) */}
-            <div className="header-language-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-card)', padding: '4px 10px', borderRadius: '20px', border: '1.5px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-gold)' }} title={t('selectLanguage', 'Select Language')}>
-                <i className="fas fa-globe"></i>
-              </span>
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  color: 'var(--text-main)',
-                  border: 'none',
-                  fontWeight: 700,
-                  fontSize: '0.78rem',
-                  outline: 'none',
-                  cursor: 'pointer',
-                  padding: '2px 4px',
-                  borderRadius: '12px'
-                }}
-                title="Select Website Language (English, Urdu, Brahui, Arabic)"
-              >
-                <option value="en" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇬🇧 English</option>
-                <option value="ur" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇵🇰 اردو</option>
-                <option value="br" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>📜 براہموئی</option>
-                <option value="ar" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🇸🇦 العربية</option>
-              </select>
-            </div>
-
-            {/* Global Website Theme Selector (Light, Sepia, Black, Auto) */}
-            <div className="header-theme-selector" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-card)', padding: '4px 10px', borderRadius: '20px', border: '1.5px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-gold)' }} title="Website Theme">
-                <i className="fas fa-palette"></i>
-              </span>
-              <select
-                value={globalTheme}
-                onChange={(e) => setGlobalTheme(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  color: 'var(--text-main)',
-                  border: 'none',
-                  fontWeight: 700,
-                  fontSize: '0.78rem',
-                  outline: 'none',
-                  cursor: 'pointer',
-                  padding: '2px 4px',
-                  borderRadius: '12px'
-                }}
-                title="Select Website Theme (Light, Sepia, Black, Auto)"
-              >
-                <option value="light" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>☀️ Light</option>
-                <option value="sepia" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>📜 Sepia</option>
-                <option value="black" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🌙 Black</option>
-                <option value="auto" style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>🌓 Auto</option>
-              </select>
-            </div>
-
-            {/* Desktop Extras Menu Toggle */}
-            <div className="desktop-extras-menu">
-              <button
-                className={`extras-menu-toggle ${showExtrasMenu ? 'active' : ''}`}
-                onClick={(e) => { e.stopPropagation(); setShowExtrasMenu(!showExtrasMenu); }}
-                aria-label="Open extras menu"
-              >
-                <i className="fas fa-th-large"></i>
-                <span className="more-text">{t('more')}</span>
-              </button>
-            </div>
-
-            {/* Persistent Header Auth Area - Always Visible Across All Screen Sizes & Zoom Levels */}
-            <div className="desktop-auth-area">
-              {user ? (
-                <div className="desktop-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <button
-                    className="nav-user-pill"
-                    onClick={() => setShowProfileModal(true)}
-                    title="User Account & Profile Settings"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.45rem',
-                      padding: '0.35rem 0.75rem',
-                      borderRadius: '25px',
-                      border: user?.frame ? (user.frame === 'emerald' ? '2px solid #10b981' : user.frame === 'royal' ? '2px solid #6366f1' : user.frame === 'noor' ? '2px solid #ec4899' : '2px solid var(--accent-gold)') : '1.5px solid var(--accent-gold)',
-                      background: 'rgba(245, 158, 11, 0.2)',
-                      color: '#ffffff',
-                      cursor: 'pointer',
-                      fontWeight: 800,
-                      fontSize: '0.82rem',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.85rem' }}>
-                      {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
-                    </div>
-                    <span style={{ color: '#ffffff', fontWeight: 800 }}>{user.full_name || user.username}</span>
-                  </button>
-
-                  {user.is_staff && (
-                    <button
-                      className="nav-action-btn"
-                      title="Upload Content Studio"
-                      onClick={() => navigateToTab('upload')}
-                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
-                    >
-                      <i className="fas fa-cloud-upload-alt"></i>
-                    </button>
-                  )}
-
-                  <button
-                    className="nav-action-btn logout"
-                    title={t('logout')}
-                    onClick={handleLogout}
-                    style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
-                  >
-                    <i className="fas fa-sign-out-alt"></i>
-                  </button>
-                </div>
-              ) : (
-                <div className="desktop-login-signup">
-                  <button
-                    className="auth-btn login-btn"
-                    onClick={() => openAuthModal('login')}
-                    title="Sign In to Maktaba"
-                  >
-                    <i className="fas fa-sign-in-alt"></i>
-                    <span className="auth-btn-text">{t('login')}</span>
-                  </button>
-                  <button
-                    className="auth-btn signup-btn"
-                    onClick={() => openAuthModal('signup')}
-                    title="Create Portal Account"
-                  >
-                    <i className="fas fa-user-plus"></i>
-                    <span className="auth-btn-text">{t('signup')}</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
             {/* Hamburger Toggle */}
             <button
               className={`mobile-toggle-btn ${mobileActive ? 'is-open' : ''}`}
@@ -432,6 +240,42 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
         <div className="mobile-menu-brand" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
           <span style={{ color: 'var(--text-main)', fontWeight: 800 }}>Maktaba <span style={{ color: 'var(--accent-gold)' }}>Tul Muslim</span></span>
+        </div>
+
+        {/* Search inside Sidebar */}
+        <div className="search-wrapper mobile-sidebar-search" style={{ position: 'relative', width: '90%', margin: '0.5rem auto 1rem' }}>
+          <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
+          <input
+            type="text"
+            className="search-input"
+            placeholder={t('searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+            style={{ paddingLeft: '2.1rem', width: '100%', boxSizing: 'border-box' }}
+          />
+          {showDropdown && searchResults.length > 0 && (
+            <div className="search-results-dropdown" style={{ position: 'absolute', width: '100%', zIndex: 10, borderRadius: '14px', boxShadow: '0 12px 30px rgba(0,0,0,0.35)', border: '1px solid var(--accent-gold)', overflow: 'hidden', background: 'var(--bg-card)', marginTop: '0.5rem' }}>
+              {searchResults.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="search-item"
+                  onClick={() => handleResultClick(item)}
+                  style={{ padding: '0.7rem 0.9rem', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', transition: 'background 0.2s ease', textAlign: 'left' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                      <i className={item.badge_icon || 'fas fa-search'} style={{ fontSize: '0.8rem', marginRight: '0.4rem' }}></i> {item.title}
+                    </div>
+                    <span className="search-item-type" style={{ fontSize: '0.68rem', padding: '2px 7px', borderRadius: '10px', background: 'rgba(245,158,11,0.18)', color: 'var(--accent-gold)', fontWeight: 800 }}>
+                      {item.type}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Top Auth Section inside Mobile Drawer (Stacked: Create Account on Top, Sign In Below) */}
