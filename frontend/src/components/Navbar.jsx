@@ -171,15 +171,29 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         <span style={{ background: 'rgba(255,255,255,0.22)', padding: '1px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800 }}>In Development</span>
       </div>
 
-      <header className="navbar">
+      {/* Professional Site Header separated from Navbar */}
+      <div className="professional-site-header" style={{
+        background: 'linear-gradient(to right, #022c22, #064e3b)', 
+        padding: '1.5rem 1rem',
+        textAlign: 'center',
+        color: '#fff',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+        position: 'relative',
+        zIndex: 99
+      }}>
+        <h1 style={{ margin: 0, fontSize: '2.4rem', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--accent-gold-light)', textShadow: '2px 2px 4px rgba(0,0,0,0.4)', fontFamily: '"Outfit", sans-serif' }}>
+           Maktaba Tul Muslim
+        </h1>
+        <p style={{ margin: '8px 0 0', fontSize: '1.05rem', color: '#cbd5e1', letterSpacing: '0.5px' }}>
+          Free Authentic Islamic Resource Platform
+        </p>
+      </div>
+
+      <header className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
         <div className="nav-container">
           <div className="navbar-left-group">
-            <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}>
+            <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }} title="Home">
               <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
-              <span className="brand-text">{t('brandName')}</span>
-              <span className="under-dev-badge" style={{ background: 'rgba(245, 158, 11, 0.18)', color: 'var(--accent-gold)', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800, whiteSpace: 'nowrap' }}>
-                Under Development
-              </span>
             </div>
 
 

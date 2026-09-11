@@ -1075,7 +1075,10 @@ a {
 @media (max-width: 950px) {
   .nav-links.desktop-nav { display: none !important; }
   .mobile-toggle-btn { display: flex !important; flex-shrink: 0 !important; }
-  .desktop-extras-menu { display: flex !important; }
+  .desktop-extras-menu,
+  .header-language-selector,
+  .header-theme-selector,
+  .desktop-auth-area { display: none !important; }
   .navbar-right-group { gap: 0.25rem !important; }
 }
 
