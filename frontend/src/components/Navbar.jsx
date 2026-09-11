@@ -173,14 +173,15 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
       <header className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
         <div className="nav-container">
-          <div className="navbar-left-group">
+          {/* LEFT: Logo only */}
+          <div className="navbar-left-group" style={{ display: 'flex', flexShrink: 0 }}>
             <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }} title="Home">
               <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
             </div>
+          </div>
 
-
-
-            <ul className="nav-links desktop-nav">
+          {/* CENTER: Navigation Links */}
+          <div className="navbar-center-group" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>            <ul className="nav-links desktop-nav">
               {navItems.map((item) => (
                 <li key={item.id}>
                   <span
@@ -195,8 +196,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             </ul>
           </div>
 
-          {/* Right side controls group */}
-          <div className="navbar-right-group">
+          {/* RIGHT: Controls group */}
+          <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end' }}>
             {/* Search */}
             <div className="search-wrapper" style={{ position: 'relative' }}>
               <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
