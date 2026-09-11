@@ -171,24 +171,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         <span style={{ background: 'rgba(255,255,255,0.22)', padding: '1px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800 }}>In Development</span>
       </div>
 
-      {/* Professional Site Header separated from Navbar */}
-      <div className="professional-site-header" style={{
-        background: 'linear-gradient(to right, #022c22, #064e3b)', 
-        padding: '1.5rem 1rem',
-        textAlign: 'center',
-        color: '#fff',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-        position: 'relative',
-        zIndex: 99
-      }}>
-        <h1 style={{ margin: 0, fontSize: '2.4rem', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--accent-gold-light)', textShadow: '2px 2px 4px rgba(0,0,0,0.4)', fontFamily: '"Outfit", sans-serif' }}>
-           Maktaba Tul Muslim
-        </h1>
-        <p style={{ margin: '8px 0 0', fontSize: '1.05rem', color: '#cbd5e1', letterSpacing: '0.5px' }}>
-          Free Authentic Islamic Resource Platform
-        </p>
-      </div>
-
       <header className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
         <div className="nav-container">
           <div className="navbar-left-group">
@@ -419,8 +401,21 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             </button>
           </div>
         </div>
-
       </header>
+
+      {/* Professional Site Header separated from Navbar (Below Navbar) */}
+      <div className="professional-site-header" style={{
+        padding: '0.8rem 1rem',
+        textAlign: 'center',
+        background: 'transparent',
+        color: 'var(--primary-dark)',
+        position: 'relative',
+        zIndex: 99
+      }}>
+        <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent-gold)', textShadow: '1px 1px 2px rgba(0,0,0,0.05)', fontFamily: '"Outfit", sans-serif' }}>
+           Maktaba Tul Muslim
+        </h1>
+      </div>
 
       {/* ===== FULL-SCREEN MOBILE MENU OVERLAY ===== */}
       <div className={`mobile-menu-overlay ${mobileActive ? 'mobile-menu-open' : ''}`}>
