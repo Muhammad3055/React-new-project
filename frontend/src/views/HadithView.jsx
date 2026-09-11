@@ -6,6 +6,12 @@ export default function HadithView({ openReportModal, user }) {
   const [hadiths, setHadiths] = useState([]);
   const [booksList, setBooksList] = useState([]);
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) setQuery(q);
+  }, []);
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');

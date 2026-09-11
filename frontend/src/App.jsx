@@ -353,10 +353,13 @@ function MainAppContent() {
       });
   }, []);
 
-  const navigateToTab = (tabName) => {
+  const navigateToTab = (tabName, queryParam = null) => {
     setActiveTab(tabName);
-    const path = tabPathMap[tabName] || '/';
-    if (window.location.pathname !== path) {
+    let path = tabPathMap[tabName] || '/';
+    if (queryParam) {
+      path += `?q=${encodeURIComponent(queryParam)}`;
+    }
+    if (window.location.pathname + window.location.search !== path) {
       window.history.pushState({}, '', path);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });

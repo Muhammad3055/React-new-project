@@ -69,6 +69,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
+    { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
     {id:'books',label:'Books',icon:'fa-solid fa-book'},
   ];
 
@@ -114,7 +115,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [mobileActive]);
 
   const handleResultClick = (result) => {
-    navigateToTab(result.tab || 'home');
+    navigateToTab(result.tab || 'home', result.query);
     setShowDropdown(false);
     setSearchQuery('');
   };
@@ -182,7 +183,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           {/* CENTER: Navigation Links */}
           <div className="navbar-center-group" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>            <ul className="nav-links desktop-nav">
               {navItems.map((item) => (
-                <li key={item.id}>
+                <li key={item.id} className={item.desktopOnly ? 'desktop-only' : ''}>
                   <span
                     className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
                     onClick={() => navigateToTab(item.id)}
@@ -197,7 +198,104 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
           {/* RIGHT: Controls group */}
           {/* RIGHT: Controls group */}
-          <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end' }}>
+          <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end', gap: '0.8rem', alignItems: 'center' }}>
+            {/* Search (Desktop) */}
+            <div className="search-wrapper desktop-only" style={{ position: 'relative' }}>
+              <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
+              <input
+                type="text"
+                className="search-input"
+                placeholder={t('searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                style={{ paddingLeft: '2.1rem' }}
+              />
+              {showDropdown && searchResults.length > 0 && (
+                <div className="search-results-dropdown" style={{ minWidth: '320px', borderRadius: '14px', boxShadow: '0 12px 30px rgba(0,0,0,0.35)', border: '1px solid var(--accent-gold)', overflow: 'hidden', background: 'var(--bg-card)', position: 'absolute', right: 0, top: '45px', zIndex: 10 }}>
+                  {searchResults.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="search-item"
+                      onClick={() => handleResultClick(item)}
+                      style={{ padding: '0.7rem 0.9rem', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', transition: 'background 0.2s ease', textAlign: 'left' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                          <i className={item.badge_icon || 'fas fa-search'} style={{ fontSize: '0.8rem', marginRight: '0.4rem' }}></i> {item.title}
+                        </div>
+                        <span className="search-item-type" style={{ fontSize: '0.68rem', padding: '2px 7px', borderRadius: '10px', background: 'rgba(245,158,11,0.18)', color: 'var(--accent-gold)', fontWeight: 800 }}>
+                          {item.type}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Persistent Header Auth Area - Desktop Only */}
+            <div className="desktop-auth-area desktop-only">
+              {user ? (
+                <div className="desktop-user-menu" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    className="nav-user-pill"
+                    onClick={() => setShowProfileModal(true)}
+                    title="User Account & Profile Settings"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '25px',
+                      border: user?.frame ? (user.frame === 'emerald' ? '2px solid #10b981' : user.frame === 'royal' ? '2px solid #6366f1' : user.frame === 'noor' ? '2px solid #ec4899' : '2px solid var(--accent-gold)') : '1.5px solid var(--accent-gold)',
+                      background: 'rgba(245, 158, 11, 0.2)',
+                      color: '#ffffff',
+                      cursor: 'pointer',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.85rem' }}>
+                      {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
+                    </div>
+                    <span style={{ color: '#ffffff', fontWeight: 800 }}>{user.full_name || user.username}</span>
+                  </button>
+
+                  <button
+                    className="nav-action-btn logout"
+                    title={t('logout')}
+                    onClick={handleLogout}
+                    style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <i className="fas fa-sign-out-alt"></i>
+                  </button>
+                </div>
+              ) : (
+                <div className="desktop-login-signup">
+                  <button
+                    className="auth-btn login-btn"
+                    onClick={() => openAuthModal('login')}
+                    title="Sign In to Maktaba"
+                  >
+                    <i className="fas fa-sign-in-alt"></i>
+                    <span className="auth-btn-text">{t('login')}</span>
+                  </button>
+                  <button
+                    className="auth-btn signup-btn"
+                    onClick={() => openAuthModal('signup')}
+                    title="Create Portal Account"
+                  >
+                    <i className="fas fa-user-plus"></i>
+                    <span className="auth-btn-text">{t('signup')}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Hamburger Toggle */}
             <button
               className={`mobile-toggle-btn ${mobileActive ? 'is-open' : ''}`}
@@ -243,7 +341,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
 
         {/* Search inside Sidebar */}
-        <div className="search-wrapper mobile-sidebar-search" style={{ position: 'relative', width: '90%', margin: '0.5rem auto 1rem' }}>
+        <div className="search-wrapper mobile-sidebar-search mobile-only" style={{ position: 'relative', width: '90%', margin: '0.5rem auto 1rem' }}>
           <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
           <input
             type="text"
@@ -279,7 +377,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
 
         {/* Top Auth Section inside Mobile Drawer (Stacked: Create Account on Top, Sign In Below) */}
-        <div className="mobile-auth-area">
+        <div className="mobile-auth-area mobile-only">
           {user ? (
             <div className="mobile-user-card">
               <div className="mobile-user-info">

@@ -3500,3 +3500,15 @@ img {
 }
 
 
+@media (max-width: 950px) {
+  .desktop-only { display: none !important; }
+}
+@media (min-width: 951px) {
+  .mobile-only { display: none !important; }
+  .mobile-menu-overlay {
+    width: 350px !important;
+    right: 0 !important;
+    left: auto !important;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.5) !important;
+  }
+}

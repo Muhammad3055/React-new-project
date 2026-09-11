@@ -77,6 +77,12 @@ export default function BooksView({ openReportModal, user }) {
     setPage(1);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) setQuery(q);
+  }, []);
+
   // Debounce search query to prevent excessive backend API calls
   useEffect(() => {
     const handler = setTimeout(() => {

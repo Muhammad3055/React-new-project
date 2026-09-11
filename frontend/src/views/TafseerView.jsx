@@ -4,6 +4,12 @@ export default function TafseerView({ openReportModal, user }) {
   const [tafseers, setTafseers] = useState([]);
   const [surahList, setSurahList] = useState([]);
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) setQuery(q);
+  }, []);
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedSurah, setSelectedSurah] = useState('');
   const [page, setPage] = useState(1);

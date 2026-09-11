@@ -145,6 +145,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const [taqreerQuery, setTaqreerQuery] = useState('');
   const [loadingTaqreers, setLoadingTaqreers] = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) {
+      setQuranQuery(q);
+      setTaqreerQuery(q);
+    }
+  }, []);
+
   const handleShareMp3 = (surahTitle, audioUrl) => {
     const shareText = `Listen to Surah ${surahTitle} MP3 Tilawat on Maktaba Tul Muslim:\nhttps://maktabatulmuslim.com`;
     if (navigator.share) {
