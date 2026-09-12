@@ -227,7 +227,8 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
               lat: lat,
               lng: lng,
               countryCode: detectedCode || activeCode,
-              city: label
+              city: label,
+              timings: data.data.timings
             });
           }
         }
@@ -293,7 +294,8 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
               lat: lat || null,
               lng: lng || null,
               countryCode: detectedCode,
-              city: city
+              city: city,
+              timings: data.data.timings
             });
           }
         }

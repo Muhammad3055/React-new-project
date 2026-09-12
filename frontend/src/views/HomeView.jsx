@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
+import DailyReminderBanner from '../components/DailyReminderBanner';
 import { fetchWithCache } from '../utils/apiCache';
 import { useLanguage } from '../context/LanguageContext';
 import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
@@ -384,6 +385,13 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
   return (
     <div style={{ background: '#fdfbf7', minHeight: '100vh', paddingBottom: '3rem' }}>
+      
+      {/* Dynamic Daily Prayer Reminders Banner */}
+      <DailyReminderBanner 
+        timings={locationInfo?.timings} 
+        navigateToTab={navigateToTab} 
+      />
+
       {/* Hero Carousel Banner Section */}
       <section className="container" style={{ paddingTop: '1.5rem' }}>
         <div

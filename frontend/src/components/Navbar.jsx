@@ -41,7 +41,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: '🎨 Quote Card Creator', icon: 'fas fa-palette', action: () => { navigateToTab('cardCreator'); setShowExtrasMenu(false); } },
     { label: '📺 24/7 Makkah & Madinah Live', icon: 'fas fa-broadcast-tower', action: () => { navigateToTab('live'); setShowExtrasMenu(false); } },
     { label: '🌐 World Clock & Todo List', icon: 'fas fa-globe', action: () => { navigateToTab('worldClock'); setShowExtrasMenu(false); } },
-    { label: '📜 Brahui Heritage Hub', icon: 'fas fa-scroll', action: () => { navigateToTab('brahui'); setShowExtrasMenu(false); } },
+    { label: '🤲 Daily Reminders & Azkar', icon: 'fas fa-praying-hands', action: () => { navigateToTab('azkar'); setShowExtrasMenu(false); } },
 
     { label: '🛡️ Daily Protection (Nazar)', icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
     { label: '🧠 Daily Islamic Quiz', icon: 'fas fa-question-circle', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
@@ -435,7 +435,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             >
               <option value="en">🇬🇧 English</option>
               <option value="ur">🇵🇰 اردو</option>
-              <option value="br">📜 براہوئی</option>
               <option value="ar">🇸🇦 العربية</option>
             </select>
           </div>
@@ -569,7 +568,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 >
                   <option value="en">🇬🇧 English</option>
                   <option value="ur">🇵🇰 اردو</option>
-                  <option value="br">📜 براہموئی</option>
                   <option value="ar">🇸🇦 العربية</option>
                 </select>
               </div>

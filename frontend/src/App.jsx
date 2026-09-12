@@ -49,7 +49,7 @@ const InheritanceView = lazy(() => import('./views/InheritanceView'));
 const RamadanView = lazy(() => import('./views/RamadanView'));
 const CardCreatorView = lazy(() => import('./views/CardCreatorView'));
 const LiveView = lazy(() => import('./views/LiveView'));
-const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
+const DailyAzkarView = lazy(() => import('./views/DailyAzkarView'));
 const WorldClockView = lazy(() => import('./views/WorldClockView'));
 import SocialCardModal from './components/SocialCardModal';
 
@@ -559,8 +559,8 @@ function MainAppContent() {
             <LiveView user={user} />
           )}
 
-          {activeTab === 'brahui' && (
-            <BrahuiHeritageView />
+          {activeTab === 'azkar' && (
+            <DailyAzkarView />
           )}
 
           {activeTab === 'worldClock' && (
