@@ -114,6 +114,18 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     return () => { document.body.style.overflow = ''; };
   }, [mobileActive]);
 
+  // Close menus on ESC key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setMobileActive(false);
+        setShowExtrasMenu(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleResultClick = (result) => {
     navigateToTab(result.tab || 'home', result.query);
     setShowDropdown(false);
@@ -456,8 +468,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
 
         {/* Main Navigation Items Grid */}
-        <div className="mobile-section-title">{t('home')} & {t('readQuran')}</div>
-        <nav className="mobile-nav-grid main-nav-grid">
+        <div className="mobile-section-title mobile-only">{t('home')} & {t('readQuran')}</div>
+        <nav className="mobile-nav-grid main-nav-grid mobile-only">
           {navItems.map((item) => (
             <button
               key={item.id}

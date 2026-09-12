@@ -28,8 +28,8 @@ export default function IslamicNamesView() {
     { name: 'Noor', arabic: 'نُور', gender: 'girl', origin: 'Arabic', meaning: 'Divine light, radiance, mentioned frequently in the Quran.' },
     { name: 'Tariq', arabic: 'طَارِق', gender: 'boy', origin: 'Arabic', meaning: 'Morning star, conqueror, title of Surah At-Tariq.' },
     { name: 'Safa', arabic: 'صَفَا', gender: 'girl', origin: 'Arabic', meaning: 'Purity, clarity, holy hill next to the Kaaba.' },
-    { name: 'Brahui Gul', arabic: 'براہوئی گل', gender: 'girl', origin: 'Brahui', meaning: 'Flower of the Brahui lands, beautiful and fragrant.' },
-    { name: 'Brohi Khan', arabic: 'بروهي خان', gender: 'boy', origin: 'Brahui', meaning: 'Noble leader, honorable Brahui warrior of faith.' }
+    { name: 'Ali', arabic: 'عَلِيّ', gender: 'boy', origin: 'Arabic', meaning: 'High, elevated, champion, Fourth Caliph of Islam (RA).' },
+    { name: 'Amina', arabic: 'آمِنَة', gender: 'girl', origin: 'Arabic', meaning: 'Trustworthy, faithful, mother of Prophet Muhammad (SAW).' }
   ];
 
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');

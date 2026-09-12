@@ -5,7 +5,7 @@ import { Radio, Video, Play, Pause, Volume2, Sparkles, Tv, Compass, RefreshCw, E
 export default function LiveView({ user }) {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('makkah'); // 'makkah', 'madinah', 'radio'
-  const [selectedServer, setSelectedServer] = useState('server1'); // 'server1', 'server2', 'server3', 'custom'
+  const [selectedServer, setSelectedServer] = useState('server1'); // 'server1', 'server2', 'custom'
   
 
 
@@ -51,26 +51,25 @@ export default function LiveView({ user }) {
 
 
 
-  // Helper to determine exact embed URL
   const getEmbedUrl = () => {
     if (activeTab === 'makkah') {
       if (selectedServer === 'custom' && customMakkahId) {
         return `https://www.youtube.com/embed/${customMakkahId}?autoplay=1&rel=0`;
       }
       if (selectedServer === 'server2') {
-        return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
+        return 'https://www.youtube.com/embed/Jqr7aM-OwRg?autoplay=1&rel=0';
       }
-      // Verified Working Default ID for Makkah
-      return 'https://www.youtube.com/embed/Jqr7aM-OwRg?autoplay=1&rel=0';
+      // Verified Working Default ID for Makkah (nocookie channel stream to bypass login on mobile)
+      return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
     } else {
       if (selectedServer === 'custom' && customMadinahId) {
         return `https://www.youtube.com/embed/${customMadinahId}?autoplay=1&rel=0`;
       }
       if (selectedServer === 'server2') {
-        return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw';
+        return 'https://www.youtube.com/embed/Rs7St51oDDc?autoplay=1&rel=0';
       }
-      // Verified Working Default ID for Madinah
-      return 'https://www.youtube.com/embed/Rs7St51oDDc?autoplay=1&rel=0';
+      // Verified Working Default ID for Madinah (nocookie channel stream to bypass login on mobile)
+      return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw';
     }
   };
 
@@ -171,7 +170,7 @@ export default function LiveView({ user }) {
                     border: '1px solid #cbd5e1'
                   }}
                 >
-                  Server 1 (Saudi Official)
+                  Server 1 (Official Nocookie)
                 </button>
 
                 <button
@@ -183,7 +182,7 @@ export default function LiveView({ user }) {
                     border: '1px solid #cbd5e1'
                   }}
                 >
-                  Server 2 (No-Cookie Player)
+                  Server 2 (Alternative ID)
                 </button>
 
                 {(customMakkahId || customMadinahId) && (
