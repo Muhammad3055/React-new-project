@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAdminContent } from '../utils/adminContentStore';
@@ -42,9 +41,10 @@ export default function ImagesView() {
     setLoading(true);
     try {
       const url = `${API_BASE_URL}/api/images/?category=${selectedCategory === 'mix' ? '' : selectedCategory}&page=${page}`;
-      const res = await axios.get(url);
-      setImages(res.data.results || []);
-      setTotalPages(res.data.total_pages || 1);
+      const response = await fetch(url);
+      const data = await response.json();
+      setImages(data.results || []);
+      setTotalPages(data.total_pages || 1);
     } catch (error) {
       console.error("Error fetching images:", error);
     } finally {
@@ -63,15 +63,18 @@ export default function ImagesView() {
     formData.append('image_file', uploadData.file);
 
     try {
-      await axios.post(`${API_BASE_URL}/api/images/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
+      const response = await fetch(`${API_BASE_URL}/api/images/`, {
+        method: 'POST',
+        body: formData,
       });
-      setShowUploadModal(false);
-      setUploadData({ title: '', category: 'mix', description: '', file: null });
-      fetchImages(); // Refresh
-      alert("Image uploaded successfully!");
+      if (response.ok) {
+        setShowUploadModal(false);
+        setUploadData({ title: '', category: 'mix', description: '', file: null });
+        fetchImages(); // Refresh
+        alert("Image uploaded successfully!");
+      } else {
+        alert("Upload failed.");
+      }
     } catch (error) {
       console.error(error);
       alert("Upload failed.");
