@@ -16,7 +16,7 @@ from django.conf import settings
 from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, UserProfilePreferences,
-    DailyPrayerTracker, AyahReflectionNote, ZakatHistory
+    DailyPrayerTracker, AyahReflectionNote, ZakatHistory, ImageMedia
 )
 from .forms import QuranAudioForm, VideoMediaForm, BookMediaForm, TafseerForm, HadithForm
 
@@ -1689,8 +1689,10 @@ def api_admin_delete_content(request):
 
             # Models to check
             models_to_check = []
-            if content_type in ['book', 'document', 'books', 'image', 'photo']:
+            if content_type in ['book', 'document', 'books']:
                 models_to_check = [BookMedia]
+            elif content_type in ['image', 'photo', 'gallery']:
+                models_to_check = [ImageMedia]
             elif content_type in ['audio', 'taqreer', 'mp3']:
                 models_to_check = [TaqreerAudio]
             elif content_type in ['quran', 'quran_audio']:
@@ -1799,4 +1801,66 @@ def api_admin_edit_content(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
+@csrf_exempt
+def api_images_list(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            file_obj = request.FILES.get('image_file') or request.FILES.get('file')
+            cat_id = body.get('category_id') or body.get('category') or 'mix'
+
+            img = ImageMedia.objects.create(
+                title=body.get('title', 'Untitled Image'),
+                category=cat_id,
+                image_url=body.get('image_url', ''),
+                description=body.get('description', '')
+            )
+            if file_obj:
+                img.image_file = file_obj
+                img.save()
+
+            return JsonResponse({
+                'status': 'success',
+                'id': img.id,
+                'title': img.title,
+                'category': img.category,
+                'image_url': img.get_image_url(),
+                'description': img.description
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    query = request.GET.get('q', '').strip()
+    category = request.GET.get('category', '').strip()
+    page_number = request.GET.get('page', 1)
+    
+    images = ImageMedia.objects.all()
+    if query:
+        images = images.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+    if category:
+        images = images.filter(category=category)
+
+    paginator = Paginator(images, 24)
+    page_obj = paginator.get_page(page_number)
+
+    data = []
+    for item in page_obj:
+        data.append({
+            'id': item.id,
+            'title': item.title,
+            'category': item.category,
+            'category_display': item.get_category_display(),
+            'image_url': item.get_image_url(),
+            'description': item.description,
+            'created_at': item.created_at.strftime('%Y-%m-%d'),
+        })
+
+    return JsonResponse({
+        'results': data,
+        'page': page_obj.number,
+        'total_pages': paginator.num_pages,
+        'total_count': paginator.count,
+    })
 

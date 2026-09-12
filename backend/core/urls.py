@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/books/', views.api_books_list, name='api_books_list'),
     path('api/tafseer/', views.api_tafseer_list, name='api_tafseer_list'),
     path('api/hadith/', views.api_hadith_list, name='api_hadith_list'),
+    path('api/images/', views.api_images_list, name='api_images_list'),
     path('api/categories/', views.api_categories_list, name='api_categories_list'),
     path('api/qaris/', views.api_qaris_list, name='api_qaris_list'),
     path('api/stats/', views.api_home_stats, name='api_home_stats'),

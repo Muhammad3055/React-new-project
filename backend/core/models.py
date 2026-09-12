@@ -467,3 +467,33 @@ class DailyQuiz(models.Model):
 
     def __str__(self):
         return f"Daily Quiz - {self.date}"
+
+class ImageMedia(models.Model):
+    CATEGORY_CHOICES = [
+        ('prophets', 'Prophets and Sahaba'),
+        ('hadith', 'Hadith & Sunnah'),
+        ('islam', 'Islam'),
+        ('quran', 'Quran'),
+        ('religion', 'Religion'),
+        ('mix', 'Mix'),
+    ]
+
+    title = models.CharField(max_length=255)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='mix', db_index=True)
+    image_file = models.ImageField(upload_to="gallery/", blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, help_text="Direct Image URL if no file uploaded")
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = "Images Gallery"
+
+    def __str__(self):
+        return f"{self.title} - {self.get_category_display()}"
+
+    def get_image_url(self):
+        if self.image_file:
+            return self.image_file.url
+        return self.image_url or "#"
+

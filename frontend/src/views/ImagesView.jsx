@@ -1,348 +1,231 @@
 import React, { useState, useEffect } from 'react';
-import { fetchWithCache, getApiUrl } from '../utils/apiCache';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Search, Download, Eye, X, Calendar, Image as ImageIcon, Sparkles, RefreshCw } from 'lucide-react';
+import { useAdminContent } from '../utils/adminContentStore';
+import { createPortal } from 'react-dom';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+const CATEGORIES = [
+  { id: 'mix', name: 'Mix' },
+  { id: 'prophets', name: 'Prophets and Sahaba' },
+  { id: 'hadith', name: 'Hadith & Sunnah' },
+  { id: 'islam', name: 'Islam' },
+  { id: 'quran', name: 'Quran' },
+  { id: 'religion', name: 'Religion' },
+];
 
 export default function ImagesView() {
-  const { t } = useLanguage();
   const [images, setImages] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('mix');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [lightboxImg, setLightboxImg] = useState(null); // Image currently viewed in lightbox
+  
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadData, setUploadData] = useState({ title: '', category: 'mix', description: '', file: null });
 
-  // Debounce search query to prevent excessive backend API calls
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedQuery(query);
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [query]);
+  const { user } = useAuth();
+  const { t } = useLanguage();
+  const { deleteContentItem } = useAdminContent();
 
-  // Load Categories
-  useEffect(() => {
-    fetchWithCache('/api/categories/')
-      .then(data => setCategories(data.categories || []))
-      .catch(() => {});
-  }, []);
+  const isAdmin = user?.is_staff || user?.is_superuser;
 
-  // Fetch only images from BookMedia endpoint (file_type=image)
   useEffect(() => {
+    fetchImages();
+    // eslint-disable-next-line
+  }, [selectedCategory, page]);
+
+  const fetchImages = async () => {
     setLoading(true);
-    const url = getApiUrl(
-      `/api/books/?file_type=image&q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&page=${page}`
-    );
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        setImages(data.results || []);
-        setTotalPages(data.total_pages || 1);
-      })
-      .catch(() => {
-        setImages([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [debouncedQuery, selectedCategory, page]);
+    try {
+      const url = `${API_BASE_URL}/api/images/?category=${selectedCategory === 'mix' ? '' : selectedCategory}&page=${page}`;
+      const res = await axios.get(url);
+      setImages(res.data.results || []);
+      setTotalPages(res.data.total_pages || 1);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleDownload = (imageUrl, filename) => {
-    if (!imageUrl) return;
-    const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = filename || 'islamic-image.jpg';
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleUploadSubmit = async (e) => {
+    e.preventDefault();
+    if (!uploadData.title || !uploadData.file) return alert("Title and image file are required.");
+
+    const formData = new FormData();
+    formData.append('title', uploadData.title);
+    formData.append('category', uploadData.category);
+    formData.append('description', uploadData.description);
+    formData.append('image_file', uploadData.file);
+
+    try {
+      await axios.post(`${API_BASE_URL}/api/images/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      setShowUploadModal(false);
+      setUploadData({ title: '', category: 'mix', description: '', file: null });
+      fetchImages(); // Refresh
+      alert("Image uploaded successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Upload failed.");
+    }
+  };
+
+  const handleDelete = async (id, title) => {
+    const success = await deleteContentItem(id, 'image', title);
+    if (success) {
+      fetchImages();
+    }
   };
 
   return (
-    <div style={{ background: '#fdfbf7', minHeight: '90vh', padding: '2rem 1.5rem' }}>
-      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        
-        {/* ── Title Banner ── */}
-        <div style={{
-          textAlign: 'center', marginBottom: '2.5rem',
-          background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-          borderRadius: '24px', padding: '3rem 2rem', color: '#fff',
-          border: '2px solid var(--accent-gold, #f59e0b)',
-          boxShadow: '0 12px 30px rgba(0,0,0,0.15)'
-        }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 15px', background: 'rgba(255,255,255,0.08)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
-            <Sparkles size={16} style={{ color: '#f59e0b' }} />
-            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Islamic Visual Gallery
-            </span>
-          </div>
-          <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 800, margin: '0 0 0.5rem', color: '#ffffff' }}>
-            Islamic Images &amp; Calligraphy
-          </h1>
-          <p style={{ margin: 0, color: '#cbd5e1', fontSize: '1rem', maxWidth: '650px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
-            Browse, view, and download authentic Islamic wallpapers, Calligraphy, Quranic quotes, and educational image resources.
-          </p>
-        </div>
-
-        {/* ── Filter Bar ── */}
-        <div style={{
-          background: '#ffffff', borderRadius: '20px', padding: '1.25rem',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.04)', border: '1px solid #e2e8f0',
-          marginBottom: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between'
-        }}>
-          {/* Search Input */}
-          <div style={{ position: 'relative', flex: '1 1 300px' }}>
-            <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-            <input
-              type="text"
-              placeholder="Search images by title, keywords..."
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              style={{
-                width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '14px',
-                border: '1.5px solid #e2e8f0', outline: 'none', fontSize: '0.9rem', color: '#334155',
-                transition: 'border-color 0.2s', background: '#f8fafc'
-              }}
-              onFocus={e => e.target.style.borderColor = '#0066FF'}
-              onBlur={e => e.target.style.borderColor = '#e2e8f0'}
-            />
-          </div>
-
-          {/* Category Dropdown */}
-          <div style={{ flex: '1 1 200px' }}>
-            <select
-              value={selectedCategory}
-              onChange={e => { setSelectedCategory(e.target.value); setPage(1); }}
-              style={{
-                width: '100%', padding: '0.75rem 1rem', borderRadius: '14px',
-                border: '1.5px solid #e2e8f0', outline: 'none', fontSize: '0.9rem', color: '#334155',
-                background: '#f8fafc', cursor: 'pointer'
-              }}
-            >
-              <option value="">All Categories</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* ── Main Gallery Grid ── */}
-        {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 0' }}>
-            <RefreshCw size={36} style={{ color: '#0066FF', animation: 'spin 1.2s linear infinite' }} />
-            <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.95rem' }}>Loading visual gallery...</p>
-          </div>
-        ) : images.length === 0 ? (
-          <div style={{
-            textAlign: 'center', padding: '4rem 2rem', background: '#ffffff',
-            borderRadius: '20px', border: '1px dashed #cbd5e1'
-          }}>
-            <ImageIcon size={48} style={{ color: '#cbd5e1', marginBottom: '1rem' }} />
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.15rem', color: '#1e293b' }}>Islamic Images &amp; Calligraphy</h3>
-            <p style={{ margin: 0, color: '#64748b', fontSize: '0.92rem', fontWeight: 600 }}>
-              Beautiful Islamic wallpapers, quotes, and calligraphies are being curated, and will be uploaded soon.
-            </p>
-          </div>
-        ) : (
-          <>
-            <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem'
-            }}>
-              {images.map(img => {
-                const imgUrl = img.pdf_url || img.cover_url;
-                return (
-                  <div
-                    key={img.id}
-                    style={{
-                      background: '#ffffff', borderRadius: '18px', overflow: 'hidden',
-                      border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
-                      display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease',
-                      position: 'relative'
-                    }}
-                    className="image-card"
-                  >
-                    {/* Hover effects handled in local CSS in style tag */}
-                    <div style={{ position: 'relative', overflow: 'hidden', paddingBottom: '70%', background: '#f8fafc' }}>
-                      <img
-                        src={imgUrl}
-                        alt={img.title}
-                        style={{
-                          position: 'absolute', inset: 0, width: '100%', height: '100%',
-                          objectFit: 'cover', transition: 'transform 0.4s ease'
-                        }}
-                        className="card-img"
-                      />
-                      {/* Image Action Overlay */}
-                      <div
-                        className="card-overlay"
-                        style={{
-                          position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                          opacity: 0, transition: 'opacity 0.25s ease'
-                        }}
-                      >
-                        <button
-                          onClick={() => setLightboxImg(img)}
-                          style={{
-                            background: '#ffffff', border: 'none', width: '38px', height: '38px',
-                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.15)', color: '#0066FF'
-                          }}
-                          title="Preview"
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDownload(imgUrl, img.title)}
-                          style={{
-                            background: '#ffffff', border: 'none', width: '38px', height: '38px',
-                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.15)', color: '#10b981'
-                          }}
-                          title="Download"
-                        >
-                          <Download size={18} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Metadata Card Footer */}
-                    <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                      <h3 style={{ margin: '0 0 0.35rem', fontSize: '0.98rem', fontWeight: 700, color: '#1e293b', lineClamp: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {img.title}
-                      </h3>
-                      {img.description && (
-                        <p style={{ margin: '0 0 0.75rem', fontSize: '0.8rem', color: '#64748b', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '2.4rem', lineHeight: 1.5 }}>
-                          {img.description}
-                        </p>
-                      )}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
-                        <span style={{ fontSize: '0.72rem', color: '#0066FF', background: '#eff6ff', padding: '3px 8px', borderRadius: '6px', fontWeight: 600 }}>
-                          {img.category || 'Islamic Resource'}
-                        </span>
-                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Calendar size={12} />
-                          {img.created_at || 'Recently'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '3rem' }}>
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  style={{
-                    padding: '0.6rem 1.2rem', borderRadius: '12px', border: '1px solid #cbd5e1',
-                    background: page <= 1 ? '#e2e8f0' : '#ffffff', color: page <= 1 ? '#94a3b8' : '#334155',
-                    cursor: page <= 1 ? 'default' : 'pointer', fontWeight: 600, fontSize: '0.88rem'
-                  }}
-                >
-                  Previous
-                </button>
-                <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 700 }}>
-                  Page {page} of {totalPages}
-                </span>
-                <button
-                  disabled={page >= totalPages}
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  style={{
-                    padding: '0.6rem 1.2rem', borderRadius: '12px', border: '1px solid #cbd5e1',
-                    background: page >= totalPages ? '#e2e8f0' : '#ffffff', color: page >= totalPages ? '#94a3b8' : '#334155',
-                    cursor: page >= totalPages ? 'default' : 'pointer', fontWeight: 600, fontSize: '0.88rem'
-                  }}
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ── Lightbox Overlay ── */}
-        {lightboxImg && (
-          <div
-            style={{
-              position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.95)',
-              zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              padding: '2rem', backdropFilter: 'blur(5px)'
-            }}
-            onClick={() => setLightboxImg(null)}
-          >
-            <button
-              onClick={() => setLightboxImg(null)}
-              style={{
-                position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.1)',
-                border: 'none', color: '#fff', width: '42px', height: '42px', borderRadius: '50%',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}
-            >
-              <X size={24} />
-            </button>
-
-            <div
-              style={{
-                maxWidth: '90vw', maxHeight: '80vh', display: 'flex', flexDirection: 'column',
-                alignItems: 'center', gap: '1rem'
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-              <img
-                src={lightboxImg.pdf_url || lightboxImg.cover_url}
-                alt={lightboxImg.title}
-                style={{
-                  maxWidth: '100%', maxHeight: '72vh', borderRadius: '16px',
-                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.15)'
-                }}
-              />
-              <div style={{ textAlign: 'center', color: '#fff' }}>
-                <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.25rem', fontWeight: 700 }}>{lightboxImg.title}</h2>
-                {lightboxImg.description && <p style={{ margin: '0 0 0.75rem', fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '600px' }}>{lightboxImg.description}</p>}
-                
-                <button
-                  onClick={() => handleDownload(lightboxImg.pdf_url || lightboxImg.cover_url, lightboxImg.title)}
-                  style={{
-                    padding: '0.65rem 1.5rem', borderRadius: '30px', background: '#0066FF',
-                    color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.9rem',
-                    cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                    boxShadow: '0 4px 15px rgba(0,102,255,0.3)'
-                  }}
-                >
-                  <Download size={16} /> Download High Quality Image
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem', minHeight: '80vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
+        <h1 className="page-title" style={{ margin: 0 }}>
+          <i className="fas fa-images" style={{ color: 'var(--accent-gold)', marginRight: '0.75rem' }}></i>
+          Islamic Images Gallery
+        </h1>
+        {isAdmin && (
+          <button onClick={() => setShowUploadModal(true)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#059669', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '50px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+            <i className="fas fa-cloud-upload-alt"></i> Upload Image
+          </button>
         )}
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        .image-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 12px 25px rgba(0,0,0,0.08) !important;
-          border-color: rgba(0, 102, 255, 0.3) !important;
-        }
-        .image-card:hover .card-img {
-          transform: scale(1.05);
-        }
-        .image-card:hover .card-overlay {
-          opacity: 1 !important;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}} />
+      {/* Category Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => { setSelectedCategory(cat.id); setPage(1); }}
+            style={{
+              padding: '0.6rem 1.25rem',
+              borderRadius: '50px',
+              border: '1px solid',
+              borderColor: selectedCategory === cat.id ? 'var(--primary-dark)' : '#e2e8f0',
+              background: selectedCategory === cat.id ? 'var(--primary-dark)' : '#ffffff',
+              color: selectedCategory === cat.id ? '#ffffff' : '#64748b',
+              fontWeight: 600,
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s'
+            }}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Image Grid */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '4rem' }}>
+          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
+          <p style={{ marginTop: '1rem', color: '#64748b', fontWeight: 600 }}>Loading Images...</p>
+        </div>
+      ) : images.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '4rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+          <i className="fas fa-image fa-3x" style={{ color: '#cbd5e1', marginBottom: '1rem' }}></i>
+          <h3 style={{ color: '#334155' }}>No images found in this category</h3>
+          <p style={{ color: '#64748b' }}>Check back later or try another category.</p>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {images.map(img => (
+            <div key={img.id} style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', transition: 'transform 0.2s', display: 'flex', flexDirection: 'column' }}>
+              <div 
+                style={{ height: '220px', position: 'relative', background: '#f1f5f9', cursor: 'pointer' }}
+                onClick={() => setPreviewImage(img.image_url)}
+              >
+                <img src={img.image_url} alt={img.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.1)', opacity: 0, transition: 'opacity 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseOver={e => e.currentTarget.style.opacity = 1} onMouseOut={e => e.currentTarget.style.opacity = 0}>
+                  <i className="fas fa-expand-arrows-alt" style={{ color: '#fff', fontSize: '2rem', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}></i>
+                </div>
+              </div>
+              <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: '#0f172a' }}>{img.title}</h3>
+                {img.description && <p style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', color: '#64748b', flex: 1 }}>{img.description}</p>}
+                
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
+                  <a href={img.image_url} download target="_blank" rel="noreferrer" style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }} title="Download Image">
+                    <i className="fas fa-download"></i>
+                  </a>
+                  {isAdmin && (
+                    <button onClick={() => handleDelete(img.id, img.title)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fee2e2', border: '1px solid #fca5a5', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Delete Image">
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '3rem 0' }}>
+          <button disabled={page <= 1} onClick={() => setPage(page - 1)} style={{ padding: '0.5rem 1rem', borderRadius: '50px', border: '1px solid #e2e8f0', background: '#fff', cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.5 : 1 }}>
+            <i className="fas fa-chevron-left"></i> Prev
+          </button>
+          <span style={{ fontWeight: 600, color: '#64748b' }}>Page {page} of {totalPages}</span>
+          <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} style={{ padding: '0.5rem 1rem', borderRadius: '50px', border: '1px solid #e2e8f0', background: '#fff', cursor: page >= totalPages ? 'not-allowed' : 'pointer', opacity: page >= totalPages ? 0.5 : 1 }}>
+            Next <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      )}
+
+      {/* Fullscreen Preview Modal */}
+      {previewImage && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100000, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }} onClick={() => setPreviewImage(null)}>
+          <button onClick={() => setPreviewImage(null)} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', width: '48px', height: '48px', borderRadius: '50%', fontSize: '1.5rem', cursor: 'pointer', zIndex: 100001, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <i className="fas fa-times"></i>
+          </button>
+          <img src={previewImage} alt="Preview" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()} />
+        </div>,
+        document.body
+      )}
+
+      {/* Admin Upload Modal */}
+      {showUploadModal && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 99999, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', padding: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+            <h2 style={{ margin: '0 0 1.5rem 0', color: '#0f172a' }}>Upload New Image</h2>
+            <form onSubmit={handleUploadSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Image Title *</label>
+                <input type="text" required value={uploadData.title} onChange={e => setUploadData({...uploadData, title: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Category *</label>
+                <select value={uploadData.category} onChange={e => setUploadData({...uploadData, category: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
+                  {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Image File *</label>
+                <input type="file" accept="image/*" required onChange={e => setUploadData({...uploadData, file: e.target.files[0]})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px dashed #cbd5e1', background: '#f8fafc' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Description (Optional)</label>
+                <textarea rows="3" value={uploadData.description} onChange={e => setUploadData({...uploadData, description: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', resize: 'vertical' }}></textarea>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button type="button" onClick={() => setShowUploadModal(false)} style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', background: '#f1f5f9', color: '#475569', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', background: '#059669', color: '#ffffff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Upload</button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

@@ -3,7 +3,8 @@ from django.utils.html import format_html
 from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker,
-    UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory
+    UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory,
+    ImageMedia
 )
 
 @admin.register(Category)
@@ -38,6 +39,19 @@ class VideoMediaAdmin(admin.ModelAdmin):
             return format_html('<a href="{}" target="_blank" style="padding: 4px 10px; background: #0d9488; color: #ffffff; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 12px; display: inline-block;">🎬 Watch / Play Media</a>', url)
         return format_html('<span style="color:#9ca3af; font-size:12px;">No Media</span>')
     preview_media_link.short_description = "Media Link"
+
+@admin.register(ImageMedia)
+class ImageMediaAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'open_image_link', 'created_at')
+    list_filter = ('category',)
+    search_fields = ('title', 'description')
+
+    def open_image_link(self, obj):
+        url = obj.get_image_url()
+        if url and url != '#':
+            return format_html('<a href="{}" target="_blank" style="padding: 4px 10px; background: #059669; color: #ffffff; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 12px; display: inline-block;">🖼️ View Image</a>', url)
+        return format_html('<span style="color:#9ca3af; font-size:12px;">No Image</span>')
+    open_image_link.short_description = "View Image"
 
 
 @admin.register(BookMedia)
