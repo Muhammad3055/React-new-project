@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Search, Heart, Sparkles, BookOpen, User, Filter, Check } from 'lucide-react';
+import { namesData } from '../data/islamicNames';
 
 export default function IslamicNamesView() {
   const { t } = useLanguage();
@@ -8,29 +9,6 @@ export default function IslamicNamesView() {
   const [genderFilter, setGenderFilter] = useState('all'); // 'all', 'boy', 'girl'
   const [startingLetter, setStartingLetter] = useState('');
   const [favorites, setFavorites] = useState([]);
-
-  const namesData = [
-    { name: 'Muhammad', arabic: 'مُحَمَّد', gender: 'boy', origin: 'Arabic', meaning: 'Praiseworthy, the name of the Last Prophet of Allah (PBUH).' },
-    { name: 'Ayesha', arabic: 'عَائِشَة', gender: 'girl', origin: 'Arabic', meaning: 'Living, prosperous, Mother of the Believers (RA).' },
-    { name: 'Zayd', arabic: 'زَيْد', gender: 'boy', origin: 'Arabic', meaning: 'Growth, abundance, companion of Prophet Muhammad (SAW).' },
-    { name: 'Fatima', arabic: 'فَاطِمَة', gender: 'girl', origin: 'Arabic', meaning: 'Chaste, one who abstains, beloved daughter of the Prophet (SAW).' },
-    { name: 'Ibrahim', arabic: 'إِبْرَاهِيم', gender: 'boy', origin: 'Arabic', meaning: 'Father of nations, Prophet Ibrahim (AS) Friend of Allah.' },
-    { name: 'Maryam', arabic: 'مَرْيَم', gender: 'girl', origin: 'Arabic', meaning: 'Pious, devout, mother of Prophet Isa (AS).' },
-    { name: 'Yusuf', arabic: 'يُوسُف', gender: 'boy', origin: 'Arabic', meaning: 'God increases, Prophet Yusuf (AS) renowned for beauty & patience.' },
-    { name: 'Khadijah', arabic: 'خَدِيجَة', gender: 'girl', origin: 'Arabic', meaning: 'Trustworthy, first wife of Prophet Muhammad (SAW).' },
-    { name: 'Bilal', arabic: 'بِلاَل', gender: 'boy', origin: 'Arabic', meaning: 'Moistening, companion & first Muezzin of Islam (RA).' },
-    { name: 'Zainab', arabic: 'زَيْنَب', gender: 'girl', origin: 'Arabic', meaning: 'Fragrant flower, daughter & granddaughter of the Prophet (SAW).' },
-    { name: 'Hamza', arabic: 'حَمْزَة', gender: 'boy', origin: 'Arabic', meaning: 'Lion, brave warrior, uncle of Prophet Muhammad (SAW).' },
-    { name: 'Sumayya', arabic: 'سُمَيَّة', gender: 'girl', origin: 'Arabic', meaning: 'High above, first female martyr in Islam (RA).' },
-    { name: 'Omar', arabic: 'عُمَر', gender: 'boy', origin: 'Arabic', meaning: 'Long-lived, Second Caliph of Islam Umar ibn Al-Khattab (RA).' },
-    { name: 'Hafsa', arabic: 'حَفْصَة', gender: 'girl', origin: 'Arabic', meaning: 'Young lioness, guardian of the first Quranic manuscript (RA).' },
-    { name: 'Rayyan', arabic: 'رَيَّان', gender: 'boy', origin: 'Arabic', meaning: 'Luxuriant, gate of Paradise reserved for fasting believers.' },
-    { name: 'Noor', arabic: 'نُور', gender: 'girl', origin: 'Arabic', meaning: 'Divine light, radiance, mentioned frequently in the Quran.' },
-    { name: 'Tariq', arabic: 'طَارِق', gender: 'boy', origin: 'Arabic', meaning: 'Morning star, conqueror, title of Surah At-Tariq.' },
-    { name: 'Safa', arabic: 'صَفَا', gender: 'girl', origin: 'Arabic', meaning: 'Purity, clarity, holy hill next to the Kaaba.' },
-    { name: 'Ali', arabic: 'عَلِيّ', gender: 'boy', origin: 'Arabic', meaning: 'High, elevated, champion, Fourth Caliph of Islam (RA).' },
-    { name: 'Amina', arabic: 'آمِنَة', gender: 'girl', origin: 'Arabic', meaning: 'Trustworthy, faithful, mother of Prophet Muhammad (SAW).' }
-  ];
 
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
