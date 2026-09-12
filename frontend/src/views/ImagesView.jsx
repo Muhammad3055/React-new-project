@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAdminContent } from '../utils/adminContentStore';
 import { createPortal } from 'react-dom';
@@ -15,7 +14,7 @@ const CATEGORIES = [
   { id: 'religion', name: 'Religion' },
 ];
 
-export default function ImagesView() {
+export default function ImagesView({ user }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('mix');
@@ -26,7 +25,6 @@ export default function ImagesView() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadData, setUploadData] = useState({ title: '', category: 'mix', description: '', file: null });
 
-  const { user } = useAuth();
   const { t } = useLanguage();
   const { deleteContentItem } = useAdminContent();
 
