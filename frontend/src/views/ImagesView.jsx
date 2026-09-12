@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { useAdminContent } from '../utils/adminContentStore';
+import { deleteContentItem } from '../utils/adminContentStore';
 import { createPortal } from 'react-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -26,7 +26,6 @@ export default function ImagesView({ user }) {
   const [uploadData, setUploadData] = useState({ title: '', category: 'mix', description: '', file: null });
 
   const { t } = useLanguage();
-  const { deleteContentItem } = useAdminContent();
 
   const isAdmin = user?.is_staff || user?.is_superuser;
 
