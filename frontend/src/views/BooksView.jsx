@@ -574,6 +574,15 @@ export default function BooksView({ openReportModal, user }) {
         </div>
       </div>
 
+      {!loading && books.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '1.5rem 0 1rem', background: '#f8fafc', padding: '0.75rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#334155', fontWeight: 700 }}>
+            <i className="fas fa-file-alt" style={{ marginRight: '0.5rem', color: '#94a3b8' }}></i>
+            {books.length} Document(s) Found
+          </h3>
+        </div>
+      )}
+
       {/* Loading Spinner */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
@@ -640,13 +649,14 @@ export default function BooksView({ openReportModal, user }) {
                 </div>
 
                 {/* Action Footer */}
-                <div className="card-footer" style={{ padding: '0.85rem 1.2rem', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div className="card-footer" style={{ padding: '1rem 1.2rem', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => handleOpenDocModal(bk)}
-                    className="btn-play"
-                    style={{ flex: 1, minWidth: '120px', justifyContent: 'center', background: 'var(--primary-dark)', borderColor: 'var(--primary-dark)', fontSize: '0.85rem' }}
+                    style={{ flex: 1, minWidth: '120px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50px', padding: '0.6rem 1.25rem', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                   >
-                    <i className="fas fa-book-open" style={{ marginRight: '0.3rem' }}></i> Read Online
+                    <i className="fas fa-play" style={{ fontSize: '0.8rem' }}></i> Read Book
                   </button>
 
                   <a
@@ -654,44 +664,42 @@ export default function BooksView({ openReportModal, user }) {
                     download
                     target="_blank"
                     rel="noreferrer"
-                    className="btn-play"
-                    style={{ background: '#059669', borderColor: '#059669', color: '#fff', padding: '0.5rem 0.85rem', fontSize: '0.85rem' }}
+                    style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
                     title="Download File"
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                   >
                     <i className="fas fa-download"></i>
                   </a>
 
                   <button
-                    className="verse-btn"
                     title="Report Issue"
                     onClick={() => openReportModal('book', bk.title)}
-                    style={{ padding: '0.5rem 0.7rem' }}
+                    style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                   >
-                    <i className="far fa-flag"></i>
+                    <i className="fas fa-share-alt"></i>
                   </button>
 
                   {user && (
                     <>
                       <button
                         onClick={() => toggleSaveBook(bk.id, false)}
-                        className="verse-btn"
-                        style={{
-                          padding: '0.5rem 0.7rem',
-                          color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : undefined
-                        }}
+                        style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                         title={userSavedBooks.some(b => b.book_id === bk.id) ? "Saved in Library" : "Save to Library"}
+                        onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                       >
                         <i className={userSavedBooks.some(b => b.book_id === bk.id) ? "fas fa-bookmark" : "far fa-bookmark"}></i>
                       </button>
 
                       <button
                         onClick={() => toggleSaveBook(bk.id, true)}
-                        className="verse-btn"
-                        style={{
-                          padding: '0.5rem 0.7rem',
-                          color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : undefined
-                        }}
+                        style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                         title={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "Favorited" : "Favorite Book"}
+                        onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                       >
                         <i className={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "fas fa-star" : "far fa-star"}></i>
                       </button>
@@ -738,52 +746,55 @@ export default function BooksView({ openReportModal, user }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => handleOpenDocModal(bk)}
-                    className="btn-play"
-                    style={{ background: 'var(--primary-dark)', borderColor: 'var(--primary-dark)', fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50px', padding: '0.5rem 1.25rem', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                   >
-                    <i className="fas fa-book-open" style={{ marginRight: '0.35rem' }}></i> Read Online
+                    <i className="fas fa-play" style={{ fontSize: '0.8rem' }}></i> Read Book
                   </button>
                   <a
                     href={getCleanDocumentUrl(getDocRawUrl(bk))}
                     download
                     target="_blank"
                     rel="noreferrer"
-                    className="btn-play"
-                    style={{ background: '#059669', borderColor: '#059669', color: '#ffffff', fontSize: '0.85rem', padding: '0.5rem 0.9rem' }}
+                    style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
+                    title="Download File"
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                   >
-                    <i className="fas fa-download"></i> Download
+                    <i className="fas fa-download"></i>
                   </a>
                   <button
-                    className="verse-btn"
-                    title="Report Issue"
+                    title="Share/Report"
                     onClick={() => openReportModal('book', bk.title)}
+                    style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                   >
-                    <i className="far fa-flag"></i>
+                    <i className="fas fa-share-alt"></i>
                   </button>
 
                   {user && (
                     <>
                       <button
                         onClick={() => toggleSaveBook(bk.id, false)}
-                        className="verse-btn"
-                        style={{
-                          color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : undefined
-                        }}
+                        style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                         title={userSavedBooks.some(b => b.book_id === bk.id) ? "Saved in Library" : "Save to Library"}
+                        onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                       >
                         <i className={userSavedBooks.some(b => b.book_id === bk.id) ? "fas fa-bookmark" : "far fa-bookmark"}></i>
                       </button>
 
                       <button
                         onClick={() => toggleSaveBook(bk.id, true)}
-                        className="verse-btn"
-                        style={{
-                          color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : undefined
-                        }}
+                        style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                         title={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "Favorited" : "Favorite Book"}
+                        onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                       >
                         <i className={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "fas fa-star" : "far fa-star"}></i>
                       </button>
