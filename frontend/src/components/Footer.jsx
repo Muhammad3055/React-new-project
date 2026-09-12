@@ -31,19 +31,19 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
             <ul className="footer-links">
               <li><a href="/read" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('read'); }}><i className="fas fa-book-open"></i> {t('readQuran')}</a></li>
               <li><a href="/quran" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('quran'); }}><i className="fas fa-headphones"></i> {t('mp3Audio')}</a></li>
-              <li><a href="/qaris" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('qaris'); }}><i className="fas fa-microphone"></i> {t('qaris')}</a></li>
+              <li><a href="/qaris" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('qaris'); }}><i className="fas fa-microphone"></i> Qaris / Reciters</a></li>
               <li><a href="/tafseer" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('tafseer'); }}><i className="fas fa-bookmark"></i> {t('tafseer')}</a></li>
             </ul>
           </div>
 
-          {/* Col 3: Media & Books */}
+          {/* Col 3: Unique Best Pages */}
           <div className="footer-col">
-            <h4 className="footer-title">{t('mediaAndBooks')}</h4>
+            <h4 className="footer-title">Unique Best Pages</h4>
             <ul className="footer-links">
-              <li><a href="/quran" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('quran'); }}><i className="fas fa-bullhorn"></i> {t('mp3Audio')}</a></li>
-              <li><a href="/books" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('books'); }}><i className="fas fa-book"></i> {t('books')}</a></li>
-              <li><a href="/hadith" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('hadith'); }}><i className="fas fa-scroll"></i> {t('hadith')}</a></li>
-              <li><a href="/fazail" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('fazail'); }}><i className="fas fa-star"></i> {t('fazail')}</a></li>
+              <li><a href="/azkar" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('azkar'); }}><i className="fas fa-praying-hands"></i> Daily Reminders & Azkar</a></li>
+              <li><a href="/live" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('live'); }}><i className="fas fa-broadcast-tower"></i> Makkah & Madinah Live</a></li>
+              <li><a href="/worldClock" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('worldClock'); }}><i className="fas fa-globe"></i> World Clock & Todo</a></li>
+              <li><a href="/quiz" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('quiz'); }}><i className="fas fa-question-circle"></i> Daily Islamic Quiz</a></li>
             </ul>
           </div>
 
@@ -72,7 +72,7 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
 
         <div className="footer-bottom">
           <p className="arabic-font calligraphy-footer">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-          <p className="copyright-text">&copy; {new Date().getFullYear()} {t('brandName')} (مكتبة المسلم). {t('rightsReserved')}</p>
+          <p className="copyright-text">&copy; {new Date().getFullYear()} {t('brandName')}. {t('rightsReserved')}</p>
         </div>
 
       </div>

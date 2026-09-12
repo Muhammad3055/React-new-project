@@ -101,6 +101,9 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
             type: 'dua',
             title: '🌅 Golden Hour (Asr to Maghrib)',
             message: 'This is a blessed time before Maghrib. Read the recommended Duas.',
+            arabic: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ',
+            translation: 'O Ever-Living One, O Sustainer of all that exists, by Your mercy I seek assistance. Rectify all my affairs and do not entrust me to myself for even the blink of an eye.',
+            urdu: 'اے ہمیشہ زندہ رہنے والے، اے سب کو قائم رکھنے والے! میں تیری رحمت کے وسیلے سے فریاد کرتا ہوں، میرے تمام کام درست فرما دے اور مجھے پلک جھپکنے کے برابر بھی میرے نفس کے حوالے نہ کر۔',
             linkTab: 'azkar'
           });
         }
@@ -129,37 +132,67 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
     return () => clearInterval(interval);
   }, [timings]);
 
-  if (activeReminders.length === 0) return null;
+  // Fallback dua to ensure something is completely visible on the home page when no specific time-based reminder is active
+  const displayReminders = activeReminders.length > 0 ? activeReminders : [{
+    id: 'default_dua',
+    type: 'dua',
+    title: '🤲 Daily Supplication',
+    message: 'Keep your tongue moist with the remembrance of Allah.',
+    arabic: 'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
+    translation: 'O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of majesty and honor.',
+    urdu: 'اے اللہ! تو ہی سلامتی والا ہے اور تیری ہی طرف سے سلامتی ہے، تو بہت برکت والا ہے اے جلال اور بزرگی والے۔',
+    linkTab: 'azkar'
+  }];
 
   return (
     <div style={{ padding: '0 1rem', marginBottom: '1.5rem', marginTop: '1.5rem' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {activeReminders.map(reminder => (
+        {displayReminders.map(reminder => (
           <div key={reminder.id} style={{
             background: 'linear-gradient(90deg, #ecfdf5 0%, #ffffff 100%)',
             border: '1.5px solid #059669',
             borderRadius: '16px',
-            padding: '1rem 1.5rem',
+            padding: '1.25rem 1.75rem',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
             boxShadow: '0 4px 15px rgba(5,150,105,0.1)',
-            gap: '1rem',
+            gap: '1.5rem',
             flexWrap: 'wrap'
           }}>
-            <div>
-              <h4 style={{ margin: '0 0 0.35rem', color: '#065f46', fontSize: '1.05rem', fontWeight: 800 }}>{reminder.title}</h4>
-              <p style={{ margin: 0, color: '#047857', fontSize: '0.9rem', fontWeight: 500 }}>{reminder.message}</p>
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              <h4 style={{ margin: '0 0 0.5rem', color: '#065f46', fontSize: '1.2rem', fontWeight: 800 }}>{reminder.title}</h4>
+              <p style={{ margin: '0 0 1rem', color: '#047857', fontSize: '0.95rem', fontWeight: 500 }}>{reminder.message}</p>
+              
+              {reminder.arabic && (
+                <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginTop: '1rem' }}>
+                  <p style={{ margin: '0 0 0.75rem', fontSize: '1.5rem', fontWeight: 700, fontFamily: 'Amiri, serif', color: '#0f172a', textAlign: 'right', lineHeight: 1.6 }}>
+                    {reminder.arabic}
+                  </p>
+                  <p style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', color: '#334155', lineHeight: 1.5 }}>
+                    <strong>Meaning:</strong> {reminder.translation}
+                  </p>
+                  <p style={{ margin: 0, fontSize: '1.05rem', color: '#1e293b', fontFamily: 'Amiri, serif', textAlign: 'right' }}>
+                    {reminder.urdu}
+                  </p>
+                </div>
+              )}
             </div>
-            <button 
-               onClick={() => { if(navigateToTab) navigateToTab(reminder.linkTab) }}
-               style={{
-                 background: '#059669', color: '#fff', border: 'none', padding: '8px 16px',
-                 borderRadius: '12px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', whiteSpace: 'nowrap'
-               }}
-            >
-              Read Now <i className="fas fa-arrow-right" style={{ marginLeft: '6px' }}></i>
-            </button>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <button 
+                 onClick={() => { if(navigateToTab) navigateToTab(reminder.linkTab) }}
+                 style={{
+                   background: '#059669', color: '#fff', border: 'none', padding: '10px 20px',
+                   borderRadius: '12px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', whiteSpace: 'nowrap',
+                   boxShadow: '0 4px 12px rgba(5,150,105,0.2)', transition: 'all 0.3s ease'
+                 }}
+                 onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+                 onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+              >
+                View All Azkar <i className="fas fa-arrow-right" style={{ marginLeft: '6px' }}></i>
+              </button>
+            </div>
           </div>
         ))}
       </div>
