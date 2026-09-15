@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import mutagen
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -54,6 +55,20 @@ class QuranAudio(models.Model):
             return self.audio_file.url
         return self.audio_url or "#"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.audio_file and (not self.duration or self.duration == "00:00" or self.duration == "15:00"):
+            try:
+                audio = mutagen.File(self.audio_file.path)
+                if audio is not None and audio.info:
+                    length = int(audio.info.length)
+                    mins, secs = divmod(length, 60)
+                    new_duration = f"{mins:02}:{secs:02}"
+                    if new_duration != self.duration:
+                        QuranAudio.objects.filter(pk=self.pk).update(duration=new_duration)
+            except Exception:
+                pass
+
 
 class TaqreerAudio(models.Model):
     LANGUAGE_CHOICES = [
@@ -89,6 +104,20 @@ class TaqreerAudio(models.Model):
         if self.audio_file:
             return self.audio_file.url
         return self.audio_url or "#"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.audio_file and (not self.duration or self.duration == "00:00" or self.duration == "15:00"):
+            try:
+                audio = mutagen.File(self.audio_file.path)
+                if audio is not None and audio.info:
+                    length = int(audio.info.length)
+                    mins, secs = divmod(length, 60)
+                    new_duration = f"{mins:02}:{secs:02}"
+                    if new_duration != self.duration:
+                        TaqreerAudio.objects.filter(pk=self.pk).update(duration=new_duration)
+            except Exception:
+                pass
 
 
 class VideoMedia(models.Model):
