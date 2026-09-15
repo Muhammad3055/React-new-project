@@ -237,17 +237,6 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     fetch(getApiUrl(apiEndpoint), fetchOptions)
       .then(res => res.json())
       .then((data) => {
-        if (data && (data.document_url || data.audio_url || data.id)) {
-          addAdminItem({
-            ...newItem,
-            id: data.id || newItem.id,
-            fileUrl: data.document_url || data.audio_url || newItem.fileUrl,
-            pdf_url: data.document_url || newItem.pdf_url,
-            audio_url: data.audio_url || newItem.audio_url
-          });
-        } else {
-          addAdminItem(newItem);
-        }
         window.dispatchEvent(new CustomEvent('admin_content_updated'));
       })
       .catch(() => {
