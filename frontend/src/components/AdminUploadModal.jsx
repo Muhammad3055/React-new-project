@@ -178,6 +178,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('pdf_url', finalFileUrl);
     formData.append('cover_url', finalCoverUrl);
     formData.append('link_url', linkUrl || finalFileUrl);
+    formData.append('duration', duration);
     formData.append('text_content', postContent || hadithTranslation || tafseerText || description);
 
     if (selectedCategory) {

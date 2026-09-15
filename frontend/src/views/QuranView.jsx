@@ -193,11 +193,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   };
 
-  const handleDeleteAudio = async (audioId, title = '') => {
-    if (!window.confirm("Are you sure you want to delete this MP3 audio track?")) return;
+  const handleDeleteAudio = async (audioId, type = 'audio', title = '') => {
+    if (!window.confirm(`Are you sure you want to delete this ${type === 'quran' ? 'Quran/Tarjuma' : 'Taqreer'} audio track?`)) return;
     setTranslationAudios(prev => prev.filter(item => String(item.id) !== String(audioId)));
+    setArabicTilawatAudios(prev => prev.filter(item => String(item.id) !== String(audioId)));
     setTaqreers(prev => prev.filter(item => String(item.id) !== String(audioId)));
-    await deleteContentItem(audioId, 'audio', title);
+    await deleteContentItem(audioId, type, title);
   };
 
 
@@ -621,7 +622,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
                           {audio.reciter || 'Qari / Scholar'}
                         </p>
-                        {audio.duration && audio.duration !== '00:00' && (
+                        {audio.duration && (
                           <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
                             <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
                           </span>
@@ -652,7 +653,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         </button>
                         <button
                           className="btn-play"
-                          onClick={() => handleDeleteAudio(audio.id, audio.title)}
+                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.surah_name_english || audio.title)}
                           style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
                           title="Delete Audio Track"
                         >
@@ -820,7 +821,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
                           {audio.reciter || 'Qari / Scholar'}
                         </p>
-                        {audio.duration && audio.duration !== '00:00' && (
+                        {audio.duration && (
                           <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
                             <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
                           </span>
@@ -860,7 +861,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         </button>
                         <button
                           className="btn-play"
-                          onClick={() => handleDeleteAudio(audio.id)}
+                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.surah_name_english || audio.title)}
                           style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
                           title="Delete Audio Track"
                         >
