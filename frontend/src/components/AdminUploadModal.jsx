@@ -162,6 +162,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('author', finalSpeaker);
     formData.append('speaker', finalSpeaker);
     formData.append('reciter', finalSpeaker);
+    formData.append('surah_name_english', itemTitle);
+    formData.append('audio_url', finalFileUrl);
     formData.append('pages_count', pagesCount);
     formData.append('file_type', activeFileType);
     formData.append('destination', destination);
