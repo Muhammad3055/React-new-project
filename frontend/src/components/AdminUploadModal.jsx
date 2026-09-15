@@ -75,6 +75,15 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       .catch(() => setCategories(defaultCategoriesList));
   }, []);
 
+  // Sync language automatically when destination changes
+  useEffect(() => {
+    if (destination) {
+      if (destination.includes('brahui')) setLanguage('brahui');
+      else if (destination.includes('urdu')) setLanguage('urdu');
+      else if (destination.includes('arabic')) setLanguage('arabic');
+    }
+  }, [destination]);
+
   const handleCreateFolder = (e) => {
     e.preventDefault();
     if (!newFolderName.trim()) return;
