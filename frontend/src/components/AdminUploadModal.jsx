@@ -162,6 +162,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     }
     formData.append('title', itemTitle);
     formData.append('arabic_title', arabicTitle);
+    formData.append('surah_name_arabic', arabicTitle);
     formData.append('author', finalSpeaker);
     formData.append('speaker', finalSpeaker);
     formData.append('reciter', finalSpeaker);
@@ -423,19 +424,6 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
-                  {contentType === 'quran' ? (
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Translator / Tarjuma Name (Optional)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Dr. Israr Ahmed"
-                      value={translatorName}
-                      onChange={(e) => setTranslatorName(e.target.value)}
-                      style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
-                    />
-                  </div>
-                  ) : (
-                  <>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
                     <input
@@ -450,15 +438,13 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Arabic Title / Text (Optional)</label>
                     <input
                       type="text"
-                      placeholder="e.g. شرح كتاب التوحيد"
+                      placeholder="e.g. سورة الفاتحة"
                       value={arabicTitle}
                       onChange={(e) => setArabicTitle(e.target.value)}
                       dir="auto"
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', fontFamily: "'Traditional Arabic', 'Amiri', serif" }}
                     />
                   </div>
-                  </>
-                  )}
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
