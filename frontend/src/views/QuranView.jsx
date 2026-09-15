@@ -525,7 +525,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {(user?.is_staff || user?.is_superuser) && (
                 <button
-                  onClick={() => openUploadModal(null, 'quran')}
+                  onClick={() => openUploadModal(null, 'quran', 'arabic')}
                   style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
                 >
                   <i className="fas fa-plus-circle"></i> + Add Arabic Tilawat MP3
@@ -555,16 +555,13 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                   <div>
                     <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>{audio.surah_number || 'MP3'}</span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', background: '#ecfdf5', padding: '3px 10px', borderRadius: '14px', border: '1px solid #a7f3d0' }}>
-                        Custom Upload
-                      </span>
                     </div>
                     <div className="card-body" style={{ padding: 0 }}>
                       <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
                         {audio.surah_name_english ? `Surah ${audio.surah_name_english}` : (audio.title || 'Translation Audio')}
                       </h3>
                       {audio.surah_name_arabic && (
-                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{audio.surah_name_arabic}</p>
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
                       )}
                       <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}>
                         <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
@@ -617,7 +614,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       </div>
                       <div className="card-body" style={{ padding: 0 }}>
                         <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>Surah {surah.name || surah.englishName}</h3>
-                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{surah.arabic ? (surah.arabic.startsWith('سورة') || surah.arabic.startsWith('سُورَةُ') ? surah.arabic : `سُورَةُ ${surah.arabic}`) : surah.name}</p>
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{surah.arabic ? (surah.arabic.startsWith('سورة') || surah.arabic.startsWith('سُورَةُ') ? surah.arabic : `سُورَةُ ${surah.arabic}`) : surah.name}</p>
                         <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)', marginRight: '0.3rem' }}></i> {activeQariObj.name}</p>
                       </div>
                     </div>
@@ -724,7 +721,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               </p>
               {(user?.is_staff || user?.is_superuser) && (
                 <button
-                  onClick={() => setShowAdminUploadModal(true)}
+                  onClick={() => openUploadModal(null, 'quran', subCategory === 'quran_brahui' ? 'brahui' : 'urdu')}
                   style={{ background: '#b45309', color: '#ffffff', border: 'none', borderRadius: '20px', padding: '0.55rem 1.25rem', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 4px 14px rgba(180, 83, 9, 0.25)' }}
                 >
                   <i className="fas fa-upload"></i> + Upload {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} Tarjuma MP3
@@ -756,7 +753,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         {audio.surah_name_english ? `Surah ${audio.surah_name_english}` : (audio.title || 'Translation Audio')}
                       </h3>
                       {audio.surah_name_arabic && (
-                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{audio.surah_name_arabic}</p>
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
                       )}
                       <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}>
                         <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
@@ -830,7 +827,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {(user?.is_staff || user?.is_superuser) && (
                 <button
-                  onClick={() => openUploadModal(null, 'audio')}
+                  onClick={() => openUploadModal(null, 'audio', subCategory === 'taqreer_arabic' ? 'arabic' : (subCategory === 'taqreer_brahui' ? 'brahui' : 'urdu'))}
                   style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
                 >
                   <i className="fas fa-plus-circle"></i> + Add MP3 Audio / Tarjuma
@@ -870,13 +867,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#022c22', background: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>
                         <i className="fas fa-globe" style={{ marginRight: '0.3rem' }}></i> {tq.language} Taqreer
                       </span>
-                      <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 600 }}>
-                        <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {tq.duration}
+                      <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                        <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {tq.duration || '00:00'}
                       </span>
                     </div>
 
-                    <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: '#ffffff' }}>{tq.title}</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, marginBottom: '0.5rem' }}>
+                    <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>{tq.title}</h3>
+                    {tq.arabic_title && (
+                      <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title}</p>
+                    )}
+                    <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, marginBottom: '0.5rem' }}>
                       <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}
                     </p>
                     <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: '1.5' }}>{tq.description}</p>
@@ -936,7 +936,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             {(user?.is_staff || user?.is_superuser) && (
               <button
-                onClick={() => openUploadModal(null, 'quran')}
+                onClick={() => openUploadModal(null, 'quran', 'mixed')}
                 style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
               >
                 <i className="fas fa-plus-circle"></i> + Add Mixed Audio / Upload

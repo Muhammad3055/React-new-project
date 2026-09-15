@@ -190,7 +190,8 @@ def api_taqreer_list(request):
         try:
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
             tq = TaqreerAudio.objects.create(
-                title=body.get('title', 'Untitled Taqreer'),
+                title=body.get('title', 'Untitled Audio'),
+                arabic_title=body.get('arabic_title', ''),
                 speaker=body.get('speaker', 'Islamic Scholar'),
                 language=body.get('language', 'urdu'),
                 audio_url=body.get('audio_url', ''),
@@ -1771,6 +1772,7 @@ def api_admin_edit_content(request):
                 tq = TaqreerAudio.objects.filter(id=item_id).first()
                 if tq:
                     if 'title' in body: tq.title = body.get('title')
+                    if 'arabic_title' in body: tq.arabic_title = body.get('arabic_title')
                     if 'speaker' in body or 'author' in body: tq.speaker = body.get('speaker') or body.get('author')
                     if 'language' in body:
                         lang = body.get('language')

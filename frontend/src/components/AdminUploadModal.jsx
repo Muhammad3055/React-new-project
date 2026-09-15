@@ -14,6 +14,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
   // General Form Fields
   const [title, setTitle] = useState(editItem?.title || editItem?.surah_name_english || '');
+  const [arabicTitle, setArabicTitle] = useState(editItem?.arabic_title || '');
   const [authorSpeaker, setAuthorSpeaker] = useState(editItem?.speaker || editItem?.author || editItem?.reciter || '');
   const [translatorName, setTranslatorName] = useState('');
   const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
@@ -112,6 +113,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
     const newItem = {
       title: itemTitle,
+      arabic_title: arabicTitle,
       author: finalSpeaker,
       speaker: finalSpeaker,
       reciter: finalSpeaker,
@@ -159,6 +161,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       formData.append('id', editItem.id);
     }
     formData.append('title', itemTitle);
+    formData.append('arabic_title', arabicTitle);
     formData.append('author', finalSpeaker);
     formData.append('speaker', finalSpeaker);
     formData.append('reciter', finalSpeaker);
@@ -443,6 +446,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     />
                   </div>
                   ) : (
+                  <>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
                     <input
@@ -453,6 +457,18 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Arabic Title / Text (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. شرح كتاب التوحيد"
+                      value={arabicTitle}
+                      onChange={(e) => setArabicTitle(e.target.value)}
+                      dir="auto"
+                      style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', fontFamily: "'Traditional Arabic', 'Amiri', serif" }}
+                    />
+                  </div>
+                  </>
                   )}
                 </div>
 
@@ -461,7 +477,21 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                   <input
                     type="file"
                     accept=".mp3,.wav,.m4a,.aac"
-                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      setSelectedFile(file);
+                      if (file && (contentType === 'audio' || contentType === 'quran')) {
+                        const audio = new Audio(URL.createObjectURL(file));
+                        audio.addEventListener('loadedmetadata', () => {
+                          const totalSeconds = Math.floor(audio.duration);
+                          if (totalSeconds > 0 && isFinite(totalSeconds)) {
+                            const m = Math.floor(totalSeconds / 60);
+                            const s = totalSeconds % 60;
+                            setDuration(`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+                          }
+                        });
+                      }
+                    }}
                     style={{ width: '100%', padding: '0.4rem', background: '#064e3b', borderRadius: '6px', color: '#fff' }}
                   />
                 </div>
