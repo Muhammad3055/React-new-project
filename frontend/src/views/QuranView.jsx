@@ -810,7 +810,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>MP3</span>
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '3px 10px', borderRadius: '14px', border: '1px solid #fcd34d' }}>
-                        {subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma'}
+                        {audio.language ? (audio.language.charAt(0).toUpperCase() + audio.language.slice(1) + ' Tarjuma') : (subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma')}
                       </span>
                     </div>
                     <div className="card-body" style={{ padding: 0 }}>
