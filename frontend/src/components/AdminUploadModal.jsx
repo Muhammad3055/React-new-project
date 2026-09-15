@@ -461,6 +461,18 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     />
                   </div>
                   <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#60a5fa' }}>Audio Language</label>
+                    <select
+                      value={language}
+                      onChange={(e) => setLanguage(e.target.value)}
+                      style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid #60a5fa', borderRadius: '8px', color: '#fff' }}
+                    >
+                      <option value="brahui">Brahui (براہوئی)</option>
+                      <option value="urdu">Urdu (اردو)</option>
+                      <option value="arabic">Arabic (عربي)</option>
+                    </select>
+                  </div>
+                  <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
                     <input
                       type="text"
@@ -470,7 +482,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
-                  <div>
+                  <div style={{ gridColumn: 'span 2' }}>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Arabic Title / Text (Optional)</label>
                     <input
                       type="text"

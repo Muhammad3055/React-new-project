@@ -232,7 +232,10 @@ def api_taqreer_list(request):
                 duration=body.get('duration', '00:00'),
                 description=body.get('description', '')
             )
-            return JsonResponse({'status': 'success', 'id': tq.id, 'message': 'Taqreer Audio uploaded successfully!'})
+            if audio_file:
+                tq.audio_file = audio_file
+                tq.save()
+            return JsonResponse({'status': 'success', 'id': tq.id, 'audio_url': tq.get_playable_url(), 'message': 'Taqreer Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
