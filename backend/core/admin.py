@@ -22,9 +22,9 @@ class QuranAudioAdmin(admin.ModelAdmin):
 
 @admin.register(TaqreerAudio)
 class TaqreerAudioAdmin(admin.ModelAdmin):
-    list_display = ('title', 'arabic_title', 'speaker', 'language', 'category', 'duration', 'created_at')
-    list_filter = ('language', 'category', 'speaker')
-    search_fields = ('title', 'arabic_title', 'speaker', 'description')
+    list_display = ('title', 'arabic_title', 'speaker', 'tarjuma_qari', 'language', 'category', 'duration', 'created_at')
+    list_filter = ('language', 'category')
+    search_fields = ('title', 'arabic_title', 'speaker', 'tarjuma_qari', 'description')
 
 
 @admin.register(VideoMedia)

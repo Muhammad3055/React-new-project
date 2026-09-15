@@ -66,6 +66,7 @@ class TaqreerAudio(models.Model):
     title = models.CharField(max_length=255)
     arabic_title = models.CharField(max_length=255, blank=True)
     speaker = models.CharField(max_length=150, default="Islamic Scholar")
+    tarjuma_qari = models.CharField(max_length=150, blank=True, help_text="Name of the Tarjuma Qari / Co-Speaker (Optional)")
     language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default='urdu', db_index=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="taqreers")
     audio_file = models.FileField(upload_to="taqreer_audio/", blank=True, null=True)

@@ -949,9 +949,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     {tq.arabic_title && (
                       <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title}</p>
                     )}
-                    <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, marginBottom: '0.5rem' }}>
+                    <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
                       <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}
                     </p>
+                    {tq.tarjuma_qari && (
+                      <p style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: '0 0 0.5rem 0' }}>
+                        <i className="fas fa-microphone-alt" style={{ marginRight: '0.3rem', color: '#b45309' }}></i>
+                        Co-Speaker / Qari: {tq.tarjuma_qari}
+                      </p>
+                    )}
                     <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: '1.5' }}>{tq.description}</p>
                   </div>
 

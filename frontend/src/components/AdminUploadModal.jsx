@@ -441,18 +441,16 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
-                  {contentType === 'quran' && (
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#fcd34d' }}>Tarjuma Qari / Translator</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Maulana Muhammad Brahui"
-                        value={tarjumaQari}
-                        onChange={(e) => setTarjumaQari(e.target.value)}
-                        style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid #fcd34d', borderRadius: '8px', color: '#fff' }}
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#fcd34d' }}>Tarjuma Qari / Co-Speaker (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Maulana Muhammad Brahui"
+                      value={tarjumaQari}
+                      onChange={(e) => setTarjumaQari(e.target.value)}
+                      style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid #fcd34d', borderRadius: '8px', color: '#fff' }}
+                    />
+                  </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
                     <input

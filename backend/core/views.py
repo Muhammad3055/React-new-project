@@ -203,6 +203,7 @@ def api_taqreer_list(request):
                 title=body.get('title', 'Untitled Audio'),
                 arabic_title=body.get('arabic_title', ''),
                 speaker=body.get('speaker', 'Islamic Scholar'),
+                tarjuma_qari=body.get('tarjuma_qari', ''),
                 language=body.get('language', 'urdu'),
                 category_id=body.get('category_id'),
                 audio_url=body.get('audio_url', ''),
@@ -237,7 +238,9 @@ def api_taqreer_list(request):
         data.append({
             'id': item.id,
             'title': item.title,
+            'arabic_title': item.arabic_title,
             'speaker': item.speaker,
+            'tarjuma_qari': item.tarjuma_qari,
             'language': item.language,
             'audio_url': item.get_playable_url(),
             'duration': item.duration,
