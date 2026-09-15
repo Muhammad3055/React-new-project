@@ -108,8 +108,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
     const itemTitle = title || (contentType === 'hadith' ? `${hadithBookName} #${hadithNumber}` : contentType === 'tafseer' ? `${tafseerSurahName} (${tafseerSurahNumber}:${tafseerAyahNumber})` : 'Untitled');
     
-    // Combine Qari and Translator for Quran Audios
-    const finalSpeaker = contentType === 'quran' && translatorName.trim() ? `${authorSpeaker.trim()} | Tarjuma: ${translatorName.trim()}` : authorSpeaker;
+    // Set finalSpeaker directly
+    const finalSpeaker = authorSpeaker;
 
     const newItem = {
       title: itemTitle,
