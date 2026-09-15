@@ -58,6 +58,7 @@ def api_quran_list(request):
                 surah_name_arabic=body.get('surah_name_arabic', 'سورة'),
                 reciter=body.get('reciter', 'Islamic Scholar'),
                 language=body.get('language', 'arabic'),
+                category_id=body.get('category_id'),
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00')
             )
@@ -96,6 +97,7 @@ def api_quran_list(request):
                     'duration': match.duration,
                     'revelation_place': match.revelation_place,
                     'total_ayahs': match.total_ayahs,
+                    'category_id': match.category_id,
                 })
         return JsonResponse({'results': featured_items, 'count': len(featured_items)})
 
@@ -110,6 +112,10 @@ def api_quran_list(request):
         audios = audios.filter(reciter__icontains=reciter_filter)
     if language_filter:
         audios = audios.filter(language=language_filter)
+    
+    category_id = request.GET.get('category_id', '').strip()
+    if category_id:
+        audios = audios.filter(category_id=category_id)
         
     reciters = cache.get('quran_reciters_list')
     if not reciters:
@@ -132,6 +138,8 @@ def api_quran_list(request):
             'duration': item.duration,
             'revelation_place': item.revelation_place,
             'total_ayahs': item.total_ayahs,
+            'category_id': item.category_id,
+            'category': item.category.name if item.category else None,
         })
 
     res = JsonResponse({
@@ -194,6 +202,7 @@ def api_taqreer_list(request):
                 arabic_title=body.get('arabic_title', ''),
                 speaker=body.get('speaker', 'Islamic Scholar'),
                 language=body.get('language', 'urdu'),
+                category_id=body.get('category_id'),
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00'),
                 description=body.get('description', '')
@@ -213,6 +222,10 @@ def api_taqreer_list(request):
         taqreers = taqreers.filter(
             Q(title__icontains=query) | Q(speaker__icontains=query) | Q(description__icontains=query)
         )
+        
+    category_id = request.GET.get('category_id', '').strip()
+    if category_id:
+        taqreers = taqreers.filter(category_id=category_id)
 
     paginator = Paginator(taqreers, 25)
     page_obj = paginator.get_page(page_number)

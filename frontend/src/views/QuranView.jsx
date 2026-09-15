@@ -154,6 +154,22 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const [taqreerQuery, setTaqreerQuery] = useState('');
   const [loadingTaqreers, setLoadingTaqreers] = useState(false);
 
+  // Dynamic Categories states
+  const [dbCategories, setDbCategories] = useState([]);
+  const [categoryAudios, setCategoryAudios] = useState([]);
+  const [loadingCategoryAudios, setLoadingCategoryAudios] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/categories/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.results) {
+          setDbCategories(data.results);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q');
@@ -253,6 +269,30 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     loadTaqreers();
   }, [subCategory]);
 
+  const loadCategoryAudios = () => {
+    if (subCategory.startsWith('category_')) {
+      const catId = subCategory.replace('category_', '');
+      setLoadingCategoryAudios(true);
+      Promise.all([
+        fetch(`/api/taqreer/?category_id=${catId}`).then(r => r.json()),
+        fetch(`/api/quran/?category_id=${catId}`).then(r => r.json())
+      ]).then(([taqData, quData]) => {
+        const taq = taqData.results || [];
+        const qu = quData.results || [];
+        const combined = [
+          ...taq.map(a => ({ ...a, type: 'taqreer' })),
+          ...qu.map(a => ({ ...a, type: 'quran', title: a.surah_name_english, arabic_title: a.surah_name_arabic, speaker: a.reciter }))
+        ];
+        setCategoryAudios(filterOutDeleted(combined));
+      }).catch(console.error)
+      .finally(() => setLoadingCategoryAudios(false));
+    }
+  };
+
+  useEffect(() => {
+    loadCategoryAudios();
+  }, [subCategory]);
+
 
 
   // Listen for admin content updates for instant zero-reload UI updates
@@ -260,6 +300,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     const handleUpdate = () => {
       loadTranslationAudios();
       loadTaqreers();
+      loadCategoryAudios();
     };
     window.addEventListener('admin_content_updated', handleUpdate);
     return () => window.removeEventListener('admin_content_updated', handleUpdate);
@@ -283,7 +324,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const totalQuranPages = Math.ceil(filteredSurahs.length / itemsPerPage) || 1;
   const displayedSurahs = filteredSurahs.slice((quranPage - 1) * itemsPerPage, quranPage * itemsPerPage);
 
-  const subCategoryOptions = [
+  const baseSubCategoryOptions = [
     { id: 'quran_arabic', label: t('arabicTilawat', 'Arabic Tilawat'), sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
     { id: 'quran_brahui', label: t('brahuiTarjuma', 'Brahui Quran Tarjuma'), sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-headphones' },
     { id: 'quran_urdu', label: t('urduTarjuma', 'Urdu Tarjuma'), sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
@@ -291,6 +332,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     { id: 'taqreer_brahui', label: t('brahuiTaqreer', 'Brahui Taqreers'), sub: 'تقارير براہوئی', icon: 'fas fa-podcast' },
     { id: 'taqreer_urdu', label: t('urduTaqreer', 'Urdu Taqreers'), sub: 'تقارير اردو', icon: 'fas fa-podcast' },
     { id: 'quran_mixed', label: t('mixedAudio', 'Mixed Audio MP3'), sub: 'مکسڈ آڈیو مجموعہ', icon: 'fas fa-compact-disc' },
+  ];
+
+  const subCategoryOptions = [
+    ...baseSubCategoryOptions,
+    ...dbCategories.map(cat => ({
+      id: `category_${cat.id}`,
+      label: cat.name,
+      sub: 'Custom Category',
+      icon: 'fas fa-folder-open'
+    }))
   ];
 
   const safePlayTrack = (url, title, artist) => {
@@ -933,6 +984,112 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           onClick={() => deleteContentItem(tq.id, 'audio')}
                           style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
                           title="Delete Audio as Admin"
+                        >
+                          <i className="fas fa-trash"></i> Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SECTION X: Custom DB Categories */}
+      {subCategory.startsWith('category_') && (
+        <div>
+          <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ fontSize: '0.85rem', color: '#000000', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '1.5px solid #d6d3d1', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <i className="fas fa-folder-open" style={{ color: '#d97706' }}></i> 
+              Custom MP3 Category
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {(user?.is_staff || user?.is_superuser) && (
+                <button
+                  onClick={() => openUploadModal(null, 'quran', 'mixed')}
+                  style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  <i className="fas fa-plus-circle"></i> + Add Category MP3
+                </button>
+              )}
+            </div>
+          </div>
+
+          {loadingCategoryAudios ? (
+            <div className="grid-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-line-short skeleton-shimmer"></div>
+                  <div className="skeleton-line-title skeleton-shimmer"></div>
+                  <div className="skeleton-line skeleton-shimmer"></div>
+                </div>
+              ))}
+            </div>
+          ) : categoryAudios.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 1rem', background: '#ffffff', borderRadius: '16px', border: '1px solid #e7e5e4' }}>
+              <i className="fas fa-folder-open fa-3x" style={{ color: '#d1d5db', marginBottom: '1rem' }}></i>
+              <h3 style={{ color: 'var(--accent-gold)' }}>No MP3s found in this category</h3>
+              <p style={{ color: '#44403c' }}>Use the Admin Upload section to add MP3s here!</p>
+            </div>
+          ) : (
+            <div className="grid-2">
+              {categoryAudios.map((tq) => (
+                <div key={tq.id || tq.title} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.2rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#022c22', background: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>
+                        <i className={tq.type === 'quran' ? 'fas fa-quran' : 'fas fa-microphone'} style={{ marginRight: '0.3rem' }}></i> 
+                        {tq.type === 'quran' ? 'Quran / Tarjuma' : 'Taqreer'}
+                      </span>
+                      <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                        <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {tq.duration || '00:00'}
+                      </span>
+                    </div>
+
+                    <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>{tq.title}</h3>
+                    {tq.arabic_title && (
+                      <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title}</p>
+                    )}
+                    <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, marginBottom: '0.5rem' }}>
+                      <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}
+                    </p>
+                    <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: '1.5' }}>{tq.description}</p>
+                  </div>
+
+                  <div className="card-footer" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', background: 'transparent', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <button
+                      className="btn-play"
+                      style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
+                      onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
+                    >
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Audio
+                    </button>
+
+                    <button
+                      className="btn-play"
+                      title="Download MP3"
+                      onClick={() => handleDownloadMp3(tq.title, tq.audio_url)}
+                      style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px' }}
+                    >
+                      <i className="fas fa-download"></i> Download
+                    </button>
+
+                    {(user?.is_staff || user?.is_superuser || tq.addedByAdmin) && (
+                      <>
+                        <button
+                          className="btn-play"
+                          onClick={() => openUploadModal(tq, tq.type === 'quran' ? 'quran' : 'audio')}
+                          style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                        >
+                          <i className="fas fa-edit"></i> Edit
+                        </button>
+                        <button
+                          className="btn-play"
+                          onClick={() => deleteContentItem(tq.id, tq.type === 'quran' ? 'quran' : 'audio')}
+                          style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
                         >
                           <i className="fas fa-trash"></i> Delete
                         </button>

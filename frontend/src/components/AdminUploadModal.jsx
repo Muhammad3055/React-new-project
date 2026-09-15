@@ -172,6 +172,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('file_type', activeFileType);
     formData.append('destination', destination);
     formData.append('language', language);
+    formData.append('category_id', selectedCategory);
     formData.append('description', description);
     formData.append('content_type', contentType);
     formData.append('pdf_url', finalFileUrl);
@@ -412,6 +413,20 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 <h4 style={{ margin: '0 0 1rem 0', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <i className="fas fa-headphones"></i> {contentType === 'quran' ? 'Quran Tilawat / Tarjuma Details' : 'Taqreer MP3 Audio Details'}
                 </h4>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#10b981' }}>Database Category / Folder</label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', fontSize: '0.9rem', outline: 'none' }}
+                  >
+                    <option value="">-- Uncategorized (Default) --</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div>

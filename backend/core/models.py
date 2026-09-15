@@ -31,6 +31,7 @@ class QuranAudio(models.Model):
     surah_name_english = models.CharField(max_length=100)
     reciter = models.CharField(max_length=150, default="Mishary Rashid Alafasy", db_index=True)
     language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES, default='arabic', db_index=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="quran_audios")
     audio_file = models.FileField(upload_to="audio/", blank=True, null=True)
     audio_url = models.URLField(max_length=500, blank=True, help_text="Direct MP3 Audio Stream URL if no file uploaded")
     duration = models.CharField(max_length=20, default="00:00", blank=True)
