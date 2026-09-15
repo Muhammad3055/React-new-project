@@ -817,10 +817,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
                           <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
                           {audio.reciter || 'Qari / Scholar'}
                         </p>
+                        {audio.tarjuma_qari && (
+                          <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: '0.2rem 0 0 0' }}>
+                            <i className="fas fa-microphone-alt" style={{ marginRight: '0.3rem', color: '#b45309' }}></i>
+                            Tarjuma by: {audio.tarjuma_qari}
+                          </p>
+                        )}
                         {audio.duration && (
                           <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
                             <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
@@ -835,7 +840,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => audio.surah_number ? playTranslationBySurahNumber(audio.surah_number, subCategory === 'quran_brahui' ? 'brahui' : 'urdu') : safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
+                      onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> {t('playTarjumaMp3', 'Play Tarjuma MP3')}
                     </button>

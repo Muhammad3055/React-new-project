@@ -16,7 +16,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [title, setTitle] = useState(editItem?.title || editItem?.surah_name_english || '');
   const [arabicTitle, setArabicTitle] = useState(editItem?.arabic_title || '');
   const [authorSpeaker, setAuthorSpeaker] = useState(editItem?.speaker || editItem?.author || editItem?.reciter || '');
-  const [translatorName, setTranslatorName] = useState('');
+  const [tarjumaQari, setTarjumaQari] = useState(editItem?.tarjuma_qari || '');
   const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
   const [description, setDescription] = useState(editItem?.description || '');
   const [fileUrl, setFileUrl] = useState(editItem?.audio_url || editItem?.pdf_url || editItem?.fileUrl || '');
@@ -166,6 +166,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('author', finalSpeaker);
     formData.append('speaker', finalSpeaker);
     formData.append('reciter', finalSpeaker);
+    formData.append('tarjuma_qari', tarjumaQari);
     formData.append('surah_name_english', itemTitle);
     formData.append('audio_url', finalFileUrl);
     formData.append('pages_count', pagesCount);
@@ -434,12 +435,24 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Speaker / Reciter / Qari</label>
                     <input
                       type="text"
-                      placeholder="e.g. Maulana Muhammad Brahui"
+                      placeholder="e.g. Qari Abdul Basit"
                       value={authorSpeaker}
                       onChange={(e) => setAuthorSpeaker(e.target.value)}
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
+                  {contentType === 'quran' && (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#fcd34d' }}>Tarjuma Qari / Translator</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Maulana Muhammad Brahui"
+                        value={tarjumaQari}
+                        onChange={(e) => setTarjumaQari(e.target.value)}
+                        style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid #fcd34d', borderRadius: '8px', color: '#fff' }}
+                      />
+                    </div>
+                  )}
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
                     <input
