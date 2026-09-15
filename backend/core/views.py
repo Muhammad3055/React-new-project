@@ -77,6 +77,8 @@ def api_quran_list(request):
     featured = request.GET.get('featured', '').strip()
     
     audios = QuranAudio.objects.all()
+    if language_filter in ['brahui', 'urdu']:
+        audios = audios.order_by('created_at')
 
     if featured:
         # Return distinct famous Surahs for the featured home page section

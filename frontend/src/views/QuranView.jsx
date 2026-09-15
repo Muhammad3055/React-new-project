@@ -229,14 +229,18 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           if (lang === 'arabic') {
             setArabicTilawatAudios(filterOutDeleted([...adminAudios, ...apiResults]));
           } else {
-            setTranslationAudios(filterOutDeleted([...adminAudios, ...apiResults]));
+            let combined = filterOutDeleted([...adminAudios, ...apiResults]);
+            combined.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            setTranslationAudios(combined);
           }
         })
         .catch(() => {
           if (lang === 'arabic') {
             setArabicTilawatAudios(filterOutDeleted(adminAudios));
           } else {
-            setTranslationAudios(filterOutDeleted(adminAudios));
+            let combined = filterOutDeleted(adminAudios);
+            combined.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            setTranslationAudios(combined);
           }
         })
         .finally(() => setLoadingTranslationAudios(false));
