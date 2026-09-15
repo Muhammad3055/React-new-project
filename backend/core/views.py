@@ -1717,9 +1717,20 @@ def api_admin_delete_content(request):
 
                 # 2. Try delete by exact or icontains title match
                 if isinstance(item_id, str) and item_id.strip():
-                    res_title = model.objects.filter(Q(title__iexact=item_id.strip()) | Q(title__icontains=item_id.strip())).delete()
-                    if res_title[0] > 0:
-                        deleted_count += res_title[0]
+                    try:
+                        if model == QuranAudio:
+                            res_title = model.objects.filter(Q(surah_name_english__iexact=item_id.strip()) | Q(surah_name_english__icontains=item_id.strip())).delete()
+                        elif model == Tafseer:
+                            res_title = model.objects.filter(Q(surah_name__iexact=item_id.strip()) | Q(surah_name__icontains=item_id.strip())).delete()
+                        elif hasattr(model, 'title'):
+                            res_title = model.objects.filter(Q(title__iexact=item_id.strip()) | Q(title__icontains=item_id.strip())).delete()
+                        else:
+                            res_title = (0, {})
+                            
+                        if res_title[0] > 0:
+                            deleted_count += res_title[0]
+                    except Exception as e:
+                        print(f"Error deleting by title in {model.__name__}: {e}")
 
             return JsonResponse({'status': 'success', 'deleted_count': deleted_count, 'message': f'Item {item_id} deleted successfully from Django backend database!'})
         except Exception as e:

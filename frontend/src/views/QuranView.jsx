@@ -565,10 +565,17 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       {audio.surah_name_arabic && (
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
                       )}
-                      <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}>
-                        <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
-                        {audio.reciter || 'Qari / Scholar'}
-                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
+                          <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
+                          {audio.reciter || 'Qari / Scholar'}
+                        </p>
+                        {audio.duration && audio.duration !== '00:00' && (
+                          <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                            <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -757,10 +764,17 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       {audio.surah_name_arabic && (
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
                       )}
-                      <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}>
-                        <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
-                        {audio.reciter || 'Qari / Scholar'}
-                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
+                          <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
+                          {audio.reciter || 'Qari / Scholar'}
+                        </p>
+                        {audio.duration && audio.duration !== '00:00' && (
+                          <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                            <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
