@@ -59,6 +59,7 @@ def api_quran_list(request):
                 reciter=body.get('reciter', 'Islamic Scholar'),
                 tarjuma_qari=body.get('tarjuma_qari', ''),
                 language=body.get('language', 'arabic'),
+                destination_folder=body.get('destination', ''),
                 category_id=body.get('category_id'),
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00')
@@ -73,11 +74,14 @@ def api_quran_list(request):
     query = request.GET.get('q', '').strip()
     reciter_filter = request.GET.get('reciter', '').strip()
     language_filter = request.GET.get('language', '').strip()
+    destination_filter = request.GET.get('destination', '').strip()
     page_number = request.GET.get('page', 1)
     featured = request.GET.get('featured', '').strip()
     
     audios = QuranAudio.objects.all()
-    if language_filter in ['brahui', 'urdu']:
+    if destination_filter in ['quran_brahui', 'quran_urdu']:
+        audios = audios.order_by('-created_at')
+    elif language_filter in ['brahui', 'urdu']:
         audios = audios.order_by('-created_at')
 
     if featured:
@@ -113,7 +117,14 @@ def api_quran_list(request):
         )
     if reciter_filter:
         audios = audios.filter(reciter__icontains=reciter_filter)
-    if language_filter:
+    if destination_filter and language_filter:
+        audios = audios.filter(
+            Q(destination_folder=destination_filter) | 
+            (Q(destination_folder='') & Q(language=language_filter))
+        )
+    elif destination_filter:
+        audios = audios.filter(destination_folder=destination_filter)
+    elif language_filter:
         audios = audios.filter(language=language_filter)
     
     category_id = request.GET.get('category_id', '').strip()
@@ -207,6 +218,7 @@ def api_taqreer_list(request):
                 speaker=body.get('speaker', 'Islamic Scholar'),
                 tarjuma_qari=body.get('tarjuma_qari', ''),
                 language=body.get('language', 'urdu'),
+                destination_folder=body.get('destination', ''),
                 category_id=body.get('category_id'),
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00'),
@@ -218,10 +230,18 @@ def api_taqreer_list(request):
 
     query = request.GET.get('q', '').strip()
     language = request.GET.get('language', '').strip()
+    destination_filter = request.GET.get('destination', '').strip()
     page_number = request.GET.get('page', 1)
     
     taqreers = TaqreerAudio.objects.all()
-    if language:
+    if destination_filter and language:
+        taqreers = taqreers.filter(
+            Q(destination_folder=destination_filter) | 
+            (Q(destination_folder='') & Q(language=language))
+        )
+    elif destination_filter:
+        taqreers = taqreers.filter(destination_folder=destination_filter)
+    elif language:
         taqreers = taqreers.filter(language=language)
     if query:
         taqreers = taqreers.filter(

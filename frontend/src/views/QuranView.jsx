@@ -222,7 +222,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       const lang = subCategory === 'quran_brahui' ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
       setLoadingTranslationAudios(true);
       const adminAudios = getAdminItems(subCategory);
-      fetch(`/api/quran/?language=${lang}`)
+      fetch(`/api/quran/?destination=${subCategory}&language=${lang}`)
         .then(res => res.json())
         .then(data => {
           const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
@@ -257,7 +257,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       const lang = subCategory.replace('taqreer_', '');
       setLoadingTaqreers(true);
       const adminTaqreers = getAdminItems(subCategory);
-      fetch(`/api/taqreer/?language=${lang}`)
+      fetch(`/api/taqreer/?destination=${subCategory}&language=${lang}`)
         .then(res => res.json())
         .then(data => {
           const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
