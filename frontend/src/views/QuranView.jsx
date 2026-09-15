@@ -817,6 +817,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
                           <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
                           {audio.reciter || 'Qari / Scholar'}
                         </p>
