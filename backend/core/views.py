@@ -1796,6 +1796,23 @@ def api_admin_edit_content(request):
                     tq.save()
                     return JsonResponse({'status': 'success', 'message': 'Audio updated successfully!', 'audio_url': tq.get_playable_url()})
 
+            elif content_type in ['quran', 'tarjuma', 'tilawat']:
+                qa = QuranAudio.objects.filter(id=item_id).first()
+                if qa:
+                    if 'title' in body or 'surah_name_english' in body:
+                        qa.surah_name_english = body.get('title') or body.get('surah_name_english')
+                    if 'speaker' in body or 'reciter' in body or 'author' in body:
+                        qa.reciter = body.get('speaker') or body.get('reciter') or body.get('author')
+                    if 'language' in body:
+                        lang = body.get('language')
+                        lang_normalized_map = {'brahui': 'brahui', 'br': 'brahui', 'urdu': 'urdu', 'ur': 'urdu', 'arabic': 'arabic', 'ar': 'arabic'}
+                        qa.language = lang_normalized_map.get(str(lang).lower(), lang)
+                    if 'duration' in body: qa.duration = body.get('duration')
+                    if 'audio_url' in body: qa.audio_url = body.get('audio_url')
+                    if file_obj: qa.audio_file = file_obj
+                    qa.save()
+                    return JsonResponse({'status': 'success', 'message': 'Quran Audio updated successfully!', 'audio_url': qa.get_playable_url()})
+
             return JsonResponse({'status': 'success', 'message': 'Item updated successfully!'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

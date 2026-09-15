@@ -2,25 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
 
-export default function AdminUploadModal({ onClose, onSuccess }) {
+export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu' }) {
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [contentType, setContentType] = useState('book'); // 'book' | 'audio' | 'hadith' | 'tafseer' | 'post' | 'button'
-  const [destination, setDestination] = useState('books'); // folder id
+  const [selectedCategory, setSelectedCategory] = useState(editItem?.category_id || '');
+  const [contentType, setContentType] = useState(editItem ? (editItem.contentType || editItem.content_type || 'book') : defaultContentType); // 'book' | 'audio' | 'quran' | 'hadith' | 'tafseer' | 'post' | 'button'
+  const [destination, setDestination] = useState(editItem?.destination || 'books'); // folder id
   const [newFolderName, setNewFolderName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   // General Form Fields
-  const [title, setTitle] = useState('');
-  const [authorSpeaker, setAuthorSpeaker] = useState('');
-  const [language, setLanguage] = useState('urdu'); // 'english' | 'urdu' | 'brahui' | 'arabic' | 'sindhi' | 'pashto' | 'balochi'
-  const [description, setDescription] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
-  const [coverUrl, setCoverUrl] = useState('');
-  const [duration, setDuration] = useState('15:00');
-  const [pagesCount, setPagesCount] = useState(100);
+  const [title, setTitle] = useState(editItem?.title || editItem?.surah_name_english || '');
+  const [authorSpeaker, setAuthorSpeaker] = useState(editItem?.speaker || editItem?.author || editItem?.reciter || '');
+  const [translatorName, setTranslatorName] = useState('');
+  const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
+  const [description, setDescription] = useState(editItem?.description || '');
+  const [fileUrl, setFileUrl] = useState(editItem?.audio_url || editItem?.pdf_url || editItem?.fileUrl || '');
+  const [coverUrl, setCoverUrl] = useState(editItem?.cover_url || '');
+  const [duration, setDuration] = useState(editItem?.duration || '15:00');
+  const [pagesCount, setPagesCount] = useState(editItem?.pages_count || 100);
   const [docFormat, setDocFormat] = useState('pdf'); // 'pdf' | 'book' | 'doc' | 'ppt' | 'image'
   const [buttonLabel, setButtonLabel] = useState('Read / Open Link');
   const [buttonIcon, setButtonIcon] = useState('fas fa-external-link-alt');
@@ -104,12 +105,17 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
       finalCoverUrl = URL.createObjectURL(selectedCoverFile);
     }
 
-    const itemTitle = title || (contentType === 'hadith' ? `${hadithBookName} #${hadithNumber}` : `${tafseerSurahName} (${tafseerSurahNumber}:${tafseerAyahNumber})`);
+    const itemTitle = title || (contentType === 'hadith' ? `${hadithBookName} #${hadithNumber}` : contentType === 'tafseer' ? `${tafseerSurahName} (${tafseerSurahNumber}:${tafseerAyahNumber})` : 'Untitled');
+    
+    // Combine Qari and Translator for Quran Audios
+    const finalSpeaker = contentType === 'quran' && translatorName.trim() ? `${authorSpeaker.trim()} | Tarjuma: ${translatorName.trim()}` : authorSpeaker;
 
     const newItem = {
       title: itemTitle,
-      author: authorSpeaker,
-      speaker: authorSpeaker,
+      author: finalSpeaker,
+      speaker: finalSpeaker,
+      reciter: finalSpeaker,
+      surah_name_english: itemTitle,
       pages_count: Number(pagesCount) || 1,
       file_type: activeFileType,
       destination,
@@ -149,9 +155,13 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
     };
 
     const formData = new FormData();
+    if (editItem) {
+      formData.append('id', editItem.id);
+    }
     formData.append('title', itemTitle);
-    formData.append('author', authorSpeaker);
-    formData.append('speaker', authorSpeaker);
+    formData.append('author', finalSpeaker);
+    formData.append('speaker', finalSpeaker);
+    formData.append('reciter', finalSpeaker);
     formData.append('pages_count', pagesCount);
     formData.append('file_type', activeFileType);
     formData.append('destination', destination);
@@ -178,9 +188,14 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
     // Determine Backend API endpoint based on content type
     let apiEndpoint = '/api/books/';
     let jsonBody = null;
+    let method = editItem ? 'PUT' : 'POST';
 
-    if (contentType === 'audio') {
+    if (editItem) {
+        apiEndpoint = '/api/admin/content/edit/';
+    } else if (contentType === 'audio' || contentType === 'taqreer') {
       apiEndpoint = '/api/taqreer/';
+    } else if (contentType === 'quran') {
+      apiEndpoint = '/api/quran/';
     } else if (contentType === 'hadith') {
       apiEndpoint = '/api/hadith/';
       jsonBody = JSON.stringify({
@@ -206,11 +221,11 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
     }
 
     const fetchOptions = jsonBody ? {
-      method: 'POST',
+      method: method,
       headers: { 'Content-Type': 'application/json' },
       body: jsonBody
     } : {
-      method: 'POST',
+      method: method,
       body: formData
     };
 
@@ -252,8 +267,8 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '42px', height: '42px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.5)', flexShrink: 0 }} />
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-gold)' }}>Admin Content & Upload Studio</h3>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Publish MP3 Audio, Hadith Text, Tafseer, Articles & Links</p>
+              <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-gold)' }}>{editItem ? 'Edit Content' : 'Admin Content & Upload Studio'}</h3>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>{editItem ? 'Update existing database items' : 'Publish MP3 Audio, Hadith Text, Tafseer, Articles & Links'}</p>
             </div>
           </div>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}>
@@ -313,14 +328,23 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
               <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
                 2. Select Content Type to Add
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.4rem' }}>
                 <button
                   type="button"
                   onClick={() => setContentType('audio')}
                   style={{ padding: '0.65rem 0.3rem', borderRadius: '10px', border: contentType === 'audio' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'audio' ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem' }}
                 >
-                  <i className="fas fa-headphones fa-lg" style={{ color: '#10b981' }}></i>
-                  <span>MP3 Audio</span>
+                  <i className="fas fa-microphone-alt fa-lg" style={{ color: '#10b981' }}></i>
+                  <span>Taqreer Audio</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setContentType('quran')}
+                  style={{ padding: '0.65rem 0.3rem', borderRadius: '10px', border: contentType === 'quran' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'quran' ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem' }}
+                >
+                  <i className="fas fa-quran fa-lg" style={{ color: '#10b981' }}></i>
+                  <span>Quran / Tarjuma</span>
                 </button>
 
                 <button
@@ -387,11 +411,11 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
 
             {/* Contextual Fields depending on Content Type */}
 
-            {/* --- SEPARATE SECTION 1: MP3 AUDIO --- */}
-            {contentType === 'audio' && (
+            {/* --- SEPARATE SECTION 1: MP3 AUDIO (Taqreer & Quran) --- */}
+            {(contentType === 'audio' || contentType === 'quran') && (
               <div style={{ background: 'rgba(16,185,129,0.1)', padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(16,185,129,0.3)', marginBottom: '1.25rem' }}>
                 <h4 style={{ margin: '0 0 1rem 0', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <i className="fas fa-headphones"></i> MP3 Audio Upload & Details
+                  <i className="fas fa-headphones"></i> {contentType === 'quran' ? 'Quran Tilawat / Tarjuma Details' : 'Taqreer MP3 Audio Details'}
                 </h4>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
@@ -405,6 +429,18 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
+                  {contentType === 'quran' ? (
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Translator / Tarjuma Name (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Dr. Israr Ahmed"
+                      value={translatorName}
+                      onChange={(e) => setTranslatorName(e.target.value)}
+                      style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
+                    />
+                  </div>
+                  ) : (
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
                     <input
@@ -415,6 +451,7 @@ export default function AdminUploadModal({ onClose, onSuccess }) {
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
+                  )}
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>

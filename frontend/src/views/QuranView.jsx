@@ -123,6 +123,14 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const { t } = useLanguage();
   const [subCategory, setSubCategory] = useState(initialSubCategory); 
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [adminDefaultContentType, setAdminDefaultContentType] = useState('quran');
+
+  const openUploadModal = (item = null, contentType = 'quran') => {
+    setEditItem(item);
+    setAdminDefaultContentType(contentType);
+    setShowAdminUploadModal(true);
+  };
 
   useEffect(() => {
     if (initialSubCategory) {
@@ -138,6 +146,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   // Translation Audio MP3 List (Brahui & Urdu uploads from DB)
   const [translationAudios, setTranslationAudios] = useState([]);
+  const [arabicTilawatAudios, setArabicTilawatAudios] = useState([]);
   const [loadingTranslationAudios, setLoadingTranslationAudios] = useState(false);
 
   // Taqreer Audio states
@@ -190,20 +199,28 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     }
   }, [user]);
 
-  // Load Brahui or Urdu Quran Translation MP3s from database with 114 Surahs fallback & admin items
+  // Load Brahui, Urdu or Arabic Quran MP3s from database
   const loadTranslationAudios = () => {
-    if (subCategory === 'quran_brahui' || subCategory === 'quran_urdu') {
-      const lang = subCategory === 'quran_brahui' ? 'brahui' : 'urdu';
+    if (subCategory === 'quran_brahui' || subCategory === 'quran_urdu' || subCategory === 'quran_arabic') {
+      const lang = subCategory === 'quran_brahui' ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
       setLoadingTranslationAudios(true);
       const adminAudios = getAdminItems(subCategory);
       fetch(`/api/quran/?language=${lang}`)
         .then(res => res.json())
         .then(data => {
           const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
-          setTranslationAudios(filterOutDeleted([...adminAudios, ...apiResults]));
+          if (lang === 'arabic') {
+            setArabicTilawatAudios(filterOutDeleted([...adminAudios, ...apiResults]));
+          } else {
+            setTranslationAudios(filterOutDeleted([...adminAudios, ...apiResults]));
+          }
         })
         .catch(() => {
-          setTranslationAudios(filterOutDeleted(adminAudios));
+          if (lang === 'arabic') {
+            setArabicTilawatAudios(filterOutDeleted(adminAudios));
+          } else {
+            setTranslationAudios(filterOutDeleted(adminAudios));
+          }
         })
         .finally(() => setLoadingTranslationAudios(false));
     }
@@ -504,6 +521,17 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               />
             </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {(user?.is_staff || user?.is_superuser) && (
+                <button
+                  onClick={() => openUploadModal(null, 'quran')}
+                  style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  <i className="fas fa-plus-circle"></i> + Add Arabic Tilawat MP3
+                </button>
+              )}
+            </div>
           </div>
 
           {surahsList.length === 0 ? (
@@ -518,6 +546,67 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             </div>
           ) : (
             <div className="grid-3">
+              {arabicTilawatAudios.filter(a => {
+                const q = (quranQuery || '').trim().toLowerCase();
+                if (!q) return true;
+                return (a.surah_name_english || a.title || '').toLowerCase().includes(q) || (a.reciter || '').toLowerCase().includes(q) || (a.surah_number || '').toString().includes(q);
+              }).map((audio) => (
+                <div key={`custom-${audio.id}`} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
+                  <div>
+                    <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>{audio.surah_number || 'MP3'}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', background: '#ecfdf5', padding: '3px 10px', borderRadius: '14px', border: '1px solid #a7f3d0' }}>
+                        Custom Upload
+                      </span>
+                    </div>
+                    <div className="card-body" style={{ padding: 0 }}>
+                      <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
+                        {audio.surah_name_english ? `Surah ${audio.surah_name_english}` : (audio.title || 'Translation Audio')}
+                      </h3>
+                      {audio.surah_name_arabic && (
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700 }}>{audio.surah_name_arabic}</p>
+                      )}
+                      <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600 }}>
+                        <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
+                        {audio.reciter || 'Qari / Scholar'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Buttons Bar */}
+                  <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', background: 'transparent', borderTop: '1.5px solid #f0edf6', paddingTop: '0.65rem' }}>
+                    <button
+                      className="btn-play"
+                      style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
+                      onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
+                    >
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play
+                    </button>
+
+                    {(user?.is_staff || user?.is_superuser) && (
+                      <>
+                        <button
+                          className="btn-play"
+                          onClick={() => openUploadModal(audio, 'quran')}
+                          style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                          title="Edit Audio Track"
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn-play"
+                          onClick={() => handleDeleteAudio(audio.id, audio.title)}
+                          style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                          title="Delete Audio Track"
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+
               {displayedSurahs.map((surah) => {
                 const qariAudioUrl = getQariAudioUrl(surah.number, activeQariObj);
                 return (
@@ -696,14 +785,24 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     </button>
 
                     {(user?.is_staff || user?.is_superuser) && (
-                      <button
-                        className="btn-play"
-                        onClick={() => handleDeleteAudio(audio.id)}
-                        style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
-                        title="Delete Audio Track"
-                      >
-                        <i className="fas fa-trash-alt"></i>
-                      </button>
+                      <>
+                        <button
+                          className="btn-play"
+                          onClick={() => openUploadModal(audio, 'quran')}
+                          style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                          title="Edit Audio Track"
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn-play"
+                          onClick={() => handleDeleteAudio(audio.id)}
+                          style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                          title="Delete Audio Track"
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -731,7 +830,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {(user?.is_staff || user?.is_superuser) && (
                 <button
-                  onClick={() => setShowAdminUploadModal(true)}
+                  onClick={() => openUploadModal(null, 'audio')}
                   style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
                 >
                   <i className="fas fa-plus-circle"></i> + Add MP3 Audio / Tarjuma
@@ -804,14 +903,24 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     </button>
 
                     {(user?.is_staff || user?.is_superuser || tq.addedByAdmin) && (
-                      <button
-                        className="btn-play"
-                        onClick={() => deleteContentItem(tq.id, 'audio')}
-                        style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
-                        title="Delete Audio as Admin"
-                      >
-                        <i className="fas fa-trash"></i> Delete
-                      </button>
+                      <>
+                        <button
+                          className="btn-play"
+                          onClick={() => openUploadModal(tq, 'audio')}
+                          style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                          title="Edit Audio as Admin"
+                        >
+                          <i className="fas fa-edit"></i> Edit
+                        </button>
+                        <button
+                          className="btn-play"
+                          onClick={() => deleteContentItem(tq.id, 'audio')}
+                          style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                          title="Delete Audio as Admin"
+                        >
+                          <i className="fas fa-trash"></i> Delete
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -827,7 +936,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             {(user?.is_staff || user?.is_superuser) && (
               <button
-                onClick={() => setShowAdminUploadModal(true)}
+                onClick={() => openUploadModal(null, 'quran')}
                 style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
               >
                 <i className="fas fa-plus-circle"></i> + Add Mixed Audio / Upload
@@ -851,7 +960,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       )}
 
       {showAdminUploadModal && (
-        <AdminUploadModal onClose={() => setShowAdminUploadModal(false)} />
+        <AdminUploadModal 
+          onClose={() => setShowAdminUploadModal(false)} 
+          editItem={editItem} 
+          defaultContentType={adminDefaultContentType} 
+        />
       )}
 
     </div>
