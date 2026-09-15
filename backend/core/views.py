@@ -52,6 +52,9 @@ def api_quran_list(request):
         try:
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
             audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
+            category_id_raw = body.get('category_id')
+            category_id = int(category_id_raw) if category_id_raw else None
+
             qa = QuranAudio.objects.create(
                 surah_number=int(body.get('surah_number', 1)),
                 surah_name_english=body.get('surah_name_english', 'Surah'),
@@ -60,7 +63,7 @@ def api_quran_list(request):
                 tarjuma_qari=body.get('tarjuma_qari', ''),
                 language=body.get('language', 'arabic'),
                 destination_folder=body.get('destination', ''),
-                category_id=body.get('category_id'),
+                category_id=category_id,
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00')
             )
@@ -212,6 +215,11 @@ def api_taqreer_list(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
+            
+            category_id_raw = body.get('category_id')
+            category_id = int(category_id_raw) if category_id_raw else None
+
             tq = TaqreerAudio.objects.create(
                 title=body.get('title', 'Untitled Audio'),
                 arabic_title=body.get('arabic_title', ''),
@@ -219,7 +227,7 @@ def api_taqreer_list(request):
                 tarjuma_qari=body.get('tarjuma_qari', ''),
                 language=body.get('language', 'urdu'),
                 destination_folder=body.get('destination', ''),
-                category_id=body.get('category_id'),
+                category_id=category_id,
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00'),
                 description=body.get('description', '')
