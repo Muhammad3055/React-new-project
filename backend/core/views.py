@@ -57,7 +57,7 @@ def api_quran_list(request):
 
             qa = QuranAudio.objects.create(
                 surah_number=int(body.get('surah_number', 1)),
-                surah_name_english=body.get('surah_name_english', 'Surah'),
+                surah_name_english=body.get('surah_name_english') or body.get('title') or '',
                 surah_name_arabic=body.get('surah_name_arabic', 'سورة'),
                 reciter=body.get('reciter', 'Islamic Scholar'),
                 tarjuma_qari=body.get('tarjuma_qari', ''),
@@ -1268,7 +1268,7 @@ def api_global_search(request):
         )[:3]
         for item in audios:
             results.append({
-                'title': f"Surah {item.surah_name_english} ({item.surah_name_arabic})",
+                'title': f"{item.surah_name_english} ({item.surah_name_arabic})",
                 'subtitle': f"Reciter: {item.reciter}",
                 'type': 'Quran Audio',
                 'badge_icon': 'fas fa-headphones',

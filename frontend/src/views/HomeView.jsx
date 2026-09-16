@@ -951,7 +951,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                     {item.revelation_place}
                   </span>
                 </div>
-                <h3 className="card-title" style={{ fontSize: '1.2rem', margin: '0.3rem 0' }}>Surah {item.surah_name_english}</h3>
+                <h3 className="card-title" style={{ fontSize: '1.2rem', margin: '0.3rem 0' }}>{item.title || item.surah_name_english}</h3>
                 <p className="arabic-font card-arabic" style={{ fontSize: '1.4rem', margin: '0.2rem 0 0.5rem 0' }}>{item.surah_name_arabic}</p>
                 <p className="card-subtitle" style={{ fontSize: '0.85rem' }}><i className="fas fa-user-alt"></i> {item.reciter}</p>
               </div>
@@ -960,7 +960,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}><i className="far fa-clock"></i> {item.duration}</span>
                 <button
                   className="btn-play"
-                  onClick={() => playTrack(item.audio_url, `Surah ${item.surah_name_english}`, item.reciter)}
+                  onClick={() => playTrack(item.audio_url, item.title || item.surah_name_english, item.reciter)}
                   style={{ width: '100%', justifyContent: 'center', padding: '0.6rem 1rem', background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}
                 >
                   <i className="fas fa-play"></i> {t('playAudioBtn')}

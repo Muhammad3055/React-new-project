@@ -377,7 +377,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     if (!targetSurah) return;
 
     const audioUrl = getQariAudioUrl(targetSurah.number, activeQariObj);
-    const title = `Surah ${targetSurah.name || targetSurah.englishName} (${targetSurah.arabic || ''})`;
+    const title = `${targetSurah.name || targetSurah.englishName} (${targetSurah.arabic || ''})`;
     const reciter = activeQariObj.name;
 
     const onNext = targetSurah.number < 114 ? () => playSurahByNumber(targetSurah.number + 1) : null;
@@ -402,7 +402,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     if (!targetSurah) return;
 
     const audioUrl = lang === 'brahui' ? getBrahuiAudioUrl(targetSurah.number) : getUrduAudioUrl(targetSurah.number);
-    const title = `Surah ${targetSurah.name || targetSurah.englishName} (${targetSurah.arabic || ''})`;
+    const title = `${targetSurah.name || targetSurah.englishName} (${targetSurah.arabic || ''})`;
     const reciter = lang === 'brahui' ? 'Brahui Tarjuma MP3 Recitation' : 'Urdu Tarjuma MP3 Recitation';
 
     const onNext = targetSurah.number < 114 ? () => playTranslationBySurahNumber(targetSurah.number + 1, lang) : null;
@@ -616,7 +616,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     </div>
                     <div className="card-body" style={{ padding: 0 }}>
                       <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
-                        {audio.surah_name_english ? `Surah ${audio.surah_name_english}` : (audio.title || 'Translation Audio')}
+                        {audio.title || audio.surah_name_english || 'Translation Audio'}
                       </h3>
                       {audio.surah_name_arabic && (
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
@@ -640,7 +640,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
+                      onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter)}
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> Play
                     </button>
@@ -657,7 +657,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         </button>
                         <button
                           className="btn-play"
-                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.surah_name_english || audio.title)}
+                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.title || audio.surah_name_english)}
                           style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
                           title="Delete Audio Track"
                         >
@@ -815,7 +815,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     </div>
                     <div className="card-body" style={{ padding: 0 }}>
                       <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
-                        {audio.surah_name_english ? `Surah ${audio.surah_name_english}` : (audio.title || 'Translation Audio')}
+                        {audio.title || audio.surah_name_english || 'Translation Audio'}
                       </h3>
                       {audio.surah_name_arabic && (
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
@@ -845,7 +845,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                     <button
                       className="btn-play"
                       style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english || audio.title, audio.reciter)}
+                      onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter)}
                     >
                       <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> {t('playTarjumaMp3', 'Play Tarjuma MP3')}
                     </button>
@@ -871,7 +871,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         </button>
                         <button
                           className="btn-play"
-                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.surah_name_english || audio.title)}
+                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.title || audio.surah_name_english)}
                           style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
                           title="Delete Audio Track"
                         >
