@@ -46,7 +46,7 @@ export default function BooksView({ openReportModal, user }) {
   ];
 
   const toggleLanguage = (langId) => {
-    setPage(1);
+    setCurrentPage(1);
     if (!langId) {
       setSelectedLanguages([]);
       return;
@@ -61,7 +61,7 @@ export default function BooksView({ openReportModal, user }) {
   };
 
   const toggleFileType = (typeId) => {
-    setPage(1);
+    setCurrentPage(1);
     if (!typeId) {
       setSelectedFileTypes([]);
       return;
@@ -80,7 +80,7 @@ export default function BooksView({ openReportModal, user }) {
     setSelectedFileTypes([]);
     setSelectedCategory('');
     setQuery('');
-    setPage(1);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function BooksView({ openReportModal, user }) {
     const langStr = selectedLanguages.join(',');
     const fileTypeStr = selectedFileTypes.join(',');
 
-    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${page}`))
+    fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${currentPage}`))
       .then(res => res.json())
       .then(data => {
         const apiBooks = data.results || [];
@@ -161,7 +161,7 @@ export default function BooksView({ openReportModal, user }) {
         setBooks(filterOutDeleted(adminBooks));
         setLoading(false);
       });
-  }, [debouncedQuery, selectedCategory, selectedFileTypes, selectedLanguages, page]);
+  }, [debouncedQuery, selectedCategory, selectedFileTypes, selectedLanguages, currentPage]);
 
   // Listen for admin content updates to refresh instantly
   useEffect(() => {
@@ -169,7 +169,7 @@ export default function BooksView({ openReportModal, user }) {
       const langStr = selectedLanguages.join(',');
       const fileTypeStr = selectedFileTypes.join(',');
 
-      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${page}`))
+      fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${currentPage}`))
         .then(res => res.json())
         .then(data => {
           const apiBooks = data.results || [];
@@ -203,7 +203,7 @@ export default function BooksView({ openReportModal, user }) {
 
     window.addEventListener('admin_content_updated', handleUpdate);
     return () => window.removeEventListener('admin_content_updated', handleUpdate);
-  }, [debouncedQuery, selectedCategory, selectedFileTypes, selectedLanguages, page]);
+  }, [debouncedQuery, selectedCategory, selectedFileTypes, selectedLanguages, currentPage]);
 
 
   const getFormatBadge = (fileType) => {
@@ -522,7 +522,7 @@ export default function BooksView({ openReportModal, user }) {
               className="filter-input"
               placeholder={t('searchBooksPlaceholder')}
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+              onChange={(e) => { setQuery(e.target.value); setCurrentPage(1); }}
             />
           </div>
 
@@ -531,7 +531,7 @@ export default function BooksView({ openReportModal, user }) {
             <select
               className="filter-select"
               value={selectedCategory}
-              onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
+              onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
             >
               <option value="">{t('allCategories')}</option>
               {categories.map((c) => (
