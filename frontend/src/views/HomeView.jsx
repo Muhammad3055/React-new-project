@@ -18,11 +18,7 @@ const DEFAULT_BOOKS = [
   { id: 3, title: "Stories of the Prophets", author: "Ibn Kathir", cover_url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80", document_url: "https://www.quranfull.com", pages_count: 380, language: "English" }
 ];
 
-const DEFAULT_TAQREERS = [
-  { id: 1, title: "فضل تدبر القرآن الكريم (Virtue of Reflecting on Quran)", speaker: "الشيخ عبد الرزاق البدر", language: "arabic", duration: "18:45", audio_url: "https://server8.mp3quran.net/afs/001.mp3", description: "محاضرة قيمة عن أهمية التمسك بالقرآن الكريم." },
-  { id: 2, title: "قرآن مجید نا تلاوت و اونا فضائل (Virtues of Quran in Brahui)", speaker: "علامہ مولانا عبد الغفور براہوئی", language: "brahui", duration: "15:30", audio_url: "https://server7.mp3quran.net/s_gmd/001.mp3", description: "براہوئی زبان ٹی قرآن پاک نا تلاوت نا مفصل تقرير۔" },
-  { id: 3, title: "تفسیر سورہ الفاتحہ اور اصلاحِ نفس (Tafseer in Urdu)", speaker: "مفتی تقی عثمانی", language: "urdu", duration: "28:50", audio_url: "https://server11.mp3quran.net/yasser/001.mp3", description: "اردو زبان میں سورہ الفاتحہ کی روحانی نکات کا بیان۔" }
-];
+const DEFAULT_TAQREERS = [];
 
 const DEFAULT_HADITHS = [
   { id: 1, book_name: "Sahih Bukhari", hadith_number: 1, grade: "Sahih", arabic_text: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى", translation: "Actions are judged by intentions, and every person will get what they intended." },
@@ -147,9 +143,9 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
   };
 
-  const [stats, setStats] = useState({ total_audios: 7, total_taqreers: 6, total_books: 3, total_hadiths: 3 });
+  const [stats, setStats] = useState({ total_audios: 7, total_taqreers: 0, total_books: 3, total_hadiths: 3 });
   const [audios, setAudios] = useState(DEFAULT_AUDIOS);
-  const [taqreers, setTaqreers] = useState(DEFAULT_TAQREERS);
+  const [taqreers, setTaqreers] = useState([]);
   const [books, setBooks] = useState(DEFAULT_BOOKS);
   const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
@@ -1075,45 +1071,47 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         </div>
       </section>
 
-      {/* 3. FEATURED TAQREER AUDIOS (CENTERED) */}
-      <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> {t('taqreerSectionTitle')}
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            {t('taqreerSectionDesc')}
-          </p>
-        </div>
+      {/* 3. FEATURED TAQREER AUDIOS / MUHAZIRAT (ONLY RENDERS IF LECTURES ARE UPLOADED) */}
+      {taqreers && taqreers.length > 0 && (
+        <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
+              <i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> {t('taqreerSectionTitle')}
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
+              {t('taqreerSectionDesc')}
+            </p>
+          </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-          {getDailyRotatedSlice(taqreers, 3).map((tq) => (
-            <div key={tq.id} className="card" style={{ padding: '1.25rem', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <span style={{ background: 'var(--accent-gold-light)', color: 'var(--primary-dark)', fontWeight: 700, fontSize: '0.78rem', padding: '3px 10px', borderRadius: '10px', textTransform: 'uppercase' }}>
-                    <i className="fas fa-volume-up"></i> {tq.language} MP3
-                  </span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            {getDailyRotatedSlice(taqreers, 3).map((tq) => (
+              <div key={tq.id} className="card" style={{ padding: '1.25rem', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <span style={{ background: 'var(--accent-gold-light)', color: 'var(--primary-dark)', fontWeight: 700, fontSize: '0.78rem', padding: '3px 10px', borderRadius: '10px', textTransform: 'uppercase' }}>
+                      <i className="fas fa-volume-up"></i> {tq.language} MP3
+                    </span>
+                  </div>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.4rem 0 0.2rem 0' }}>{tq.title}</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--primary-light)', margin: '0.2rem 0 0.6rem 0', fontWeight: 600 }}>
+                    <i className="fas fa-user-tie"></i> {tq.speaker}
+                  </p>
+                  {tq.description && (
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.8rem', lineHeight: '1.4' }}>{tq.description}</p>
+                  )}
                 </div>
-                <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.4rem 0 0.2rem 0' }}>{tq.title}</h4>
-                <p style={{ fontSize: '0.88rem', color: 'var(--primary-light)', margin: '0.2rem 0 0.6rem 0', fontWeight: 600 }}>
-                  <i className="fas fa-user-tie"></i> {tq.speaker}
-                </p>
-                {tq.description && (
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.8rem', lineHeight: '1.4' }}>{tq.description}</p>
-                )}
+                <button
+                  className="btn-play"
+                  style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
+                  onClick={() => playTrack(tq.audio_url || tq.audio_file, tq.title, tq.speaker)}
+                >
+                  <i className="fas fa-play"></i> {t('playTaqreerBtn')}
+                </button>
               </div>
-              <button
-                className="btn-play"
-                style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
-                onClick={() => playTrack(tq.audio_url, tq.title, tq.speaker)}
-              >
-                <i className="fas fa-play"></i> {t('playTaqreerBtn')}
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 4. HADITH SPOTLIGHT (CENTERED) */}
       <section className="container" style={{ marginBottom: '4rem', textAlign: 'center' }}>
@@ -1126,8 +1124,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           </p>
         </div>
 
-        <div className="grid-2" style={{ gap: '1.5rem' }}>
-          {getDailyRotatedSlice(hadiths, 4).map((h) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {getDailyRotatedSlice(hadiths, 3).map((h) => (
             <div key={h.id} className="card" style={{ padding: '1.75rem', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-dark)', background: 'var(--accent-gold-light)', padding: '3px 12px', borderRadius: '12px' }}>
