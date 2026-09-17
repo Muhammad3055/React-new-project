@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
+import { ALL_114_SURAHS } from '../data/quran_data';
 
 export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu' }) {
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
@@ -14,10 +15,11 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
   // General Form Fields
   const [title, setTitle] = useState(editItem?.title || editItem?.surah_name_english || '');
-  const [arabicTitle, setArabicTitle] = useState(editItem?.arabic_title || '');
+  const [arabicTitle, setArabicTitle] = useState(editItem?.arabic_title || editItem?.surah_name_arabic || '');
   const [authorSpeaker, setAuthorSpeaker] = useState(editItem?.speaker || editItem?.author || editItem?.reciter || '');
   const [tarjumaQari, setTarjumaQari] = useState(editItem?.tarjuma_qari || '');
   const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
+  const [surahNumber, setSurahNumber] = useState(editItem?.surah_number || 1);
   const [description, setDescription] = useState(editItem?.description || '');
   const [fileUrl, setFileUrl] = useState(editItem?.audio_url || editItem?.pdf_url || editItem?.fileUrl || '');
   const [coverUrl, setCoverUrl] = useState(editItem?.cover_url || '');
@@ -126,6 +128,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       author: finalSpeaker,
       speaker: finalSpeaker,
       reciter: finalSpeaker,
+      tarjuma_qari: tarjumaQari,
+      surah_number: Number(surahNumber) || 1,
       surah_name_english: itemTitle,
       pages_count: Number(pagesCount) || 1,
       file_type: activeFileType,
@@ -176,6 +180,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('speaker', finalSpeaker);
     formData.append('reciter', finalSpeaker);
     formData.append('tarjuma_qari', tarjumaQari);
+    formData.append('surah_number', surahNumber);
     formData.append('surah_name_english', itemTitle);
     formData.append('audio_url', finalFileUrl);
     formData.append('pages_count', pagesCount);
@@ -424,6 +429,38 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 <h4 style={{ margin: '0 0 1rem 0', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <i className="fas fa-headphones"></i> {contentType === 'quran' ? 'Quran Tilawat / Tarjuma Details' : 'Taqreer MP3 Audio Details'}
                 </h4>
+
+                {/* Surah Number Selection for Quran / Tarjuma MP3s */}
+                {contentType === 'quran' && (
+                  <div style={{ marginBottom: '1rem', background: 'rgba(245,158,11,0.15)', padding: '0.85rem', borderRadius: '10px', border: '1.5px solid var(--accent-gold)' }}>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.35rem' }}>
+                      <i className="fas fa-list-ol"></i> Select Surah Number (1 - 114) for Numerical Sorting *
+                    </label>
+                    <select
+                      value={surahNumber}
+                      onChange={(e) => {
+                        const num = Number(e.target.value);
+                        setSurahNumber(num);
+                        const match = ALL_114_SURAHS.find(s => s.number === num);
+                        if (match) {
+                          if (!title || title.startsWith('Surah') || title.includes('Untitled') || title === '') {
+                            setTitle(`Surah ${match.name} (${match.englishName})`);
+                          }
+                          if (!arabicTitle || arabicTitle.startsWith('سورة')) {
+                            setArabicTitle(`سورة ${match.arabic}`);
+                          }
+                        }
+                      }}
+                      style={{ width: '100%', padding: '0.65rem', background: '#022c22', border: '1px solid var(--accent-gold)', borderRadius: '8px', color: '#fff', fontSize: '0.95rem', fontWeight: 700 }}
+                    >
+                      {ALL_114_SURAHS.map((s) => (
+                        <option key={s.number} value={s.number}>
+                          Surah {s.number}. {s.name} ({s.arabic}) - {s.englishName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div style={{ marginBottom: '1rem' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#10b981' }}>Database Category / Folder</label>
