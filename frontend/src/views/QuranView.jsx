@@ -326,7 +326,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   const activeQariObj = QARIS.find((q) => q.id === selectedQari) || QARIS[0];
 
-  const itemsPerPage = 12;
+  const itemsPerPage = 15;
 
   const filteredSurahs = surahsList.filter(s => {
     if (!s) return false;
@@ -812,7 +812,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               const num = (a.surah_number || '').toString();
               return eng.includes(q) || arab.includes(q) || reciter.includes(q) || num.includes(q);
             });
-            const itemsPerPage = 12;
+            const itemsPerPage = 15;
             const paginated = filtered.slice((tarjumaPage - 1) * itemsPerPage, tarjumaPage * itemsPerPage);
 
             return (
