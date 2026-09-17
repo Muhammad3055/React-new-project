@@ -533,7 +533,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Up to 900MB / 10 Hours)</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Up to 1GB per MP3 / 10 Hours Length)</label>
                   <input
                     type="file"
                     accept=".mp3,.wav,.m4a,.aac,.ogg,.opus,.flac"
