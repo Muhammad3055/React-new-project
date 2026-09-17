@@ -55,8 +55,11 @@ export function filterOutDeleted(items = []) {
   return items.filter(item => {
     if (!item) return false;
     const strId = String(item.id || '');
-    const strTitle = String(item.title || '');
-    return !deleted.includes(strId) && (!strTitle || !deleted.includes(strTitle));
+    // Only filter out temporary local browser admin items (IDs starting with admin_item_)
+    if (strId.startsWith('admin_item_')) {
+      return !deleted.includes(strId);
+    }
+    return true;
   });
 }
 
