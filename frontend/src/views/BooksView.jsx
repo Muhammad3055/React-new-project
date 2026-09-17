@@ -406,9 +406,6 @@ export default function BooksView({ openReportModal, user }) {
         <h1 className="section-title">
           <i className="fas fa-book-reader" style={{ color: 'var(--accent-gold)' }}></i> {t('libraryHeaderTitle')}
         </h1>
-        <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-          {t('libraryHeaderSubtitle')}
-        </p>
       </div>
 
       {/* Language Multi-Select Toggle Pill Bar */}

@@ -57,19 +57,19 @@ export default function LiveView({ user }) {
         return `https://www.youtube.com/embed/${customMakkahId}?autoplay=1&rel=0`;
       }
       if (selectedServer === 'server2') {
-        return 'https://www.youtube.com/embed/Jqr7aM-OwRg?autoplay=1&rel=0';
+        return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
       }
-      // Verified Working Default ID for Makkah (nocookie channel stream to bypass login on mobile)
-      return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC5u28zD6cQc4lV_0J9q3s6A';
+      // Official Active Live Stream ID for Makkah Al-Masjid Al-Haram (Saudi Quran TV)
+      return 'https://www.youtube.com/embed/eC4LfEVxvKg?autoplay=1&rel=0';
     } else {
       if (selectedServer === 'custom' && customMadinahId) {
         return `https://www.youtube.com/embed/${customMadinahId}?autoplay=1&rel=0`;
       }
       if (selectedServer === 'server2') {
-        return 'https://www.youtube.com/embed/Rs7St51oDDc?autoplay=1&rel=0';
+        return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw';
       }
-      // Verified Working Default ID for Madinah (nocookie channel stream to bypass login on mobile)
-      return 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCROKYPep-UuODNwyipe6JMw';
+      // Official Active Live Stream ID for Madinah Al-Masjid An-Nabawi (Saudi Sunnah TV)
+      return 'https://www.youtube.com/embed/Rs7St51oDDc?autoplay=1&rel=0';
     }
   };
 
