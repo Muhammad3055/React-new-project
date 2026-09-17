@@ -604,19 +604,19 @@ export default function BooksView({ openReportModal, user }) {
           </p>
         </div>
       ) : (() => {
-        const itemsPerPage = 9;
+        const itemsPerPage = 12;
         const paginatedBooks = books.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
         return (
           <>
             {viewMode === 'grid' ? (
-              /* GRID VIEW */
-              <div className="grid-3">
+              /* GRID VIEW - 4 COLUMNS / 12 CARDS */
+              <div className="grid-4">
                 {paginatedBooks.map((bk) => {
                   const badge = getFormatBadge(bk.file_type);
                   return (
-                    <div key={bk.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
-                      <div className="media-cover-wrapper" style={{ height: '210px', position: 'relative', background: '#0f172a' }}>
+                    <div key={bk.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 14px rgba(0,0,0,0.04)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
+                      <div className="media-cover-wrapper" style={{ height: '160px', position: 'relative', background: '#0f172a' }}>
                         <img
                           src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"}
                           alt={bk.title}
@@ -629,46 +629,46 @@ export default function BooksView({ openReportModal, user }) {
                         <span
                           style={{
                             position: 'absolute',
-                            top: '12px',
-                            right: '12px',
-                            padding: '0.35rem 0.75rem',
+                            top: '8px',
+                            right: '8px',
+                            padding: '0.25rem 0.6rem',
                             background: badge.bg,
                             color: badge.color,
                             border: `1px solid ${badge.border}`,
-                            borderRadius: '20px',
-                            fontSize: '0.78rem',
+                            borderRadius: '16px',
+                            fontSize: '0.7rem',
                             fontWeight: 800,
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '0.35rem',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                            gap: '0.25rem',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
                           }}
                         >
                           <i className={badge.icon}></i> {badge.label}
                         </span>
                       </div>
 
-                      <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1.2rem' }}>
-                        <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: 'var(--primary-dark)', fontWeight: 700 }}>{bk.title}</h3>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0 0.5rem 0' }}>
+                      <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0.9rem' }}>
+                        <h3 className="card-title" style={{ fontSize: '0.95rem', marginBottom: '0.2rem', color: 'var(--primary-dark)', fontWeight: 800 }}>{bk.title}</h3>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.15rem 0 0.35rem 0' }}>
                           <i className="fas fa-pen-nib" style={{ color: 'var(--accent-gold)' }}></i> {bk.author}
                         </p>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--primary-light)', fontWeight: 600, marginBottom: '0.6rem' }}>
-                          <i className={bk.file_type === 'ppt' ? 'fas fa-file-powerpoint' : 'fas fa-file-alt'} style={{ marginRight: '0.3rem' }}></i>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--primary-light)', fontWeight: 600, marginBottom: '0.4rem' }}>
+                          <i className={bk.file_type === 'ppt' ? 'fas fa-file-powerpoint' : 'fas fa-file-alt'} style={{ marginRight: '0.25rem' }}></i>
                           {bk.file_type === 'ppt' ? `${bk.pages_count} Slides` : `${bk.pages_count} Pages`} &bull; {bk.language}
                         </p>
-                        <p style={{ fontSize: '0.85rem', color: '#475569', lineHeight: '1.5', flex: 1, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>{bk.description}</p>
+                        <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: '1.4', flex: 1, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{bk.description}</p>
                       </div>
 
                       {/* Action Footer */}
-                      <div className="card-footer" style={{ padding: '1rem 1.2rem', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div className="card-footer" style={{ padding: '0.65rem 0.9rem', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button
                           onClick={() => handleOpenDocModal(bk)}
-                          style={{ flex: 1, minWidth: '120px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50px', padding: '0.6rem 1.25rem', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                          style={{ flex: 1, minWidth: '90px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '30px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.8rem' }}></i> Read Book
+                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> Read
                         </button>
 
                         <a
@@ -676,7 +676,7 @@ export default function BooksView({ openReportModal, user }) {
                           download
                           target="_blank"
                           rel="noreferrer"
-                          style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
+                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
                           title="Download File"
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
@@ -687,7 +687,7 @@ export default function BooksView({ openReportModal, user }) {
                         <button
                           title="Report Issue"
                           onClick={() => openReportModal('book', bk.title)}
-                          style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
@@ -698,7 +698,7 @@ export default function BooksView({ openReportModal, user }) {
                           <>
                             <button
                               onClick={() => toggleSaveBook(bk.id, false)}
-                              style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                              style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                               title={userSavedBooks.some(b => b.book_id === bk.id) ? "Saved in Library" : "Save to Library"}
                               onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                               onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
@@ -708,7 +708,7 @@ export default function BooksView({ openReportModal, user }) {
 
                             <button
                               onClick={() => toggleSaveBook(bk.id, true)}
-                              style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                              style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                               title={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "Favorited" : "Favorite Book"}
                               onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                               onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
@@ -722,17 +722,17 @@ export default function BooksView({ openReportModal, user }) {
                           <>
                             <button
                               onClick={() => setEditingBook(bk)}
-                              style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                              style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.35rem 0.5rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
                               title="Edit Document as Admin"
                             >
-                              <i className="fas fa-edit"></i> Edit
+                              <i className="fas fa-edit"></i>
                             </button>
                             <button
                               onClick={() => deleteContentItem(bk.id, 'book', bk.title)}
-                              style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                              style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.35rem 0.5rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
                               title="Delete Book as Admin"
                             >
-                              <i className="fas fa-trash"></i> Delete
+                              <i className="fas fa-trash"></i>
                             </button>
                           </>
                         )}
@@ -743,36 +743,36 @@ export default function BooksView({ openReportModal, user }) {
               </div>
             ) : (
               /* COMPACT LIST VIEW */
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {paginatedBooks.map((bk) => {
                   const badge = getFormatBadge(bk.file_type);
                   return (
-                    <div key={bk.id} className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', gap: '1rem', flexWrap: 'wrap', borderRadius: '12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '240px' }}>
-                        <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    <div key={bk.id} className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', gap: '0.75rem', flexWrap: 'wrap', borderRadius: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: '220px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
                           <i className={badge.icon}></i>
                         </div>
                         <div>
-                          <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{bk.title}</h4>
-                          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>By {bk.author} • {bk.pages_count || 100} Pages</span>
+                          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{bk.title}</h4>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>By {bk.author} • {bk.pages_count || 100} Pages</span>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button
                           onClick={() => handleOpenDocModal(bk)}
-                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50px', padding: '0.5rem 1.25rem', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '30px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.8rem' }}></i> Read Book
+                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> Read
                         </button>
                         <a
                           href={getCleanDocumentUrl(getDocRawUrl(bk))}
                           download
                           target="_blank"
                           rel="noreferrer"
-                          style={{ width: '40px', height: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '50%', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
+                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
                           title="Download File"
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
