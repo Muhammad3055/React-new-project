@@ -243,7 +243,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             setArabicTilawatAudios(filterOutDeleted([...adminAudios, ...apiResults]));
           } else {
             let combined = filterOutDeleted([...adminAudios, ...apiResults]);
-            combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            combined.sort((a, b) => (Number(a.surah_number) || 999) - (Number(b.surah_number) || 999));
             setTranslationAudios(combined);
           }
         })
@@ -252,7 +252,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             setArabicTilawatAudios(filterOutDeleted(adminAudios));
           } else {
             let combined = filterOutDeleted(adminAudios);
-            combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            combined.sort((a, b) => (Number(a.surah_number) || 999) - (Number(b.surah_number) || 999));
             setTranslationAudios(combined);
           }
         })

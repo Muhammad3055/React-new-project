@@ -82,10 +82,10 @@ def api_quran_list(request):
     featured = request.GET.get('featured', '').strip()
     
     audios = QuranAudio.objects.all()
-    if destination_filter in ['quran_brahui', 'quran_urdu']:
-        audios = audios.order_by('-created_at')
-    elif language_filter in ['brahui', 'urdu']:
-        audios = audios.order_by('-created_at')
+    if destination_filter in ['quran_brahui', 'quran_urdu'] or language_filter in ['brahui', 'urdu']:
+        audios = audios.order_by('surah_number', 'id')
+    else:
+        audios = audios.order_by('surah_number', 'id')
 
     if featured:
         # Return distinct famous Surahs for the featured home page section
@@ -139,7 +139,10 @@ def api_quran_list(request):
         reciters = list(QuranAudio.objects.values_list('reciter', flat=True).distinct())
         cache.set('quran_reciters_list', reciters, 600)
 
-    paginator = Paginator(audios, 25)
+    # Support up to 500 items so all 114 surahs are retrieved for frontend pagination
+    page_size_param = request.GET.get('page_size')
+    page_size = 500 if (not page_size_param or request.GET.get('all') == 'true' or destination_filter or language_filter) else int(page_size_param)
+    paginator = Paginator(audios, page_size)
     page_obj = paginator.get_page(page_number)
 
     data = []
