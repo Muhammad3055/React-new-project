@@ -527,9 +527,9 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
-        gap: '0.75rem',
-        marginBottom: '1.75rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
+        gap: '0.45rem',
+        marginBottom: '1.25rem'
       }}>
         {subCategoryOptions.map(opt => {
           const isActive = subCategory === opt.id;
@@ -538,25 +538,26 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               key={opt.id}
               onClick={() => { setSubCategory(opt.id); setQuranPage(1); }}
               style={{
-                padding: '0.7rem 1rem',
-                borderRadius: '30px',
-                border: isActive ? '2.5px solid #b45309' : '1.5px solid #d6d3d1',
+                padding: '0.4rem 0.65rem',
+                borderRadius: '20px',
+                border: isActive ? '2px solid #b45309' : '1px solid #e7e5e4',
                 background: isActive ? '#fef3c7' : '#ffffff',
                 color: '#000000',
-                boxShadow: isActive ? '0 6px 18px rgba(180, 83, 9, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)',
+                boxShadow: isActive ? '0 3px 10px rgba(180, 83, 9, 0.2)' : '0 1px 4px rgba(0, 0, 0, 0.04)',
                 cursor: 'pointer',
-                transition: 'all 0.25s ease',
+                transition: 'all 0.2s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.65rem',
+                gap: '0.4rem',
                 justifyContent: 'center',
-                outline: 'none'
+                outline: 'none',
+                minHeight: '38px'
               }}
             >
-              <i className={opt.icon} style={{ fontSize: '1.1rem', color: isActive ? '#b45309' : '#d97706' }}></i>
-              <div style={{ textAlign: 'left', lineHeight: '1.25' }}>
-                <div style={{ fontWeight: 900, fontSize: '0.85rem', color: '#000000' }}>{opt.label}</div>
-                <div style={{ fontSize: '0.72rem', color: isActive ? '#78350f' : '#6b7280', fontWeight: 700 }}>{opt.sub}</div>
+              <i className={opt.icon} style={{ fontSize: '0.85rem', color: isActive ? '#b45309' : '#d97706' }}></i>
+              <div style={{ textAlign: 'left', lineHeight: '1.15' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.75rem', color: '#000000', whiteSpace: 'nowrap' }}>{opt.label}</div>
+                <div style={{ fontSize: '0.65rem', color: isActive ? '#78350f' : '#78716c', fontWeight: 600, whiteSpace: 'nowrap' }}>{opt.sub}</div>
               </div>
             </button>
           );
