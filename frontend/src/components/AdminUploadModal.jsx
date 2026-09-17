@@ -510,10 +510,10 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (mm:ss)</label>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Duration (hh:mm:ss or mm:ss)</label>
                     <input
                       type="text"
-                      placeholder="15:30"
+                      placeholder="09:45:00 or 15:30"
                       value={duration}
                       onChange={(e) => setDuration(e.target.value)}
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
@@ -533,10 +533,10 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose MP3 File from Device</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Up to 900MB / 10 Hours)</label>
                   <input
                     type="file"
-                    accept=".mp3,.wav,.m4a,.aac"
+                    accept=".mp3,.wav,.m4a,.aac,.ogg,.opus,.flac"
                     onChange={(e) => {
                       const file = e.target.files[0];
                       setSelectedFile(file);
@@ -545,9 +545,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                         audio.addEventListener('loadedmetadata', () => {
                           const totalSeconds = Math.floor(audio.duration);
                           if (totalSeconds > 0 && isFinite(totalSeconds)) {
-                            const m = Math.floor(totalSeconds / 60);
-                            const s = totalSeconds % 60;
-                            setDuration(`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+                            const hrs = Math.floor(totalSeconds / 3600);
+                            const mins = Math.floor((totalSeconds % 3600) / 60);
+                            const secs = totalSeconds % 60;
+                            if (hrs > 0) {
+                              setDuration(`${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+                            } else {
+                              setDuration(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+                            }
                           }
                         });
                       }

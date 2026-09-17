@@ -256,9 +256,9 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Enable 600MB File Upload Limits in Django
-DATA_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 629145600  # 600 MB
+# Enable 1000MB (1GB) File Upload Limits in Django for up to 900MB+ single MP3 media files
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576000  # 1000 MB (1 GB)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576000  # 1000 MB (1 GB)
 
 # Set upload permissions so Nginx (www-data) can read uploaded PDF & media files (Fixes 403 Forbidden)
 FILE_UPLOAD_PERMISSIONS = 0o644

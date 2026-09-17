@@ -93,8 +93,12 @@ class QuranAudio(models.Model):
                 audio = mutagen.File(self.audio_file.path)
                 if audio is not None and audio.info:
                     length = int(audio.info.length)
-                    mins, secs = divmod(length, 60)
-                    new_duration = f"{mins:02}:{secs:02}"
+                    hrs, rem = divmod(length, 3600)
+                    mins, secs = divmod(rem, 60)
+                    if hrs > 0:
+                        new_duration = f"{hrs:02}:{mins:02}:{secs:02}"
+                    else:
+                        new_duration = f"{mins:02}:{secs:02}"
                     if new_duration != self.duration:
                         QuranAudio.objects.filter(pk=self.pk).update(duration=new_duration)
             except Exception:
@@ -165,8 +169,12 @@ class TaqreerAudio(models.Model):
                 audio = mutagen.File(self.audio_file.path)
                 if audio is not None and audio.info:
                     length = int(audio.info.length)
-                    mins, secs = divmod(length, 60)
-                    new_duration = f"{mins:02}:{secs:02}"
+                    hrs, rem = divmod(length, 3600)
+                    mins, secs = divmod(rem, 60)
+                    if hrs > 0:
+                        new_duration = f"{hrs:02}:{mins:02}:{secs:02}"
+                    else:
+                        new_duration = f"{mins:02}:{secs:02}"
                     if new_duration != self.duration:
                         TaqreerAudio.objects.filter(pk=self.pk).update(duration=new_duration)
             except Exception:
