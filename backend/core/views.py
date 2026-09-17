@@ -91,11 +91,13 @@ def api_quran_list(request):
         # Return distinct famous Surahs for the featured home page section
         featured_surah_nums = [18, 36, 55, 67, 1, 2]
         featured_items = []
+        seen_ids = set()
         seen_surahs = set()
         for num in featured_surah_nums:
             match = audios.filter(surah_number=num).first()
             if match and num not in seen_surahs:
                 seen_surahs.add(num)
+                seen_ids.add(match.id)
                 featured_items.append({
                     'id': match.id,
                     'surah_number': match.surah_number,
@@ -109,6 +111,28 @@ def api_quran_list(request):
                     'total_ayahs': match.total_ayahs,
                     'category_id': match.category_id,
                 })
+        
+        # Fallback: fill with any uploaded Quran audio from database if specific featured numbers are missing
+        if len(featured_items) < 6:
+            for match in audios:
+                if match.id not in seen_ids:
+                    seen_ids.add(match.id)
+                    featured_items.append({
+                        'id': match.id,
+                        'surah_number': match.surah_number,
+                        'surah_name_arabic': match.surah_name_arabic,
+                        'surah_name_english': match.surah_name_english,
+                        'reciter': match.reciter,
+                        'language': match.language,
+                        'audio_url': match.get_playable_url(),
+                        'duration': match.duration,
+                        'revelation_place': match.revelation_place,
+                        'total_ayahs': match.total_ayahs,
+                        'category_id': match.category_id,
+                    })
+                if len(featured_items) >= 6:
+                    break
+
         return JsonResponse({'results': featured_items, 'count': len(featured_items)})
 
     if query:
