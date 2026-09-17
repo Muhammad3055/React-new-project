@@ -15,18 +15,19 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(QuranAudio)
 class QuranAudioAdmin(admin.ModelAdmin):
-    list_display = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'reciter', 'tarjuma_qari', 'language', 'destination_folder', 'category', 'revelation_place', 'duration')
-    list_editable = ('surah_number',)
+    list_display = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'destination_folder', 'reciter', 'tarjuma_qari', 'language', 'category', 'duration', 'created_at')
+    list_editable = ('surah_number', 'destination_folder', 'language')
     ordering = ('surah_number', 'id')
-    list_filter = ('language', 'category', 'revelation_place', 'reciter')
-    search_fields = ('surah_name_english', 'surah_name_arabic', 'reciter', 'tarjuma_qari')
+    list_filter = ('destination_folder', 'language', 'category', 'revelation_place', 'reciter')
+    search_fields = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'reciter', 'tarjuma_qari', 'destination_folder')
 
 
 @admin.register(TaqreerAudio)
 class TaqreerAudioAdmin(admin.ModelAdmin):
     list_display = ('title', 'arabic_title', 'speaker', 'tarjuma_qari', 'language', 'destination_folder', 'category', 'duration', 'created_at')
-    list_filter = ('language', 'destination_folder', 'category')
-    search_fields = ('title', 'arabic_title', 'speaker', 'tarjuma_qari', 'description')
+    list_editable = ('destination_folder', 'language')
+    list_filter = ('destination_folder', 'language', 'category', 'speaker')
+    search_fields = ('title', 'arabic_title', 'speaker', 'tarjuma_qari', 'destination_folder', 'description')
 
 
 @admin.register(VideoMedia)
