@@ -77,7 +77,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       .catch(() => setCategories(defaultCategoriesList));
   }, []);
 
-  // Sync language automatically when destination changes
+  // Sync language and destination automatically
   useEffect(() => {
     if (destination) {
       if (destination.includes('brahui')) setLanguage('brahui');
@@ -85,6 +85,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       else if (destination.includes('arabic')) setLanguage('arabic');
     }
   }, [destination]);
+
+  useEffect(() => {
+    if (contentType === 'quran' && (!destination || destination === 'books' || destination.startsWith('taqreer_'))) {
+      setDestination(`quran_${language}`);
+    } else if (contentType === 'audio' && (!destination || destination === 'books' || destination.startsWith('quran_'))) {
+      setDestination(`taqreer_${language}`);
+    }
+  }, [contentType, language]);
 
   const handleCreateFolder = (e) => {
     e.preventDefault();
@@ -255,6 +263,17 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     fetch(getApiUrl(apiEndpoint), fetchOptions)
       .then(res => res.json())
       .then((data) => {
+        if (data && (data.audio_url || data.document_url || data.id)) {
+          const realUrl = data.audio_url || data.document_url || finalFileUrl;
+          newItem.id = data.id || newItem.id;
+          newItem.fileUrl = realUrl;
+          if (contentType === 'audio' || contentType === 'quran') {
+            newItem.audio_url = realUrl;
+          } else if (contentType === 'book') {
+            newItem.pdf_url = realUrl;
+          }
+        }
+        addAdminItem(newItem);
         window.dispatchEvent(new CustomEvent('admin_content_updated'));
       })
       .catch(() => {

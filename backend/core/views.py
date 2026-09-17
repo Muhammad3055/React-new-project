@@ -55,14 +55,19 @@ def api_quran_list(request):
             category_id_raw = body.get('category_id')
             category_id = int(category_id_raw) if (category_id_raw and str(category_id_raw).isdigit()) else None
 
+            dest = body.get('destination', '').strip()
+            lang = body.get('language', 'arabic').strip()
+            if not dest or dest == 'books':
+                dest = f"quran_{lang}"
+
             qa = QuranAudio.objects.create(
                 surah_number=int(body.get('surah_number', 1)),
                 surah_name_english=body.get('surah_name_english') or body.get('title') or '',
                 surah_name_arabic=body.get('surah_name_arabic', 'سورة'),
-                reciter=body.get('reciter', 'Islamic Scholar'),
+                reciter=body.get('reciter', 'Islamic Scholar') or body.get('speaker', 'Islamic Scholar'),
                 tarjuma_qari=body.get('tarjuma_qari', ''),
-                language=body.get('language', 'arabic'),
-                destination_folder=body.get('destination', ''),
+                language=lang,
+                destination_folder=dest,
                 category_id=category_id,
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00')
@@ -147,10 +152,13 @@ def api_quran_list(request):
     if destination_filter and language_filter:
         audios = audios.filter(
             Q(destination_folder=destination_filter) | 
-            (Q(destination_folder='') & Q(language=language_filter))
+            Q(language=language_filter)
         )
     elif destination_filter:
-        audios = audios.filter(destination_folder=destination_filter)
+        audios = audios.filter(
+            Q(destination_folder=destination_filter) |
+            Q(destination_folder=destination_filter.replace('quran_', ''))
+        )
     elif language_filter:
         audios = audios.filter(language=language_filter)
     
@@ -249,13 +257,18 @@ def api_taqreer_list(request):
             category_id_raw = body.get('category_id')
             category_id = int(category_id_raw) if (category_id_raw and str(category_id_raw).isdigit()) else None
 
+            dest = body.get('destination', '').strip()
+            lang = body.get('language', 'urdu').strip()
+            if not dest or dest == 'books':
+                dest = f"taqreer_{lang}"
+
             tq = TaqreerAudio.objects.create(
                 title=body.get('title', 'Untitled Audio'),
                 arabic_title=body.get('arabic_title', ''),
-                speaker=body.get('speaker', 'Islamic Scholar'),
+                speaker=body.get('speaker', 'Islamic Scholar') or body.get('author', 'Islamic Scholar'),
                 tarjuma_qari=body.get('tarjuma_qari', ''),
-                language=body.get('language', 'urdu'),
-                destination_folder=body.get('destination', ''),
+                language=lang,
+                destination_folder=dest,
                 category_id=category_id,
                 audio_url=body.get('audio_url', ''),
                 duration=body.get('duration', '00:00'),
@@ -277,10 +290,13 @@ def api_taqreer_list(request):
     if destination_filter and language:
         taqreers = taqreers.filter(
             Q(destination_folder=destination_filter) | 
-            (Q(destination_folder='') & Q(language=language))
+            Q(language=language)
         )
     elif destination_filter:
-        taqreers = taqreers.filter(destination_folder=destination_filter)
+        taqreers = taqreers.filter(
+            Q(destination_folder=destination_filter) |
+            Q(destination_folder=destination_filter.replace('taqreer_', ''))
+        )
     elif language:
         taqreers = taqreers.filter(language=language)
     if query:
