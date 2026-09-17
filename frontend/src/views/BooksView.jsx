@@ -15,8 +15,8 @@ export default function BooksView({ openReportModal, user }) {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedFileTypes, setSelectedFileTypes] = useState([]); // ['pdf', 'doc', 'ppt', 'book']
   const [selectedLanguages, setSelectedLanguages] = useState([]); // ['en', 'ur', 'ar', 'br']
-  const [page, setPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [previewDoc, setPreviewDoc] = useState(null); // Document selected for modal viewing
@@ -581,11 +581,24 @@ export default function BooksView({ openReportModal, user }) {
       </div>
 
       {!loading && books.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '1.5rem 0 1rem', background: '#f8fafc', padding: '0.75rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '1.5rem 0 1rem', background: '#f8fafc', padding: '0.75rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', flexWrap: 'wrap', gap: '0.5rem' }}>
           <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#334155', fontWeight: 700 }}>
-            <i className="fas fa-file-alt" style={{ marginRight: '0.5rem', color: '#94a3b8' }}></i>
+            <i className="fas fa-file-alt" style={{ marginRight: '0.5rem', color: 'var(--accent-gold)' }}></i>
             {books.length} Document(s) Found
           </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#64748b' }}>
+            <span>Show per page:</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+              style={{ padding: '0.35rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700, background: '#ffffff', color: '#0f172a', cursor: 'pointer' }}
+            >
+              <option value={12}>12 per page</option>
+              <option value={24}>24 per page</option>
+              <option value={48}>48 per page</option>
+              <option value={500}>All ({books.length})</option>
+            </select>
+          </div>
         </div>
       )}
 
@@ -604,7 +617,6 @@ export default function BooksView({ openReportModal, user }) {
           </p>
         </div>
       ) : (() => {
-        const itemsPerPage = 12;
         const paginatedBooks = books.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
         return (

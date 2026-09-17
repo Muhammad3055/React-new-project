@@ -374,19 +374,26 @@ def api_books_list(request):
     if file_type_filter:
         ft_list = [ft.strip().lower() for ft in file_type_filter.split(',') if ft.strip()]
         if ft_list:
-            books = books.filter(file_type__in=ft_list)
+            # If pdf is requested, include 'book' as well since books are PDFs
+            expanded_ft = set(ft_list)
+            if 'pdf' in ft_list:
+                expanded_ft.add('book')
+            q_ft = Q(file_type__in=list(expanded_ft))
+            for ft in expanded_ft:
+                q_ft |= Q(file_type__icontains=ft)
+            books = books.filter(q_ft)
     if language_filter:
         lang_raw_list = [l.strip().lower() for l in language_filter.split(',') if l.strip()]
         lang_matches = set()
         lang_map = {
-            'br': ['br', 'brahui'],
-            'brahui': ['br', 'brahui'],
-            'ur': ['ur', 'urdu'],
-            'urdu': ['ur', 'urdu'],
+            'br': ['br', 'brahui', 'براہوئی'],
+            'brahui': ['br', 'brahui', 'براہوئی'],
+            'ur': ['ur', 'urdu', 'اردو'],
+            'urdu': ['ur', 'urdu', 'اردو'],
             'en': ['en', 'english'],
             'english': ['en', 'english'],
-            'ar': ['ar', 'arabic'],
-            'arabic': ['ar', 'arabic'],
+            'ar': ['ar', 'arabic', 'عربي'],
+            'arabic': ['ar', 'arabic', 'عربي'],
         }
         for l in lang_raw_list:
             if l in lang_map:
@@ -394,10 +401,13 @@ def api_books_list(request):
             else:
                 lang_matches.add(l)
         if lang_matches:
-            books = books.filter(language__in=list(lang_matches))
+            q_lang = Q()
+            for lm in lang_matches:
+                q_lang |= Q(language__icontains=lm)
+            books = books.filter(q_lang)
 
     page_size_param = request.GET.get('page_size')
-    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 500
+    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 1000
     paginator = Paginator(books, page_size)
     page_obj = paginator.get_page(page_number)
 

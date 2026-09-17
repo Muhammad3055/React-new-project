@@ -125,7 +125,7 @@ def seed_database():
     for item in video_items:
         VideoMedia.objects.get_or_create(title=item["title"], defaults=item)
 
-    # Islamic Library Resources (PDF, Word DOCX, PPT Presentations, E-Books)
+        # Islamic Library Resources (PDF, Word DOCX, PPT Presentations, E-Books) - 44 Documents
     book_items = [
         {
             "title": "Tafsir Ibn Kathir (Complete English Translation)",
@@ -235,6 +235,380 @@ def seed_database():
             "description": "The second of the two most authentic collections of Hadiths, compiled by Imam Muslim, detailing the Sunnah of Prophet Muhammad (peace be upon him).",
             "pages_count": 2900,
             "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Sunan Abu Dawood (Complete Arabic / English)",
+            "author": "Imam Abu Dawood",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Sunan-Abu-Dawood.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "Comprehensive Sunan Hadith collection focusing on Islamic jurisprudence (Fiqh) rulings and Sunnah practices.",
+            "pages_count": 2100,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Jami at-Tirmidhi (Complete Edition)",
+            "author": "Imam Al-Tirmidhi",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Jami-at-Tirmidhi.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "One of the Kutub al-Sittah containing legal Hadiths with detailed grading of authenticity by Imam Tirmidhi.",
+            "pages_count": 1950,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Sunan an-Nasa'i (Complete 6 Volumes)",
+            "author": "Imam An-Nasa'i",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Sunan-an-Nasai.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80",
+            "description": "Major Hadith collection renowned for strict criteria in narrators and jurisprudential precision.",
+            "pages_count": 1800,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Sunan Ibn Majah (Complete 5 Volumes)",
+            "author": "Imam Ibn Majah",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Sunan-Ibn-Majah.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80",
+            "description": "The sixth book of the canonical Hadith collections arranged systematically according to Fiqh chapters.",
+            "pages_count": 1650,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Muwatta Imam Malik (Arabic / English)",
+            "author": "Imam Malik ibn Anas",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Muwatta-Imam-Malik.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80",
+            "description": "The earliest written collection of Hadiths and legal rulings of Madinah compiled by Imam Malik.",
+            "pages_count": 1200,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Bulugh al-Maram (Attaining the Objective)",
+            "author": "Hafiz Ibn Hajar al-Asqalani",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Bulugh-al-Maram.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=500&q=80",
+            "description": "Essential collection of 1,300 legal Hadiths used worldwide for Islamic jurisprudence studies.",
+            "pages_count": 480,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Al-Fiqh Al-Islami wa Adillatuh (Islamic Fiqh & Proofs)",
+            "author": "Dr. Wahba Al-Zuhayli",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Fiqh-Al-Islami.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80",
+            "description": "Encyclopedic study comparing jurisprudential rulings across the four major Sunni schools of thought.",
+            "pages_count": 1400,
+            "language": "Arabic / English",
+            "category": cat_lectures
+        },
+        {
+            "title": "Tafsir Al-Qurtubi (Comprehensive Quran Commentary)",
+            "author": "Imam Al-Qurtubi",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Tafsir-Al-Qurtubi.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "Famous 20-volume classical commentary emphasizing legal rulings derived from Quranic verses.",
+            "pages_count": 3200,
+            "language": "Arabic / Urdu",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Tafsir Al-Jalalayn (Arabic & English Translation)",
+            "author": "Jalal ad-Din al-Mahalli & Jalal ad-Din as-Suyuti",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Tafsir-Al-Jalalayn.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "Concise classical commentary prized for its clarity and precise word-by-word explanation.",
+            "pages_count": 620,
+            "language": "Arabic / English",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Tafsir Ahsan ul Bayan (Urdu Quran Commentary)",
+            "author": "Hafiz Salahuddin Yusuf",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Tafsir-Ahsan-ul-Bayan.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80",
+            "description": "Authentic Urdu commentary approved by King Fahd Complex for Printing the Holy Quran.",
+            "pages_count": 980,
+            "language": "Urdu (اردو)",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Ma'ariful Quran (Urdu Complete Commentary)",
+            "author": "Mufti Muhammad Shafi",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Maariful-Quran-Urdu.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80",
+            "description": "Eight-volume Urdu Tafsir bridging traditional Quranic exegesis with modern intellectual inquiries.",
+            "pages_count": 4500,
+            "language": "Urdu (اردو)",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Qisas ul Anbiya (Stories of Prophets - Urdu Edition)",
+            "author": "Hafiz Ibn Kathir (Urdu Trans: Maulana Muhammad Asghar)",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Qisas-ul-Anbiya-Urdu.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=500&q=80",
+            "description": "Complete Urdu translation of Ibn Kathir's authentic historical narratives of all Prophets.",
+            "pages_count": 750,
+            "language": "Urdu (اردو)",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Seerat un Nabi (Shibli Nomani & Sulaiman Nadvi)",
+            "author": "Allama Shibli Nomani & Syed Sulaiman Nadvi",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Seerat-un-Nabi-Urdu.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80",
+            "description": "The landmark 7-volume Urdu biography of the Holy Prophet Muhammad (ﷺ).",
+            "pages_count": 3200,
+            "language": "Urdu (اردو)",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Uswah-e-Hasanah (Character of Prophet Muhammad ﷺ)",
+            "author": "Dr. Syed Muhammad Zia-ul-Haq",
+            "file_type": "doc",
+            "pdf_url": "https://www.quranproject.org/Uswah-e-Hasanah.docx",
+            "cover_url": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=500&q=80",
+            "description": "Comprehensive Word Document detailing the sublime manners, ethics, and mercy of the Prophet.",
+            "pages_count": 160,
+            "language": "Urdu (اردو)",
+            "category": cat_lectures
+        },
+        {
+            "title": "Brahui Quran Translation (Holy Quran in Brahui)",
+            "author": "Sheikh Abdul Karim Murad Al-Athari",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Brahui-Quran-Translation.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "King Fahd Complex authentic Brahui translation (قرآن پاک نا براہوئی ترجُمہ) covering all 114 Surahs.",
+            "pages_count": 850,
+            "language": "Brahui (براہوئی)",
+            "category": cat_tafseer_cat
+        },
+        {
+            "title": "Brahui Tajweed & Qaida Guide (براہوئی تجوید و قاعدہ)",
+            "author": "Maulana Abdul Haq Brahui",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Brahui-Tajweed-Guide.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80",
+            "description": "Complete beginner's guide to Quranic pronunciation and Tajweed rules written in Brahui language.",
+            "pages_count": 95,
+            "language": "Brahui (براہوئی)",
+            "category": cat_recitation
+        },
+        {
+            "title": "Brahui Islamic Fiqh & Namaz Guide (براہوئی نماز و مسایل)",
+            "author": "Mufti Muhammad Jan Brahui",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Brahui-Namaz-Guide.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "Step-by-step illustrated guide on Prayer (Namaz), Wudu, Zakat, and Fasting in Brahui.",
+            "pages_count": 140,
+            "language": "Brahui (براہوئی)",
+            "category": cat_lectures
+        },
+        {
+            "title": "Brahui Hisn al-Muslim (براہوئی حصن المسلم - دعا تا کتاب)",
+            "author": "Sa'id Al-Qahtani (Brahui Trans: Sheikh Abdul Karim)",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Brahui-Hisn-Muslim.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80",
+            "description": "Authentic morning and evening supplications and daily Azkar translated into Brahui.",
+            "pages_count": 185,
+            "language": "Brahui (براہوئی)",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Brahui Seerat un Nabi (براہوئی سیرت النبی ﷺ)",
+            "author": "Maulana Noor Muhammad Brahui",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Brahui-Seerat-Prophet.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80",
+            "description": "Comprehensive Brahui biography detailing the noble life and teachings of Prophet Muhammad ﷺ.",
+            "pages_count": 480,
+            "language": "Brahui (براہوئی)",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Brahui Forty Hadith Collection (براہوئی چهل حدیث)",
+            "author": "Imam An-Nawawi (Brahui Translation)",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Brahui-40-Hadith.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=500&q=80",
+            "description": "Forty fundamental Hadiths of Islam with word-by-word Brahui commentary.",
+            "pages_count": 75,
+            "language": "Brahui (براہوئی)",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Al-Aqidah al-Wasitiyyah (The Creed of Wasitiyyah)",
+            "author": "Shaykh al-Islam Ibn Taymiyyah",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Aqidah-Wasitiyyah.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "Foundational treatise on Islamic creed and the belief in the Names and Attributes of Allah.",
+            "pages_count": 180,
+            "language": "Arabic / English",
+            "category": cat_lectures
+        },
+        {
+            "title": "Kitab at-Tawheed (The Book of Monotheism)",
+            "author": "Sheikh-ul-Islam Muhammad ibn Abd al-Wahhab",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Kitab-at-Tawheed.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "Essential Islamic guidebook detailing Tawheed (pure monotheism) and avoiding Shirk.",
+            "pages_count": 220,
+            "language": "Arabic / English / Urdu",
+            "category": cat_lectures
+        },
+        {
+            "title": "Sharh As-Sunnah (Explanation of the Sunnah)",
+            "author": "Imam Al-Baghawi",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Sharh-As-Sunnah.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80",
+            "description": "Classic Hadith commentary explaining the core principles of Islamic belief and methodology.",
+            "pages_count": 1100,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Al-Adab Al-Mufrad (Book of Manners & Ethics)",
+            "author": "Imam Muhammad al-Bukhari",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Al-Adab-Al-Mufrad.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80",
+            "description": "Imam Bukhari's famous collection of 1,300 Hadiths dedicated entirely to social etiquette and character.",
+            "pages_count": 550,
+            "language": "Arabic / English / Urdu",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Zad al-Ma'ad (Provisions for the Hereafter)",
+            "author": "Imam Ibn Qayyim Al-Jawziyya",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Zad-al-Maad.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80",
+            "description": "Masterpiece analyzing the daily life, worship, medicine, and guidance of the Prophet Muhammad ﷺ.",
+            "pages_count": 1850,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Minhaj al-Muslim (The Way of the Muslim)",
+            "author": "Sheikh Abu Bakr Jabir al-Jaza'iri",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Minhaj-al-Muslim.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=500&q=80",
+            "description": "Complete handbook covering Creed, Manners, Worship, and Social Transactions for every Muslim.",
+            "pages_count": 920,
+            "language": "Arabic / English",
+            "category": cat_lectures
+        },
+        {
+            "title": "Fiqh us-Sunnah (Complete 3 Volumes)",
+            "author": "Sayyid Sabiq",
+            "file_type": "book",
+            "pdf_url": "https://www.quranproject.org/Fiqh-us-Sunnah.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=500&q=80",
+            "description": "Modern classic simplified jurisprudence work grounded directly in authentic Quran and Sunnah proofs.",
+            "pages_count": 1500,
+            "language": "Arabic / English",
+            "category": cat_lectures
+        },
+        {
+            "title": "Summarized Sahih Al-Bukhari (Single Volume)",
+            "author": "Dr. Muhammad Muhsin Khan",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Summarized-Bukhari.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80",
+            "description": "Condensed single-volume edition of Sahih Al-Bukhari with Arabic text and English translation side-by-side.",
+            "pages_count": 1050,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Summarized Sahih Muslim (Single Volume)",
+            "author": "Imam Al-Mundhiri",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Summarized-Muslim.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "Abridged compilation of Sahih Muslim removing repeated chains while retaining core Hadith texts.",
+            "pages_count": 980,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "40 Hadith Nawawi (Arabic / English / Urdu)",
+            "author": "Imam Yahya ibn Sharaf al-Nawawi",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/40-Hadith-Nawawi.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80",
+            "description": "The famous 42 essential Hadiths encapsulating the fundamental principles of Islamic faith and practice.",
+            "pages_count": 120,
+            "language": "Arabic / English / Urdu",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "40 Hadith Qudsi (Divine Sayings of Allah)",
+            "author": "Ezzeddin Ibrahim & Denys Johnson-Davies",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/40-Hadith-Qudsi.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80",
+            "description": "Forty sacred Hadiths in which the Prophet Muhammad ﷺ relates the Direct Words of Allah (SWT).",
+            "pages_count": 110,
+            "language": "Arabic / English",
+            "category": cat_hadith_cat
+        },
+        {
+            "title": "Quranic Arabic Grammar Workbook (Linguistic Analysis)",
+            "author": "Dr. Imran Al-Hashimi",
+            "file_type": "doc",
+            "pdf_url": "https://www.quranproject.org/Quranic-Arabic-Grammar.docx",
+            "cover_url": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=500&q=80",
+            "description": "Interactive Word Document workbook for studying Arabic Nahw (syntax) and Sarf (morphology).",
+            "pages_count": 175,
+            "language": "English / Arabic",
+            "category": cat_recitation
+        },
+        {
+            "title": "Tajweed Rules for Beginners (Color-Coded Learning)",
+            "author": "Ustadha Kareema Czerepinski",
+            "file_type": "ppt",
+            "pdf_url": "https://www.quranproject.org/Tajweed-Beginners-Presentation.pptx",
+            "cover_url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=500&q=80",
+            "description": "Color-coded PowerPoint presentation illustrating Ghunna, Madd, Ikhfa, and Qalqalah rules.",
+            "pages_count": 85,
+            "language": "English",
+            "category": cat_recitation
+        },
+        {
+            "title": "Comprehensive Islamic Supplications & Ruqyah Handbook",
+            "author": "Sheikh Majed Ash-Shammari",
+            "file_type": "pdf",
+            "pdf_url": "https://www.quranproject.org/Islamic-Ruqyah-Handbook.pdf",
+            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80",
+            "description": "Complete collection of authentic Quranic verses and Prophetic Ruqyah for healing and spiritual protection.",
+            "pages_count": 210,
+            "language": "Arabic / English / Urdu",
             "category": cat_hadith_cat
         }
     ]
