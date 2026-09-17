@@ -4,6 +4,7 @@ import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adm
 import { getFormattedHijriDate } from '../utils/hijriDate';
 import { useLanguage } from '../context/LanguageContext';
 import AdminUploadModal from '../components/AdminUploadModal';
+import Pagination from '../components/Pagination';
 import { ALL_114_SURAHS } from '../data/quran_data';
 
 const QARIS = [
@@ -143,6 +144,18 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const [selectedQari, setSelectedQari] = useState('alafasy');
   const [quranQuery, setQuranQuery] = useState('');
   const [quranPage, setQuranPage] = useState(1);
+
+  // Pagination states for audio sections
+  const [tarjumaPage, setTarjumaPage] = useState(1);
+  const [taqreerPage, setTaqreerPage] = useState(1);
+  const [categoryPage, setCategoryPage] = useState(1);
+
+  useEffect(() => {
+    setQuranPage(1);
+    setTarjumaPage(1);
+    setTaqreerPage(1);
+    setCategoryPage(1);
+  }, [subCategory]);
 
   // Translation Audio MP3 List (Brahui & Urdu uploads from DB)
   const [translationAudios, setTranslationAudios] = useState([]);
@@ -720,17 +733,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           )}
 
           {/* Quran Pagination */}
-          {totalQuranPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2rem 0' }}>
-              <button className="btn-play" disabled={quranPage <= 1} onClick={() => setQuranPage(quranPage - 1)} style={{ opacity: quranPage <= 1 ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
-                <i className="fas fa-chevron-left"></i> Previous
-              </button>
-              <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Page {quranPage} of {totalQuranPages}</span>
-              <button className="btn-play" disabled={quranPage >= totalQuranPages} onClick={() => setQuranPage(quranPage + 1)} style={{ opacity: quranPage >= totalQuranPages ? 0.5 : 1, padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
-                Next <i className="fas fa-chevron-right"></i>
-              </button>
-            </div>
-          )}
+          <Pagination
+            currentPage={quranPage}
+            totalItems={filteredSurahs.length}
+            itemsPerPage={12}
+            onPageChange={(p) => setQuranPage(p)}
+          />
         </div>
       )}
 
@@ -793,97 +801,112 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 </button>
               )}
             </div>
-          ) : (
-            <div className="grid-3">
-              {translationAudios.filter(a => {
-                if (!a) return false;
-                const q = (quranQuery || '').trim().toLowerCase();
-                if (!q) return true;
-                const eng = (a.surah_name_english || a.title || '').toLowerCase();
-                const arab = (a.surah_name_arabic || '').toLowerCase();
-                const reciter = (a.reciter || '').toLowerCase();
-                const num = (a.surah_number || '').toString();
-                return eng.includes(q) || arab.includes(q) || reciter.includes(q) || num.includes(q);
-              }).map((audio) => (
-                <div key={audio.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
-                  <div>
-                    <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>MP3</span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '3px 10px', borderRadius: '14px', border: '1px solid #fcd34d' }}>
-                        {audio.language ? (audio.language.charAt(0).toUpperCase() + audio.language.slice(1) + ' Tarjuma') : (subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma')}
-                      </span>
-                    </div>
-                    <div className="card-body" style={{ padding: 0 }}>
-                      <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
-                        {audio.title || audio.surah_name_english || 'Translation Audio'}
-                      </h3>
-                      {audio.surah_name_arabic && (
-                        <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
-                      )}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
-                          <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
-                          {audio.reciter || 'Qari / Scholar'}
-                        </p>
-                        {audio.tarjuma_qari && (
-                          <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: '0.2rem 0 0 0' }}>
-                            <i className="fas fa-microphone-alt" style={{ marginRight: '0.3rem', color: '#b45309' }}></i>
-                            Tarjuma by: {audio.tarjuma_qari}
-                          </p>
-                        )}
-                        {audio.duration && (
-                          <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
-                            <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
+          ) : (() => {
+            const filtered = translationAudios.filter(a => {
+              if (!a) return false;
+              const q = (quranQuery || '').trim().toLowerCase();
+              if (!q) return true;
+              const eng = (a.surah_name_english || a.title || '').toLowerCase();
+              const arab = (a.surah_name_arabic || '').toLowerCase();
+              const reciter = (a.reciter || '').toLowerCase();
+              const num = (a.surah_number || '').toString();
+              return eng.includes(q) || arab.includes(q) || reciter.includes(q) || num.includes(q);
+            });
+            const itemsPerPage = 9;
+            const paginated = filtered.slice((tarjumaPage - 1) * itemsPerPage, tarjumaPage * itemsPerPage);
+
+            return (
+              <>
+                <div className="grid-3">
+                  {paginated.map((audio) => (
+                    <div key={audio.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.1rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
+                      <div>
+                        <div className="card-header-badge" style={{ marginBottom: '0.65rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}>MP3</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '3px 10px', borderRadius: '14px', border: '1px solid #fcd34d' }}>
+                            {audio.language ? (audio.language.charAt(0).toUpperCase() + audio.language.slice(1) + ' Tarjuma') : (subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma')}
                           </span>
+                        </div>
+                        <div className="card-body" style={{ padding: 0 }}>
+                          <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>
+                            {audio.title || audio.surah_name_english || 'Translation Audio'}
+                          </h3>
+                          {audio.surah_name_arabic && (
+                            <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
+                          )}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
+                              <i className="fas fa-bullhorn" style={{ marginRight: '0.3rem', color: 'var(--accent-gold)' }}></i>
+                              {audio.reciter || 'Qari / Scholar'}
+                            </p>
+                            {audio.tarjuma_qari && (
+                              <p className="card-subtitle" style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: '0.2rem 0 0 0' }}>
+                                <i className="fas fa-microphone-alt" style={{ marginRight: '0.3rem', color: '#b45309' }}></i>
+                                Tarjuma by: {audio.tarjuma_qari}
+                              </p>
+                            )}
+                            {audio.duration && (
+                              <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                                <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {audio.duration}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Buttons Bar */}
+                      <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', background: 'transparent', borderTop: '1.5px solid #f0edf6', paddingTop: '0.65rem' }}>
+                        <button
+                          className="btn-play"
+                          style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
+                          onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter)}
+                        >
+                          <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> {t('playTarjumaMp3', 'Play Tarjuma MP3')}
+                        </button>
+
+                        <button
+                          className="btn-play"
+                          title="Download Tarjuma MP3"
+                          onClick={() => handleDownloadMp3(`Audio_${audio.id}`, audio.audio_url)}
+                          style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px' }}
+                        >
+                          <i className="fas fa-download"></i>
+                        </button>
+
+                        {(user?.is_staff || user?.is_superuser) && (
+                          <>
+                            <button
+                              className="btn-play"
+                              onClick={() => openUploadModal(audio, 'quran')}
+                              style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                              title="Edit Audio Track"
+                            >
+                              <i className="fas fa-edit"></i>
+                            </button>
+                            <button
+                              className="btn-play"
+                              onClick={() => handleDeleteAudio(audio.id, 'quran', audio.title || audio.surah_name_english)}
+                              style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                              title="Delete Audio Track"
+                            >
+                              <i className="fas fa-trash-alt"></i>
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
-                  </div>
-
-                  {/* Buttons Bar */}
-                  <div className="card-footer" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', background: 'transparent', borderTop: '1.5px solid #f0edf6', paddingTop: '0.65rem' }}>
-                    <button
-                      className="btn-play"
-                      style={{ flex: 1, justifyContent: 'center', padding: '0.5rem 0.75rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-                      onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter)}
-                    >
-                      <i className="fas fa-play" style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}></i> {t('playTarjumaMp3', 'Play Tarjuma MP3')}
-                    </button>
-
-                    <button
-                      className="btn-play"
-                      title="Download Tarjuma MP3"
-                      onClick={() => handleDownloadMp3(`Audio_${audio.id}`, audio.audio_url)}
-                      style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px' }}
-                    >
-                      <i className="fas fa-download"></i>
-                    </button>
-
-                    {(user?.is_staff || user?.is_superuser) && (
-                      <>
-                        <button
-                          className="btn-play"
-                          onClick={() => openUploadModal(audio, 'quran')}
-                          style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
-                          title="Edit Audio Track"
-                        >
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button
-                          className="btn-play"
-                          onClick={() => handleDeleteAudio(audio.id, 'quran', audio.title || audio.surah_name_english)}
-                          style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.75rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
-                          title="Delete Audio Track"
-                        >
-                          <i className="fas fa-trash-alt"></i>
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+
+                <Pagination
+                  currentPage={tarjumaPage}
+                  totalItems={filtered.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={(p) => setTarjumaPage(p)}
+                />
+              </>
+            );
+          })()}
         </div>
       )}
 
@@ -936,81 +959,94 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               <h3 style={{ color: 'var(--accent-gold)' }}>No MP3 Taqreer audio found</h3>
               <p style={{ color: '#44403c' }}>Use the Admin Upload section to add Taqreers in this language category!</p>
             </div>
-          ) : (
-            <div className="grid-2">
-              {activeTaqreers.map((tq) => (
-                <div key={tq.id || tq.title} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.2rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#022c22', background: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>
-                        <i className="fas fa-globe" style={{ marginRight: '0.3rem' }}></i> {tq.language} Taqreer
-                      </span>
-                      <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
-                        <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {tq.duration || '00:00'}
-                      </span>
+          ) : (() => {
+            const itemsPerPage = 8;
+            const paginated = activeTaqreers.slice((taqreerPage - 1) * itemsPerPage, taqreerPage * itemsPerPage);
+
+            return (
+              <>
+                <div className="grid-2">
+                  {paginated.map((tq) => (
+                    <div key={tq.id || tq.title} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.2rem', background: '#ffffff', color: '#1c1917', border: '1.5px solid #e7e5e4', borderRadius: '18px' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#022c22', background: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '12px' }}>
+                            <i className="fas fa-globe" style={{ marginRight: '0.3rem' }}></i> {tq.language} Taqreer
+                          </span>
+                          <span style={{ fontSize: '0.78rem', color: '#78716c', fontWeight: 600 }}>
+                            <i className="far fa-clock" style={{ color: 'var(--accent-gold)' }}></i> {tq.duration || '00:00'}
+                          </span>
+                        </div>
+
+                        <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>{tq.title}</h3>
+                        {tq.arabic_title && (
+                          <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title}</p>
+                        )}
+                        <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
+                          <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}
+                        </p>
+                        {tq.tarjuma_qari && (
+                          <p style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: '0 0 0.5rem 0' }}>
+                            <i className="fas fa-microphone-alt" style={{ marginRight: '0.3rem', color: '#b45309' }}></i>
+                            Co-Speaker / Qari: {tq.tarjuma_qari}
+                          </p>
+                        )}
+                        <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: '1.5' }}>{tq.description}</p>
+                      </div>
+
+                      {/* Compact Buttons */}
+                      <div className="card-footer" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', background: 'transparent', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                        <button
+                          className="btn-play"
+                          style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
+                          onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
+                        >
+                          <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> {t('playTaqreer', 'Play Taqreer')}
+                        </button>
+
+                        <button
+                          className="btn-play"
+                          title="Download MP3"
+                          onClick={() => handleDownloadMp3(tq.title, tq.audio_url)}
+                          style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px' }}
+                        >
+                          <i className="fas fa-download"></i> Download
+                        </button>
+
+                        {(user?.is_staff || user?.is_superuser || tq.addedByAdmin) && (
+                          <>
+                            <button
+                              className="btn-play"
+                              onClick={() => openUploadModal(tq, 'audio')}
+                              style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                              title="Edit Audio as Admin"
+                            >
+                              <i className="fas fa-edit"></i> Edit
+                            </button>
+                            <button
+                              className="btn-play"
+                              onClick={() => deleteContentItem(tq.id, 'audio')}
+                              style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
+                              title="Delete Audio as Admin"
+                            >
+                              <i className="fas fa-trash"></i> Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
-
-                    <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>{tq.title}</h3>
-                    {tq.arabic_title && (
-                      <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title}</p>
-                    )}
-                    <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
-                      <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}
-                    </p>
-                    {tq.tarjuma_qari && (
-                      <p style={{ fontSize: '0.8rem', color: '#78716c', fontWeight: 600, margin: '0 0 0.5rem 0' }}>
-                        <i className="fas fa-microphone-alt" style={{ marginRight: '0.3rem', color: '#b45309' }}></i>
-                        Co-Speaker / Qari: {tq.tarjuma_qari}
-                      </p>
-                    )}
-                    <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: '1.5' }}>{tq.description}</p>
-                  </div>
-
-                  {/* Compact Buttons */}
-                  <div className="card-footer" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', background: 'transparent', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <button
-                      className="btn-play"
-                      style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
-                      onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
-
-                    >
-                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> {t('playTaqreer', 'Play Taqreer')}
-                    </button>
-
-                    <button
-                      className="btn-play"
-                      title="Download MP3"
-                      onClick={() => handleDownloadMp3(tq.title, tq.audio_url)}
-                      style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px' }}
-                    >
-                      <i className="fas fa-download"></i> Download
-                    </button>
-
-                    {(user?.is_staff || user?.is_superuser || tq.addedByAdmin) && (
-                      <>
-                        <button
-                          className="btn-play"
-                          onClick={() => openUploadModal(tq, 'audio')}
-                          style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
-                          title="Edit Audio as Admin"
-                        >
-                          <i className="fas fa-edit"></i> Edit
-                        </button>
-                        <button
-                          className="btn-play"
-                          onClick={() => deleteContentItem(tq.id, 'audio')}
-                          style={{ background: '#dc2626', borderColor: '#dc2626', color: '#ffffff', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', fontWeight: 700 }}
-                          title="Delete Audio as Admin"
-                        >
-                          <i className="fas fa-trash"></i> Delete
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+
+                <Pagination
+                  currentPage={taqreerPage}
+                  totalItems={activeTaqreers.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={(p) => setTaqreerPage(p)}
+                />
+              </>
+            );
+          })()}
         </div>
       )}
 

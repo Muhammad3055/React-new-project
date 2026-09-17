@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import Pagination from '../components/Pagination';
 
 export default function DuasView({ playTrack, user }) {
   const { lang, t } = useLanguage();
@@ -7,6 +8,11 @@ export default function DuasView({ playTrack, user }) {
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [bookmarkedIds, setBookmarkedIds] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, search]);
 
   const categories = [
     { id: 'all', label: 'All Du\'as', icon: 'fas fa-hands' },
@@ -409,8 +415,14 @@ export default function DuasView({ playTrack, user }) {
       </div>
 
       {/* Du'as List */}
-      <div style={{ display: 'grid', gap: '1.5rem', maxWidth: '880px', margin: '0 auto' }}>
-        {filteredDuas.map((item) => (
+      {(() => {
+        const itemsPerPage = 8;
+        const paginatedDuas = filteredDuas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+        return (
+          <>
+            <div style={{ display: 'grid', gap: '1.5rem', maxWidth: '880px', margin: '0 auto' }}>
+              {paginatedDuas.map((item) => (
           <div
             key={item.id}
             className="card"
@@ -542,7 +554,17 @@ export default function DuasView({ playTrack, user }) {
             <p>No supplications found matching your search term.</p>
           </div>
         )}
-      </div>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalItems={filteredDuas.length}
+              itemsPerPage={8}
+              onPageChange={(p) => setCurrentPage(p)}
+            />
+          </>
+        );
+      })()}
     </div>
   );
 }
