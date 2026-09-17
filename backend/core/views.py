@@ -187,7 +187,9 @@ def api_videos_list(request):
     if category_id:
         videos = videos.filter(category_id=category_id)
 
-    paginator = Paginator(videos, 25)
+    page_size_param = request.GET.get('page_size')
+    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 500
+    paginator = Paginator(videos, page_size)
     page_obj = paginator.get_page(page_number)
 
     data = []
@@ -266,7 +268,9 @@ def api_taqreer_list(request):
     if category_id:
         taqreers = taqreers.filter(category_id=category_id)
 
-    paginator = Paginator(taqreers, 25)
+    page_size_param = request.GET.get('page_size')
+    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 500
+    paginator = Paginator(taqreers, page_size)
     page_obj = paginator.get_page(page_number)
 
     data = []
@@ -392,7 +396,9 @@ def api_books_list(request):
         if lang_matches:
             books = books.filter(language__in=list(lang_matches))
 
-    paginator = Paginator(books, 25)
+    page_size_param = request.GET.get('page_size')
+    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 500
+    paginator = Paginator(books, page_size)
     page_obj = paginator.get_page(page_number)
 
     data = []
@@ -458,7 +464,9 @@ def api_tafseer_list(request):
         tafseers = tafseers.filter(surah_number=surah_num)
 
     surah_list = list(Tafseer.objects.values('surah_number', 'surah_name').distinct().order_by('surah_number'))
-    paginator = Paginator(tafseers, 25)
+    page_size_param = request.GET.get('page_size')
+    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 500
+    paginator = Paginator(tafseers, page_size)
     page_obj = paginator.get_page(page_number)
 
     data = []
@@ -521,7 +529,9 @@ def api_hadith_list(request):
         hadiths = hadiths.filter(grade__icontains=grade_filter)
 
     books_list = [b[0] for b in Hadith.BOOK_CHOICES]
-    paginator = Paginator(hadiths, 25)
+    page_size_param = request.GET.get('page_size')
+    page_size = int(page_size_param) if page_size_param and page_size_param.isdigit() else 500
+    paginator = Paginator(hadiths, page_size)
     page_obj = paginator.get_page(page_number)
 
     data = []

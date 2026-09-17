@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { deleteContentItem } from '../utils/adminContentStore';
 import { createPortal } from 'react-dom';
+import Pagination from '../components/Pagination';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -169,18 +170,12 @@ export default function ImagesView({ user }) {
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '3rem 0' }}>
-          <button disabled={page <= 1} onClick={() => setPage(page - 1)} style={{ padding: '0.5rem 1rem', borderRadius: '50px', border: '1px solid #e2e8f0', background: '#fff', cursor: page <= 1 ? 'not-allowed' : 'pointer', opacity: page <= 1 ? 0.5 : 1 }}>
-            <i className="fas fa-chevron-left"></i> Prev
-          </button>
-          <span style={{ fontWeight: 600, color: '#64748b' }}>Page {page} of {totalPages}</span>
-          <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} style={{ padding: '0.5rem 1rem', borderRadius: '50px', border: '1px solid #e2e8f0', background: '#fff', cursor: page >= totalPages ? 'not-allowed' : 'pointer', opacity: page >= totalPages ? 0.5 : 1 }}>
-            Next <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={page}
+        totalItems={images.length}
+        itemsPerPage={9}
+        onPageChange={(p) => setPage(p)}
+      />
 
       {/* Fullscreen Preview Modal */}
       {previewImage && createPortal(

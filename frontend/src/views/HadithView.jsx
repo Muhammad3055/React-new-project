@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
+import Pagination from '../components/Pagination';
 
 export default function HadithView({ openReportModal, user }) {
   const [hadiths, setHadiths] = useState([]);
@@ -279,17 +280,12 @@ export default function HadithView({ openReportModal, user }) {
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2.5rem 0' }}>
-          <button className="btn-play" disabled={page <= 1} onClick={() => setPage(page - 1)} style={{ opacity: page <= 1 ? 0.5 : 1 }}>
-            <i className="fas fa-chevron-left"></i> Previous
-          </button>
-          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>Page {page} of {totalPages}</span>
-          <button className="btn-play" disabled={page >= totalPages} onClick={() => setPage(page + 1)} style={{ opacity: page >= totalPages ? 0.5 : 1 }}>
-            Next <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={page}
+        totalItems={hadiths.length}
+        itemsPerPage={9}
+        onPageChange={(p) => setPage(p)}
+      />
     </div>
   );
 }
