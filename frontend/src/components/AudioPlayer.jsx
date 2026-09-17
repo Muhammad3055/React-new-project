@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, setCurrentTrack }) {
   const audioRef = useRef(null);
@@ -11,7 +12,8 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
   useEffect(() => {
     if (audioRef.current) {
       if (currentTrack) {
-        const audioUrl = typeof currentTrack === 'string' ? currentTrack : currentTrack.url;
+        const rawAudioUrl = typeof currentTrack === 'string' ? currentTrack : (currentTrack.url || currentTrack.audio_url);
+        const audioUrl = getApiUrl(rawAudioUrl);
         audioRef.current.src = audioUrl;
         audioRef.current.playbackRate = playbackRate;
         if (isPlaying) {

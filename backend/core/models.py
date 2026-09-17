@@ -65,6 +65,28 @@ class QuranAudio(models.Model):
         return self.audio_url or "#"
 
     def save(self, *args, **kwargs):
+        if self.audio_file and self.audio_file.name:
+            import os, re
+            name = self.audio_file.name
+            dir_name, base_name = os.path.split(name)
+            try:
+                base_name.encode('ascii')
+            except UnicodeEncodeError:
+                name_part, ext_part = os.path.splitext(base_name)
+                clean_name = re.sub(r'[^a-zA-Z0-9_-]', '_', name_part).strip('_')
+                if not clean_name:
+                    clean_name = 'audio_file'
+                new_base = f"{clean_name}{ext_part.lower()}"
+                if hasattr(self.audio_file, 'path') and os.path.exists(self.audio_file.path):
+                    old_path = self.audio_file.path
+                    new_full = os.path.join(os.path.dirname(old_path), new_base)
+                    if old_path != new_full and not os.path.exists(new_full):
+                        try:
+                            os.rename(old_path, new_full)
+                        except Exception:
+                            pass
+                self.audio_file.name = os.path.join(dir_name, new_base).replace('\\', '/')
+
         super().save(*args, **kwargs)
         if self.audio_file and (not self.duration or self.duration == "00:00" or self.duration == "15:00"):
             try:
@@ -115,6 +137,28 @@ class TaqreerAudio(models.Model):
         return self.audio_url or "#"
 
     def save(self, *args, **kwargs):
+        if self.audio_file and self.audio_file.name:
+            import os, re
+            name = self.audio_file.name
+            dir_name, base_name = os.path.split(name)
+            try:
+                base_name.encode('ascii')
+            except UnicodeEncodeError:
+                name_part, ext_part = os.path.splitext(base_name)
+                clean_name = re.sub(r'[^a-zA-Z0-9_-]', '_', name_part).strip('_')
+                if not clean_name:
+                    clean_name = 'taqreer_file'
+                new_base = f"{clean_name}{ext_part.lower()}"
+                if hasattr(self.audio_file, 'path') and os.path.exists(self.audio_file.path):
+                    old_path = self.audio_file.path
+                    new_full = os.path.join(os.path.dirname(old_path), new_base)
+                    if old_path != new_full and not os.path.exists(new_full):
+                        try:
+                            os.rename(old_path, new_full)
+                        except Exception:
+                            pass
+                self.audio_file.name = os.path.join(dir_name, new_base).replace('\\', '/')
+
         super().save(*args, **kwargs)
         if self.audio_file and (not self.duration or self.duration == "00:00" or self.duration == "15:00"):
             try:

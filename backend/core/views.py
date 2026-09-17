@@ -53,7 +53,7 @@ def api_quran_list(request):
             body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
             audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
             category_id_raw = body.get('category_id')
-            category_id = int(category_id_raw) if category_id_raw else None
+            category_id = int(category_id_raw) if (category_id_raw and str(category_id_raw).isdigit()) else None
 
             qa = QuranAudio.objects.create(
                 surah_number=int(body.get('surah_number', 1)),
@@ -247,7 +247,7 @@ def api_taqreer_list(request):
             audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
             
             category_id_raw = body.get('category_id')
-            category_id = int(category_id_raw) if category_id_raw else None
+            category_id = int(category_id_raw) if (category_id_raw and str(category_id_raw).isdigit()) else None
 
             tq = TaqreerAudio.objects.create(
                 title=body.get('title', 'Untitled Audio'),
@@ -1883,6 +1883,8 @@ def api_admin_edit_content(request):
                     if 'title' in body: tq.title = body.get('title')
                     if 'arabic_title' in body: tq.arabic_title = body.get('arabic_title')
                     if 'speaker' in body or 'author' in body: tq.speaker = body.get('speaker') or body.get('author')
+                    if 'tarjuma_qari' in body: tq.tarjuma_qari = body.get('tarjuma_qari')
+                    if 'destination' in body: tq.destination_folder = body.get('destination')
                     if 'language' in body:
                         lang = body.get('language')
                         lang_normalized_map = {'brahui': 'brahui', 'br': 'brahui', 'urdu': 'urdu', 'ur': 'urdu', 'arabic': 'arabic', 'ar': 'arabic'}
@@ -1912,8 +1914,16 @@ def api_admin_edit_content(request):
                 if qa:
                     if 'title' in body or 'surah_name_english' in body:
                         qa.surah_name_english = body.get('title') or body.get('surah_name_english')
+                    if 'arabic_title' in body or 'surah_name_arabic' in body:
+                        qa.surah_name_arabic = body.get('arabic_title') or body.get('surah_name_arabic')
                     if 'speaker' in body or 'reciter' in body or 'author' in body:
                         qa.reciter = body.get('speaker') or body.get('reciter') or body.get('author')
+                    if 'tarjuma_qari' in body:
+                        qa.tarjuma_qari = body.get('tarjuma_qari')
+                    if 'surah_number' in body and str(body.get('surah_number')).isdigit():
+                        qa.surah_number = int(body.get('surah_number'))
+                    if 'destination' in body:
+                        qa.destination_folder = body.get('destination')
                     if 'language' in body:
                         lang = body.get('language')
                         lang_normalized_map = {'brahui': 'brahui', 'br': 'brahui', 'urdu': 'urdu', 'ur': 'urdu', 'arabic': 'arabic', 'ar': 'arabic'}
@@ -1921,6 +1931,18 @@ def api_admin_edit_content(request):
                     if 'duration' in body: qa.duration = body.get('duration')
                     if 'audio_url' in body: qa.audio_url = body.get('audio_url')
                     if file_obj: qa.audio_file = file_obj
+                    
+                    cat_id = body.get('category_id') or body.get('category')
+                    if cat_id is not None:
+                        if not cat_id or str(cat_id).strip() == '':
+                            qa.category = None
+                        elif str(cat_id).isdigit():
+                            qa.category = Category.objects.filter(id=int(cat_id)).first()
+                        else:
+                            from django.utils.text import slugify
+                            cat_obj, _ = Category.objects.get_or_create(name=cat_id, defaults={'slug': slugify(cat_id)})
+                            qa.category = cat_obj
+
                     qa.save()
                     return JsonResponse({'status': 'success', 'message': 'Quran Audio updated successfully!', 'audio_url': qa.get_playable_url()})
 
