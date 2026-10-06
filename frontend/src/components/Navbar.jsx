@@ -32,26 +32,26 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const extraMenuItems = [
     { label: t('mp3Audio'), icon: 'fas fa-headphones', action: () => { navigateToTab('quran'); setShowExtrasMenu(false); setMobileActive(false); } },
-    { label: '💰 Zakat Calculator', icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
-    { label: '🕋 Hajj & Umrah Guide', icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },
-    { label: '📖 Tajweed & Makharij', icon: 'fas fa-book-reader', action: () => { navigateToTab('tajweed'); setShowExtrasMenu(false); } },
-    { label: '👶 Islamic Baby Names', icon: 'fas fa-signature', action: () => { navigateToTab('names'); setShowExtrasMenu(false); } },
-    { label: '⚖️ Mirath Inheritance', icon: 'fas fa-balance-scale', action: () => { navigateToTab('inheritance'); setShowExtrasMenu(false); } },
-    { label: '🌙 Ramadan Hub & Tracker', icon: 'fas fa-moon', action: () => { navigateToTab('ramadan'); setShowExtrasMenu(false); } },
-    { label: '🎨 Quote Card Creator', icon: 'fas fa-palette', action: () => { navigateToTab('cardCreator'); setShowExtrasMenu(false); } },
-    { label: '📺 24/7 Makkah & Madinah Live', icon: 'fas fa-broadcast-tower', action: () => { navigateToTab('live'); setShowExtrasMenu(false); } },
-    { label: '🌐 World Clock & Todo List', icon: 'fas fa-globe', action: () => { navigateToTab('worldClock'); setShowExtrasMenu(false); } },
-    { label: '🤲 Daily Reminders & Azkar', icon: 'fas fa-praying-hands', action: () => { navigateToTab('azkar'); setShowExtrasMenu(false); } },
+    { label: '💰 ' + t('zakatCalc', 'Zakat Calculator'), icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
+    { label: '🕋 ' + t('hajjUmrahGuide', 'Hajj & Umrah Guide'), icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },
+    { label: '📖 ' + t('tajweedMakharij', 'Tajweed & Makharij'), icon: 'fas fa-book-reader', action: () => { navigateToTab('tajweed'); setShowExtrasMenu(false); } },
+    { label: '👶 ' + t('babyNames', 'Islamic Baby Names'), icon: 'fas fa-signature', action: () => { navigateToTab('names'); setShowExtrasMenu(false); } },
+    { label: '⚖️ ' + t('mirathInheritance', 'Mirath Inheritance'), icon: 'fas fa-balance-scale', action: () => { navigateToTab('inheritance'); setShowExtrasMenu(false); } },
+    { label: '🌙 ' + t('ramadanHub', 'Ramadan Hub & Tracker'), icon: 'fas fa-moon', action: () => { navigateToTab('ramadan'); setShowExtrasMenu(false); } },
+    { label: '🎨 ' + t('quoteCardCreator', 'Quote Card Creator'), icon: 'fas fa-palette', action: () => { navigateToTab('cardCreator'); setShowExtrasMenu(false); } },
+    { label: '📺 ' + t('liveMakkahMadinah', '24/7 Makkah & Madinah Live'), icon: 'fas fa-broadcast-tower', action: () => { navigateToTab('live'); setShowExtrasMenu(false); } },
+    { label: '🌐 ' + t('worldClockTodo', 'World Clock & Todo List'), icon: 'fas fa-globe', action: () => { navigateToTab('worldClock'); setShowExtrasMenu(false); } },
+    { label: '🤲 ' + t('dailyRemindersAzkar', 'Daily Reminders & Azkar'), icon: 'fas fa-praying-hands', action: () => { navigateToTab('azkar'); setShowExtrasMenu(false); } },
 
-    { label: '🛡️ Daily Protection (Nazar)', icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
-    { label: '🧠 Daily Islamic Quiz', icon: 'fas fa-question-circle', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
-    { label: '📜 Seerah Timeline', icon: 'fas fa-history', action: () => { navigateToTab('seerah'); setShowExtrasMenu(false); } },
+    { label: '🛡️ ' + t('dailyProtection', 'Daily Protection (Nazar)'), icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
+    { label: '🧠 ' + t('dailyQuiz', 'Daily Islamic Quiz'), icon: 'fas fa-question-circle', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
+    { label: '📜 ' + t('seerahTimeline', 'Seerah Timeline'), icon: 'fas fa-history', action: () => { navigateToTab('seerah'); setShowExtrasMenu(false); } },
     { label: t('books'), icon: 'fas fa-file-pdf', action: () => { navigateToTab('books'); setShowExtrasMenu(false); } },
     { label: t('islamicImages'), icon: 'fas fa-image', action: () => { navigateToTab('images'); setShowExtrasMenu(false); } },
     { label: t('videoLectures'), icon: 'fas fa-video', action: () => { navigateToTab('videos'); setShowExtrasMenu(false); } },
     { label: t('islamicCalendar'), icon: 'fas fa-calendar-alt', action: () => { if (openCalendar) openCalendar(); setShowExtrasMenu(false); } },
-    { label: '🌟 Friday Jumu\'ah Special', icon: 'fas fa-sun', action: () => { if (openFriday) openFriday(); setShowExtrasMenu(false); } },
-    { label: '📅 Daily Surahs', icon: 'fas fa-calendar-day', action: () => { if (openDailySurahs) openDailySurahs(); setShowExtrasMenu(false); } },
+    { label: '🌟 ' + t('fridaySpecial', 'Friday Jumu\'ah Special'), icon: 'fas fa-sun', action: () => { if (openFriday) openFriday(); setShowExtrasMenu(false); } },
+    { label: '📅 ' + t('dailySurahs', 'Daily Surahs'), icon: 'fas fa-calendar-day', action: () => { if (openDailySurahs) openDailySurahs(); setShowExtrasMenu(false); } },
     { label: t('hifzTracker'), icon: 'fas fa-award', action: () => { if (openHifz) openHifz(); setShowExtrasMenu(false); } },
 
     { label: t('qibla'), icon: 'fas fa-compass', action: () => { navigateToTab('qibla'); setShowExtrasMenu(false); } },
@@ -70,7 +70,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
-    {id:'books',label:'Books',icon:'fa-solid fa-book'},
+    { id: 'books', label: t('books', 'Books'), icon: 'fa-solid fa-book' },
   ];
 
 
@@ -179,8 +179,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         letterSpacing: '0.2px'
       }}>
         <i className="fas fa-tools" style={{ fontSize: '0.82rem' }}></i>
-        <span>Website Under Development — Maktaba tul Muslim (مكتبة المسلم — زیرِ تعمیر)</span>
-        <span style={{ background: 'rgba(255,255,255,0.22)', padding: '1px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800 }}>In Development</span>
+        <span>{t('websiteUnderDev', 'Website Under Development — Maktaba tul Muslim')}</span>
+        <span style={{ background: 'rgba(255,255,255,0.22)', padding: '1px 8px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800 }}>{t('inDevelopment', 'In Development')}</span>
       </div>
 
       <header className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
@@ -209,8 +209,34 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           </div>
 
           {/* RIGHT: Controls group */}
-          {/* RIGHT: Controls group */}
-          <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end', gap: '0.8rem', alignItems: 'center' }}>
+          <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end', gap: '0.6rem', alignItems: 'center' }}>
+            {/* Desktop Language Switcher Selector */}
+            <div className="desktop-lang-selector desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                aria-label="Select Language"
+                style={{
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  color: 'var(--accent-gold)',
+                  border: '1.5px solid var(--accent-gold)',
+                  borderRadius: '20px',
+                  padding: '0.35rem 0.75rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <option value="en" style={{ background: '#022c22', color: '#ffffff' }}>🇬🇧 English</option>
+                <option value="ur" style={{ background: '#022c22', color: '#ffffff' }}>🇵🇰 اردو</option>
+                <option value="ar" style={{ background: '#022c22', color: '#ffffff' }}>🇸🇦 العربية</option>
+                <option value="br" style={{ background: '#022c22', color: '#ffffff' }}>🇵🇰 براہوئی</option>
+              </select>
+            </div>
+
             {/* Search (Desktop) */}
             <div className="search-wrapper desktop-only" style={{ position: 'relative' }}>
               <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>

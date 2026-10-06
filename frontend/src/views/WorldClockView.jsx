@@ -201,10 +201,10 @@ export default function WorldClockView() {
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Islamic World Clock &amp; Live Prayer Times
+            {t('worldClockTitle', 'Islamic World Clock & Live Prayer Times')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Track live local times, exact prayer schedules (Fajr, Dhuhr, Asr, Maghrib, Isha), and Hijri dates for any city and country in the world.
+            {t('worldClockDesc', 'Track live local times, exact prayer schedules (Fajr, Dhuhr, Asr, Maghrib, Isha), and Hijri dates for any city and country in the world.')}
           </p>
         </div>
 
@@ -218,7 +218,7 @@ export default function WorldClockView() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Navigation size={14} /> Your Detected Location
+                <Navigation size={14} /> {t('yourLocation', 'Your Detected Location')}
               </span>
               <h2 style={{ margin: '4px 0 0', fontSize: '1.8rem', fontWeight: 900, color: '#ffffff' }}>
                 {detectedLocation.city}, {detectedLocation.country}
@@ -237,12 +237,12 @@ export default function WorldClockView() {
           {detectedTimings && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.75rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
               {[
-                { name: 'Fajr', time: detectedTimings.Fajr },
-                { name: 'Sunrise', time: detectedTimings.Sunrise },
-                { name: 'Dhuhr', time: detectedTimings.Dhuhr },
-                { name: 'Asr', time: detectedTimings.Asr },
-                { name: 'Maghrib', time: detectedTimings.Maghrib },
-                { name: 'Isha', time: detectedTimings.Isha }
+                { name: t('fajr', 'Fajr'), time: detectedTimings.Fajr },
+                { name: t('sunrise', 'Sunrise'), time: detectedTimings.Sunrise },
+                { name: t('dhuhr', 'Dhuhr'), time: detectedTimings.Dhuhr },
+                { name: t('asr', 'Asr'), time: detectedTimings.Asr },
+                { name: t('maghrib', 'Maghrib'), time: detectedTimings.Maghrib },
+                { name: t('isha', 'Isha'), time: detectedTimings.Isha }
               ].map(p => (
                 <div key={p.name} style={{ background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '14px', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.75rem', color: '#a7f3d0', fontWeight: 800 }}>{p.name}</div>
@@ -256,19 +256,19 @@ export default function WorldClockView() {
         {/* ── Add Custom City Form ── */}
         <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', marginBottom: '2.5rem' }}>
           <h3 style={{ margin: '0 0 1rem', fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Plus size={18} style={{ color: '#059669' }} /> Add Any World City &amp; Country
+            <Plus size={18} style={{ color: '#059669' }} /> {t('addCity', 'Add Any World City & Country')}
           </h3>
           <form onSubmit={handleAddCustomCity} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <input
               type="text"
-              placeholder="City Name (e.g. Quetta, Karachi, Istanbul)..."
+              placeholder={t('searchCityCountry', 'City Name (e.g. Quetta, Karachi, Istanbul)...')}
               value={searchCityInput}
               onChange={e => setSearchCityInput(e.target.value)}
               style={{ flex: 1, minWidth: '180px', padding: '0.65rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', outline: 'none', fontSize: '0.9rem' }}
             />
             <input
               type="text"
-              placeholder="Country Name (e.g. Pakistan, Turkey)..."
+              placeholder={t('searchCityCountry', 'Country Name (e.g. Pakistan, Turkey)...')}
               value={searchCountryInput}
               onChange={e => setSearchCountryInput(e.target.value)}
               style={{ flex: 1, minWidth: '180px', padding: '0.65rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', outline: 'none', fontSize: '0.9rem' }}
@@ -281,7 +281,7 @@ export default function WorldClockView() {
                 border: 'none', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem'
               }}
             >
-              {isAdding ? 'Fetching API...' : '+ Fetch & Save City'}
+              {isAdding ? 'Fetching API...' : '+ ' + t('addCity', 'Fetch & Save City')}
             </button>
           </form>
         </div>
@@ -289,7 +289,7 @@ export default function WorldClockView() {
         {/* ── Saved Favorite Cities Cards Grid ── */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>My Saved World Cities ({savedCities.length})</h2>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{t('savedCities', 'My Saved World Cities')} ({savedCities.length})</h2>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>

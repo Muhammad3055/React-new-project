@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DailyReminderBanner({ timings, navigateToTab }) {
+  const { t } = useLanguage();
   const [activeReminders, setActiveReminders] = useState([]);
 
   useEffect(() => {
@@ -13,7 +15,6 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
 
       const parseTime = (timeStr) => {
         if (!timeStr) return null;
-        // timeStr usually looks like "05:30 (PKT)" or "05:30"
         const cleanTime = timeStr.split(' ')[0];
         const [hours, minutes] = cleanTime.split(':').map(Number);
         const d = new Date(now);
@@ -35,8 +36,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
           active.push({
             id: 'ishraq',
             type: 'prayer',
-            title: '☀️ Ishraq Prayer Reminder',
-            message: 'It is time for Ishraq prayer (2 Rakaat). Recite its Azkar and earn the reward of a complete Hajj and Umrah!',
+            title: t('ishraqTitle', '☀️ Ishraq Prayer Reminder'),
+            message: t('ishraqMsg', 'It is time for Ishraq prayer (2 Rakaat). Recite its Azkar and earn great reward!'),
             linkTab: 'azkar'
           });
         }
@@ -54,8 +55,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
             active.push({
               id: `azkar_${prayer.name}`,
               type: 'prayer',
-              title: `🤲 Post-${prayer.name} Azkar`,
-              message: `Don't forget to recite your daily Azkar after ${prayer.name} prayer.`,
+              title: t('postPrayerAzkar', '🤲 Post-Prayer Azkar'),
+              message: t('postPrayerMsg', 'Don\'t forget to recite your daily Azkar after prayer.'),
               linkTab: 'azkar'
             });
           }
@@ -70,8 +71,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
           active.push({
             id: 'azkar_maghrib',
             type: 'prayer',
-            title: '🤲 Post-Maghrib Azkar',
-            message: 'Don\'t forget to recite your daily Azkar after Maghrib prayer.',
+            title: t('postPrayerAzkar', '🤲 Post-Prayer Azkar'),
+            message: t('postPrayerMsg', 'Don\'t forget to recite your daily Azkar after prayer.'),
             linkTab: 'azkar'
           });
         }
@@ -85,8 +86,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
           active.push({
             id: 'azkar_asr',
             type: 'prayer',
-            title: '🤲 Post-Asr Azkar',
-            message: 'Don\'t forget to recite your daily Azkar after Asr prayer.',
+            title: t('postPrayerAzkar', '🤲 Post-Prayer Azkar'),
+            message: t('postPrayerMsg', 'Don\'t forget to recite your daily Azkar after prayer.'),
             linkTab: 'azkar'
           });
         }
@@ -99,8 +100,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
           active.push({
             id: 'dua_asr_maghrib',
             type: 'dua',
-            title: '🌅 Golden Hour (Asr to Maghrib)',
-            message: 'This is a blessed time before Maghrib. Read the recommended Duas.',
+            title: t('goldenHourTitle', '🌅 Golden Hour (Asr to Maghrib)'),
+            message: t('goldenHourMsg', 'This is a blessed time before Maghrib. Read the recommended Duas.'),
             arabic: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ',
             translation: 'O Ever-Living One, O Sustainer of all that exists, by Your mercy I seek assistance. Rectify all my affairs and do not entrust me to myself for even the blink of an eye.',
             urdu: 'اے ہمیشہ زندہ رہنے والے، اے سب کو قائم رکھنے والے! میں تیری رحمت کے وسیلے سے فریاد کرتا ہوں، میرے تمام کام درست فرما دے اور مجھے پلک جھپکنے کے برابر بھی میرے نفس کے حوالے نہ کر۔',
@@ -117,8 +118,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
           active.push({
             id: 'surah_kahf',
             type: 'quran',
-            title: '📖 Friday Reminder: Surah Al-Kahf',
-            message: 'Don\'t forget to read Surah Al-Kahf before Jumu\'ah prayer for light that shines between the two Fridays.',
+            title: t('fridayKahfTitle', '📖 Friday Reminder: Surah Al-Kahf'),
+            message: t('fridayKahfMsg', 'Don\'t forget to read Surah Al-Kahf before Jumu\'ah prayer.'),
             linkTab: 'azkar'
           });
         }
@@ -128,16 +129,15 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
     };
 
     checkReminders();
-    const interval = setInterval(checkReminders, 60000); // Check every minute
+    const interval = setInterval(checkReminders, 60000);
     return () => clearInterval(interval);
-  }, [timings]);
+  }, [timings, t]);
 
-  // Fallback dua to ensure something is completely visible on the home page when no specific time-based reminder is active
   const displayReminders = activeReminders.length > 0 ? activeReminders : [{
     id: 'default_dua',
     type: 'dua',
-    title: '🤲 Daily Supplication',
-    message: 'Keep your tongue moist with the remembrance of Allah.',
+    title: t('dailySupplicationTitle', '🤲 Daily Supplication'),
+    message: t('dailySupplicationMsg', 'Keep your tongue moist with the remembrance of Allah.'),
     arabic: 'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
     translation: 'O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of majesty and honor.',
     urdu: 'اے اللہ! تو ہی سلامتی والا ہے اور تیری ہی طرف سے سلامتی ہے، تو بہت برکت والا ہے اے جلال اور بزرگی والے۔',
@@ -190,7 +190,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
                  onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
                  onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
               >
-                View All Azkar <i className="fas fa-arrow-right" style={{ marginLeft: '6px' }}></i>
+                {t('viewAllAzkar', 'View All Azkar')} <i className="fas fa-arrow-right" style={{ marginLeft: '6px' }}></i>
               </button>
             </div>
           </div>

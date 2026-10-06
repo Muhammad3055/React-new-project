@@ -5,22 +5,22 @@ import { useLanguage } from '../context/LanguageContext';
 export default function PrayersView({ navigateToTab }) {
   const { t } = useLanguage();
   const tools = [
-    { title: 'Qibla Direction Compass', desc: 'Accurate live Qibla direction for your exact location.', icon: 'fas fa-compass', tab: 'qibla', color: '#0d9488' },
-    { title: '30-Day Khatam Tracker', desc: 'Track your daily Juz reading progress to complete Quran.', icon: 'fas fa-calendar-check', tab: 'khatam', color: '#b45309' },
-    { title: 'Masnoon Duas & Azkar', desc: 'Morning & evening Azkar with audio recitations.', icon: 'fas fa-hands', tab: 'duas', color: '#059669' },
-    { title: 'Digital Tasbeeh Counter', desc: 'Count your daily Zikr, Salawat, and Istighfar.', icon: 'fas fa-hand-holding-heart', tab: 'tasbeeh', color: '#7c3aed' },
-    { title: '99 Beautiful Names of Allah', desc: 'Asma-ul-Husna with English & Urdu meanings.', icon: 'fas fa-star', tab: 'namesOfAllah', color: '#d97706' },
-    { title: 'Virtues of Quran (Fazail)', desc: 'Virtues and rewards of reciting Quran Majeed.', icon: 'fas fa-book-reader', tab: 'fazail', color: '#2563eb' },
+    { title: t('qiblaCompassTitle', 'Qibla Direction Compass'), desc: t('qiblaCompassDesc', 'Accurate live Qibla direction for your exact location.'), icon: 'fas fa-compass', tab: 'qibla', color: '#0d9488' },
+    { title: t('khatamTrackerTitle', '30-Day Khatam Tracker'), desc: t('khatamTrackerDesc', 'Track your daily Juz reading progress to complete Quran.'), icon: 'fas fa-calendar-check', tab: 'khatam', color: '#b45309' },
+    { title: t('masnoonDuasTitle', 'Masnoon Duas & Azkar'), desc: t('masnoonDuasDesc', 'Morning & evening Azkar with audio recitations.'), icon: 'fas fa-hands', tab: 'duas', color: '#059669' },
+    { title: t('digitalTasbeehTitle', 'Digital Tasbeeh Counter'), desc: t('digitalTasbeehDesc', 'Count your daily Zikr, Salawat, and Istighfar.'), icon: 'fas fa-hand-holding-heart', tab: 'tasbeeh', color: '#7c3aed' },
+    { title: t('namesOfAllahTitle', '99 Beautiful Names of Allah'), desc: t('namesOfAllahDesc', 'Asma-ul-Husna with English & Urdu meanings.'), icon: 'fas fa-star', tab: 'namesOfAllah', color: '#d97706' },
+    { title: t('fazailQuranTitle', 'Virtues of Quran (Fazail)'), desc: t('fazailQuranDesc', 'Virtues and rewards of reciting Quran Majeed.'), icon: 'fas fa-book-reader', tab: 'fazail', color: '#2563eb' },
   ];
 
   return (
     <div className="container" style={{ padding: '2.5rem 1rem', minHeight: '80vh' }}>
       <div className="section-header" style={{ marginBottom: '2rem', textAlign: 'center' }}>
         <h1 className="section-title" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
-          <i className="fas fa-clock" style={{ color: 'var(--accent-gold)', marginRight: '0.6rem' }}></i> Daily Prayer Times & Spiritual Tools
+          <i className="fas fa-clock" style={{ color: 'var(--accent-gold)', marginRight: '0.6rem' }}></i> {t('prayerToolsTitle', 'Daily Prayer Times & Spiritual Tools')}
         </h1>
         <p style={{ color: '#78716c', fontSize: '0.92rem', marginTop: '0.35rem' }}>
-          Accurate prayer times, live digital clock, Qibla finder, daily Zikr tools, and Khatam tracker.
+          {t('prayerToolsDesc', 'Accurate prayer times, live digital clock, Qibla finder, daily Zikr tools, and Khatam tracker.')}
         </p>
       </div>
 
@@ -32,7 +32,7 @@ export default function PrayersView({ navigateToTab }) {
       {/* Spiritual Tools Cards */}
       <section style={{ marginTop: '3rem' }}>
         <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1c1917', marginBottom: '1.5rem', textAlign: 'center' }}>
-          <i className="fas fa-th-large" style={{ color: '#b45309', marginRight: '0.5rem' }}></i> Daily Islamic Spiritual Tools
+          <i className="fas fa-th-large" style={{ color: '#b45309', marginRight: '0.5rem' }}></i> {t('spiritualToolsHeader', 'Daily Islamic Spiritual Tools')}
         </h2>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>

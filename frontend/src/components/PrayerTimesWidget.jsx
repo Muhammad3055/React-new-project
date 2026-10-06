@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
+  const { t } = useLanguage();
   const [timings, setTimings] = useState(null);
   const [hijriDate, setHijriDate] = useState('');
   const [gregorianDate, setGregorianDate] = useState('');
@@ -353,12 +355,12 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   }
 
   const mainPrayers = [
-    { name: 'Fajr', time: timings?.Fajr },
-    { name: 'Sunrise', time: timings?.Sunrise },
-    { name: 'Dhuhr', time: timings?.Dhuhr },
-    { name: 'Asr', time: timings?.Asr },
-    { name: 'Maghrib', time: timings?.Maghrib },
-    { name: 'Isha', time: timings?.Isha }
+    { key: 'Fajr', name: t('fajr', 'Fajr'), time: timings?.Fajr },
+    { key: 'Sunrise', name: t('sunrise', 'Sunrise'), time: timings?.Sunrise },
+    { key: 'Dhuhr', name: t('dhuhr', 'Dhuhr'), time: timings?.Dhuhr },
+    { key: 'Asr', name: t('asr', 'Asr'), time: timings?.Asr },
+    { key: 'Maghrib', name: t('maghrib', 'Maghrib'), time: timings?.Maghrib },
+    { key: 'Isha', name: t('isha', 'Isha'), time: timings?.Isha }
   ];
 
   return (
@@ -400,7 +402,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           {nextPrayer.name && (
             <div className="next-prayer-tag">
-              <i className="fas fa-hourglass-half"></i> Next: <strong style={{ color: 'var(--accent-gold)' }}>{nextPrayer.name}</strong> ({nextPrayer.time})
+              <i className="fas fa-hourglass-half"></i> {t('nextPrayer', 'Next Prayer')}: <strong style={{ color: 'var(--accent-gold)' }}>{t(nextPrayer.name.toLowerCase(), nextPrayer.name)}</strong> ({nextPrayer.time})
             </div>
           )}
           <button
@@ -418,7 +420,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
             }}
           >
             <i className="fas fa-calendar-week" style={{ marginRight: '4px' }}></i>
-            {showCalendarView ? 'Live Nimaz View' : 'Nimaz Timetable Calendar'}
+            {showCalendarView ? t('liveNimazView', 'Live Nimaz View') : t('timetableCalendar', 'Nimaz Timetable Calendar')}
           </button>
         </div>
       </div>
@@ -430,14 +432,14 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
             type="text"
             value={customCity}
             onChange={(e) => setCustomCity(e.target.value)}
-            placeholder="Type city name (e.g., Karachi, London, Istanbul, Mecca)..."
+            placeholder={t('typeCityPlaceholder', 'Type city name (e.g., Karachi, London, Makkah)...')}
             style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff', outline: 'none', fontSize: '0.85rem', padding: '0 0.5rem' }}
           />
           <button type="submit" style={{ background: 'var(--accent-gold)', color: '#000', border: 'none', padding: '0.3rem 0.85rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>
-            Update Location
+            {t('updateLocation', 'Update Location')}
           </button>
           <button type="button" onClick={() => detectLocationAndFetch()} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>
-            <i className="fas fa-crosshairs"></i> Auto GPS
+            <i className="fas fa-crosshairs"></i> {t('autoGps', 'Auto GPS')}
           </button>
         </form>
       )}
@@ -450,9 +452,9 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
             {/* Next Prayer Countdown Card */}
             <div style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%)', border: '1.5px solid var(--accent-gold)', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#fcd34d', letterSpacing: '0.5px' }}>Next Nimaz Countdown</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#fcd34d', letterSpacing: '0.5px' }}>{t('nextNimazCountdown', 'Next Nimaz Countdown')}</span>
                 <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
-                  {nextPrayer.name || 'Prayer'} ({nextPrayer.time || '--:--'})
+                  {t(nextPrayer.name.toLowerCase(), nextPrayer.name || 'Prayer')} ({nextPrayer.time || '--:--'})
                 </h4>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -466,9 +468,9 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
           {/* Live Daily Nimaz View */}
           <div className="prayer-times-grid">
             {mainPrayers.map((p) => {
-              const isNext = nextPrayer.name === p.name;
+              const isNext = nextPrayer.name === p.key;
               return (
-                <div key={p.name} className={`prayer-time-box ${isNext ? 'active-prayer' : ''}`}>
+                <div key={p.key} className={`prayer-time-box ${isNext ? 'active-prayer' : ''}`}>
                   <div className="prayer-name">{p.name}</div>
                   <div className="prayer-val">{p.time || '--:--'}</div>
                 </div>
@@ -480,20 +482,20 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
         /* Full Month Daily Nimaz Timetable Calendar */
         <div style={{ marginTop: '0.75rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', color: 'var(--accent-gold)', fontSize: '0.85rem', fontWeight: 700 }}>
-            <span><i className="fas fa-calendar-alt"></i> Full Month Schedule ({new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}) - {locationName}</span>
-            <span style={{ fontSize: '0.75rem', color: '#cbd5e1', fontWeight: 400 }}>Showing all {monthlyTimings.length} days of the month</span>
+            <span><i className="fas fa-calendar-alt"></i> {t('fullMonthSchedule', 'Full Month Schedule')} ({new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}) - {locationName}</span>
+            <span style={{ fontSize: '0.75rem', color: '#cbd5e1', fontWeight: 400 }}>{t('showingAllDays', 'Showing all days of the month')}</span>
           </div>
           <div style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'center' }}>
               <thead style={{ position: 'sticky', top: 0, zIndex: 5, background: '#022c22', color: 'var(--accent-gold)' }}>
                 <tr style={{ borderBottom: '2px solid rgba(245,158,11,0.3)' }}>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Date</th>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Fajr</th>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Sunrise</th>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Dhuhr</th>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Asr</th>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Maghrib</th>
-                  <th style={{ padding: '0.65rem 0.5rem' }}>Isha</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('dateHeader', 'Date')}</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('fajr', 'Fajr')}</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('sunrise', 'Sunrise')}</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('dhuhr', 'Dhuhr')}</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('asr', 'Asr')}</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('maghrib', 'Maghrib')}</th>
+                  <th style={{ padding: '0.65rem 0.5rem' }}>{t('isha', 'Isha')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -512,7 +514,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
                       }}
                     >
                       <td style={{ padding: '0.5rem', fontWeight: 700, color: isToday ? 'var(--accent-gold)' : '#e2e8f0' }}>
-                        {day.date?.readable} {isToday && <span style={{ fontSize: '0.7rem', background: 'var(--accent-gold)', color: '#000', padding: '1px 6px', borderRadius: '10px', marginLeft: '4px' }}>Today</span>}
+                        {day.date?.readable} {isToday && <span style={{ fontSize: '0.7rem', background: 'var(--accent-gold)', color: '#000', padding: '1px 6px', borderRadius: '10px', marginLeft: '4px' }}>{t('todayBadge', 'Today')}</span>}
                       </td>
                       <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Fajr?.split(' ')[0]}</td>
                       <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Sunrise?.split(' ')[0]}</td>
