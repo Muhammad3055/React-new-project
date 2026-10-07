@@ -679,7 +679,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
               {/* Quran Only Sub-Mode Toggle (Page View vs Verse View) */}
               {readMode === 'only_quran' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Layout:</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>{t('layout', 'Layout')}:</span>
                   <button
                     onClick={() => setQuranSubMode('page_view')}
                     style={{ padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, border: 'none', background: quranSubMode === 'page_view' ? 'var(--primary-dark)' : 'transparent', color: quranSubMode === 'page_view' ? 'var(--accent-gold)' : '#1e293b', cursor: 'pointer' }}
@@ -697,23 +697,23 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
 
               {/* Reading Theme Selector (Light, Sepia, Dark) */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Theme:</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>{t('theme', 'Theme')}:</span>
                 <button
                   onClick={() => handleSetTheme('light')}
                   style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'light' ? '#ffffff' : 'transparent', color: '#1e293b', cursor: 'pointer' }}
-                >Light</button>
+                >{t('themeLight', 'Light')}</button>
                 <button
                   onClick={() => handleSetTheme('sepia')}
                   style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'sepia' ? '#fbf0d9' : 'transparent', color: '#432818', cursor: 'pointer' }}
-                >Sepia</button>
+                >{t('themeSepia', 'Sepia')}</button>
                 <button
                   onClick={() => handleSetTheme('dark')}
                   style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'dark' ? '#0f172a' : 'transparent', color: '#f8fafc', cursor: 'pointer' }}
-                >Dark</button>
+                >{t('themeDark', 'Dark')}</button>
               </div>
 
               {/* Custom Background Color Picker */}
-              <div className="color-picker-badge" title="Change Reader Background Color">
+              <div className="color-picker-badge" title={t('changeBgColor', 'Change Reader Background Color')}>
                 <i className="fas fa-fill-drip" style={{ color: 'var(--accent-gold)' }}></i>
                 <span>BG:</span>
                 <input
@@ -725,9 +725,9 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
               </div>
 
               {/* Custom Translation Color Picker */}
-              <div className="color-picker-badge" title="Change Translation Text Color">
+              <div className="color-picker-badge" title={t('translationColor', 'Change Translation Text Color')}>
                 <i className="fas fa-font" style={{ color: 'var(--primary-emerald)' }}></i>
-                <span>Translation:</span>
+                <span>{t('translation', 'Translation')}:</span>
                 <input
                   type="color"
                   className="color-picker-input"
@@ -737,9 +737,9 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
               </div>
 
               {/* Custom Arabic Text Color Picker */}
-              <div className="color-picker-badge" title="Change Arabic Text Color">
+              <div className="color-picker-badge" title={t('arabicColor', 'Change Arabic Text Color')}>
                 <i className="fas fa-palette" style={{ color: 'var(--accent-gold-dark)' }}></i>
-                <span>Arabic:</span>
+                <span>{t('arabicText', 'Arabic')}:</span>
                 <input
                   type="color"
                   className="color-picker-input"
@@ -750,7 +750,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
 
               {/* Font Size Selector */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '20px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Font:</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>{t('fontSizeLabel', 'Font')}:</span>
                 <button className="verse-btn" style={{ width: '26px', height: '26px' }} onClick={() => setFontSize(Math.max(18, fontSize - 2))}>-</button>
                 <span style={{ fontSize: '0.85rem', fontWeight: 700, padding: '0 4px' }}>{fontSize}px</span>
                 <button className="verse-btn" style={{ width: '26px', height: '26px' }} onClick={() => setFontSize(Math.min(46, fontSize + 2))}>+</button>

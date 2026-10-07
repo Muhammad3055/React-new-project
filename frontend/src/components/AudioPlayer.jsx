@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { getApiUrl } from '../utils/apiCache';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, setCurrentTrack }) {
+  const { t } = useLanguage();
   const audioRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -185,7 +187,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
           {/* Mobile close button inside info bar */}
           <button
             onClick={handleStop}
-            title="Stop & Close Audio Player"
+            title={t('stopCloseAudio', 'Stop & Close')}
             className="player-close-btn mobile-only-close"
           >
             <i className="fas fa-times"></i>
@@ -197,7 +199,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
           <div className="control-buttons">
             <button
               onClick={cycleSpeed}
-              title="Change Playback Speed"
+              title={t('playbackSpeed', 'Playback Speed')}
               className="player-speed-btn"
             >
               {playbackRate}x
@@ -206,7 +208,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Previous Track Button */}
             <button
               onClick={handlePrev}
-              title="Previous Audio Track (or -10s)"
+              title={t('prevTrack', 'Previous Track')}
               className="player-skip-btn"
             >
               <i className="fas fa-step-backward"></i>
@@ -215,7 +217,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Rewind -10s Button */}
             <button
               onClick={() => skipTime(-10)}
-              title="Rewind 10 Seconds (-10s)"
+              title={t('rewind10', 'Rewind 10s')}
               className="player-skip-btn"
             >
               <i className="fas fa-undo"></i>
@@ -226,7 +228,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             <button
               className="btn-player-main"
               onClick={() => setIsPlaying(!isPlaying)}
-              title={isPlaying ? 'Pause' : 'Play'}
+              title={isPlaying ? t('pauseAudio', 'Pause') : t('playAudio', 'Play')}
             >
               <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
             </button>
@@ -234,7 +236,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Forward +10s Button */}
             <button
               onClick={() => skipTime(10)}
-              title="Forward 10 Seconds (+10s)"
+              title={t('forward10', 'Forward 10s')}
               className="player-skip-btn"
             >
               <i className="fas fa-redo"></i>
@@ -244,7 +246,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Next Track Button */}
             <button
               onClick={handleNext}
-              title="Next Audio Track (or +10s)"
+              title={t('nextTrack', 'Next Track')}
               className="player-skip-btn"
             >
               <i className="fas fa-step-forward"></i>
@@ -253,7 +255,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Repeat/Loop Toggle */}
             <button
               onClick={toggleLoop}
-              title={isLooping ? 'Repeat Mode: Active' : 'Repeat Mode: Disabled'}
+              title={isLooping ? t('repeatActive', 'Repeat Mode: Active') : t('repeatDisabled', 'Repeat Mode: Disabled')}
               className={`player-loop-btn ${isLooping ? 'active' : ''}`}
             >
               <i className="fas fa-redo"></i>
@@ -262,7 +264,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Share Button */}
             <button
               onClick={handleShareAudio}
-              title="Share this MP3 Audio"
+              title={t('shareAudio', 'Share Audio')}
               className="player-loop-btn"
               style={{ color: 'var(--accent-gold)' }}
             >
@@ -272,7 +274,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Stop & Close Button */}
             <button
               onClick={handleStop}
-              title="Stop & Close Audio Player"
+              title={t('stopCloseAudio', 'Stop & Close')}
               className="player-stop-btn"
             >
               <i className="fas fa-stop"></i>

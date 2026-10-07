@@ -420,10 +420,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             <div className="mobile-user-card">
               <div className="mobile-user-info">
                 <i className="fas fa-user-circle"></i>
-                <span style={{ color: '#000000' }}>Logged in as <strong>{user.username}</strong></span>
+                <span style={{ color: '#000000' }}>{t('loggedInAs', 'Logged in as')} <strong>{user.username}</strong></span>
               </div>
               <button className="mobile-auth-btn mobile-logout-btn" onClick={() => { handleLogout(); setMobileActive(false); }}>
-                <i className="fas fa-sign-out-alt"></i> Logout
+                <i className="fas fa-sign-out-alt"></i> {t('logout', 'Log Out')}
               </button>
             </div>
           ) : (
@@ -462,6 +462,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               <option value="en">🇬🇧 English</option>
               <option value="ur">🇵🇰 اردو</option>
               <option value="ar">🇸🇦 العربية</option>
+              <option value="br">🇵🇰 براہوئی</option>
             </select>
           </div>
 

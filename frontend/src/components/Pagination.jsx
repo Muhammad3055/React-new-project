@@ -1,15 +1,6 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
-/**
- * Reusable Pagination component for content lists across Maktab Tul Muslim
- * 
- * Props:
- * - currentPage: number (1-indexed)
- * - totalItems: number
- * - itemsPerPage: number
- * - onPageChange: (newPage: number) => void
- * - scrollToTopId: string (optional element ID to scroll into view upon page change)
- */
 export default function Pagination({
   currentPage = 1,
   totalItems = 0,
@@ -17,6 +8,7 @@ export default function Pagination({
   onPageChange,
   scrollToTopId = null
 }) {
+  const { t } = useLanguage();
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   if (totalPages <= 1) return null;
@@ -85,8 +77,8 @@ export default function Pagination({
     >
       {/* Page summary info */}
       <div style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 600 }}>
-        Showing <strong style={{ color: 'var(--accent-gold)' }}>{startItem}–{endItem}</strong> of{' '}
-        <strong style={{ color: '#1c1917' }}>{totalItems}</strong> items (Page {currentPage} of {totalPages})
+        {t('showingItems', 'Showing')} <strong style={{ color: 'var(--accent-gold)' }}>{startItem}–{endItem}</strong> {t('ofItems', 'of')}{' '}
+        <strong style={{ color: '#1c1917' }}>{totalItems}</strong> ({t('pageLabel', 'Page')} {currentPage} {t('ofItems', 'of')} {totalPages})
       </div>
 
       {/* Pagination control buttons */}
@@ -119,7 +111,7 @@ export default function Pagination({
             boxShadow: currentPage === 1 ? 'none' : '0 2px 6px rgba(0,0,0,0.04)'
           }}
         >
-          <i className="fas fa-chevron-left" style={{ fontSize: '0.75rem' }}></i> Previous
+          <i className="fas fa-chevron-left" style={{ fontSize: '0.75rem' }}></i> {t('previousPage', 'Previous')}
         </button>
 
         {/* Page Numbers */}
@@ -188,7 +180,7 @@ export default function Pagination({
             boxShadow: currentPage === totalPages ? 'none' : '0 2px 6px rgba(0,0,0,0.04)'
           }}
         >
-          Next <i className="fas fa-chevron-right" style={{ fontSize: '0.75rem' }}></i>
+          {t('nextPage', 'Next')} <i className="fas fa-chevron-right" style={{ fontSize: '0.75rem' }}></i>
         </button>
       </div>
     </div>
