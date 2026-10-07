@@ -89,14 +89,14 @@ export default function LiveView({ user }) {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'pulse 1.5s infinite' }}></span>
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              24/7 Official Saudi Live HD Broadcast & Radio
+              {t('officialSaudiLive')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Makkah &amp; Madinah Live Streams
+            {t('makkahMadinahLiveTitle')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Watch live 24/7 broadcasts from Al-Masjid Al-Haram (Holy Kaaba) and Al-Masjid An-Nabawi (Madinah), and listen to non-stop Tilawat radio.
+            {t('makkahMadinahLiveDesc')}
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function LiveView({ user }) {
               boxShadow: activeTab === 'makkah' ? '0 8px 20px rgba(5,150,105,0.3)' : 'none', transition: 'all 0.2s'
             }}
           >
-            🕋 Makkah Live (قناة القرآن)
+            {t('makkahLiveTab')}
           </button>
           <button
             onClick={() => { setActiveTab('madinah'); setSelectedServer('server1'); }}
@@ -124,7 +124,7 @@ export default function LiveView({ user }) {
               boxShadow: activeTab === 'madinah' ? '0 8px 20px rgba(5,150,105,0.3)' : 'none', transition: 'all 0.2s'
             }}
           >
-            💚 Madinah Live (قناة السنة)
+            {t('madinahLiveTab')}
           </button>
 
         </div>
@@ -158,7 +158,7 @@ export default function LiveView({ user }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 1rem', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-gold, #b45309)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <Tv size={16} /> Select Stream Source:
+                  <Tv size={16} /> {t('selectStreamSource')}:
                 </span>
                 
                 <button

@@ -39,14 +39,14 @@ export default function IslamicNamesView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Sparkles size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Authentic Islamic Dictionary
+              {t('authenticIslamicDict', 'Authentic Islamic Dictionary')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Islamic Baby Names &amp; Meanings
+            {t('babyNamesTitle', 'Islamic Baby Names & Meanings')}
           </h1>
           <p style={{ color: '#cbd5e1', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Discover thousands of meaningful Islamic names for boys &amp; girls with Arabic script, origin, Quranic background, and translations.
+            {t('babyNamesDesc', 'Discover thousands of meaningful Islamic names for boys & girls with Arabic script, origin, Quranic background, and translations.')}
           </p>
         </div>
 
@@ -59,10 +59,10 @@ export default function IslamicNamesView() {
           {/* Top Row: Search & Gender Toggle */}
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ position: 'relative', flex: '1 1 300px' }}>
-              <Search size= {18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
               <input
                 type="text"
-                placeholder="Search name, meaning, or Arabic script..."
+                placeholder={t('searchBabyNamesPlaceholder', 'Search name, meaning, or Arabic script...')}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 style={{
@@ -83,7 +83,7 @@ export default function IslamicNamesView() {
                     color: genderFilter === g ? '#ffffff' : '#475569', border: 'none', transition: 'all 0.2s', textTransform: 'capitalize'
                   }}
                 >
-                  {g === 'all' ? 'All Names' : g === 'boy' ? '👦 Boys' : '👧 Girls'}
+                  {g === 'all' ? t('allNamesBtn', 'All Names') : g === 'boy' ? t('boysBtn', '👦 Boys') : t('girlsBtn', '👧 Girls')}
                 </button>
               ))}
             </div>
@@ -99,7 +99,7 @@ export default function IslamicNamesView() {
                 color: startingLetter === '' ? '#ffffff' : '#64748b', border: 'none'
               }}
             >
-              All A-Z
+              {t('allAZBtn', 'All A-Z')}
             </button>
             {alphabet.map(letter => (
               <button

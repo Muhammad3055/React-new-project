@@ -63,14 +63,14 @@ export default function InheritanceView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Scale size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Sharia Mirath Jurisprudence
+              {t('shariaMirathJurisprudence')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Islamic Inheritance Shares Calculator
+            {t('inheritanceTitle')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Calculate legal Quranic inheritance shares (*Fara'id &amp; Asabah*) based on Surah An-Nisa (Verses 11, 12, 176) for heirs.
+            {t('inheritanceDesc')}
           </p>
         </div>
 
@@ -81,14 +81,14 @@ export default function InheritanceView() {
 
             {/* Estate Value & Deceased Gender */}
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>1. Net Estate &amp; Deceased Information</h3>
+              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('netEstateDeceasedInfo')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Net Estate Value (Cash + Assets - Debts):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('netEstateValue')}</label>
                   <input type="number" value={estateValue} onChange={e => setEstateValue(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Deceased Gender:</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('deceasedGender')}</label>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       onClick={() => setDeceasedGender('male')}
@@ -98,7 +98,7 @@ export default function InheritanceView() {
                         color: deceasedGender === 'male' ? '#fff' : '#475569', border: 'none'
                       }}
                     >
-                      Male (Deceased Husband/Father)
+                      {t('maleDeceased')}
                     </button>
                     <button
                       onClick={() => setDeceasedGender('female')}
@@ -108,7 +108,7 @@ export default function InheritanceView() {
                         color: deceasedGender === 'female' ? '#fff' : '#475569', border: 'none'
                       }}
                     >
-                      Female (Deceased Wife/Mother)
+                      {t('femaleDeceased')}
                     </button>
                   </div>
                 </div>
@@ -117,26 +117,26 @@ export default function InheritanceView() {
 
             {/* Surviving Family Heirs */}
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>2. Surviving Legal Heirs</h3>
+              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('survivingLegalHeirs')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div style={heirRowStyle}>
-                  <span>{deceasedGender === 'male' ? 'Wife / Wives' : 'Husband'}:</span>
+                  <span>{deceasedGender === 'male' ? t('wifeWives') : t('husband')}:</span>
                   <input type="number" min="0" max="4" value={spouseCount} onChange={e => setSpouseCount(parseInt(e.target.value)||0)} style={{ width: '70px', ...inputStyle }} />
                 </div>
                 <div style={heirRowStyle}>
-                  <span>Sons:</span>
+                  <span>{t('sons')}:</span>
                   <input type="number" min="0" value={sonsCount} onChange={e => setSonsCount(parseInt(e.target.value)||0)} style={{ width: '70px', ...inputStyle }} />
                 </div>
                 <div style={heirRowStyle}>
-                  <span>Daughters:</span>
+                  <span>{t('daughters')}:</span>
                   <input type="number" min="0" value={daughtersCount} onChange={e => setDaughtersCount(parseInt(e.target.value)||0)} style={{ width: '70px', ...inputStyle }} />
                 </div>
                 <div style={heirRowStyle}>
-                  <span>Father Alive?</span>
+                  <span>{t('fatherAlive')}</span>
                   <input type="checkbox" checked={fatherPresent} onChange={e => setFatherPresent(e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
                 </div>
                 <div style={heirRowStyle}>
-                  <span>Mother Alive?</span>
+                  <span>{t('motherAlive')}</span>
                   <input type="checkbox" checked={motherPresent} onChange={e => setMotherPresent(e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
                 </div>
               </div>
@@ -151,14 +151,14 @@ export default function InheritanceView() {
               padding: '2rem', color: '#ffffff', border: '2px solid #f59e0b', boxShadow: '0 12px 35px rgba(0,0,0,0.3)'
             }}>
               <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fcd34d', margin: '0 0 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
-                Legal Shares Breakdown
+                {t('legalSharesBreakdown')}
               </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 {spouseCount > 0 && (
                   <div style={resultRowStyle}>
                     <div>
-                      <div style={{ fontWeight: 800, color: '#ffffff' }}>{deceasedGender === 'male' ? `Wife (${spouseCount})` : 'Husband'}</div>
+                      <div style={{ fontWeight: 800, color: '#ffffff' }}>{deceasedGender === 'male' ? `${t('wifeWives')} (${spouseCount})` : t('husband')}</div>
                       <div style={{ fontSize: '0.78rem', color: '#93c5fd' }}>Quranic Share: {(spouseShareFrac * 100).toFixed(1)}%</div>
                     </div>
                     <div style={{ fontWeight: 900, color: '#fcd34d', fontSize: '1.1rem' }}>Rs. {spouseVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
@@ -188,7 +188,7 @@ export default function InheritanceView() {
                 {sonsCount > 0 && (
                   <div style={resultRowStyle}>
                     <div>
-                      <div style={{ fontWeight: 800, color: '#ffffff' }}>Sons ({sonsCount} total)</div>
+                      <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('sons')} ({sonsCount} total)</div>
                       <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachSonVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} per son (2x ratio)</div>
                     </div>
                     <div style={{ fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>Rs. {totalSonsVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
@@ -198,7 +198,7 @@ export default function InheritanceView() {
                 {daughtersCount > 0 && (
                   <div style={resultRowStyle}>
                     <div>
-                      <div style={{ fontWeight: 800, color: '#ffffff' }}>Daughters ({daughtersCount} total)</div>
+                      <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('daughters')} ({daughtersCount} total)</div>
                       <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachDaughterVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} per daughter</div>
                     </div>
                     <div style={{ fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>Rs. {totalDaughtersVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>

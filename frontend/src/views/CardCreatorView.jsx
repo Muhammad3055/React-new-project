@@ -61,14 +61,14 @@ export default function CardCreatorView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Palette size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Digital Calligraphy Studio
+              {t('digitalCalligraphyStudio')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Quran Verse &amp; Hadith Card Creator
+            {t('cardCreatorTitle')}
           </h1>
           <p style={{ color: '#fef3c7', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Create, style, and download custom Quranic verse &amp; Hadith quote cards for WhatsApp, Instagram, and Facebook sharing.
+            {t('cardCreatorDesc')}
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export default function CardCreatorView() {
 
             {/* Quick Sample Selector */}
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Quick Verse Presets</h3>
+              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('quickVersePresets')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {sampleQuotes.map((q, i) => (
                   <button
@@ -99,14 +99,14 @@ export default function CardCreatorView() {
 
             {/* Custom Inputs */}
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Customize Content</h3>
+              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('customizeContent')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Arabic Text / Verse:</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('arabicTextVerse')}:</label>
                   <textarea rows={3} value={arabicText} onChange={e => setArabicText(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Translation / Reference:</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('translationRef')}:</label>
                   <textarea rows={3} value={translationText} onChange={e => setTranslationText(e.target.value)} style={inputStyle} />
                 </div>
               </div>
@@ -114,7 +114,7 @@ export default function CardCreatorView() {
 
             {/* Theme & Ratio Controls */}
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Color Theme &amp; Format</h3>
+              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('colorThemeFormat')}</h3>
               <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1rem' }}>
                 {Object.keys(themes).map(th => (
                   <button
@@ -190,7 +190,7 @@ export default function CardCreatorView() {
                 boxShadow: '0 8px 25px rgba(5,150,105,0.3)'
               }}
             >
-              <Download size={20} /> Download High-Res Image Card
+              <Download size={20} /> {t('downloadCardBtn')}
             </button>
           </div>
 
