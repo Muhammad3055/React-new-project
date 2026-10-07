@@ -69,14 +69,14 @@ export default function ZakatView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Sparkles size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Sharia Compliant Zakat Engine
+              {t('shariaZakatEngine', 'Sharia Compliant Zakat Engine')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Zakat &amp; Nisab Calculator
+            {t('zakatCalcTitle', 'Zakat & Nisab Calculator')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Accurately calculate your annual Zakat (2.5%) based on authentic Islamic jurisprudence for cash, gold, silver, investments, and business assets.
+            {t('zakatCalcDesc', 'Accurately calculate your annual Zakat (2.5%) based on authentic Islamic jurisprudence for cash, gold, silver, investments, and business assets.')}
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function ZakatView() {
         }}>
           {/* Currency Choice */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontWeight: 700, color: '#334155', fontSize: '0.92rem' }}>Select Currency:</span>
+            <span style={{ fontWeight: 700, color: '#334155', fontSize: '0.92rem' }}>{t('selectCurrency', 'Select Currency:')}</span>
             <div style={{ display: 'flex', gap: '0.4rem' }}>
               {['PKR', 'USD', 'SAR', 'AED', 'INR'].map((cur) => (
                 <button
@@ -109,7 +109,7 @@ export default function ZakatView() {
 
           {/* Nisab Basis Standard Choice */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontWeight: 700, color: '#334155', fontSize: '0.92rem' }}>Nisab Standard:</span>
+            <span style={{ fontWeight: 700, color: '#334155', fontSize: '0.92rem' }}>{t('nisabStandard', 'Nisab Standard:')}</span>
             <button
               onClick={() => setNisabStandard('silver')}
               style={{
@@ -119,7 +119,7 @@ export default function ZakatView() {
                 border: 'none', transition: 'all 0.2s'
               }}
             >
-              Silver Nisab (612.36g / Recommended)
+              {t('silverNisabOpt', 'Silver Nisab (612.36g / Recommended)')}
             </button>
             <button
               onClick={() => setNisabStandard('gold')}
@@ -130,7 +130,7 @@ export default function ZakatView() {
                 border: 'none', transition: 'all 0.2s'
               }}
             >
-              Gold Nisab (87.48g)
+              {t('goldNisabOpt', 'Gold Nisab (87.48g)')}
             </button>
           </div>
         </div>
@@ -145,15 +145,15 @@ export default function ZakatView() {
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#059669' }}>
                 <DollarSign size={20} />
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Cash &amp; Liquid Funds</h3>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('cashLiquidFunds', 'Cash & Liquid Funds')}</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Cash on Hand ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('cashOnHand', 'Cash on Hand')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={cashOnHand} onChange={(e) => setCashOnHand(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Bank Accounts &amp; Savings ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('bankAccounts', 'Bank Accounts & Savings')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={bankBalance} onChange={(e) => setBankBalance(e.target.value)} style={inputStyle} />
                 </div>
               </div>
@@ -163,23 +163,23 @@ export default function ZakatView() {
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#d97706' }}>
                 <Coins size={20} />
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Gold &amp; Silver Assets</h3>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('goldSilverAssets', 'Gold & Silver Assets')}</h3>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.9rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Gold (Grams):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('goldGrams', 'Gold (Grams):')}</label>
                   <input type="number" placeholder="0" value={goldGrams} onChange={(e) => setGoldGrams(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Gold Rate ({symbol}/gram):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('goldRate', 'Gold Rate')} ({symbol}/gram):</label>
                   <input type="number" value={goldRatePerGram} onChange={(e) => setGoldRatePerGram(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Silver (Grams):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('silverGrams', 'Silver (Grams):')}</label>
                   <input type="number" placeholder="0" value={silverGrams} onChange={(e) => setSilverGrams(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Silver Rate ({symbol}/gram):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('silverRate', 'Silver Rate')} ({symbol}/gram):</label>
                   <input type="number" value={silverRatePerGram} onChange={(e) => setSilverRatePerGram(e.target.value)} style={inputStyle} />
                 </div>
               </div>
@@ -189,19 +189,19 @@ export default function ZakatView() {
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#2563eb' }}>
                 <TrendingUp size={20} />
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Investments &amp; Business Stock</h3>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('investmentsBusiness', 'Investments & Business Stock')}</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Stocks / Mutual Funds / Crypto ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('stocksInvestments', 'Stocks / Mutual Funds / Crypto')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={investments} onChange={(e) => setInvestments(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Business Trade Stock &amp; Goods ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('businessTrade', 'Business Trade Stock & Goods')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={businessInventory} onChange={(e) => setBusinessInventory(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Money Owed To You ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('moneyOwedToYou', 'Money Owed To You')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={owedToYou} onChange={(e) => setOwedToYou(e.target.value)} style={inputStyle} />
                 </div>
               </div>
@@ -211,15 +211,15 @@ export default function ZakatView() {
             <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#dc2626' }}>
                 <CreditCard size={20} />
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Deductible Debts &amp; Expenses</h3>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('deductibleDebts', 'Deductible Debts & Expenses')}</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Debts You Owe ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('debtsYouOwe', 'Debts You Owe')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={debtsOwed} onChange={(e) => setDebtsOwed(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>Immediate Due Bills/Expenses ({symbol}):</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>{t('immediateBills', 'Immediate Due Bills/Expenses')} ({symbol}):</label>
                   <input type="number" placeholder="0" value={immediateExpenses} onChange={(e) => setImmediateExpenses(e.target.value)} style={inputStyle} />
                 </div>
               </div>
@@ -235,24 +235,24 @@ export default function ZakatView() {
               boxShadow: '0 12px 35px rgba(2,44,34,0.3)'
             }}>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 1.25rem', color: '#fcd34d', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
-                Zakat Calculation Summary
+                {t('zakatSummaryTitle', 'Zakat Calculation Summary')}
               </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
                 <div style={rowStyle}>
-                  <span style={{ color: '#a7f3d0' }}>Gross Wealth:</span>
+                  <span style={{ color: '#a7f3d0' }}>{t('grossWealth', 'Gross Wealth:')}</span>
                   <span style={{ fontWeight: 700 }}>{symbol} {totalGrossAssets.toLocaleString()}</span>
                 </div>
                 <div style={rowStyle}>
-                  <span style={{ color: '#fca5a5' }}>Deductible Liabilities:</span>
+                  <span style={{ color: '#fca5a5' }}>{t('deductibleLiabilities', 'Deductible Liabilities:')}</span>
                   <span style={{ fontWeight: 700 }}>- {symbol} {totalLiabilities.toLocaleString()}</span>
                 </div>
                 <div style={{ ...rowStyle, paddingTop: '0.5rem', borderTop: '1px dashed rgba(255,255,255,0.2)', fontSize: '1.05rem', fontWeight: 800 }}>
-                  <span style={{ color: '#ffffff' }}>Net Zakatable Wealth:</span>
+                  <span style={{ color: '#ffffff' }}>{t('netZakatable', 'Net Zakatable Wealth:')}</span>
                   <span style={{ color: '#fcd34d' }}>{symbol} {netWealth.toLocaleString()}</span>
                 </div>
                 <div style={rowStyle}>
-                  <span style={{ color: '#cbd5e1' }}>Nisab Threshold ({nisabStandard}):</span>
+                  <span style={{ color: '#cbd5e1' }}>{t('nisabThresholdLabel', 'Nisab Threshold')} ({nisabStandard}):</span>
                   <span style={{ fontWeight: 700, color: '#93c5fd' }}>{symbol} {nisabThreshold.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
                 </div>
               </div>
@@ -266,19 +266,16 @@ export default function ZakatView() {
                 {isEligible ? (
                   <div>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#34d399', fontWeight: 800, fontSize: '0.95rem', marginBottom: '4px' }}>
-                      <CheckCircle2 size={18} /> Zakat is Obligatory (Fard)
+                      <CheckCircle2 size={18} /> {t('netWealthMeetsNisab', 'Net wealth meets or exceeds Nisab standard')}
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.82rem', color: '#a7f3d0' }}>
-                      Your net wealth meets or exceeds the Nisab threshold.
-                    </p>
                   </div>
                 ) : (
                   <div>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#f87171', fontWeight: 800, fontSize: '0.95rem', marginBottom: '4px' }}>
-                      <Info size={18} /> Below Nisab Threshold
+                      <Info size={18} /> {t('belowNisab', 'Below Nisab Threshold')}
                     </div>
                     <p style={{ margin: 0, fontSize: '0.82rem', color: '#fca5a5' }}>
-                      Zakat is not obligatory at this time as net wealth is below Nisab.
+                      {t('zakatNotObligatory', 'Zakat is not obligatory at this time as net wealth is below Nisab.')}
                     </p>
                   </div>
                 )}
@@ -291,7 +288,7 @@ export default function ZakatView() {
                 boxShadow: '0 8px 20px rgba(245,158,11,0.3)'
               }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>
-                  Total Zakat Payable (2.5%)
+                  {t('totalZakatPayable', 'TOTAL ZAKAT PAYABLE (2.5%)')}
                 </span>
                 <div style={{ fontSize: '2.2rem', fontWeight: 900, marginTop: '4px' }}>
                   {symbol} {zakatPayable.toLocaleString('en-US', { maximumFractionDigits: 2 })}

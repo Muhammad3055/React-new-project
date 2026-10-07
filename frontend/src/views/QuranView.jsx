@@ -498,7 +498,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
             }}
           >
-            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 Hijri Calendar & Events
+            <i className="fas fa-calendar-alt" style={{ color: '#f59e0b' }}></i> 📅 {t('islamicCalendar', 'Hijri Calendar & Events')}
           </button>
         )}
 
@@ -520,7 +520,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
             }}
           >
-            <i className="fas fa-microphone" style={{ color: '#34d399' }}></i> 🎙️ AI Tajweed Voice Guide
+            <i className="fas fa-microphone" style={{ color: '#34d399' }}></i> 🎙️ {t('aiTajweedGuide', 'AI Tajweed Voice Guide')}
           </button>
         )}
       </div>

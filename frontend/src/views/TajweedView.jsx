@@ -99,14 +99,14 @@ export default function TajweedView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Sparkles size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Quran Recitation Art
+              {t('quranRecitationArt', 'Quran Recitation Art')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Tajweed Rules &amp; Pronunciation Guide
+            {t('tajweedRulesTitle', 'Tajweed Rules & Pronunciation Guide')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Recite the Holy Quran as it was revealed (*Tartila*). Learn rules of Noon Sakinah, Tanween, Qalqalah, Ghunnah, and makharij points.
+            {t('tajweedRulesDesc', 'Recite the Holy Quran as it was revealed (*Tartila*). Learn rules of Noon Sakinah, Tanween, Qalqalah, Ghunnah, and makharij points.')}
           </p>
         </div>
 
@@ -139,7 +139,7 @@ export default function TajweedView() {
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>
             <div>
               <span style={{ background: currentRuleObj.bgLight, color: currentRuleObj.color, padding: '4px 12px', borderRadius: '20px', fontWeight: 800, fontSize: '0.8rem' }}>
-                Rule Spotlight
+                {t('ruleSpotlight', 'Rule Spotlight')}
               </span>
               <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', margin: '0.4rem 0 0' }}>
                 {currentRuleObj.name} — <span style={{ color: currentRuleObj.color }}>{currentRuleObj.subtitle}</span>
@@ -154,7 +154,7 @@ export default function TajweedView() {
           {/* Rule Letters Grid */}
           <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-              Associated Letters ({currentRuleObj.letters.length}):
+              {t('associatedLetters', 'Associated Letters')} ({currentRuleObj.letters.length}):
             </h4>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
               {currentRuleObj.letters.map((ltr, i) => (
@@ -175,7 +175,7 @@ export default function TajweedView() {
             display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem'
           }}>
             <div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: currentRuleObj.color }}>Example Verse Recitation</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: currentRuleObj.color }}>{t('exampleVerseRecitation', 'Example Verse Recitation')}</span>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'Amiri, serif', color: '#022c22', margin: '4px 0' }}>
                 {currentRuleObj.exampleArabic}
               </div>
@@ -190,10 +190,10 @@ export default function TajweedView() {
         <div style={{ background: '#0f172a', borderRadius: '24px', padding: '2rem', color: '#ffffff', border: '1px solid #334155' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#fcd34d', marginBottom: '1rem' }}>
             <BookOpen size={22} />
-            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>The 5 Major Makharij (Articulation Points)</h3>
+            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{t('majorMakharijTitle', 'The 5 Major Makharij (Articulation Points)')}</h3>
           </div>
           <p style={{ color: '#cbd5e1', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
-            *Makhraj* refers to the exact physical place in the speech apparatus from which an Arabic letter sound originates.
+            {t('makhrajDesc', '*Makhraj* refers to the exact physical place in the speech apparatus from which an Arabic letter sound originates.')}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
             {makharijList.map((m, idx) => (

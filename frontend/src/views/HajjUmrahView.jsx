@@ -103,14 +103,14 @@ export default function HajjUmrahView() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Compass size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Interactive Pilgrim Guide
+              {t('interactivePilgrimGuide', 'Interactive Pilgrim Guide')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Hajj &amp; Umrah Step-by-Step Guide
+            {t('hajjUmrahGuideTitle', 'Hajj & Umrah Step-by-Step Guide')}
           </h1>
           <p style={{ color: '#cbd5e1', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.6 }}>
-            Master the sacred rites of Umrah and Hajj with interactive step-by-step guidance, authentic duas, Tawaf counters, and preparation checklists.
+            {t('hajjUmrahGuideDesc', 'Master the sacred rites of Umrah and Hajj with interactive step-by-step guidance, authentic duas, Tawaf counters, and preparation checklists.')}
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export default function HajjUmrahView() {
               transition: 'all 0.2s'
             }}
           >
-            🌙 Umrah Guide (عُمرة)
+            {t('umrahGuideBtn', '🌙 Umrah Guide (عُمرة)')}
           </button>
           <button
             onClick={() => { setActiveMode('hajj'); setActiveStep(0); }}
@@ -140,7 +140,7 @@ export default function HajjUmrahView() {
               transition: 'all 0.2s'
             }}
           >
-            🕋 Hajj Guide (حَجّ)
+            {t('hajjGuideBtn', '🕋 Hajj Guide (حَجّ)')}
           </button>
         </div>
 
@@ -150,22 +150,22 @@ export default function HajjUmrahView() {
         }}>
           {/* Tawaf Counter */}
           <div style={{ background: '#022c22', borderRadius: '20px', padding: '1.5rem', color: '#ffffff', border: '1px solid #f59e0b', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tawaf Circuit Counter</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('tawafCounterTitle', 'Tawaf Circuit Counter')}</span>
             <div style={{ fontSize: '3rem', fontWeight: 900, color: '#ffffff', margin: '0.5rem 0' }}>{tawafCount} / 7</div>
-            <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: '#a7f3d0' }}>Counter-clockwise rounds around Kaaba</p>
+            <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: '#a7f3d0' }}>{t('tawafCounterDesc', 'Counter-clockwise rounds around Kaaba')}</p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button onClick={() => setTawafCount(Math.min(7, tawafCount + 1))} style={btnCounterStyle}><Plus size={16}/> Count Round</button>
+              <button onClick={() => setTawafCount(Math.min(7, tawafCount + 1))} style={btnCounterStyle}><Plus size={16}/> {t('countRoundBtn', 'Count Round +')}</button>
               <button onClick={() => setTawafCount(0)} style={{ ...btnCounterStyle, background: 'rgba(255,255,255,0.1)' }}><RotateCcw size={14}/></button>
             </div>
           </div>
 
           {/* Sa'i Counter */}
           <div style={{ background: '#1e1b4b', borderRadius: '20px', padding: '1.5rem', color: '#ffffff', border: '1px solid #f59e0b', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sa'i Lap Counter</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('saiCounterTitle', 'Sa\'i Lap Counter')}</span>
             <div style={{ fontSize: '3rem', fontWeight: 900, color: '#ffffff', margin: '0.5rem 0' }}>{saiCount} / 7</div>
-            <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: '#cbd5e1' }}>Laps between Safa &amp; Marwah</p>
+            <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: '#cbd5e1' }}>{t('saiCounterDesc', 'Laps between Safa & Marwah')}</p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button onClick={() => setSaiCount(Math.min(7, saiCount + 1))} style={{ ...btnCounterStyle, background: '#d97706' }}><Plus size={16}/> Count Lap</button>
+              <button onClick={() => setSaiCount(Math.min(7, saiCount + 1))} style={{ ...btnCounterStyle, background: '#d97706' }}><Plus size={16}/> {t('countLapBtn', 'Count Lap +')}</button>
               <button onClick={() => setSaiCount(0)} style={{ ...btnCounterStyle, background: 'rgba(255,255,255,0.1)' }}><RotateCcw size={14}/></button>
             </div>
           </div>
