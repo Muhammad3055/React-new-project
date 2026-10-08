@@ -133,10 +133,10 @@ export default function NamesOfAllahView() {
       {/* Header Banner */}
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title" style={{ justifyContent: 'center' }}>
-          <i className="fas fa-star" style={{ color: 'var(--accent-gold)' }}></i> Asma ul Husna — 99 Names of Allah (أسماء الله الحسنى)
+          <i className="fas fa-star" style={{ color: 'var(--accent-gold)' }}></i> {t('asmaUlHusnaTitle', 'Asma ul Husna — 99 Names of Allah (أسماء الله الحسنى)')}
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.5rem', maxWidth: '720px', marginInline: 'auto' }}>
-          "And to Allah belong the best names, so invoke Him by them." — (Surah Al-A'raf 7:180). Explore the 99 Beautiful Names of Allah with English & Urdu meanings and spiritual virtues (فضائل و برکات).
+          {t('asmaUlHusnaDesc', '"And to Allah belong the best names, so invoke Him by them." — (Surah Al-A\'raf 7:180). Explore the 99 Beautiful Names of Allah with English & Urdu meanings and spiritual virtues (فضائل و برکات).')}
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export default function NamesOfAllahView() {
         <input
           type="text"
           className="form-input"
-          placeholder="Search in English or Urdu (e.g. Ar-Rahman, Merciful, رحم, 1)..."
+          placeholder={t('searchAsmaPlaceholder', 'Search in English or Urdu (e.g. Ar-Rahman, Merciful, رحم, 1)...')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ paddingLeft: '2.8rem', borderRadius: '30px', border: '1.5px solid var(--accent-gold)' }}
@@ -193,7 +193,7 @@ export default function NamesOfAllahView() {
             {/* Virtues Section (Dynamic Language) */}
             <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-gold)', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <p style={{ fontSize: lang === 'en' ? '0.82rem' : '0.95rem', color: '#064e3b', margin: 0, lineHeight: '1.5', direction: lang === 'en' ? 'ltr' : 'rtl' }}>
-                <strong style={{ color: '#047857' }}><i className="fas fa-gem" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {t('fazail')}:</strong> {lang === 'en' ? name.benefit : name.benefit_ur}
+                <strong style={{ color: '#047857' }}><i className="fas fa-gem" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {t('fazail', 'Fazail')}:</strong> {lang === 'en' ? name.benefit : name.benefit_ur}
               </p>
             </div>
           </div>
@@ -219,7 +219,7 @@ export default function NamesOfAllahView() {
             }}
           >
             <i className="fas fa-chevron-down" style={{ marginRight: '0.5rem' }}></i>
-            {t('loadMore') || (lang === 'ur' ? 'مزید دیکھئے' : lang === 'br' ? 'مست لوڑ بکن بو' : lang === 'ar' ? 'تحميل المزيد' : 'Load More')}
+            {t('loadMore', 'Load More')}
           </button>
         </div>
       )}

@@ -141,13 +141,13 @@ export default function FazailView() {
   }, [lang]);
 
   const categories = [
-    { id: 'all', label: 'All Fazail / تمام فضائل', icon: 'fas fa-star' },
-    { id: 'quran', label: 'Virtues of Quran / فضائل قرآن', icon: 'fas fa-quran' },
-    { id: 'salah', label: 'Virtues of Prayer / فضائل نماز', icon: 'fas fa-mosque' },
-    { id: 'dhikr', label: 'Dhikr / فضائل ذکر', icon: 'fas fa-hands' },
-    { id: 'ramadan', label: 'Ramadan / فضائل روزہ', icon: 'fas fa-moon' },
-    { id: 'knowledge', label: 'Knowledge / فضائل علم', icon: 'fas fa-graduation-cap' },
-    { id: 'charity', label: 'Charity / فضائل صدقہ', icon: 'fas fa-hand-holding-heart' },
+    { id: 'all', label: t('allFazail', 'All Fazail / تمام فضائل'), icon: 'fas fa-star' },
+    { id: 'quran', label: t('virtuesQuran', 'Virtues of Quran / فضائل قرآن'), icon: 'fas fa-quran' },
+    { id: 'salah', label: t('virtuesPrayer', 'Virtues of Prayer / فضائل نماز'), icon: 'fas fa-mosque' },
+    { id: 'dhikr', label: t('virtuesDhikr', 'Dhikr / فضائل ذکر'), icon: 'fas fa-hands' },
+    { id: 'ramadan', label: t('virtuesRamadan', 'Ramadan / فضائل روزہ'), icon: 'fas fa-moon' },
+    { id: 'knowledge', label: t('virtuesKnowledge', 'Knowledge / فضائل علم'), icon: 'fas fa-graduation-cap' },
+    { id: 'charity', label: t('virtuesCharity', 'Charity / فضائل صدقہ'), icon: 'fas fa-hand-holding-heart' },
   ];
 
   const filteredItems = FAZAIL_DATA.filter((item) => {
@@ -177,10 +177,10 @@ export default function FazailView() {
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3rem' }}>
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
         <h1 className="section-title">
-          <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> Fazail & Virtues of Good Deeds (فضائل)
+          <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> {t('fazailTitle', 'Fazail & Virtues of Good Deeds (فضائل)')}
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.5rem', maxWidth: '680px', marginInline: 'auto' }}>
-          Explore authentic virtues (فضائل و فضائلِ قرآن) in English & Urdu for reciting the Holy Quran, performing Salah, Dhikr, and good deeds.
+          {t('fazailDesc', 'Explore authentic virtues (فضائل و فضائلِ قرآن) in English & Urdu for reciting the Holy Quran, performing Salah, Dhikr, and good deeds.')}
         </p>
       </div>
 
@@ -199,7 +199,7 @@ export default function FazailView() {
             cursor: 'pointer'
           }}
         >
-          🌐 Both (English + Urdu)
+          🌐 {t('bothEngUrdu', 'Both (English + Urdu)')}
         </button>
 
         <button
@@ -215,7 +215,7 @@ export default function FazailView() {
             cursor: 'pointer'
           }}
         >
-          English Fazail
+          {t('englishFazail', 'English Fazail')}
         </button>
 
         <button
@@ -231,7 +231,7 @@ export default function FazailView() {
             cursor: 'pointer'
           }}
         >
-          اردو فضائل (Urdu)
+          {t('urduFazail', 'اردو فضائل (Urdu)')}
         </button>
       </div>
 
@@ -266,7 +266,7 @@ export default function FazailView() {
         <i className="fas fa-search" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
         <input
           type="text"
-          placeholder="Search virtues in English or Urdu..."
+          placeholder={t('searchFazailPlaceholder', 'Search virtues in English or Urdu...')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
@@ -322,21 +322,21 @@ export default function FazailView() {
               {/* English Translation */}
               {(selectedLang === 'both' || selectedLang === 'en') && (
                 <p style={{ fontSize: '0.95rem', color: '#f8fafc', fontStyle: 'italic', lineHeight: '1.6', marginBottom: '0.85rem' }}>
-                  English: "{item.translation_en}"
+                  {t('englishLabel', 'English')}: "{item.translation_en}"
                 </p>
               )}
 
               {/* Urdu Translation */}
               {(selectedLang === 'both' || selectedLang === 'ur') && (
                 <p style={{ fontSize: '1rem', color: '#fef3c7', lineHeight: '1.8', marginBottom: '0.85rem', textAlign: 'right', fontWeight: 600 }}>
-                  اردو: "{item.translation_ur}"
+                  {t('urduLabel', 'اردو')}: "{item.translation_ur}"
                 </p>
               )}
 
               {/* Key Benefit */}
               <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.75rem 1rem', borderRadius: '10px', borderLeft: '3px solid var(--accent-gold)', marginBottom: '0.85rem' }}>
                 <span style={{ fontSize: '0.82rem', color: 'var(--accent-gold)', fontWeight: 700, display: 'block', marginBottom: '0.2rem' }}>
-                  ✨ Virtue & Benefit (فضیلت و فائدہ):
+                  ✨ {t('virtueBenefit', 'Virtue & Benefit (فضیلت و فائدہ):')}
                 </span>
                 {(selectedLang === 'both' || selectedLang === 'en') && (
                   <span style={{ fontSize: '0.85rem', color: '#cbd5e1', display: 'block', marginBottom: '0.2rem' }}>{item.benefit_en}</span>

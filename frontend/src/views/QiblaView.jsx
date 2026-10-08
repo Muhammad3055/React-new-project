@@ -222,10 +222,10 @@ export default function QiblaView() {
             }}
           >
             {/* Compass Directions N, E, S, W */}
-            <span style={{ position: 'absolute', top: '10px', fontWeight: 900, color: '#dc2626', fontSize: '1.1rem' }}>N</span>
-            <span style={{ position: 'absolute', right: '14px', fontWeight: 800, color: '#78716c', fontSize: '0.95rem' }}>E</span>
-            <span style={{ position: 'absolute', bottom: '10px', fontWeight: 800, color: '#78716c', fontSize: '0.95rem' }}>S</span>
-            <span style={{ position: 'absolute', left: '14px', fontWeight: 800, color: '#78716c', fontSize: '0.95rem' }}>W</span>
+            <span style={{ position: 'absolute', top: '10px', fontWeight: 900, color: '#dc2626', fontSize: '1.1rem' }}>{t('north', 'N')}</span>
+            <span style={{ position: 'absolute', right: '14px', fontWeight: 800, color: '#78716c', fontSize: '0.95rem' }}>{t('east', 'E')}</span>
+            <span style={{ position: 'absolute', bottom: '10px', fontWeight: 800, color: '#78716c', fontSize: '0.95rem' }}>{t('south', 'S')}</span>
+            <span style={{ position: 'absolute', left: '14px', fontWeight: 800, color: '#78716c', fontSize: '0.95rem' }}>{t('west', 'W')}</span>
 
             {/* Qibla Direction Needle Arrow */}
             <div
@@ -274,7 +274,7 @@ export default function QiblaView() {
                     onClick={requestOrientationPermission}
                     style={{ padding: '0.4rem 0.9rem', borderRadius: '16px', background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
                   >
-                    <i className="fas fa-compass"></i> Enable Mobile Live Sensor
+                    <i className="fas fa-compass"></i> {t('enableMobileSensor', 'Enable Mobile Live Sensor')}
                   </button>
                 )}
               </div>
@@ -298,7 +298,7 @@ export default function QiblaView() {
                 disabled={loadingLoc}
                 style={{ padding: '0.35rem 0.75rem', borderRadius: '14px', background: '#ffffff', border: '1.5px solid var(--accent-gold)', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
               >
-                {loadingLoc ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-crosshairs"></i> GPS Detect</>}
+                {loadingLoc ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-crosshairs"></i> {t('gpsDetect', 'GPS Detect')}</>}
               </button>
             </div>
 
@@ -307,9 +307,9 @@ export default function QiblaView() {
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', fontSize: '0.82rem', color: '#78716c', fontWeight: 600 }}>
-              <span><i className="fas fa-globe"></i> Lat: <strong>{location.lat.toFixed(4)}°</strong></span>
-              <span><i className="fas fa-globe"></i> Lon: <strong>{location.lon.toFixed(4)}°</strong></span>
-              <span><i className="fas fa-kaaba"></i> Distance: <strong style={{ color: 'var(--accent-gold)' }}>{distanceToMakkah} km</strong></span>
+              <span><i className="fas fa-globe"></i> {t('latitudeAbbr', 'Lat')}: <strong>{location.lat.toFixed(4)}°</strong></span>
+              <span><i className="fas fa-globe"></i> {t('longitudeAbbr', 'Lon')}: <strong>{location.lon.toFixed(4)}°</strong></span>
+              <span><i className="fas fa-kaaba"></i> {t('distanceLabel', 'Distance')}: <strong style={{ color: 'var(--accent-gold)' }}>{distanceToMakkah} {t('km', 'km')}</strong></span>
             </div>
 
             {locError && (
@@ -330,7 +330,7 @@ export default function QiblaView() {
               onChange={(e) => handleCitySelect(e.target.value)}
               style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1.5px solid #d1d5db', fontSize: '0.88rem', background: '#ffffff', color: '#1c1917', fontWeight: 600, outline: 'none' }}
             >
-              <option value="">-- Choose Preset City --</option>
+              <option value="">{t('choosePresetCity', '-- Choose Preset City --')}</option>
               {PRESET_CITIES.map((c) => (
                 <option key={c.name} value={c.name}>{c.name}</option>
               ))}
@@ -347,7 +347,7 @@ export default function QiblaView() {
               <input
                 type="number"
                 step="any"
-                placeholder="Latitude (e.g. 30.1798)"
+                placeholder={t('latitudePlaceholder', 'Latitude (e.g. 30.1798)')}
                 value={customLat}
                 onChange={(e) => setCustomLat(e.target.value)}
                 style={{ flex: 1, minWidth: '120px', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.85rem', outline: 'none' }}
@@ -355,7 +355,7 @@ export default function QiblaView() {
               <input
                 type="number"
                 step="any"
-                placeholder="Longitude (e.g. 66.9750)"
+                placeholder={t('longitudePlaceholder', 'Longitude (e.g. 66.9750)')}
                 value={customLon}
                 onChange={(e) => setCustomLon(e.target.value)}
                 style={{ flex: 1, minWidth: '120px', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.85rem', outline: 'none' }}
@@ -364,7 +364,7 @@ export default function QiblaView() {
                 type="submit"
                 style={{ padding: '0.55rem 1rem', borderRadius: '10px', border: '2px solid var(--accent-gold)', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
               >
-                Apply
+                {t('apply', 'Apply')}
               </button>
             </form>
           </div>

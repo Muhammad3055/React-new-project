@@ -1,12 +1,14 @@
 import React from 'react';
 import { Film } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function VideosView() {
+  const { t } = useLanguage();
   return (
     <div className="container" style={{ padding: '3.5rem 1rem', textAlign: 'center' }}>
       <div className="section-header" style={{ marginBottom: '2rem' }}>
         <h1 className="section-title" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
-          <i className="fas fa-video" style={{ color: 'var(--accent-gold)', marginRight: '0.6rem' }}></i> Islamic Video Lectures & Bayanat
+          <i className="fas fa-video" style={{ color: 'var(--accent-gold)', marginRight: '0.6rem' }}></i> {t('videoLecturesTitle', 'Islamic Video Lectures & Bayanat')}
         </h1>
       </div>
 
@@ -28,15 +30,15 @@ export default function VideosView() {
         </div>
 
         <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.5rem' }}>
-          Videos Will Be Uploaded Soon!
+          {t('videosComingSoonTitle', 'Videos Will Be Uploaded Soon!')}
         </h2>
         
         <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#059669', marginBottom: '1rem', fontFamily: "'Jameel Noori Nastaleeq', 'Amiri', serif" }}>
-          ویڈیوز جلد اپ لوڈ کی جائیں گی
+          {t('videosComingSoonUrdu', 'ویڈیوز جلد اپ لوڈ کی جائیں گی')}
         </h3>
 
         <p style={{ fontSize: '0.95rem', color: '#44403c', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto' }}>
-          We are preparing high-quality Islamic video lectures, Seerah series, and Quranic reflections. Stay tuned — video bayanat will be uploaded soon!
+          {t('videosComingSoonDesc', 'We are preparing high-quality Islamic video lectures, Seerah series, and Quranic reflections. Stay tuned — video bayanat will be uploaded soon!')}
         </p>
       </div>
     </div>

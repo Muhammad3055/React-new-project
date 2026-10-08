@@ -91,11 +91,11 @@ export default function ImagesView({ user }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
         <h1 className="page-title" style={{ margin: 0 }}>
           <i className="fas fa-images" style={{ color: 'var(--accent-gold)', marginRight: '0.75rem' }}></i>
-          Islamic Images Gallery
+          {t('imagesGalleryTitle', 'Islamic Images Gallery')}
         </h1>
         {isAdmin && (
           <button onClick={() => setShowUploadModal(true)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#059669', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '50px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
-            <i className="fas fa-cloud-upload-alt"></i> Upload Image
+            <i className="fas fa-cloud-upload-alt"></i> {t('uploadImage', 'Upload Image')}
           </button>
         )}
       </div>
@@ -120,7 +120,7 @@ export default function ImagesView({ user }) {
               transition: 'all 0.2s'
             }}
           >
-            {cat.name}
+            {t(`category_${cat.id}`, cat.name)}
           </button>
         ))}
       </div>
@@ -129,13 +129,13 @@ export default function ImagesView({ user }) {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem' }}>
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-          <p style={{ marginTop: '1rem', color: '#64748b', fontWeight: 600 }}>Loading Images...</p>
+          <p style={{ marginTop: '1rem', color: '#64748b', fontWeight: 600 }}>{t('loadingImages', 'Loading Images...')}</p>
         </div>
       ) : images.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
           <i className="fas fa-image fa-3x" style={{ color: '#cbd5e1', marginBottom: '1rem' }}></i>
-          <h3 style={{ color: '#334155' }}>No images found in this category</h3>
-          <p style={{ color: '#64748b' }}>Check back later or try another category.</p>
+          <h3 style={{ color: '#334155' }}>{t('noImagesFound', 'No images found in this category')}</h3>
+          <p style={{ color: '#64748b' }}>{t('checkBackLater', 'Check back later or try another category.')}</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>

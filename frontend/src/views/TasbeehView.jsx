@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function TasbeehView() {
+  const { t } = useLanguage();
   const dhikrPresets = [
     { id: 'subhanallah', arabic: 'سُبْحَانَ ٱللَّٰهِ', transliteration: 'Subhanallah', meaning: 'Glory be to Allah', target: 33 },
     { id: 'alhamdulillah', arabic: 'ٱلْحَمْدُ لِلَّٰهِ', transliteration: 'Alhamdulillah', meaning: 'Praise be to Allah', target: 33 },
@@ -76,10 +78,10 @@ export default function TasbeehView() {
       {/* Header */}
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title" style={{ justifyContent: 'center' }}>
-          <i className="fas fa-hand-holding-heart" style={{ color: 'var(--accent-gold)' }}></i> Digital Tasbeeh & Dhikr Counter
+          <i className="fas fa-hand-holding-heart" style={{ color: 'var(--accent-gold)' }}></i> {t('tasbeehTitle', 'Digital Tasbeeh & Dhikr Counter')}
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.4rem' }}>
-          Remember Allah abundantly with your interactive digital counter. Select a supplication or customize your target.
+          {t('tasbeehDesc', 'Remember Allah abundantly with your interactive digital counter. Select a supplication or customize your target.')}
         </p>
       </div>
 
@@ -155,12 +157,12 @@ export default function TasbeehView() {
             {count}
           </span>
           <span style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 700, marginTop: '0.25rem' }}>
-            Target: {target}
+            {t('target', 'Target')}: {target}
           </span>
         </div>
 
         <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '1.5rem' }}>
-          Tap circle or press spacebar to count
+          {t('tapToCount', 'Tap circle or press spacebar to count')}
         </p>
 
         {/* Action Controls */}
@@ -178,7 +180,7 @@ export default function TasbeehView() {
               fontSize: '0.85rem'
             }}
           >
-            <i className="fas fa-undo"></i> Reset Count
+            <i className="fas fa-undo"></i> {t('resetCount', 'Reset Count')}
           </button>
 
           <button
@@ -194,7 +196,7 @@ export default function TasbeehView() {
               fontSize: '0.85rem'
             }}
           >
-            <i className={`fas ${soundEnabled ? 'fa-volume-up' : 'fa-volume-mute'}`}></i> {soundEnabled ? 'Sound On' : 'Sound Off'}
+            <i className={`fas ${soundEnabled ? 'fa-volume-up' : 'fa-volume-mute'}`}></i> {soundEnabled ? t('soundOn', 'Sound On') : t('soundOff', 'Sound Off')}
           </button>
 
           <select
@@ -210,10 +212,10 @@ export default function TasbeehView() {
               fontSize: '0.85rem'
             }}
           >
-            <option value={33}>Target: 33</option>
-            <option value={100}>Target: 100</option>
-            <option value={500}>Target: 500</option>
-            <option value={1000}>Target: 1000</option>
+            <option value={33}>{t('target', 'Target')}: 33</option>
+            <option value={100}>{t('target', 'Target')}: 100</option>
+            <option value={500}>{t('target', 'Target')}: 500</option>
+            <option value={1000}>{t('target', 'Target')}: 1000</option>
           </select>
         </div>
       </div>
@@ -221,7 +223,7 @@ export default function TasbeehView() {
       {/* Completion Counter Footer */}
       <div style={{ textAlign: 'center', padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
         <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>
-          🏆 Total Completed Rounds Today: <span style={{ color: 'var(--accent-gold-dark)', fontSize: '1.1rem' }}>{totalCompleted}</span>
+          🏆 {t('totalRoundsToday', 'Total Completed Rounds Today:')} <span style={{ color: 'var(--accent-gold-dark)', fontSize: '1.1rem' }}>{totalCompleted}</span>
         </p>
       </div>
     </div>

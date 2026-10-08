@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ALL_30_JUZ } from '../data/juz_data';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }) {
+  const { t } = useLanguage();
   const [completedJuz, setCompletedJuz] = useState(() => {
     try {
       const saved = localStorage.getItem('khatam_quran_progress');
@@ -30,13 +32,13 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
   const progressPercent = Math.round((completedCount / 30) * 100);
 
   const resetTracker = () => {
-    if (window.confirm("Are you sure you want to reset your 30-Day Khatam progress?")) {
+    if (window.confirm(t('confirmResetKhatam', "Are you sure you want to reset your 30-Day Khatam progress?"))) {
       setCompletedJuz({});
     }
   };
 
   const startNewKhatam = () => {
-    if (window.confirm("Congratulations on completing your Khatam! Would you like to reset and start a fresh 30-Day Khatam Quran journey?")) {
+    if (window.confirm(t('confirmNewKhatam', "Congratulations on completing your Khatam! Would you like to reset and start a fresh 30-Day Khatam Quran journey?"))) {
       setCompletedJuz({});
     }
   };
@@ -49,13 +51,13 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
             <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', tracking: '1px', fontWeight: 800, background: 'rgba(245,158,11,0.2)', color: 'var(--accent-gold)', padding: '3px 10px', borderRadius: '14px', border: '1px solid var(--accent-gold)' }}>
-              <i className="fas fa-calendar-check"></i> 30-Day Planner
+              <i className="fas fa-calendar-check"></i> {t('30DayPlanner', '30-Day Planner')}
             </span>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--accent-gold)', marginTop: '0.4rem', marginBottom: '0.2rem' }}>
-              Khatam Quran 30-Day Progress Tracker
+              {t('khatamTrackerTitle', 'Khatam Quran 30-Day Progress Tracker')}
             </h1>
             <p style={{ fontSize: '0.9rem', color: '#cbd5e1', maxWidth: '650px' }}>
-              Complete the Holy Quran in 30 days by reading 1 Juz (approx. 20 pages) daily. Track your progress, mark daily Juz as finished, and study with English, Urdu & Brahui translations.
+              {t('khatamTrackerDesc', 'Complete the Holy Quran in 30 days by reading 1 Juz (approx. 20 pages) daily. Track your progress, mark daily Juz as finished, and study with English, Urdu & Brahui translations.')}
             </p>
           </div>
 
@@ -65,7 +67,7 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
               onClick={() => navigateToTab('read')}
               style={{ background: 'var(--accent-gold)', color: 'var(--primary-dark)', fontWeight: 800 }}
             >
-              <i className="fas fa-book-open"></i> Read Quran Now
+              <i className="fas fa-book-open"></i> {t('readQuranNow', 'Read Quran Now')}
             </button>
             {completedCount === 30 ? (
               <button
@@ -73,14 +75,14 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
                 onClick={startNewKhatam}
                 style={{ background: '#10b981', color: '#fff' }}
               >
-                <i className="fas fa-trophy"></i> Start New Khatam
+                <i className="fas fa-trophy"></i> {t('startNewKhatam', 'Start New Khatam')}
               </button>
             ) : (
               <button
                 onClick={resetTracker}
                 style={{ padding: '0.6rem 1.1rem', borderRadius: '25px', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
               >
-                <i className="fas fa-redo-alt"></i> Reset Progress
+                <i className="fas fa-redo-alt"></i> {t('resetProgress', 'Reset Progress')}
               </button>
             )}
           </div>
@@ -91,9 +93,9 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
           
           {/* Progress Card */}
           <div style={{ background: 'rgba(255,255,255,0.08)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.25)' }}>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>Overall Completion</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>{t('overallCompletion', 'Overall Completion')}</p>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-gold)', margin: '0.2rem 0' }}>
-              {completedCount} <span style={{ fontSize: '0.9rem', color: '#cbd5e1', fontWeight: 600 }}>/ 30 Juz ({progressPercent}%)</span>
+              {completedCount} <span style={{ fontSize: '0.9rem', color: '#cbd5e1', fontWeight: 600 }}>/ 30 {t('juzLabel', 'Juz')} ({progressPercent}%)</span>
             </h3>
             <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.15)', borderRadius: '10px', overflow: 'hidden', marginTop: '0.4rem' }}>
               <div style={{ width: `${progressPercent}%`, height: '100%', background: 'linear-gradient(90deg, #f59e0b, #10b981)', transition: 'width 0.4s ease' }}></div>
@@ -102,31 +104,31 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
 
           {/* Remaining Card */}
           <div style={{ background: 'rgba(255,255,255,0.08)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)' }}>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>Remaining Juz</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>{t('remainingJuz', 'Remaining Juz')}</p>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', margin: '0.2rem 0' }}>
-              {30 - completedCount} <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>Juz Left</span>
+              {30 - completedCount} <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>{t('juzLeft', 'Juz Left')}</span>
             </h3>
             <p style={{ fontSize: '0.75rem', color: '#10b981', margin: 0, fontWeight: 600 }}>
-              <i className="fas fa-check-circle"></i> Target: 1 Juz Daily (~20 pgs)
+              <i className="fas fa-check-circle"></i> {t('khatamTarget', 'Target: 1 Juz Daily (~20 pgs)')}
             </p>
           </div>
 
           {/* Target Goal Card */}
           <div style={{ background: 'rgba(255,255,255,0.08)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)' }}>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>Planner Schedule</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>{t('plannerSchedule', 'Planner Schedule')}</p>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', margin: '0.2rem 0' }}>
-              30 Days <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>Plan</span>
+              30 {t('days', 'Days')} <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>{t('plan', 'Plan')}</span>
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', margin: 0, fontWeight: 600 }}>
-              <i className="fas fa-star"></i> Ramadan & Daily Khatam
+              <i className="fas fa-star"></i> {t('ramadanKhatam', 'Ramadan & Daily Khatam')}
             </p>
           </div>
 
           {/* Dynamic Badge Card */}
           <div style={{ background: 'rgba(255,255,255,0.08)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)' }}>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>Status Level</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, fontWeight: 700 }}>{t('statusLevel', 'Status Level')}</p>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: completedCount === 30 ? '#10b981' : 'var(--accent-gold)', margin: '0.35rem 0' }}>
-              {completedCount === 30 ? '🏆 Khatam Complete!' : (completedCount > 15 ? '🌟 Halfway Completed!' : (completedCount > 0 ? '📖 Reading in Progress' : '🚀 Ready to Begin'))}
+              {completedCount === 30 ? `🏆 ${t('khatamComplete', 'Khatam Complete!')}` : (completedCount > 15 ? `🌟 ${t('halfwayCompleted', 'Halfway Completed!')}` : (completedCount > 0 ? `📖 ${t('readingInProgress', 'Reading in Progress')}` : `🚀 ${t('readyToBegin', 'Ready to Begin')}`))}
             </h3>
           </div>
 
@@ -136,10 +138,10 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
       {/* ===== 30-DAY JUZ GRID ===== */}
       <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <i className="fas fa-th-large"></i> Daily 30 Juz Schedule Map
+          <i className="fas fa-th-large"></i> {t('dailyScheduleMap', 'Daily 30 Juz Schedule Map')}
         </h2>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          Click checkbox to mark completed
+          {t('clickToMarkCompleted', 'Click checkbox to mark completed')}
         </span>
       </div>
 
@@ -162,10 +164,10 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: isDone ? '#047857' : 'var(--accent-gold)', background: isDone ? 'rgba(16,185,129,0.15)' : '#fef3c7', padding: '2px 8px', borderRadius: '12px', display: 'inline-block', marginBottom: '0.3rem' }}>
-                    Day {juz.id} &bull; Juz {juz.id}
+                    {t('dayLabel', 'Day')} {juz.id} &bull; {t('juzLabel', 'Juz')} {juz.id}
                   </span>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>
-                    Juz {juz.id}: <span style={{ color: 'var(--text-main)' }}>{juz.nameTranslit}</span>
+                    {t('juzLabel', 'Juz')} {juz.id}: <span style={{ color: 'var(--text-main)' }}>{juz.nameTranslit}</span>
                   </h3>
                 </div>
 
@@ -189,7 +191,7 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
                     onChange={() => toggleJuzComplete(juz.id)}
                     style={{ width: '18px', height: '18px', accentColor: '#10b981', cursor: 'pointer' }}
                   />
-                  <span>{isDone ? 'Finished ✓' : 'Mark Completed'}</span>
+                  <span>{isDone ? t('finishedStatus', 'Finished ✓') : t('markCompleted', 'Mark Completed')}</span>
                 </label>
 
                 {/* Read Juz Button */}
@@ -210,7 +212,7 @@ export default function KhatamTrackerView({ navigateToTab, user, openAuthModal }
                     gap: '0.3rem'
                   }}
                 >
-                  <i className="fas fa-book"></i> Read
+                  <i className="fas fa-book"></i> {t('readDoc', 'Read')}
                 </button>
               </div>
             </div>
