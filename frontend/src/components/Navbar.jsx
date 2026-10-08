@@ -233,7 +233,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 <option value="en" style={{ background: '#022c22', color: '#ffffff' }}>🇬🇧 English</option>
                 <option value="ur" style={{ background: '#022c22', color: '#ffffff' }}>🇵🇰 اردو</option>
                 <option value="ar" style={{ background: '#022c22', color: '#ffffff' }}>🇸🇦 العربية</option>
-                <option value="br" style={{ background: '#022c22', color: '#ffffff' }}>🇵🇰 براہوئی</option>
               </select>
             </div>
 
@@ -462,7 +461,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               <option value="en">🇬🇧 English</option>
               <option value="ur">🇵🇰 اردو</option>
               <option value="ar">🇸🇦 العربية</option>
-              <option value="br">🇵🇰 براہوئی</option>
             </select>
           </div>
 
