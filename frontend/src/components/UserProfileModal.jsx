@@ -379,15 +379,15 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
 
         {/* TABS NAVIGATION GRID - 100% RESPONSIVE FOR ALL SCREEN WIDTHS & ZOOM LEVELS */}
         <div className="profile-tabs-grid">
-          <button className={`profile-tab-pill ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i className="fas fa-user-circle"></i> Profile</button>
-          <button className={`profile-tab-pill ${activeTab === 'frame' ? 'active' : ''}`} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> VIP Frames</button>
-          <button className={`profile-tab-pill ${activeTab === 'password' ? 'active' : ''}`} onClick={() => setActiveTab('password')}><i className="fas fa-shield-alt"></i> Security & 2FA</button>
-          <button className={`profile-tab-pill ${activeTab === 'sessions' ? 'active' : ''}`} onClick={() => setActiveTab('sessions')}><i className="fas fa-laptop"></i> Devices</button>
-          <button className={`profile-tab-pill ${activeTab === 'activity' ? 'active' : ''}`} onClick={() => setActiveTab('activity')}><i className="fas fa-history"></i> Activity</button>
-          <button className={`profile-tab-pill ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}><i className="fas fa-bell"></i> Alerts</button>
-          <button className={`profile-tab-pill ${activeTab === 'privacy' ? 'active' : ''}`} onClick={() => setActiveTab('privacy')}><i className="fas fa-user-shield"></i> Privacy</button>
-          <button className={`profile-tab-pill ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}><i className="fas fa-cog"></i> Settings</button>
-          <button className={`profile-tab-pill ${activeTab === 'delete' ? 'active' : ''}`} style={{ background: activeTab === 'delete' ? '#ef4444' : 'rgba(239,68,68,0.12)', color: activeTab === 'delete' ? '#fff' : '#f87171' }} onClick={() => setActiveTab('delete')}><i className="fas fa-trash-alt"></i> Account</button>
+          <button className={`profile-tab-pill ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i className="fas fa-user-circle"></i> {t('tabProfile', 'Profile')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'frame' ? 'active' : ''}`} onClick={() => setActiveTab('frame')}><i className="fas fa-crown"></i> {t('tabVIP', 'VIP Frames')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'password' ? 'active' : ''}`} onClick={() => setActiveTab('password')}><i className="fas fa-shield-alt"></i> {t('tabSecurity', 'Security & 2FA')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'sessions' ? 'active' : ''}`} onClick={() => setActiveTab('sessions')}><i className="fas fa-laptop"></i> {t('tabDevices', 'Devices')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'activity' ? 'active' : ''}`} onClick={() => setActiveTab('activity')}><i className="fas fa-history"></i> {t('tabActivity', 'Activity')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}><i className="fas fa-bell"></i> {t('tabAlerts', 'Alerts')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'privacy' ? 'active' : ''}`} onClick={() => setActiveTab('privacy')}><i className="fas fa-user-shield"></i> {t('tabPrivacy', 'Privacy')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}><i className="fas fa-cog"></i> {t('tabSettings', 'Settings')}</button>
+          <button className={`profile-tab-pill ${activeTab === 'delete' ? 'active' : ''}`} style={{ background: activeTab === 'delete' ? '#ef4444' : 'rgba(239,68,68,0.12)', color: activeTab === 'delete' ? '#fff' : '#f87171' }} onClick={() => setActiveTab('delete')}><i className="fas fa-trash-alt"></i> {t('tabAccount', 'Account')}</button>
         </div>
 
         {/* ========================================================================= */}
@@ -395,61 +395,69 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
         {/* ========================================================================= */}
         {activeTab === 'profile' && (
           <form onSubmit={handleSaveProfile} className="profile-glass-card">
-            <h4 style={{ margin: '0 0 1rem 0', color: 'var(--accent-gold)', fontSize: '1.05rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <i className="fas fa-id-card"></i> Personal Information Sub-World
+            <h4 style={{ margin: '0 0 1.25rem 0', color: 'var(--accent-gold)', fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.6rem', borderBottom: '1px dashed rgba(245,158,11,0.3)', paddingBottom: '0.75rem' }}>
+              <i className="fas fa-id-badge"></i> {t('profileTitle', 'Personal Information')}
             </h4>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-              <div>
-                <label style={labelStyle}>{t('fullNameLabel', 'Full Name / Display Name')}</label>
-                <input type="text" style={inputStyle} value={fullName} onChange={e => setFullName(e.target.value)} placeholder="e.g. Muhammad Khidrani" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
+              {/* Column 1 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', background: 'rgba(0,0,0,0.15)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div>
+                  <label style={labelStyle}><i className="fas fa-user" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('fullNameLabel', 'Full Name / Display Name')}</label>
+                  <input type="text" style={inputStyle} value={fullName} onChange={e => setFullName(e.target.value)} placeholder={t('fullNamePlaceholder', 'e.g. Muhammad Khidrani')} />
+                </div>
+                <div>
+                  <label style={labelStyle}><i className="fas fa-at" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('handleLabel', 'Handle / Tag (@nickname)')}</label>
+                  <input type="text" style={inputStyle} value={nickname} onChange={e => setNickname(e.target.value)} placeholder="@username" />
+                </div>
+                <div>
+                  <label style={labelStyle}><i className="fas fa-calendar-alt" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('dobLabel', 'Date of Birth')}</label>
+                  <input type="date" style={inputStyle} value={dob} onChange={e => setDob(e.target.value)} />
+                </div>
               </div>
-              <div>
-                <label style={labelStyle}>Handle / Tag (@nickname)</label>
-                <input type="text" style={inputStyle} value={nickname} onChange={e => setNickname(e.target.value)} placeholder="@muhammad" />
+
+              {/* Column 2 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', background: 'rgba(0,0,0,0.15)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div>
+                  <label style={labelStyle}><i className="fas fa-venus-mars" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('genderLabel', 'Gender Identity')}</label>
+                  <select style={inputStyle} value={gender} onChange={e => setGender(e.target.value)}>
+                    <option value="male">{t('genderMale', 'Brother (Male)')}</option>
+                    <option value="female">{t('genderFemale', 'Sister (Female)')}</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}><i className="fas fa-phone-alt" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('contactPhone', 'Contact Phone Number')}</label>
+                  <input type="tel" style={inputStyle} value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="+92 300 0000000" />
+                </div>
+                <div>
+                  <label style={labelStyle}><i className="fas fa-id-card-alt" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('accountUsername', 'Account Username (System ID)')}</label>
+                  <input type="text" disabled style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} value={user?.username || 'root'} />
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-              <div>
-                <label style={labelStyle}>{t('dobLabel', 'Date of Birth')}</label>
-                <input type="date" style={inputStyle} value={dob} onChange={e => setDob(e.target.value)} />
-              </div>
-              <div>
-                <label style={labelStyle}>{t('genderLabel', 'Gender Identity')}</label>
-                <select style={inputStyle} value={gender} onChange={e => setGender(e.target.value)}>
-                  <option value="male">{t('genderMale', 'Brother (Male)')}</option>
-                  <option value="female">{t('genderFemale', 'Sister (Female)')}</option>
-                </select>
-              </div>
+            {/* Full Width Bio */}
+            <div style={{ marginBottom: '1.25rem', background: 'rgba(0,0,0,0.15)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <label style={labelStyle}><i className="fas fa-quote-left" style={{ color: 'var(--accent-gold)', marginRight: '0.4rem' }}></i> {t('bioLabel', 'Personal Bio & Favorite Ayah Note')}</label>
+              <textarea rows="3" style={{ ...inputStyle, resize: 'vertical' }} value={bio} onChange={e => setBio(e.target.value)} placeholder={t('bioPlaceholder', 'Share your favorite Ayah or personal Islamic reflection...')} />
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={labelStyle}>{t('contactPhone', 'Contact Phone Number')}</label>
-              <input type="tel" style={inputStyle} value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="+92 300 0000000" />
-            </div>
-
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={labelStyle}>{t('bioLabel', 'Personal Bio & Favorite Ayah Note')}</label>
-              <textarea rows="3" style={{ ...inputStyle, resize: 'vertical' }} value={bio} onChange={e => setBio(e.target.value)} placeholder="Share your favorite Ayah or personal Islamic reflection..." />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
-              <div>
-                <label style={labelStyle}>Account Username (System ID)</label>
-                <input type="text" disabled style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} value={user?.username || 'root'} />
+            {/* Portal Tier Banner */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(14, 165, 233, 0.1)', border: '1px solid rgba(14, 165, 233, 0.3)', padding: '0.85rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
+                <i className="fas fa-award"></i>
               </div>
               <div>
-                <label style={labelStyle}>Member Portal Tier</label>
-                <input type="text" disabled style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed', color: 'var(--accent-gold)', fontWeight: 800 }} value={isAdmin ? 'Superuser Administrator' : 'VIP Verified Portal Member'} />
+                <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>{t('memberTier', 'Member Portal Tier')}</span>
+                <span style={{ fontSize: '1.05rem', color: '#38bdf8', fontWeight: 900 }}>{isAdmin ? 'Superuser Administrator' : 'VIP Verified Portal Member'}</span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap' }}>
               <button type="button" onClick={handleLogout} style={{ padding: '0.75rem 1.4rem', background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <i className="fas fa-sign-out-alt"></i> Sign Out Account
+                <i className="fas fa-sign-out-alt"></i> {t('signOutBtn', 'Sign Out Account')}
               </button>
-              <button type="submit" disabled={saving} style={{ padding: '0.75rem 1.8rem', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 14px rgba(245,158,11,0.3)' }}>
+              <button type="submit" disabled={saving} style={{ padding: '0.85rem 2.2rem', background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 900, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem', boxShadow: '0 4px 14px rgba(245,158,11,0.3)', transition: 'transform 0.2s' }}>
                 {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
                 {t('saveProfile', 'Save Profile Details')}
               </button>
