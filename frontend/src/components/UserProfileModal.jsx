@@ -443,13 +443,37 @@ export default function UserProfileModal({ user, onClose, onUpdateUser }) {
             </div>
 
             {/* Portal Tier Banner */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(14, 165, 233, 0.1)', border: '1px solid rgba(14, 165, 233, 0.3)', padding: '0.85rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(14, 165, 233, 0.1)', border: '1px solid rgba(14, 165, 233, 0.3)', padding: '0.85rem 1.25rem', borderRadius: '12px', marginBottom: '1.25rem' }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem' }}>
                 <i className="fas fa-award"></i>
               </div>
               <div>
                 <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>{t('memberTier', 'Member Portal Tier')}</span>
                 <span style={{ fontSize: '1.05rem', color: '#38bdf8', fontWeight: 900 }}>{isAdmin ? 'Superuser Administrator' : 'VIP Verified Portal Member'}</span>
+              </div>
+            </div>
+
+            {/* Badges & Achievements Section */}
+            <div style={{ marginBottom: '1.5rem', background: 'rgba(0,0,0,0.15)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <h5 style={{ margin: '0 0 1rem 0', color: 'var(--accent-gold)', fontSize: '1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <i className="fas fa-medal"></i> Achievements & Badges
+              </h5>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+                <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '1rem', borderRadius: '12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🌟</div>
+                  <h6 style={{ margin: '0 0 0.25rem 0', color: '#10b981', fontSize: '0.9rem', fontWeight: 800 }}>Scholar Badge</h6>
+                  <p style={{ margin: 0, fontSize: '0.7rem', color: '#94a3b8' }}>Scored 100% in 5 Quizzes</p>
+                </div>
+                <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '1rem', borderRadius: '12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📖</div>
+                  <h6 style={{ margin: '0 0 0.25rem 0', color: '#f59e0b', fontSize: '0.9rem', fontWeight: 800 }}>Hafiz Badge</h6>
+                  <p style={{ margin: 0, fontSize: '0.7rem', color: '#94a3b8' }}>Memorized 30 Surahs</p>
+                </div>
+                <div style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '1rem', borderRadius: '12px', textAlign: 'center', opacity: 0.5 }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem', filter: 'grayscale(100%)' }}>🔥</div>
+                  <h6 style={{ margin: '0 0 0.25rem 0', color: '#38bdf8', fontSize: '0.9rem', fontWeight: 800 }}>Streak Master</h6>
+                  <p style={{ margin: 0, fontSize: '0.7rem', color: '#94a3b8' }}>30 Days Quiz Streak</p>
+                </div>
               </div>
             </div>
 

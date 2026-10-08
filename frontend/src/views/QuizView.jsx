@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { getApiUrl } from '../utils/apiCache';
+import { QUIZ_DATA } from '../data/quiz_data';
 
 export default function QuizView() {
   const { lang } = useLanguage();
@@ -55,18 +57,46 @@ export default function QuizView() {
       }
     }
 
-    // Fetch the automatic daily quiz from the API
+    // Fetch the automatic daily quiz from the API or AI
     const fetchDailyQuiz = async () => {
       try {
-        const response = await fetch('/api/quiz/daily/');
-        if (!response.ok) {
-          throw new Error('Failed to load quiz');
-        }
+        const apiUrl = getApiUrl('/api/ai-assistant/');
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ 
+            prompt: "Generate a daily Islamic quiz with exactly 5 multiple choice questions. The topics should include Tajweed rules, Islamic History (Prophets, Seerah, Sahabah), and general Quranic knowledge. Return ONLY a valid JSON array where each object has: 'question' (string), 'options' (array of 4 strings), 'correctIndex' (integer 0-3), and 'explanation' (string). Do not return any markdown tags or other text, just the raw JSON array.",
+            language: 'en'
+          })
+        });
+
+        if (!response.ok) throw new Error('AI request failed');
         const data = await response.json();
-        setDailyQuestions(data.questions || []);
+        
+        // Try to extract JSON array from AI response
+        const aiText = data.answer || data.reply || "";
+        const jsonMatch = aiText.match(/\[.*\]/s);
+        if (jsonMatch) {
+          const parsedQs = JSON.parse(jsonMatch[0]);
+          if (Array.isArray(parsedQs) && parsedQs.length > 0) {
+            // Convert to format compatible with getTrans (make them objects with 'en' key)
+            const formattedQs = parsedQs.map(q => ({
+              question: { en: q.question, ur: q.question, ar: q.question },
+              options: { en: q.options, ur: q.options, ar: q.options },
+              correctIndex: q.correctIndex,
+              explanation: { en: q.explanation, ur: q.explanation, ar: q.explanation }
+            }));
+            setDailyQuestions(formattedQs);
+            return;
+          }
+        }
+        throw new Error("Invalid AI JSON format");
       } catch (err) {
-        console.error(err);
-        setError("Unable to load today's quiz. Please try again later.");
+        console.error("AI Quiz failed, falling back to static data:", err);
+        // Fallback: pick 5 random questions from QUIZ_DATA
+        const shuffled = [...QUIZ_DATA].sort(() => 0.5 - Math.random());
+        setDailyQuestions(shuffled.slice(0, 5));
       } finally {
         setLoading(false);
       }
