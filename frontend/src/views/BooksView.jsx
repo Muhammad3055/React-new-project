@@ -209,13 +209,13 @@ export default function BooksView({ openReportModal, user }) {
   const getFormatBadge = (fileType) => {
     switch (fileType) {
       case 'doc':
-        return { label: 'Word (.docx)', icon: 'fas fa-file-word', bg: '#eff6ff', color: '#2563eb', border: '#bfdbfe' };
+        return { label: t('wordDocExt', 'Word (.docx)'), icon: 'fas fa-file-word', bg: '#eff6ff', color: '#2563eb', border: '#bfdbfe' };
       case 'ppt':
-        return { label: 'PowerPoint (.pptx)', icon: 'fas fa-file-powerpoint', bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
+        return { label: t('pptDocExt', 'PowerPoint (.pptx)'), icon: 'fas fa-file-powerpoint', bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
       case 'book':
-        return { label: 'Book (100+ pgs)', icon: 'fas fa-book', bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
+        return { label: t('bookBadge', 'Book (100+ pgs)'), icon: 'fas fa-book', bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
       default:
-        return { label: 'PDF Document', icon: 'fas fa-file-pdf', bg: '#fef2f2', color: '#dc2626', border: '#fecaca' };
+        return { label: t('pdfBadge', 'PDF Document'), icon: 'fas fa-file-pdf', bg: '#fef2f2', color: '#dc2626', border: '#fecaca' };
     }
   };
 
@@ -660,11 +660,11 @@ export default function BooksView({ openReportModal, user }) {
                       <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0.9rem' }}>
                         <h3 className="card-title" style={{ fontSize: '0.95rem', marginBottom: '0.2rem', color: 'var(--primary-dark)', fontWeight: 800 }}>{bk.title}</h3>
                         <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.15rem 0 0.35rem 0' }}>
-                          <i className="fas fa-pen-nib" style={{ color: 'var(--accent-gold)' }}></i> {bk.author}
+                          <i className="fas fa-pen-nib" style={{ color: 'var(--accent-gold)' }}></i> {t('byAuthor', 'By')} {bk.author}
                         </p>
                         <p style={{ fontSize: '0.75rem', color: 'var(--primary-light)', fontWeight: 600, marginBottom: '0.4rem' }}>
                           <i className={bk.file_type === 'ppt' ? 'fas fa-file-powerpoint' : 'fas fa-file-alt'} style={{ marginRight: '0.25rem' }}></i>
-                          {bk.file_type === 'ppt' ? `${bk.pages_count} Slides` : `${bk.pages_count} Pages`} &bull; {bk.language}
+                          {bk.file_type === 'ppt' ? `${bk.pages_count} ${t('slides', 'Slides')}` : `${bk.pages_count} ${t('pages', 'Pages')}`} &bull; {bk.language}
                         </p>
                         <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: '1.4', flex: 1, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{bk.description}</p>
                       </div>
@@ -677,7 +677,7 @@ export default function BooksView({ openReportModal, user }) {
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> Read
+                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> {t('readDoc', 'Read')}
                         </button>
 
                         <a
@@ -763,7 +763,7 @@ export default function BooksView({ openReportModal, user }) {
                         </div>
                         <div>
                           <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{bk.title}</h4>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>By {bk.author} • {bk.pages_count || 100} Pages</span>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t('byAuthor', 'By')} {bk.author} • {bk.pages_count || 100} {t('pages', 'Pages')}</span>
                         </div>
                       </div>
 
@@ -774,7 +774,7 @@ export default function BooksView({ openReportModal, user }) {
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> Read
+                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> {t('readDoc', 'Read')}
                         </button>
                         <a
                           href={getCleanDocumentUrl(getDocRawUrl(bk))}

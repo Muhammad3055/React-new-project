@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Calendar, Sparkles, X, Clock, MapPin, RefreshCw } from 'lucide-react';
 import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
+import { useLanguage } from '../context/LanguageContext';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Hijri Months list
@@ -101,6 +102,7 @@ async function fetchRamadanDates(hijriYear, lat, lon, countryCode) {
 // Main Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function IslamicCalendarModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
   const [hijriData, setHijriData] = useState(null);
   const [ramadanInfo, setRamadanInfo] = useState(null);
   const [locationLabel, setLocationLabel] = useState('Global (UTC)');
@@ -280,7 +282,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#f59e0b' }}>
-                Islamic Hijri Calendar
+                {t('islamicHijriCalendar', 'Islamic Hijri Calendar')}
               </h3>
               <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <MapPin size={11} style={{ color: '#34d399' }} />
@@ -312,7 +314,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
           }}>
             <div>
               <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: '#34d399', letterSpacing: '1px' }}>
-                Today — Gregorian &amp; Hijri
+                {t('todayGregorianHijri', 'Today — Gregorian & Hijri')}
               </span>
               {loading ? (
                 <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -374,10 +376,10 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
                     <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#f59e0b', lineHeight: 1 }}>
                       {ramadanCountdown.days}
                     </span>
-                    <span style={{ fontSize: '1rem', color: '#fcd34d', fontWeight: 700 }}>days remaining</span>
+                    <span style={{ fontSize: '1rem', color: '#fcd34d', fontWeight: 700 }}>{t('daysRemaining', 'days remaining')}</span>
                   </div>
                   <p style={{ margin: '0.4rem 0 0', fontSize: '0.82rem', color: '#94a3b8' }}>
-                    until the blessed month of Ramadan begins · {ramadanCountdown.total} days of fasting
+                    {t('untilRamadanBegins', 'until the blessed month of Ramadan begins')} · {ramadanCountdown.total} {t('daysOfFasting', 'days of fasting')}
                   </p>
                   <div style={{ marginTop: '0.75rem', height: '6px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
                     <div style={{
@@ -434,7 +436,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
               fontSize: '1rem', fontWeight: 800, color: '#f59e0b',
               marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 0.75rem'
             }}>
-              <Calendar size={18} /> 12 Sacred Hijri Months
+              <Calendar size={18} /> {t('sacredHijriMonths', '12 Sacred Hijri Months')}
             </h4>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '0.55rem' }}>
               {HIJRI_MONTHS_DISPLAY.map((month, idx) => {
@@ -477,7 +479,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
               fontSize: '1rem', fontWeight: 800, color: '#f59e0b',
               marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 0.75rem'
             }}>
-              <Sparkles size={18} /> Important Islamic Events
+              <Sparkles size={18} /> {t('importantIslamicEvents', 'Important Islamic Events')}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {ISLAMIC_EVENTS.map((evt, idx) => (

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 const SEERAH_EVENTS = [
   {
@@ -114,6 +115,7 @@ const SEERAH_EVENTS = [
 ];
 
 export default function SeerahView() {
+  const { t } = useLanguage();
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState(1);
@@ -135,10 +137,10 @@ export default function SeerahView() {
         marginBottom: '2rem', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
       }}>
         <h1 style={{ margin: '0 0 0.5rem 0', color: '#f59e0b', fontSize: '2rem', fontWeight: '800', fontFamily: 'Outfit, sans-serif' }}>
-          📜 Seerah & Stories of the Prophets Timeline
+          📜 {t('seerahTitle', 'Seerah & Stories of the Prophets Timeline')}
         </h1>
         <p style={{ margin: 0, color: '#cbd5e1', fontSize: '0.95rem' }}>
-          Explore key milestones in the life of Prophet Muhammad (PBUH) & noble Prophets of Islam.
+          {t('seerahSubtitle', 'Explore key milestones in the life of Prophet Muhammad (PBUH) & noble Prophets of Islam.')}
         </p>
       </div>
 
@@ -150,7 +152,7 @@ export default function SeerahView() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search events, locations, or Quranic references..."
+            placeholder={t('searchSeerahPlaceholder', 'Search events, locations, or Quranic references...')}
             style={{
               width: '100%', padding: '0.85rem 1rem 0.85rem 2.8rem', background: '#09090b',
               border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: '#fff', fontSize: '0.95rem'
@@ -160,10 +162,10 @@ export default function SeerahView() {
 
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           {[
-            { id: 'all', label: 'All Milestones' },
-            { id: 'prophet_meccan', label: 'Meccan Era (PBUH)' },
-            { id: 'prophet_medinan', label: 'Medinan Era (PBUH)' },
-            { id: 'other_prophets', label: 'Stories of Prophets (AS)' }
+            { id: 'all', label: t('allMilestones', 'All Milestones') },
+            { id: 'prophet_meccan', label: t('meccanEra', 'Meccan Era (PBUH)') },
+            { id: 'prophet_medinan', label: t('medinanEra', 'Medinan Era (PBUH)') },
+            { id: 'other_prophets', label: t('storiesOfProphets', 'Stories of Prophets (AS)') }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -220,9 +222,9 @@ export default function SeerahView() {
 
                 {isExpanded && (
                   <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed rgba(255,255,255,0.15)', color: '#e2e8f0', fontSize: '0.9rem', lineHeight: '1.6' }}>
-                    <p style={{ margin: '0 0 0.75rem 0' }}>{event.details}</p>
+                    <p style={{ margin: '0 0 0.75rem 0' }}>{t(event.details, event.details)}</p>
                     <div style={{ background: 'rgba(6, 78, 59, 0.4)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '10px', padding: '0.6rem 1rem', color: '#6ee7b7', fontSize: '0.85rem', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <i className="fas fa-book-quran"></i> Reference: {event.quranRef}
+                      <i className="fas fa-book-quran"></i> {t('reference', 'Reference')}: {event.quranRef}
                     </div>
                   </div>
                 )}
@@ -234,7 +236,7 @@ export default function SeerahView() {
                     cursor: 'pointer', padding: '0.4rem 0 0 0', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.5rem'
                   }}
                 >
-                  {isExpanded ? 'Show Less ▲' : 'Read Detailed Historical Account ▼'}
+                  {isExpanded ? t('showLess', 'Show Less ▲') : t('readDetailedAccount', 'Read Detailed Historical Account ▼')}
                 </button>
               </div>
             </div>
