@@ -51,6 +51,9 @@ const CardCreatorView = lazy(() => import('./views/CardCreatorView'));
 const LiveView = lazy(() => import('./views/LiveView'));
 const DailyAzkarView = lazy(() => import('./views/DailyAzkarView'));
 const WorldClockView = lazy(() => import('./views/WorldClockView'));
+const DreamView = lazy(() => import('./views/DreamView'));
+const MuhasabaView = lazy(() => import('./views/MuhasabaView'));
+const QuranicMapsView = lazy(() => import('./views/QuranicMapsView'));
 import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
@@ -460,6 +463,18 @@ function MainAppContent() {
 
           {activeTab === 'seerah' && (
             <SeerahView />
+          )}
+
+          {activeTab === 'dream' && (
+            <DreamView />
+          )}
+
+          {activeTab === 'muhasaba' && (
+            <MuhasabaView />
+          )}
+
+          {activeTab === 'maps' && (
+            <QuranicMapsView />
           )}
 
           {activeTab === 'quran' && (

@@ -42,6 +42,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: '📺 ' + t('liveMakkahMadinah', '24/7 Makkah & Madinah Live'), icon: 'fas fa-broadcast-tower', action: () => { navigateToTab('live'); setShowExtrasMenu(false); } },
     { label: '🌐 ' + t('worldClockTodo', 'World Clock & Todo List'), icon: 'fas fa-globe', action: () => { navigateToTab('worldClock'); setShowExtrasMenu(false); } },
     { label: '🤲 ' + t('dailyRemindersAzkar', 'Daily Reminders & Azkar'), icon: 'fas fa-praying-hands', action: () => { navigateToTab('azkar'); setShowExtrasMenu(false); } },
+    { label: '🌙 ' + t('dreamInterpretation', 'AI Dream Interpretation'), icon: 'fas fa-moon', action: () => { navigateToTab('dream'); setShowExtrasMenu(false); } },
+    { label: '📊 ' + t('muhasabaTracker', 'Daily Muhasaba Tracker'), icon: 'fas fa-tasks', action: () => { navigateToTab('muhasaba'); setShowExtrasMenu(false); } },
+    { label: '🗺️ ' + t('quranicMaps', 'Interactive Quranic Maps'), icon: 'fas fa-map-marked-alt', action: () => { navigateToTab('maps'); setShowExtrasMenu(false); } },
 
     { label: '🛡️ ' + t('dailyProtection', 'Daily Protection (Nazar)'), icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
     { label: '🧠 ' + t('dailyQuiz', 'Daily Islamic Quiz'), icon: 'fas fa-question-circle', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },
