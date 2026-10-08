@@ -1,13 +1,15 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AboutView({ navigateToTab }) {
+  const { t } = useLanguage();
   const features = [
-    { icon: 'fas fa-book-open', title: '114 Surahs Quran Reader', desc: 'Read the complete Holy Quran with verse-by-verse audio playback, bookmarking, and clear translations.' },
-    { icon: 'fas fa-headphones', title: 'HD Audio Recitations', desc: 'Listen to recitations from over 20 world-renowned Qaris in high-definition audio with continuous playback.' },
-    { icon: 'fas fa-scroll', title: 'Authentic Hadith Collections', desc: 'Search and study canonical Hadith texts including Sahih al-Bukhari, Sahih Muslim, and Sunan collections.' },
-    { icon: 'fas fa-bookmark', title: 'Tafseer & Commentary', desc: 'Gain deeper insights into divine verses with verse-by-verse scholarly explanations and Tafseer.' },
-    { icon: 'fas fa-clock', title: 'Live Prayer Times & Hijri Calendar', desc: 'Real-time calculation of daily Nimaz times based on location along with a complete monthly timetable.' },
-    { icon: 'fas fa-file-pdf', title: 'Digital PDF Library & Media', desc: 'Access free downloadable Islamic PDF books and curated video lectures by verified Islamic scholars.' }
+    { icon: 'fas fa-book-open', title: t('featureQuranTitle', '114 Surahs Quran Reader'), desc: t('featureQuranDesc', 'Read the complete Holy Quran with verse-by-verse audio playback, bookmarking, and clear translations.') },
+    { icon: 'fas fa-headphones', title: t('featureAudioTitle', 'HD Audio Recitations'), desc: t('featureAudioDesc', 'Listen to recitations from over 20 world-renowned Qaris in high-definition audio with continuous playback.') },
+    { icon: 'fas fa-scroll', title: t('featureHadithTitle', 'Authentic Hadith Collections'), desc: t('featureHadithDesc', 'Search and study canonical Hadith texts including Sahih al-Bukhari, Sahih Muslim, and Sunan collections.') },
+    { icon: 'fas fa-bookmark', title: t('featureTafseerTitle', 'Tafseer & Commentary'), desc: t('featureTafseerDesc', 'Gain deeper insights into divine verses with verse-by-verse scholarly explanations and Tafseer.') },
+    { icon: 'fas fa-clock', title: t('featurePrayerTitle', 'Live Prayer Times & Hijri Calendar'), desc: t('featurePrayerDesc', 'Real-time calculation of daily Nimaz times based on location along with a complete monthly timetable.') },
+    { icon: 'fas fa-file-pdf', title: t('featureLibraryTitle', 'Digital PDF Library & Media'), desc: t('featureLibraryDesc', 'Access free downloadable Islamic PDF books and curated video lectures by verified Islamic scholars.') }
   ];
 
   return (
@@ -38,7 +40,7 @@ export default function AboutView({ navigateToTab }) {
             textTransform: 'uppercase',
             letterSpacing: '1px'
           }}>
-            About Our Platform
+            {t('aboutOurPlatform', 'About Our Platform')}
           </span>
           <span style={{
             background: 'rgba(5, 150, 105, 0.2)',
@@ -50,15 +52,15 @@ export default function AboutView({ navigateToTab }) {
             fontWeight: 700,
             letterSpacing: '0.5px'
           }}>
-            🗓️ Started in 2026
+            🗓️ {t('startedIn', 'Started in 2026')}
           </span>
         </div>
 
         <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0.5rem 0 1rem 0', letterSpacing: '-0.5px' }}>
-          Maktaba Tul Muslim
+          {t('maktabaTulMuslim', 'Maktaba Tul Muslim')}
         </h1>
         <p style={{ color: '#e2e8f0', maxWidth: '800px', margin: '0 auto', fontSize: '1.15rem', lineHeight: '1.8' }}>
-          Established and started in <strong>2026</strong>, Maktaba Tul Muslim is a modern, ad-free Islamic digital portal dedicated to facilitating the study, recitation, and understanding of the Holy Quran, authentic Hadiths, Tafseer, and Islamic literature worldwide.
+          {t('aboutHeroDesc', 'Established and started in')} <strong>2026</strong>, {t('aboutHeroDesc2', 'Maktaba Tul Muslim is a modern, ad-free Islamic digital portal dedicated to facilitating the study, recitation, and understanding of the Holy Quran, authentic Hadiths, Tafseer, and Islamic literature worldwide.')}
         </p>
       </section>
 
@@ -72,13 +74,13 @@ export default function AboutView({ navigateToTab }) {
               <div style={{ background: 'var(--accent-gold-light)', color: 'var(--accent-gold-dark)', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
                 <i className="fas fa-bullseye"></i>
               </div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Our Mission & Vision</h2>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>{t('missionVisionTitle', 'Our Mission & Vision')}</h2>
             </div>
             <p style={{ color: 'var(--text-main)', fontSize: '1rem', lineHeight: '1.7', marginBottom: '1rem' }}>
-              Our goal is to build an accessible, beautifully crafted, and fast digital ecosystem that connects Muslims and learners of all backgrounds to authentic Islamic teachings.
+              {t('missionVisionDesc1', 'Our goal is to build an accessible, beautifully crafted, and fast digital ecosystem that connects Muslims and learners of all backgrounds to authentic Islamic teachings.')}
             </p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.7' }}>
-              We strive to deliver seamless Quranic reading, audio recitations, and scholarly commentary across all devices without distractions or commercialization.
+              {t('missionVisionDesc2', 'We strive to deliver seamless Quranic reading, audio recitations, and scholarly commentary across all devices without distractions or commercialization.')}
             </p>
           </div>
 
@@ -87,13 +89,13 @@ export default function AboutView({ navigateToTab }) {
               <div style={{ background: 'rgba(6, 78, 59, 0.1)', color: 'var(--primary-emerald)', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
                 <i className="fas fa-star"></i>
               </div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Sadaqah Jariyah Initiative</h2>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>{t('sadaqahJariyahTitle', 'Sadaqah Jariyah Initiative')}</h2>
             </div>
             <p style={{ color: 'var(--text-main)', fontSize: '1rem', lineHeight: '1.7', marginBottom: '1rem' }}>
-              This portal is built purely for the sake of Allah SWT to serve Muslims, students of knowledge, and researchers across all nations.
+              {t('sadaqahJariyahDesc1', 'This portal is built purely for the sake of Allah SWT to serve Muslims, students of knowledge, and researchers across all nations.')}
             </p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.7' }}>
-              All audio recitations, PDF books, Hadith databases, and Tafseer tools are provided completely free of charge without commercial ads.
+              {t('sadaqahJariyahDesc2', 'All audio recitations, PDF books, Hadith databases, and Tafseer tools are provided completely free of charge without commercial ads.')}
             </p>
           </div>
         </div>
@@ -102,7 +104,7 @@ export default function AboutView({ navigateToTab }) {
         <section style={{ marginBottom: '4rem' }}>
           <div className="section-header" style={{ textAlign: 'center', justifyContent: 'center', flexDirection: 'column', gap: '0.5rem', marginBottom: '2.5rem' }}>
             <h2 className="section-title" style={{ fontSize: '2rem', justifyContent: 'center' }}>
-              <i className="fas fa-cubes" style={{ color: 'var(--accent-gold)' }}></i> Core Features of Maktaba Tul Muslim
+              <i className="fas fa-cubes" style={{ color: 'var(--accent-gold)' }}></i> {t('coreFeaturesTitle', 'Core Features of Maktaba Tul Muslim')}
             </h2>
             <div style={{ width: '80px', height: '4px', background: 'var(--accent-gold)', borderRadius: '2px' }}></div>
           </div>
@@ -135,14 +137,14 @@ export default function AboutView({ navigateToTab }) {
                 وَمَنْ أَحْسَنُ قَوْلًا مِّمَّن دَعَا إِلَى اللَّهِ وَعَمِلَ صَالِحًا
               </p>
               <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: '#ffffff' }}>
-                Dedicated to Serving the Global Ummah
+                {t('dedicatedServingUmmah', 'Dedicated to Serving the Global Ummah')}
               </h2>
               <p style={{ color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '1.5rem' }}>
-                Maktaba Tul Muslim was created with sincere devotion to provide a clean, peaceful, and respectful online space for reading the Word of Allah, listening to authentic recitations, and learning Islamic knowledge.
+                {t('dedicatedServingDesc', 'Maktaba Tul Muslim was created with sincere devotion to provide a clean, peaceful, and respectful online space for reading the Word of Allah, listening to authentic recitations, and learning Islamic knowledge.')}
               </p>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', background: 'rgba(255,255,255,0.08)', padding: '0.75rem 1.75rem', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.3)' }}>
                 <i className="fas fa-heart" style={{ color: 'var(--accent-gold)', fontSize: '1.2rem' }}></i>
-                <span style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: 600 }}>May Allah accept this effort from us and benefit all who use it.</span>
+                <span style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: 600 }}>{t('mayAllahAccept', 'May Allah accept this effort from us and benefit all who use it.')}</span>
               </div>
             </div>
           </div>
@@ -153,23 +155,23 @@ export default function AboutView({ navigateToTab }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--accent-gold)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>114</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Complete Surahs</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>{t('completeSurahs', 'Complete Surahs')}</p>
             </div>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--primary-emerald)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>20+</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Famous Reciters</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>{t('famousReciters', 'Famous Reciters')}</p>
             </div>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid #b45309' }}>
               <h3 style={{ fontSize: '2.4rem', color: '#b45309', fontWeight: 800, margin: 0 }}>2026</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Started & Founded</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>{t('startedFounded', 'Started & Founded')}</p>
             </div>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--accent-gold)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>100%</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Ad-Free & Free</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>{t('adFreeFree', 'Ad-Free & Free')}</p>
             </div>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--primary-emerald)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>24/7</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>Digital Access</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>{t('digitalAccess', 'Digital Access')}</p>
             </div>
           </div>
         </section>
@@ -183,10 +185,10 @@ export default function AboutView({ navigateToTab }) {
           borderRadius: '20px'
         }}>
           <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>
-            Have Questions or Suggestions?
+            {t('haveQuestions', 'Have Questions or Suggestions?')}
           </h2>
           <p style={{ color: '#78350f', maxWidth: '600px', margin: '0 auto 1.5rem auto', fontSize: '1rem' }}>
-            We welcome feedback, suggestions, and feature requests from our global community.
+            {t('welcomeFeedback', 'We welcome feedback, suggestions, and feature requests from our global community.')}
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
             <a
@@ -208,7 +210,7 @@ export default function AboutView({ navigateToTab }) {
                 if (typeof navigateToTab === 'function') navigateToTab('contact');
               }}
             >
-              <i className="fas fa-envelope"></i> Contact Us Today
+              <i className="fas fa-envelope"></i> {t('contactUsToday', 'Contact Us Today')}
             </a>
           </div>
         </section>

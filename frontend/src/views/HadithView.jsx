@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
+import { useLanguage } from '../context/LanguageContext';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import Pagination from '../components/Pagination';
 
 export default function HadithView({ openReportModal, user }) {
+  const { t } = useLanguage();
   const [hadiths, setHadiths] = useState([]);
   const [booksList, setBooksList] = useState([]);
   const [query, setQuery] = useState('');
@@ -127,19 +129,18 @@ export default function HadithView({ openReportModal, user }) {
   };
 
   const gradesOptions = [
-    { value: '', label: 'All Grades', icon: 'fas fa-layer-group' },
-    { value: 'Sahih', label: 'Sahih (Authentic)', icon: 'fas fa-check-circle', color: '#15803d' },
-    { value: 'Hasan', label: 'Hasan (Good)', icon: 'fas fa-star', color: '#0369a1' },
+    { value: '', label: t('allGrades', 'All Grades'), icon: 'fas fa-layer-group' },
+    { value: 'Sahih', label: t('sahihAuthentic', 'Sahih (Authentic)'), icon: 'fas fa-check-circle', color: '#15803d' },
+    { value: 'Hasan', label: t('hasanGood', 'Hasan (Good)'), icon: 'fas fa-star', color: '#0369a1' },
   ];
 
   return (
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3rem' }}>
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title">
-          <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> Hadith Collections & Authenticity Grades
+          <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> {t('hadithCollectionsTitle', 'Hadith Collections & Authenticity Grades')}
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem', maxWidth: '650px', marginInline: 'auto' }}>
-          Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings: <strong>Sahih</strong> (Authentic) and <strong>Hasan</strong> (Good).
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem', maxWidth: '650px', marginInline: 'auto' }} dangerouslySetInnerHTML={{ __html: t('exploreHadithsPart1', 'Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings:') + ` <strong>Sahih</strong> (${t('authentic', 'Authentic')}) ${t('and', 'and')} <strong>Hasan</strong> (${t('good', 'Good')}).` }}>
         </p>
       </div>
 
@@ -173,24 +174,24 @@ export default function HadithView({ openReportModal, user }) {
 
       <div className="filter-bar" style={{ marginBottom: '2rem' }}>
         <div className="filter-group" style={{ flex: 1 }}>
-          <span className="filter-label"><i className="fas fa-search"></i> Search:</span>
+          <span className="filter-label"><i className="fas fa-search"></i> {t('searchLabel', 'Search:')}</span>
           <input
             type="text"
             className="filter-input"
-            placeholder="Search translation, chapter, narrator..."
+            placeholder={t('searchHadithPlaceholder', 'Search translation, chapter, narrator...')}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setPage(1); }}
           />
         </div>
 
         <div className="filter-group">
-          <span className="filter-label"><i className="fas fa-book"></i> Hadith Book:</span>
+          <span className="filter-label"><i className="fas fa-book"></i> {t('hadithBook', 'Hadith Book:')}</span>
           <select
             className="filter-select"
             value={selectedBook}
             onChange={(e) => { setSelectedBook(e.target.value); setPage(1); }}
           >
-            <option value="">All Collections</option>
+            <option value="">{t('allCollections', 'All Collections')}</option>
             {booksList.map((b, idx) => (
               <option key={idx} value={b}>{b}</option>
             ))}
@@ -201,7 +202,7 @@ export default function HadithView({ openReportModal, user }) {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem' }}>
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-          <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>Loading Hadiths...</p>
+          <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>{t('loadingHadiths', 'Loading Hadiths...')}</p>
         </div>
       ) : (
         <div className="grid-2">
@@ -253,7 +254,7 @@ export default function HadithView({ openReportModal, user }) {
 
               {h.chapter && (
                 <p style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 600, marginBottom: '0.75rem' }}>
-                  <i className="fas fa-bookmark" style={{ marginRight: '0.4rem' }}></i> Chapter: {h.chapter}
+                  <i className="fas fa-bookmark" style={{ marginRight: '0.4rem' }}></i> {t('chapter', 'Chapter:')} {h.chapter}
                 </p>
               )}
 
@@ -261,7 +262,7 @@ export default function HadithView({ openReportModal, user }) {
               
               {h.narrated_by && (
                 <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.4rem' }}>
-                  <i className="fas fa-user"></i> Narrated by: {h.narrated_by}
+                  <i className="fas fa-user"></i> {t('narratedBy', 'Narrated by:')} {h.narrated_by}
                 </p>
               )}
               
@@ -273,7 +274,7 @@ export default function HadithView({ openReportModal, user }) {
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: '#ffffff', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
               <i className="fas fa-info-circle fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
-                Authentic Hadith text collections are currently being compiled and verified, and will be uploaded soon.
+                {t('hadithComingSoon', 'Authentic Hadith text collections are currently being compiled and verified, and will be uploaded soon.')}
               </p>
             </div>
           )}

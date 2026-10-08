@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function TafseerView({ openReportModal, user }) {
+  const { t } = useLanguage();
   const [tafseers, setTafseers] = useState([]);
   const [surahList, setSurahList] = useState([]);
   const [query, setQuery] = useState('');
@@ -114,31 +116,31 @@ export default function TafseerView({ openReportModal, user }) {
   return (
     <div className="container">
       <div className="section-header">
-        <h1 className="section-title"><i className="fas fa-bookmark" style={{ color: 'var(--accent-gold)' }}></i> Quran Tafseer & Exegesis</h1>
+        <h1 className="section-title"><i className="fas fa-bookmark" style={{ color: 'var(--accent-gold)' }}></i> {t('quranTafseerTitle', 'Quran Tafseer & Exegesis')}</h1>
       </div>
 
       <div className="filter-bar">
         <div className="filter-group">
-          <span className="filter-label"><i className="fas fa-search"></i> Search:</span>
+          <span className="filter-label"><i className="fas fa-search"></i> {t('searchLabel', 'Search:')}</span>
           <input
             type="text"
             className="filter-input"
-            placeholder="Search Tafseer text, scholar..."
+            placeholder={t('searchTafseerPlaceholder', 'Search Tafseer text, scholar...')}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setPage(1); }}
           />
         </div>
 
         <div className="filter-group">
-          <span className="filter-label"><i className="fas fa-book-open"></i> Surah:</span>
+          <span className="filter-label"><i className="fas fa-book-open"></i> {t('surahLabel', 'Surah:')}</span>
           <select
             className="filter-select"
             value={selectedSurah}
             onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
           >
-            <option value="">All Surahs</option>
+            <option value="">{t('allSurahs', 'All Surahs')}</option>
             {surahList.map((s) => (
-              <option key={s.surah_number} value={s.surah_number}>Surah {s.surah_number}. {s.surah_name}</option>
+              <option key={s.surah_number} value={s.surah_number}>{t('surah', 'Surah')} {s.surah_number}. {s.surah_name}</option>
             ))}
           </select>
         </div>
@@ -147,7 +149,7 @@ export default function TafseerView({ openReportModal, user }) {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem' }}>
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
-          <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>Loading Tafseer Commentary...</p>
+          <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>{t('loadingTafseer', 'Loading Tafseer Commentary...')}</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -155,7 +157,7 @@ export default function TafseerView({ openReportModal, user }) {
             <div key={item.id} className="card" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <span className="surah-number-badge" style={{ width: 'auto', padding: '0.3rem 1rem', borderRadius: '20px', fontSize: '0.9rem' }}>
-                  Surah {item.surah_name} ({item.surah_number}:{item.ayah_number})
+                  {t('surah', 'Surah')} {item.surah_name} ({item.surah_number}:{item.ayah_number})
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary-light)' }}>{item.scholar_name}</span>
@@ -166,14 +168,14 @@ export default function TafseerView({ openReportModal, user }) {
                       style={{
                         color: userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? '#3b82f6' : undefined
                       }}
-                      title={userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? "Tafseer Saved" : "Save Tafseer"}
+                      title={userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? t('tafseerSaved', "Tafseer Saved") : t('saveTafseer', "Save Tafseer")}
                     >
                       <i className={userSavedTafseers.some(t => t.surah === item.surah_number && t.ayah === item.ayah_number) ? "fas fa-bookmark" : "far fa-bookmark"}></i>
                     </button>
                   )}
                   <button
                     className="verse-btn"
-                    title="Report Issue"
+                    title={t('reportIssue', "Report Issue")}
                     onClick={() => openReportModal('tafseer', `Surah ${item.surah_number}:${item.ayah_number}`)}
                   >
                     <i className="far fa-flag"></i>
@@ -185,7 +187,7 @@ export default function TafseerView({ openReportModal, user }) {
               <p style={{ fontSize: '1rem', fontStyle: 'italic', color: '#334155', marginBottom: '1rem' }}>"{item.translation}"</p>
               
               <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '10px', borderLeft: '4px solid var(--accent-gold)' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>Scholarly Commentary:</h4>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>{t('scholarlyCommentary', 'Scholarly Commentary:')}</h4>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', lineHeight: '1.7' }}>{item.tafseer_text}</p>
               </div>
             </div>
@@ -195,7 +197,7 @@ export default function TafseerView({ openReportModal, user }) {
             <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#ffffff', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
               <i className="fas fa-info-circle fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
-                Tafseer Ibn Kathir text commentary is currently being compiled and verified, and will be uploaded soon.
+                {t('tafseerComingSoon', 'Tafseer Ibn Kathir text commentary is currently being compiled and verified, and will be uploaded soon.')}
               </p>
             </div>
           )}
@@ -206,11 +208,11 @@ export default function TafseerView({ openReportModal, user }) {
       {totalPages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '2.5rem 0' }}>
           <button className="btn-play" disabled={page <= 1} onClick={() => setPage(page - 1)} style={{ opacity: page <= 1 ? 0.5 : 1 }}>
-            <i className="fas fa-chevron-left"></i> Previous
+            <i className="fas fa-chevron-left"></i> {t('previous', 'Previous')}
           </button>
-          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>Page {page} of {totalPages}</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{t('page', 'Page')} {page} {t('of', 'of')} {totalPages}</span>
           <button className="btn-play" disabled={page >= totalPages} onClick={() => setPage(page + 1)} style={{ opacity: page >= totalPages ? 0.5 : 1 }}>
-            Next <i className="fas fa-chevron-right"></i>
+            {t('next', 'Next')} <i className="fas fa-chevron-right"></i>
           </button>
         </div>
       )}

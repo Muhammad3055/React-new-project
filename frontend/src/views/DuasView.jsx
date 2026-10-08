@@ -15,17 +15,17 @@ export default function DuasView({ playTrack, user }) {
   }, [activeCategory, search]);
 
   const categories = [
-    { id: 'all', label: 'All Du\'as', icon: 'fas fa-hands' },
-    { id: 'morning', label: 'Morning Adhkar', icon: 'fas fa-sun' },
-    { id: 'evening', label: 'Evening Adhkar', icon: 'fas fa-moon' },
-    { id: 'salah', label: 'After Prayer', icon: 'fas fa-kaaba' },
-    { id: 'sleep', label: 'Sleep & Waking', icon: 'fas fa-bed' },
-    { id: 'forgiveness', label: 'Forgiveness & Istighfar', icon: 'fas fa-heart' },
-    { id: 'anxiety', label: 'Anxiety & Relief', icon: 'fas fa-shield-alt' },
-    { id: 'guidance', label: 'Knowledge & Exams', icon: 'fas fa-book-reader' },
-    { id: 'travel', label: 'Travel & Home', icon: 'fas fa-plane' },
-    { id: 'eating', label: 'Food & Fasting', icon: 'fas fa-utensils' },
-    { id: 'family', label: 'Family & Children', icon: 'fas fa-users' }
+    { id: 'all', label: t('catAllDuas', 'All Du\'as'), icon: 'fas fa-hands' },
+    { id: 'morning', label: t('catMorning', 'Morning Adhkar'), icon: 'fas fa-sun' },
+    { id: 'evening', label: t('catEvening', 'Evening Adhkar'), icon: 'fas fa-moon' },
+    { id: 'salah', label: t('catAfterPrayer', 'After Prayer'), icon: 'fas fa-kaaba' },
+    { id: 'sleep', label: t('catSleep', 'Sleep & Waking'), icon: 'fas fa-bed' },
+    { id: 'forgiveness', label: t('catForgiveness', 'Forgiveness & Istighfar'), icon: 'fas fa-heart' },
+    { id: 'anxiety', label: t('catAnxiety', 'Anxiety & Relief'), icon: 'fas fa-shield-alt' },
+    { id: 'guidance', label: t('catKnowledge', 'Knowledge & Exams'), icon: 'fas fa-book-reader' },
+    { id: 'travel', label: t('catTravel', 'Travel & Home'), icon: 'fas fa-plane' },
+    { id: 'eating', label: t('catFood', 'Food & Fasting'), icon: 'fas fa-utensils' },
+    { id: 'family', label: t('catFamily', 'Family & Children'), icon: 'fas fa-users' }
   ];
 
   const duasData = [
@@ -366,10 +366,10 @@ export default function DuasView({ playTrack, user }) {
       {/* Banner */}
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title" style={{ justifyContent: 'center' }}>
-          <i className="fas fa-hands" style={{ color: 'var(--accent-gold)' }}></i> Authentic Du'as & Daily Adhkar
+          <i className="fas fa-hands" style={{ color: 'var(--accent-gold)' }}></i> {t('authenticDuas', 'Authentic Du\'as & Daily Adhkar')}
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.4rem', maxWidth: '750px', marginInline: 'auto' }}>
-          Explore authentic supplications from the Holy Quran & Sunnah with complete translations, recommended recitation times, and virtues.
+          {t('exploreDuas', 'Explore authentic supplications from the Holy Quran & Sunnah with complete translations, recommended recitation times, and virtues.')}
         </p>
       </div>
 
@@ -407,7 +407,7 @@ export default function DuasView({ playTrack, user }) {
         <input
           type="text"
           className="form-input"
-          placeholder="Search in English or Urdu (e.g. Morning, Forgiveness, سفر, استغفار)..."
+          placeholder={t('searchDuas', 'Search in English or Urdu (e.g. Morning, Forgiveness, سفر, استغفار)...')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ paddingLeft: '2.8rem', borderRadius: '30px', border: '1.5px solid var(--accent-gold)' }}
@@ -542,7 +542,7 @@ export default function DuasView({ playTrack, user }) {
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#475569', fontWeight: 700 }}>
                 <i className="fas fa-bookmark" style={{ color: 'var(--accent-gold)' }}></i>
-                <span>Reference: {item.reference}</span>
+                <span>{t('reference', 'Reference')}: {item.reference}</span>
               </div>
             </div>
           </div>
@@ -551,7 +551,7 @@ export default function DuasView({ playTrack, user }) {
         {filteredDuas.length === 0 && (
           <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
             <i className="fas fa-search fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
-            <p>No supplications found matching your search term.</p>
+            <p>{t('noDuasFound', 'No supplications found matching your search term.')}</p>
           </div>
         )}
             </div>

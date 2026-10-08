@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ContactView() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [responseMsg, setResponseMsg] = useState({ type: '', text: '' });
@@ -22,19 +24,19 @@ export default function ContactView() {
           setResponseMsg({ type: 'success', text: data.message });
           setFormData({ name: '', email: '', subject: '', message: '' });
         } else {
-          setResponseMsg({ type: 'error', text: data.error || 'Failed to send message.' });
+          setResponseMsg({ type: 'error', text: data.error || t('failedToSend', 'Failed to send message.') });
         }
       })
       .catch(() => {
         setSubmitting(false);
-        setResponseMsg({ type: 'error', text: 'Network error submitting contact form.' });
+        setResponseMsg({ type: 'error', text: t('networkError', 'Network error submitting contact form.') });
       });
   };
 
   return (
     <div className="container">
       <div className="section-header">
-        <h1 className="section-title"><i className="fas fa-envelope-open-text" style={{ color: 'var(--accent-gold)' }}></i> Contact Us & Feedback</h1>
+        <h1 className="section-title"><i className="fas fa-envelope-open-text" style={{ color: 'var(--accent-gold)' }}></i> {t('contactUsTitle', 'Contact Us & Feedback')}</h1>
       </div>
 
       <div className="grid-2" style={{ alignItems: 'start', gap: '2rem' }}>
@@ -42,9 +44,9 @@ export default function ContactView() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '20px' }}>
             <h2 className="arabic-font" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}>وَقُل رَّبِّ زِدْنِي عِلْمًا</h2>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>Get in Touch with Portal Admins</h3>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>{t('getInTouch', 'Get in Touch with Portal Admins')}</h3>
             <p style={{ fontSize: '0.9rem', color: '#e2e8f0', lineHeight: '1.6' }}>
-              Have questions, feedback, content suggestions, or partnership inquiries? Fill out the contact form or reach out through our official support channels.
+              {t('contactDesc', 'Have questions, feedback, content suggestions, or partnership inquiries? Fill out the contact form or reach out through our official support channels.')}
             </p>
           </div>
 
@@ -54,7 +56,7 @@ export default function ContactView() {
                 <i className="fas fa-envelope"></i>
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>Email Support</h4>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{t('emailSupport', 'Email Support')}</h4>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>maktabtulmuslim26@gmail.com</p>
 
               </div>
@@ -67,7 +69,7 @@ export default function ContactView() {
                 <i className="fas fa-clock"></i>
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>Support Hours</h4>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{t('supportHours', 'Support Hours')}</h4>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Monday &ndash; Saturday (9:00 AM &ndash; 6:00 PM EST)</p>
               </div>
             </div>
@@ -79,7 +81,7 @@ export default function ContactView() {
                 <i className="fas fa-globe"></i>
               </div>
               <div>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>Global Community</h4>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{t('globalCommunity', 'Global Community')}</h4>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Serving millions of Quran learners worldwide</p>
               </div>
             </div>
@@ -89,16 +91,16 @@ export default function ContactView() {
         {/* Right Side: Interactive Form */}
         <div className="card" style={{ padding: '2rem' }}>
           <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--primary-dark)', marginBottom: '1.25rem' }}>
-            <i className="fas fa-paper-plane" style={{ color: 'var(--accent-gold)' }}></i> Send Us a Message
+            <i className="fas fa-paper-plane" style={{ color: 'var(--accent-gold)' }}></i> {t('sendUsMessage', 'Send Us a Message')}
           </h2>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label">Full Name *</label>
+              <label className="form-label">{t('fullName', 'Full Name *')}</label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="Enter your name..."
+                placeholder={t('enterYourName', 'Enter your name...')}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
@@ -106,11 +108,11 @@ export default function ContactView() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Email Address *</label>
+              <label className="form-label">{t('emailAddress', 'Email Address *')}</label>
               <input
                 type="email"
                 className="form-input"
-                placeholder="name@example.com"
+                placeholder={t('nameExample', 'name@example.com')}
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
@@ -118,22 +120,22 @@ export default function ContactView() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Subject</label>
+              <label className="form-label">{t('subject', 'Subject')}</label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="Feedback / Question / Inquiry..."
+                placeholder={t('feedbackPlaceholder', 'Feedback / Question / Inquiry...')}
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Message *</label>
+              <label className="form-label">{t('messageLabel', 'Message *')}</label>
               <textarea
                 className="form-textarea"
                 rows="5"
-                placeholder="Write your message here..."
+                placeholder={t('writeMessage', 'Write your message here...')}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 required
@@ -157,7 +159,7 @@ export default function ContactView() {
             )}
 
             <button type="submit" className="btn-submit" disabled={submitting}>
-              <i className="fas fa-paper-plane"></i> {submitting ? 'Sending Message...' : 'Send Message'}
+              <i className="fas fa-paper-plane"></i> {submitting ? t('sendingMessage', 'Sending Message...') : t('sendMessage', 'Send Message')}
             </button>
           </form>
         </div>
