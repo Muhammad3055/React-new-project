@@ -35,12 +35,12 @@ export default function WorldClockView() {
 
   // Todo List State (Persisted in LocalStorage)
   const defaultTodos = [
-    { id: 1, text: 'Offer Tahajjud & Fajr Prayer in Congregation', done: true },
-    { id: 2, text: 'Recite Morning Adhkar (Hisn al-Muslim)', done: true },
-    { id: 3, text: 'Read 1 Juz of Holy Quran with Translation', done: false },
-    { id: 4, text: 'Send 100 Salawat upon Prophet Muhammad (PBUH)', done: false },
-    { id: 5, text: 'Recite Surah Al-Kahf (Friday Special)', done: false },
-    { id: 6, text: 'Give Daily Charity (Sadaqah)', done: false }
+    { id: 1, key: 'todo1', text: 'Offer Tahajjud & Fajr Prayer in Congregation', done: true },
+    { id: 2, key: 'todo2', text: 'Recite Morning Adhkar (Hisn al-Muslim)', done: true },
+    { id: 3, key: 'todo3', text: 'Read 1 Juz of Holy Quran with Translation', done: false },
+    { id: 4, key: 'todo4', text: 'Send 100 Salawat upon Prophet Muhammad (PBUH)', done: false },
+    { id: 5, key: 'todo5', text: 'Recite Surah Al-Kahf (Friday Special)', done: false },
+    { id: 6, key: 'todo6', text: 'Give Daily Charity (Sadaqah)', done: false }
   ];
 
   const [todos, setTodos] = useState(() => {
@@ -261,14 +261,14 @@ export default function WorldClockView() {
           <form onSubmit={handleAddCustomCity} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <input
               type="text"
-              placeholder={t('searchCityCountry', 'City Name (e.g. Quetta, Karachi, Istanbul)...')}
+              placeholder={t('searchCityNamePlaceholder', 'City Name (e.g. Quetta, Karachi, Istanbul)...')}
               value={searchCityInput}
               onChange={e => setSearchCityInput(e.target.value)}
               style={{ flex: 1, minWidth: '180px', padding: '0.65rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', outline: 'none', fontSize: '0.9rem' }}
             />
             <input
               type="text"
-              placeholder={t('searchCityCountry', 'Country Name (e.g. Pakistan, Turkey)...')}
+              placeholder={t('searchCountryNamePlaceholder', 'Country Name (e.g. Pakistan, Turkey)...')}
               value={searchCountryInput}
               onChange={e => setSearchCountryInput(e.target.value)}
               style={{ flex: 1, minWidth: '180px', padding: '0.65rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', outline: 'none', fontSize: '0.9rem' }}
@@ -281,7 +281,7 @@ export default function WorldClockView() {
                 border: 'none', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem'
               }}
             >
-              {isAdding ? 'Fetching API...' : '+ ' + t('addCity', 'Fetch & Save City')}
+              {isAdding ? '...' : '+ ' + t('fetchSaveCity', 'Fetch & Save City')}
             </button>
           </form>
         </div>
@@ -289,7 +289,7 @@ export default function WorldClockView() {
         {/* ── Saved Favorite Cities Cards Grid ── */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{t('savedCities', 'My Saved World Cities')} ({savedCities.length})</h2>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{t('savedWorldCities', 'My Saved World Cities')} ({savedCities.length})</h2>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
@@ -336,16 +336,16 @@ export default function WorldClockView() {
                   {/* Live Aladhan API Prayer Timings Grid */}
                   {apiInfo?.timings ? (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem', paddingTop: '0.75rem', borderTop: isHoly ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f1f5f9' }}>
-                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>Fajr:</span> <b>{apiInfo.timings.Fajr}</b></div>
-                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>Dhuhr:</span> <b>{apiInfo.timings.Dhuhr}</b></div>
-                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>Asr:</span> <b>{apiInfo.timings.Asr}</b></div>
-                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>Maghrib:</span> <b>{apiInfo.timings.Maghrib}</b></div>
-                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>Isha:</span> <b>{apiInfo.timings.Isha}</b></div>
-                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>Sunrise:</span> <b>{apiInfo.timings.Sunrise}</b></div>
+                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>{t('fajr', 'Fajr')}:</span> <b>{apiInfo.timings.Fajr}</b></div>
+                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>{t('dhuhr', 'Dhuhr')}:</span> <b>{apiInfo.timings.Dhuhr}</b></div>
+                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>{t('asr', 'Asr')}:</span> <b>{apiInfo.timings.Asr}</b></div>
+                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>{t('maghrib', 'Maghrib')}:</span> <b>{apiInfo.timings.Maghrib}</b></div>
+                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>{t('isha', 'Isha')}:</span> <b>{apiInfo.timings.Isha}</b></div>
+                      <div style={{ fontSize: '0.75rem' }}><span style={{ opacity: 0.7 }}>{t('sunrise', 'Sunrise')}:</span> <b>{apiInfo.timings.Sunrise}</b></div>
                     </div>
                   ) : (
                     <div style={{ fontSize: '0.78rem', color: isHoly ? '#fcd34d' : '#d97706', fontStyle: 'italic' }}>
-                      Fetching real-time API prayer schedule...
+                      {t('fetchingApiSchedule', 'Fetching real-time API prayer schedule...')}
                     </div>
                   )}
                 </div>
@@ -359,21 +359,21 @@ export default function WorldClockView() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckSquare size={22} style={{ color: '#059669' }} /> Daily Islamic Spiritual Checklist
+                <CheckSquare size={22} style={{ color: '#059669' }} /> {t('dailySpiritualChecklist', 'Daily Islamic Spiritual Checklist')}
               </h2>
-              <p style={{ margin: '2px 0 0', fontSize: '0.88rem', color: '#64748b' }}>Track your daily prayers, Quran reading, and Sunnah deeds</p>
+              <p style={{ margin: '2px 0 0', fontSize: '0.88rem', color: '#64748b' }}>{t('dailyChecklistDesc', 'Track your daily prayers, Quran reading, and Sunnah deeds')}</p>
             </div>
 
             <form onSubmit={addTodo} style={{ display: 'flex', gap: '0.5rem', flex: '1 1 300px', maxWidth: '450px' }}>
               <input
                 type="text"
-                placeholder="Add custom task (e.g. Recite Surah Mulk)..."
+                placeholder={t('addCustomTaskPlaceholder', 'Add custom task (e.g. Recite Surah Mulk)...')}
                 value={newTodoText}
                 onChange={e => setNewTodoText(e.target.value)}
                 style={{ flex: 1, padding: '0.65rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', outline: 'none', fontSize: '0.88rem' }}
               />
               <button type="submit" style={{ padding: '0.65rem 1rem', borderRadius: '12px', background: '#059669', color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <Plus size={16}/> Add Task
+                <Plus size={16}/> {t('addTaskBtn', 'Add Task')}
               </button>
             </form>
           </div>
@@ -396,7 +396,7 @@ export default function WorldClockView() {
                     {todo.done ? <CheckCircle2 size={22} /> : <Circle size={22} />}
                   </div>
                   <span style={{ fontSize: '0.95rem', fontWeight: 700, color: todo.done ? '#166534' : '#334155', textDecoration: todo.done ? 'line-through' : 'none' }}>
-                    {todo.text}
+                    {todo.key ? t(todo.key, todo.text) : todo.text}
                   </span>
                 </div>
                 <button

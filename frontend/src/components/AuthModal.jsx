@@ -88,10 +88,10 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     if (/[0-9]/.test(pass)) score += 1;
     if (/[^A-Za-z0-9]/.test(pass)) score += 1;
 
-    if (score <= 1) return { score: 1, label: t.passwordWeak, color: '#ef4444' };
-    if (score === 2) return { score: 2, label: t.passwordFair, color: '#f59e0b' };
-    if (score === 3) return { score: 3, label: t.passwordStrong, color: '#10b981' };
-    return { score: 4, label: t.passwordExcellent, color: '#059669' };
+    if (score <= 1) return { score: 1, label: t('passwordWeak', 'Weak'), color: '#ef4444' };
+    if (score === 2) return { score: 2, label: t('passwordFair', 'Fair'), color: '#f59e0b' };
+    if (score === 3) return { score: 3, label: t('passwordStrong', 'Strong'), color: '#10b981' };
+    return { score: 4, label: t('passwordExcellent', 'Excellent'), color: '#059669' };
   };
 
   const passStrength = getPasswordStrength(password);

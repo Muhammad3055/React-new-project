@@ -82,10 +82,10 @@ export default function DailyAzkarView() {
           border: '2px solid #34d399', boxShadow: '0 12px 35px rgba(0,0,0,0.15)'
         }}>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, margin: '0 0 1rem', color: '#ffffff' }}>
-            Daily Reminders & Azkar
+            {t('dailyRemindersAzkarTitle', 'Daily Reminders & Azkar')}
           </h1>
           <p style={{ color: '#d1fae5', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto', lineHeight: 1.6 }}>
-            Authentic supplications, post-prayer Azkar, and special daily/weekly reminders to keep your tongue moist with the remembrance of Allah.
+            {t('dailyAzkarDesc', 'Authentic supplications, post-prayer Azkar, and special daily/weekly reminders to keep your tongue moist with the remembrance of Allah.')}
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export default function DailyAzkarView() {
                   {section.icon}
                 </div>
                 <div>
-                  <h2 style={{ margin: '0 0 0.3rem', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{section.title}</h2>
+                  <h2 style={{ margin: '0 0 0.3rem', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{t(section.id, section.title)}</h2>
                   <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, fontFamily: 'Amiri, serif', color: '#059669' }}>{section.titleUrdu}</h3>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export default function DailyAzkarView() {
                         {dua.transliteration}
                       </p>
                       <p style={{ margin: '0 0 0.75rem', fontSize: '0.95rem', color: '#334155', lineHeight: 1.6 }}>
-                        <strong>Meaning:</strong> {dua.translation}
+                        <strong>{t('meaning', 'Meaning:')}</strong> {dua.translation}
                       </p>
                       <p style={{ margin: 0, fontSize: '1.1rem', color: '#1e293b', fontFamily: 'Amiri, serif', textAlign: 'right' }}>
                         {dua.urdu}
@@ -130,7 +130,7 @@ export default function DailyAzkarView() {
               <div style={{ background: 'linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 100%)', padding: '1.25rem', borderRadius: '16px', borderLeft: '5px solid #10b981' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
                   <Heart size={18} style={{ color: '#10b981' }} />
-                  <span style={{ fontWeight: 800, color: '#065f46', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px' }}>Virtue & Fazeelat</span>
+                  <span style={{ fontWeight: 800, color: '#065f46', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px' }}>{t('virtueFazeelat', 'Virtue & Fazeelat')}</span>
                 </div>
                 <p style={{ margin: '0 0 0.75rem', color: '#047857', fontSize: '0.95rem', lineHeight: 1.6, fontWeight: 500 }}>
                   {section.fazeelatEn}

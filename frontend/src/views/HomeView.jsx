@@ -407,7 +407,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', padding: '6px 18px', background: 'rgba(255, 255, 255, 0.12)', borderRadius: '30px', border: '1.5px solid var(--accent-gold)', marginBottom: '1.25rem', backdropFilter: 'blur(8px)' }}>
               <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" width="34" height="34" loading="lazy" decoding="async" style={{ width: '34px', height: '34px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(180, 83, 9, 0.5)', flexShrink: 0 }} />
               <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>
-                MAKTABA TUL MUSLIM &bull; {slide.badge}
+                {t('maktabaTulMuslim', 'MAKTABA TUL MUSLIM')} &bull; {slide.badge}
               </span>
             </div>
 
@@ -500,10 +500,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.1rem' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(245,158,11,0.3), rgba(5,150,105,0.3))', border: '1.5px solid rgba(245,158,11,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>☀️</div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>یوم الجمعہ — Jumu'ah Mubarak!</h3>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Today is Friday · Recite Surah Al-Kahf &amp; Al-Jumu'ah</p>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>{t('jumuahMubarakTitle', "یوم الجمعہ — Jumu'ah Mubarak!")}</h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>{t('jumuahMubarakDesc', "Today is Friday · Recite Surah Al-Kahf & Al-Jumu'ah")}</p>
               </div>
-              <span style={{ marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: '10px', background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)', color: '#fcd34d', whiteSpace: 'nowrap' }}>📅 Today is Friday</span>
+              <span style={{ marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: '10px', background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)', color: '#fcd34d', whiteSpace: 'nowrap' }}>📅 {t('todayIsFriday', 'Today is Friday')}</span>
             </div>
 
             {/* Fazeelat banner */}
@@ -514,7 +514,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                   مَنْ قَرَأَ سُورَةَ الْكَهْفِ يَوْمَ الْجُمُعَةِ، أَضَاءَ لَهُ مِنَ النُّورِ مَا بَيْنَ الْجُمُعَتَيْنِ
                 </p>
                 <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
-                  &quot;Whoever reads Surah Al-Kahf on Friday, light will shine for him until the next Friday.&quot; — <em style={{ color: '#94a3b8' }}>Sunan Al-Bayhaqi</em>
+                  {t('fridayKahfHadith', '"Whoever reads Surah Al-Kahf on Friday, light will shine for him until the next Friday." — Sunan Al-Bayhaqi')}
                 </p>
               </div>
             </div>
@@ -540,7 +540,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
             {/* Salawat reminder */}
             <p style={{ margin: '1rem 0 0', textAlign: 'center', fontSize: '0.8rem', color: '#fcd34d' }}>
-              🤲 Also send abundant Salawat on the Prophet ﷺ today · <em style={{ color: '#94a3b8' }}>"The best day is Friday" — Sunan Abu Dawood</em>
+              {t('fridaySalawat', '🤲 Also send abundant Salawat on the Prophet ﷺ today · "The best day is Friday" — Sunan Abu Dawood')}
             </p>
           </div>
         )}
@@ -564,7 +564,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <span style={{ fontSize: '1.2rem' }}>📜</span>
               <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                Hadith of the Day &bull; {dailyHadith.book} #{dailyHadith.number}
+                {t('hadithOfTheDay', 'Hadith of the Day')} &bull; {dailyHadith.book} #{dailyHadith.number}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -584,7 +584,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                   fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s'
                 }}
               >
-                {copiedHadith ? '✓ Copied' : '📋 Copy Hadith'}
+                {copiedHadith ? `✓ ${t('copied', 'Copied')}` : `📋 ${t('copyHadith', 'Copy Hadith')}`}
               </button>
             </div>
           </div>
@@ -595,10 +595,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '1rem' }}>
             <p style={{ margin: 0, fontSize: '0.98rem', color: '#cbd5e1', lineHeight: '1.6' }}>
-              <b>English:</b> "{dailyHadith.translation_en}"
+              <b>{t('english', 'English')}:</b> "{dailyHadith.translation_en}"
             </p>
             <p style={{ margin: 0, fontSize: '0.98rem', color: '#cbd5e1', lineHeight: '1.6', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', serif" }}>
-              <b>اردو:</b> "{dailyHadith.translation_ur}"
+              <b>{t('urdu', 'Urdu')}:</b> "{dailyHadith.translation_ur}"
             </p>
           </div>
         </div>
@@ -818,7 +818,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                   <span style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--accent-gold)', lineHeight: 1, fontFamily: 'monospace' }}>
                     {ramadanCountdown.days}
                   </span>
-                  <span style={{ fontSize: '1.25rem', color: '#fcd34d', fontWeight: 800 }}>Days Remaining</span>
+                  <span style={{ fontSize: '1.25rem', color: '#fcd34d', fontWeight: 800 }}>{t('daysRemaining', 'Days Remaining')}</span>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.6 }}>
                   until the sacred month of Ramzan begins. Prepare your mind and soul for {ramadanCountdown.total} days of spiritual growth and devotion.
@@ -846,11 +846,11 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                     <span style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--accent-gold)', lineHeight: 1, fontFamily: 'monospace' }}>
                       {ramadanCountdown.daysLeft}
                     </span>
-                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>Days Left</p>
+                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>{t('daysLeft', 'Days Left')}</p>
                   </div>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.6 }}>
-                  🤲 You are currently in the blessed month of Ramzan. May Allah accept your fasts, prayers, and charity!
+                  {t('ramadanActiveMsg', '🤲 You are currently in the blessed month of Ramzan. May Allah accept your fasts, prayers, and charity!')}
                 </p>
                 <div style={{ marginTop: '0.5rem', height: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
                   <div style={{
@@ -866,10 +866,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             {ramadanCountdown.state === 'passed' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <p style={{ margin: 0, fontSize: '1rem', color: '#cbd5e1', fontWeight: 600 }}>
-                  Ramadan has passed {ramadanCountdown.daysAgo} days ago. May Allah accept your fasts and deeds! 🤲
+                  {t('ramadanPassedMsg', 'Ramadan has passed')} {ramadanCountdown.daysAgo} {t('daysAgoMsg', 'days ago. May Allah accept your fasts and deeds! 🤲')}
                 </p>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
-                  Next Ramzan countdown will appear as the new Hijri year approaches. Stay connected to your daily prayers.
+                  {t('nextRamadanCountdownMsg', 'Next Ramzan countdown will appear as the new Hijri year approaches. Stay connected to your daily prayers.')}
                 </p>
               </div>
             )}
@@ -903,10 +903,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               </div>
               <div>
                 <h4 style={{ margin: 0, color: 'var(--primary-dark)', fontSize: '1.05rem', fontWeight: 800 }}>
-                  Resume Reading: Surah {lastRead.surahName} (Ayah {lastRead.ayahNumber})
+                  {t('resumeReading', 'Resume Reading')}: {t('surah', 'Surah')} {lastRead.surahName} ({t('ayah', 'Ayah')} {lastRead.ayahNumber})
                 </h4>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#78350f' }}>
-                  Saved position from your recent reading session.
+                  {t('savedPositionMsg', 'Saved position from your recent reading session.')}
                 </p>
               </div>
             </div>
@@ -920,7 +920,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               }}
               style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800, padding: '0.6rem 1.4rem', textDecoration: 'none', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
             >
-              <i className="fas fa-arrow-right"></i> Continue Reading
+              <i className="fas fa-arrow-right"></i> {t('continueReading', 'Continue Reading')}
             </a>
           </div>
         </section>
@@ -1010,9 +1010,9 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                   <img src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"} alt={bk.title} className="media-cover-img" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.2rem 0' }}>{bk.title}</h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0' }}>By {bk.author}</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0' }}>{t('byAuthor', 'By')} {bk.author}</p>
                 <span style={{ fontSize: '0.78rem', color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px', marginTop: '0.4rem', fontWeight: 600 }}>
-                  {bk.pages_count} Pages &bull; {bk.language}
+                  {bk.pages_count} {t('pages', 'Pages')} &bull; {bk.language}
                 </span>
               </div>
 
