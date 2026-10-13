@@ -301,9 +301,13 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.85rem' }}>
-                      {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
-                    </div>
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="Avatar" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--accent-gold)', color: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.85rem' }}>
+                        {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
+                      </div>
+                    )}
                     <span style={{ color: '#ffffff', fontWeight: 800 }}>{user.full_name || user.username}</span>
                   </button>
 
@@ -422,9 +426,13 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         <div className="mobile-auth-area mobile-only">
           {user ? (
             <div className="mobile-user-card">
-              <div className="mobile-user-info">
-                <i className="fas fa-user-circle"></i>
-                <span style={{ color: '#000000' }}>{t('loggedInAs', 'Logged in as')} <strong>{user.username}</strong></span>
+              <div className="mobile-user-info" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {user.avatar ? (
+                  <img src={user.avatar} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <i className="fas fa-user-circle"></i>
+                )}
+                <span style={{ color: '#000000' }}>{t('loggedInAs', 'Logged in as')} <strong>{user.full_name || user.username}</strong></span>
               </div>
               <button className="mobile-auth-btn mobile-logout-btn" onClick={() => { handleLogout(); setMobileActive(false); }}>
                 <i className="fas fa-sign-out-alt"></i> {t('logout', 'Log Out')}

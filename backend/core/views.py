@@ -938,10 +938,13 @@ def submit_contact_view(request):
 def api_auth_status(request):
     google_client_id = getattr(settings, 'GOOGLE_OAUTH_CLIENT_ID', '')
     if request.user.is_authenticated:
+        pref = getattr(request.user, 'preferences', None)
         return JsonResponse({
             'is_authenticated': True,
             'username': request.user.username,
             'email': request.user.email,
+            'full_name': pref.full_name if pref else '',
+            'avatar': pref.avatar if pref else '',
             'is_staff': request.user.is_staff,
             'google_client_id': google_client_id
         })
@@ -1852,6 +1855,49 @@ def api_update_user_preferences(request):
 
         return JsonResponse({'status': 'success', 'message': 'Profile & Preferences saved successfully'})
     return JsonResponse({'status': 'error'}, status=400)
+
+
+
+@csrf_exempt
+def api_upload_avatar(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required'}, status=401)
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST method required'}, status=405)
+
+    avatar_file = request.FILES.get('avatar_file')
+    if not avatar_file:
+        return JsonResponse({'status': 'error', 'message': 'No avatar file uploaded'}, status=400)
+
+    import os, time
+    from django.conf import settings
+    ext = os.path.splitext(avatar_file.name)[1].lower()
+    if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.gif']:
+        return JsonResponse({'status': 'error', 'message': 'Invalid image format. Allowed: JPG, PNG, WEBP, GIF.'}, status=400)
+
+    if avatar_file.size > 5 * 1024 * 1024:
+        return JsonResponse({'status': 'error', 'message': 'Image cannot exceed 5MB.'}, status=400)
+
+    avatars_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+    os.makedirs(avatars_dir, exist_ok=True)
+
+    filename = f"user_{request.user.id}_{int(time.time())}{ext}"
+    file_path = os.path.join(avatars_dir, filename)
+
+    with open(file_path, 'wb+') as destination:
+        for chunk in avatar_file.chunks():
+            destination.write(chunk)
+
+    avatar_url = f"{settings.MEDIA_URL}avatars/{filename}"
+    pref, _ = UserProfilePreferences.objects.get_or_create(user=request.user)
+    pref.avatar = avatar_url
+    pref.save()
+
+    return JsonResponse({
+        'status': 'success',
+        'message': 'Profile picture updated successfully!',
+        'avatar_url': avatar_url
+    })
 
 
 

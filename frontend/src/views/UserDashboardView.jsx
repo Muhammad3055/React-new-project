@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getApiUrl } from '../utils/apiCache';
+import { ALL_114_SURAHS } from '../data/quran_data';
 
 export default function UserDashboardView({ user, openAuthModal, navigateToTab, playTrack }) {
   const [dashboardData, setDashboardData] = useState(null);
@@ -17,6 +18,20 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
   const [showNewCollectionForm, setShowNewCollectionForm] = useState(false);
   const [selectedCollectionForViewing, setSelectedCollectionForViewing] = useState(null);
   const [showAddToCollectionModal, setShowAddToCollectionModal] = useState(null); // item to add: { type, id/surah/ayah, title }
+
+  // Avatar Upload states
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarFileRef = useRef(null);
+
+  // Khatm Quran Modal & Search states
+  const [showKhatmModal, setShowKhatmModal] = useState(false);
+  const [khatmSurahSearch, setKhatmSurahSearch] = useState('');
+
+  // Danger Zone / Account Deletion states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Settings & Security states
   const [passwordOld, setPasswordOld] = useState('');
@@ -138,6 +153,178 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
         alert(data.message || 'Preferences updated!');
         fetchDashboardData();
       });
+  };
+
+  // Avatar Upload Handler
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (JPG, PNG, WEBP).');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size cannot exceed 5MB.');
+      return;
+    }
+    setAvatarUploading(true);
+    const formData = new FormData();
+    formData.append('avatar_file', file);
+    try {
+      const res = await fetch(getApiUrl('/api/user/avatar/upload/'), {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setDashboardData(prev => ({
+          ...prev,
+          preferences: { ...prev?.preferences, avatar: data.avatar_url }
+        }));
+        alert('Profile picture updated successfully! 🕌');
+        fetchDashboardData();
+      } else {
+        alert(data.message || 'Failed to upload photo.');
+      }
+    } catch {
+      alert('Network error while uploading photo.');
+    } finally {
+      setAvatarUploading(false);
+      if (avatarFileRef.current) avatarFileRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    if (!window.confirm("Are you sure you want to remove your profile picture?")) return;
+    handleSavePreferences({ avatar: '' });
+  };
+
+  // Toggle Surah Completed in Khatam Planner
+  const handleToggleSurahCompleted = (surahNum) => {
+    if (!dashboardData) return;
+    const currentList = dashboardData.preferences?.completed_surahs || [];
+    let updated;
+    if (currentList.includes(surahNum)) {
+      updated = currentList.filter(n => n !== surahNum);
+    } else {
+      updated = [...currentList, surahNum].sort((a, b) => a - b);
+    }
+
+    // Optimistic UI update
+    setDashboardData(prev => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        completed_surahs: updated,
+        khatm_percent: Math.round((updated.length / 114) * 100)
+      }
+    }));
+
+    fetch(getApiUrl('/api/user/preferences/update/'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed_surahs: updated })
+    });
+  };
+
+  // Export User Study Data Backup (JSON)
+  const handleExportData = () => {
+    if (!dashboardData) return;
+    const prefs = dashboardData.preferences || {};
+    const exportPayload = {
+      export_version: "2.0",
+      generated_at: new Date().toISOString(),
+      platform: "Maktaba tul Muslim (maktabatulmuslim.com)",
+      user_profile: {
+        username: user?.username,
+        email: user?.email,
+        full_name: prefs.full_name || '',
+        city: prefs.location_city || '',
+        streak_days: dashboardData.namaz_streak || 0,
+        preferred_qari: prefs.preferred_qari,
+        preferred_language: prefs.preferred_language
+      },
+      khatm_progress: {
+        khatm_target_days: prefs.khatm_target_days || 30,
+        completed_surahs_count: (prefs.completed_surahs || []).length,
+        completed_surahs: prefs.completed_surahs || [],
+        last_read_quran: { surah: prefs.last_read_surah || 1, ayah: prefs.last_read_ayah || 1 }
+      },
+      saved_bookmarks: dashboardData.bookmarks || [],
+      saved_books: dashboardData.saved_books || [],
+      saved_tafseers: dashboardData.saved_tafseers || [],
+      favorite_recitations: dashboardData.favorite_recitations || [],
+      ayah_reflections_journal: dashboardData.ayah_notes || [],
+      study_collections: dashboardData.personal_collections || [],
+      reading_history: {
+        quran: dashboardData.quran_history || [],
+        books: dashboardData.book_history || [],
+        tafseer: dashboardData.tafseer_history || [],
+        audio: dashboardData.audio_history || []
+      },
+      namaz_records_7_days: dashboardData.namaz_days || [],
+      qada_fasts_count: qadaFasts
+    };
+
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Maktaba_Islamic_Backup_${user?.username || 'user'}_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  // Delete Account Handler
+  const handleDeleteAccount = (e) => {
+    e.preventDefault();
+    if (!deletePassword) {
+      setDeleteError('Please enter your password to confirm account deletion.');
+      return;
+    }
+    setDeleteLoading(true);
+    setDeleteError('');
+
+    fetch(getApiUrl('/api/user/delete/'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: deletePassword })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('Your account and all associated data have been permanently removed.');
+          window.location.reload();
+        } else {
+          setDeleteError(data.message || 'Incorrect password. Account was not deleted.');
+          setDeleteLoading(false);
+        }
+      })
+      .catch(() => {
+        setDeleteError('Server connection error. Please try again.');
+        setDeleteLoading(false);
+      });
+  };
+
+  // Detect Client Browser and OS
+  const getClientDeviceInfo = () => {
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+    let os = 'Windows OS';
+    if (ua.indexOf('Win') !== -1) os = 'Windows 10/11';
+    else if (ua.indexOf('Mac') !== -1) os = 'Apple macOS';
+    else if (ua.indexOf('Android') !== -1) os = 'Android Mobile';
+    else if (ua.indexOf('iPhone') !== -1 || ua.indexOf('iPad') !== -1) os = 'Apple iOS';
+    else if (ua.indexOf('Linux') !== -1) os = 'Linux OS';
+
+    let browser = 'Web Browser';
+    if (ua.indexOf('Chrome') !== -1 && ua.indexOf('Edg') === -1) browser = 'Google Chrome';
+    else if (ua.indexOf('Edg') !== -1) browser = 'Microsoft Edge';
+    else if (ua.indexOf('Firefox') !== -1) browser = 'Mozilla Firefox';
+    else if (ua.indexOf('Safari') !== -1 && ua.indexOf('Chrome') === -1) browser = 'Apple Safari';
+
+    return { os, browser };
   };
 
   // Delete Individual History Item
@@ -426,22 +613,78 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
   // Count unread notifications
   const unreadNotifsCount = (dashboardData.user_notifications || []).filter(n => !n.is_read).length;
 
+  // Khatm-ul-Quran calculations
+  const completedSurahsList = prefs.completed_surahs || [];
+  const completedSurahsCount = completedSurahsList.length;
+  const remainingSurahsCount = Math.max(0, 114 - completedSurahsCount);
+  const khatmPercent = Math.min(100, Math.round((completedSurahsCount / 114) * 100));
+  const dailySurahTarget = Math.max(1, Math.ceil(remainingSurahsCount / Math.max(1, prefs.khatm_target_days || 30)));
+
   return (
     <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '4rem' }}>
+      
+      {/* Hidden File Input for Avatar Upload */}
+      <input
+        type="file"
+        ref={avatarFileRef}
+        accept="image/*"
+        onChange={handleAvatarUpload}
+        style={{ display: 'none' }}
+      />
       
       {/* 🌟 HERO DASHBOARD HEADER */}
       <div className="card" style={{ padding: '2rem', marginBottom: '1.75rem', background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)', color: '#fff', border: '2px solid var(--accent-gold)', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
-          <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
-              {timeGreeting}
-            </span>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ffffff', margin: '0.25rem 0' }}>
-              Welcome back, {prefs.full_name || user.username}! 🕌
-            </h1>
-            <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
-              📅 <strong>Friday, 22 Safar 1448 AH</strong> &bull; 7 August 2026 &bull; Private Account Dashboard
-            </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+            {/* 📷 Avatar with Direct Upload Badge */}
+            <div style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--accent-gold)', boxShadow: '0 6px 20px rgba(0,0,0,0.3)', background: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {prefs.avatar ? (
+                  <img src={prefs.avatar} alt="Profile Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent-gold)' }}>
+                    {prefs.full_name ? prefs.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => avatarFileRef.current && avatarFileRef.current.click()}
+                title="Change Profile Picture"
+                disabled={avatarUploading}
+                style={{
+                  position: 'absolute',
+                  bottom: '-2px',
+                  right: '-2px',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: 'var(--accent-gold)',
+                  color: '#022c22',
+                  border: '2px solid #022c22',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.8rem',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                }}
+              >
+                {avatarUploading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-camera"></i>}
+              </button>
+            </div>
+
+            <div>
+              <span style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                {timeGreeting}
+              </span>
+              <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ffffff', margin: '0.25rem 0' }}>
+                Welcome back, {prefs.full_name || user.username}! 🕌
+              </h1>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+                📅 <strong>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong> &bull; Private Islamic Dashboard
+              </p>
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -594,6 +837,124 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
                 )}
               </div>
 
+            </div>
+          </div>
+
+          {/* 🌟 KHATM-UL-QURAN PLANNER & VISUAL PROGRESS */}
+          <div className="card" style={{ padding: '1.75rem', background: '#09090b', border: '1.5px solid var(--accent-gold)', borderRadius: '20px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  HOLY QURAN COMPLETION PLANNER
+                </span>
+                <h3 style={{ margin: '0.2rem 0', color: '#fff', fontSize: '1.35rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <i className="fas fa-quran" style={{ color: 'var(--accent-gold)' }}></i> Khatm-ul-Quran Goal Tracker
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#a1a1aa' }}>
+                  Track completed Surahs, set your target pace, and achieve your Khatm milestone.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowKhatmModal(true)}
+                  style={{
+                    background: 'var(--accent-gold)',
+                    color: '#022c22',
+                    border: 'none',
+                    padding: '0.65rem 1.25rem',
+                    borderRadius: '14px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    fontSize: '0.88rem',
+                    boxShadow: '0 4px 15px rgba(245,158,11,0.25)'
+                  }}
+                >
+                  <i className="fas fa-list-check"></i> Manage 114 Surahs ({completedSurahsCount}/114)
+                </button>
+              </div>
+            </div>
+
+            {/* Visual Progress Bar */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 700 }}>
+                <span style={{ color: '#e4e4e7' }}>
+                  Overall Progress: <strong style={{ color: 'var(--accent-gold)', fontSize: '1.05rem' }}>{khatmPercent}%</strong> ({completedSurahsCount} of 114 Surahs Completed)
+                </span>
+                <span style={{ color: '#a1a1aa' }}>
+                  {remainingSurahsCount} Surahs Remaining
+                </span>
+              </div>
+              <div style={{ width: '100%', height: '16px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden', padding: '2px', border: '1px solid rgba(245,158,11,0.3)' }}>
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${khatmPercent}%`,
+                    background: 'linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #eab308 100%)',
+                    borderRadius: '10px',
+                    transition: 'width 0.4s ease',
+                    boxShadow: '0 0 12px rgba(245,158,11,0.5)'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Pace & Statistics Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+              <div style={{ background: '#18181b', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ fontSize: '0.72rem', color: '#a1a1aa', display: 'block', fontWeight: 700 }}>TARGET DURATION</span>
+                <strong style={{ fontSize: '1.1rem', color: '#fff' }}>{prefs.khatm_target_days || 30} Days Plan</strong>
+              </div>
+
+              <div style={{ background: '#18181b', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ fontSize: '0.72rem', color: '#a1a1aa', display: 'block', fontWeight: 700 }}>DAILY READING PACE</span>
+                <strong style={{ fontSize: '1.1rem', color: 'var(--accent-gold)' }}>~{dailySurahTarget} Surahs / Day</strong>
+              </div>
+
+              <div style={{ background: '#18181b', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ fontSize: '0.72rem', color: '#a1a1aa', display: 'block', fontWeight: 700 }}>TOTAL VERSES IN QURAN</span>
+                <strong style={{ fontSize: '1.1rem', color: '#34d399' }}>6,236 Ayahs</strong>
+              </div>
+            </div>
+
+            {/* Quick Target Pace Preset Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.8rem', color: '#a1a1aa', fontWeight: 700, marginRight: '0.25rem' }}>
+                Adjust Target Pace:
+              </span>
+              {[
+                { days: 30, label: '30 Days (Ramadan Pace)' },
+                { days: 60, label: '60 Days (2 Months)' },
+                { days: 90, label: '90 Days (Quarterly)' },
+                { days: 180, label: '6 Months' },
+                { days: 365, label: '1 Year' },
+              ].map(preset => {
+                const isSelected = (prefs.khatm_target_days || 30) === preset.days;
+                return (
+                  <button
+                    key={preset.days}
+                    type="button"
+                    onClick={() => handleSavePreferences({ khatm_target_days: preset.days })}
+                    style={{
+                      padding: '0.35rem 0.85rem',
+                      borderRadius: '20px',
+                      border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.15)',
+                      background: isSelected ? 'rgba(245,158,11,0.2)' : 'transparent',
+                      color: isSelected ? 'var(--accent-gold)' : '#d4d4d8',
+                      fontSize: '0.75rem',
+                      fontWeight: isSelected ? 800 : 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -1352,6 +1713,68 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               <i className="fas fa-user-edit" style={{ color: 'var(--accent-gold)' }}></i> Edit Profile & Settings
             </h3>
 
+            {/* Profile Avatar Upload & Manage */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', width: '76px', height: '76px', flexShrink: 0 }}>
+                <div style={{ width: '76px', height: '76px', borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--accent-gold)', background: '#022c22', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {prefs.avatar ? (
+                    <img src={prefs.avatar} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent-gold)' }}>
+                      {prefs.full_name ? prefs.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary-dark)' }}>Profile Avatar / Photo</span>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Upload JPG, PNG or WEBP (Max 5MB). Syncs automatically across the platform.</span>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => avatarFileRef.current && avatarFileRef.current.click()}
+                    disabled={avatarUploading}
+                    style={{
+                      background: 'var(--primary-dark)',
+                      color: 'var(--accent-gold)',
+                      border: 'none',
+                      padding: '0.45rem 1rem',
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                  >
+                    {avatarUploading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
+                    {avatarUploading ? 'Uploading...' : 'Upload Photo'}
+                  </button>
+
+                  {prefs.avatar && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveAvatar}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        color: '#ef4444',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        padding: '0.45rem 0.85rem',
+                        borderRadius: '8px',
+                        fontWeight: 700,
+                        fontSize: '0.82rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>Full Name</label>
@@ -1521,6 +1944,105 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </form>
           </div>
 
+          {/* 📥 Data Portability & Offline Backup */}
+          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <i className="fas fa-cloud-download-alt" style={{ color: 'var(--accent-gold)' }}></i> Data Portability & Offline Backup
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+              Own your learning journey! Download a full offline backup of all your Quran bookmarks, reflection journal notes, reading history, prayer streak, and custom study collections in JSON format.
+            </p>
+            <button
+              type="button"
+              onClick={handleExportData}
+              style={{
+                background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)',
+                color: '#fff',
+                border: '1.5px solid var(--accent-gold)',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '12px',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.1)'
+              }}
+            >
+              <i className="fas fa-file-download" style={{ color: 'var(--accent-gold)' }}></i> Download Islamic Study Backup (JSON)
+            </button>
+          </div>
+
+          {/* 💻 Active Sessions & Connected Devices */}
+          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <i className="fas fa-laptop-house" style={{ color: 'var(--accent-gold)' }}></i> Active Sessions & Security
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1.25rem' }}>
+              Review your currently active login sessions across devices.
+            </p>
+
+            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(16,185,129,0.15)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+                  <i className="fas fa-desktop"></i>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <strong style={{ fontSize: '0.92rem', color: 'var(--primary-dark)' }}>{getClientDeviceInfo().os} &bull; {getClientDeviceInfo().browser}</strong>
+                    <span style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', fontWeight: 800, padding: '2px 8px', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}></span> Active Now
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Maktaba Secure Session &bull; Contabo VPS TLS Encrypted</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm("Do you want to log out from all devices?")) {
+                    fetch(getApiUrl('/api/auth/logout/'), { method: 'POST' }).then(() => window.location.reload());
+                  }
+                }}
+                style={{ background: '#fff', border: '1px solid #cbd5e1', color: '#475569', padding: '0.45rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Log Out All Other Devices
+              </button>
+            </div>
+          </div>
+
+          {/* ⚠️ Danger Zone */}
+          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1.5px solid #fca5a5' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#dc2626', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <i className="fas fa-exclamation-triangle"></i> Danger Zone
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+              Permanently erase your account, study history, bookmarks, and reflections journal. Once confirmed, this data cannot be recovered.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(true)}
+              style={{
+                background: '#dc2626',
+                color: '#fff',
+                border: 'none',
+                padding: '0.65rem 1.4rem',
+                borderRadius: '10px',
+                fontWeight: 800,
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 4px 12px rgba(220,38,38,0.2)'
+              }}
+            >
+              <i className="fas fa-trash-alt"></i> Delete My Account & Wipe Data
+            </button>
+          </div>
+
         </div>
       )}
 
@@ -1563,6 +2085,237 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 📖 KHATM-UL-QURAN 114 SURAHS CHECKLIST MODAL */}
+      {/* ========================================================================= */}
+      {showKhatmModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#09090b', border: '1.5px solid var(--accent-gold)', borderRadius: '24px', maxWidth: '720px', width: '100%', maxHeight: '88vh', display: 'flex', flexDirection: 'column', color: '#fff', boxShadow: '0 25px 60px rgba(0,0,0,0.85)', overflow: 'hidden' }}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: '1.5rem 1.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(2,44,34,0.8) 0%, rgba(9,9,11,0.95) 100%)' }}>
+              <div>
+                <h3 style={{ margin: 0, color: 'var(--accent-gold)', fontSize: '1.3rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <i className="fas fa-quran"></i> 114 Surahs Completion Checklist
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.82rem', color: '#a1a1aa' }}>
+                  Completed: <strong style={{ color: 'var(--accent-gold)' }}>{completedSurahsCount} / 114 Surahs</strong> ({khatmPercent}%)
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowKhatmModal(false)}
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '34px', height: '34px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Controls: Search & Select All/Reset */}
+            <div style={{ padding: '1rem 1.75rem', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', background: '#121214' }}>
+              <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+                <i className="fas fa-search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#71717a', fontSize: '0.8rem' }}></i>
+                <input
+                  type="text"
+                  placeholder="Search Surah by name or number (e.g. Baqarah, Yasin, 36)..."
+                  value={khatmSurahSearch}
+                  onChange={e => setKhatmSurahSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: '#18181b',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: '10px',
+                    padding: '0.5rem 0.8rem 0.5rem 2rem',
+                    color: '#fff',
+                    fontSize: '0.85rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allNumbers = Array.from({ length: 114 }, (_, i) => i + 1);
+                    setDashboardData(prev => ({
+                      ...prev,
+                      preferences: { ...prev.preferences, completed_surahs: allNumbers, khatm_percent: 100 }
+                    }));
+                    fetch(getApiUrl('/api/user/preferences/update/'), {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ completed_surahs: allNumbers })
+                    });
+                  }}
+                  style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Mark All 114
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("Do you want to reset your Surah completion checklist?")) {
+                      setDashboardData(prev => ({
+                        ...prev,
+                        preferences: { ...prev.preferences, completed_surahs: [], khatm_percent: 0 }
+                      }));
+                      fetch(getApiUrl('/api/user/preferences/update/'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ completed_surahs: [] })
+                      });
+                    }
+                  }}
+                  style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            {/* Surahs Scrollable Grid */}
+            <div style={{ padding: '1.25rem 1.75rem', overflowY: 'auto', flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+              {ALL_114_SURAHS
+                .filter(s => {
+                  if (!khatmSurahSearch.trim()) return true;
+                  const q = khatmSurahSearch.toLowerCase().trim();
+                  return s.name.toLowerCase().includes(q) || s.englishName.toLowerCase().includes(q) || s.arabic.includes(q) || s.number.toString() === q;
+                })
+                .map(s => {
+                  const isDone = (prefs.completed_surahs || []).includes(s.number);
+                  return (
+                    <label
+                      key={s.number}
+                      style={{
+                        padding: '0.65rem 0.85rem',
+                        background: isDone ? 'rgba(16,185,129,0.12)' : '#18181b',
+                        border: isDone ? '1.5px solid #10b981' : '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <input
+                          type="checkbox"
+                          checked={isDone}
+                          onChange={() => handleToggleSurahCompleted(s.number)}
+                          style={{ width: '18px', height: '18px', accentColor: '#10b981', cursor: 'pointer' }}
+                        />
+                        <div>
+                          <strong style={{ fontSize: '0.85rem', color: isDone ? '#34d399' : '#fff', display: 'block' }}>
+                            {s.number}. {s.name}
+                          </strong>
+                          <span style={{ fontSize: '0.7rem', color: '#a1a1aa' }}>{s.ayahs} Verses &bull; {s.type}</span>
+                        </div>
+                      </div>
+
+                      <span style={{ fontFamily: "'Amiri', serif", fontSize: '1.05rem', color: isDone ? 'var(--accent-gold)' : '#a1a1aa', direction: 'rtl' }}>
+                        {s.arabic}
+                      </span>
+                    </label>
+                  );
+                })}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '1rem 1.75rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#121214' }}>
+              <span style={{ fontSize: '0.8rem', color: '#a1a1aa' }}>
+                All changes are automatically saved to your cloud profile.
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowKhatmModal(false)}
+                style={{ padding: '0.55rem 1.4rem', background: 'var(--accent-gold)', color: '#022c22', fontWeight: 800, borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                Done
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* ⚠️ DELETE ACCOUNT DANGER ZONE CONFIRMATION MODAL */}
+      {/* ========================================================================= */}
+      {showDeleteModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#09090b', border: '2px solid #ef4444', borderRadius: '24px', maxWidth: '460px', width: '100%', padding: '2rem', color: '#fff', boxShadow: '0 25px 60px rgba(239,68,68,0.25)' }}>
+            
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.15)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '1.25rem' }}>
+              <i className="fas fa-exclamation-triangle"></i>
+            </div>
+
+            <h3 style={{ margin: '0 0 0.5rem 0', color: '#ef4444', fontSize: '1.3rem', fontWeight: 900 }}>
+              Permanently Delete Account?
+            </h3>
+
+            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+              This will permanently delete your Maktaba account <strong>({user?.username})</strong>, all bookmarks, tadabbur reflection notes, reading history, and study collections.
+              <strong> This action is irreversible.</strong>
+            </p>
+
+            {deleteError && (
+              <div style={{ padding: '0.65rem 0.85rem', background: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+                {deleteError}
+              </div>
+            )}
+
+            <form onSubmit={handleDeleteAccount} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#e4e4e7', display: 'block', marginBottom: '0.35rem' }}>
+                  Enter Your Password to Confirm:
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Your current password"
+                  value={deletePassword}
+                  onChange={e => setDeletePassword(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: '#18181b',
+                    border: '1.5px solid rgba(239,68,68,0.4)',
+                    borderRadius: '10px',
+                    padding: '0.65rem 0.85rem',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => { setShowDeleteModal(false); setDeletePassword(''); setDeleteError(''); }}
+                  style={{ padding: '0.65rem 1.25rem', background: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem' }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={deleteLoading}
+                  style={{ padding: '0.65rem 1.4rem', background: '#dc2626', color: '#fff', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  {deleteLoading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-trash-alt"></i>}
+                  {deleteLoading ? 'Deleting...' : 'Confirm Deletion'}
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}

@@ -44,6 +44,7 @@ urlpatterns = [
 
     # Logged-in User Dashboard & Personalization API
     path('api/user/dashboard/', views.api_user_dashboard, name='api_user_dashboard'),
+    path('api/user/avatar/upload/', views.api_upload_avatar, name='api_upload_avatar'),
     path('api/user/preferences/update/', views.api_update_user_preferences, name='api_update_user_preferences'),
     path('api/user/delete/', views.api_delete_user, name='api_delete_user'),
     path('api/user/namaz/toggle/', views.api_toggle_namaz, name='api_toggle_namaz'),
