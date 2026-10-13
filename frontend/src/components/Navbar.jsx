@@ -31,7 +31,13 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
-    { label: '🕌 ' + t('asanNimaz', 'آسان نماز و احکام (Asan Nimaz)'), icon: 'fas fa-mosque', action: () => { navigateToTab('asanNimaz'); setShowExtrasMenu(false); } },
+    {
+      id: 'asanNimaz',
+      label: t('asanNimaz', 'آسان نماز و احکام'),
+      icon: 'fas fa-mosque',
+      highlight: true,
+      action: () => { navigateToTab('asanNimaz'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
     { label: t('mp3Audio'), icon: 'fas fa-headphones', action: () => { navigateToTab('quran'); setShowExtrasMenu(false); setMobileActive(false); } },
     { label: '💰 ' + t('zakatCalc', 'Zakat Calculator'), icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
     { label: '🕋 ' + t('hajjUmrahGuide', 'Hajj & Umrah Guide'), icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },
@@ -74,7 +80,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
-    { id: 'asanNimaz', label: 'آسان نماز', icon: 'fas fa-mosque' },
+    { id: 'asanNimaz', label: t('asanNimaz', 'آسان نماز'), icon: 'fas fa-mosque' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
     { id: 'books', label: t('books', 'Books'), icon: 'fa-solid fa-book' },
@@ -506,6 +512,66 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           </div>
         </div>
 
+        {/* Dedicated Asan Nimaz Spotlight Card in Sidebar Menu */}
+        <div
+          onClick={() => { navigateToTab('asanNimaz'); setMobileActive(false); }}
+          style={{
+            margin: '0.4rem 0 1rem 0',
+            padding: '0.85rem 1rem',
+            background: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%)',
+            borderRadius: '16px',
+            border: '1.5px solid #10b981',
+            boxShadow: '0 6px 20px rgba(16, 185, 129, 0.28)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            color: '#ffffff',
+            transition: 'all 0.2s ease',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', zIndex: 1 }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.18)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.25rem',
+              color: '#fcd34d',
+              flexShrink: 0
+            }}>
+              <i className="fas fa-mosque"></i>
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '0.96rem', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {t('asanNimaz', 'آسان نماز اور مکمل احکام')}
+                <span style={{ fontSize: '0.62rem', fontWeight: 900, background: '#f59e0b', color: '#022c22', padding: '1px 6px', borderRadius: '6px' }}>جدید</span>
+              </div>
+              <div style={{ fontSize: '0.73rem', color: '#a7f3d0', marginTop: '2px' }}>
+                طریقہ، رکعات، فرائض، وضو، غسل، جنازہ، دعائیں
+              </div>
+            </div>
+          </div>
+          <div style={{
+            fontSize: '0.75rem',
+            fontWeight: 800,
+            background: '#ffffff',
+            color: '#065f46',
+            padding: '5px 10px',
+            borderRadius: '10px',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            zIndex: 1
+          }}>
+            پڑھیں →
+          </div>
+        </div>
+
         {/* Main Navigation Items Grid */}
         <div className="mobile-section-title mobile-only">{t('home')} & {t('readQuran')}</div>
         <nav className="mobile-nav-grid main-nav-grid mobile-only">
@@ -527,11 +593,30 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           {extraMenuItems.map((item) => (
             <button
               key={item.label}
-              className="mobile-nav-item mobile-nav-extra"
+              className={`mobile-nav-item mobile-nav-extra ${item.highlight ? 'featured-nav-card' : ''}`}
               onClick={() => { item.action(); setMobileActive(false); }}
+              style={item.highlight ? {
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.28) 100%)',
+                border: '1.5px solid #10b981',
+                boxShadow: '0 2px 10px rgba(16, 185, 129, 0.25)',
+                position: 'relative'
+              } : undefined}
             >
-              <i className={item.icon}></i>
-              <span>{item.label}</span>
+              <i className={item.icon} style={item.highlight ? { color: '#10b981' } : undefined}></i>
+              <span style={item.highlight ? { fontWeight: 800, color: 'var(--text-main)' } : undefined}>{item.label}</span>
+              {item.highlight && (
+                <span style={{
+                  position: 'absolute',
+                  top: '3px',
+                  right: '5px',
+                  fontSize: '0.58rem',
+                  fontWeight: 900,
+                  background: '#10b981',
+                  color: '#ffffff',
+                  padding: '1px 5px',
+                  borderRadius: '6px'
+                }}>NEW</span>
+              )}
             </button>
           ))}
 
