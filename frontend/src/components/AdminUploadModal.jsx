@@ -607,7 +607,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Up to 1GB per MP3 / 10 Hours Length)</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Up to 2GB per MP3)</label>
                   <input
                     type="file"
                     accept=".mp3,.wav,.m4a,.aac,.ogg,.opus,.flac"
@@ -882,20 +882,24 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Pages Count</label>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Pages Count (Max 2000 Pages)</label>
                     <input
                       type="number"
                       min="1"
-                      placeholder="120"
+                      max="2000"
+                      placeholder="e.g. 500"
                       value={pagesCount}
-                      onChange={(e) => setPagesCount(e.target.value)}
+                      onChange={(e) => {
+                        const val = Math.min(2000, Math.max(1, Number(e.target.value) || 1));
+                        setPagesCount(val);
+                      }}
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff' }}
                     />
                   </div>
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose File (PDF / Word .docx / PPT / Image)</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose File (PDF / Word .docx / PPT / Image - Up to 2GB per File)</label>
                   <input
                     type="file"
                     accept=".pdf,.doc,.docx,.epub,.ppt,.pptx,.png,.jpg,.jpeg"

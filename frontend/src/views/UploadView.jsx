@@ -455,7 +455,7 @@ export default function UploadView({ user }) {
                 </select>
               </div>
               <div>
-                <label className="form-label">Choose MP3 File from Laptop</label>
+                <label className="form-label">Choose MP3 File from Laptop (Up to 2GB)</label>
                 <input
                   type="file"
                   className="form-input"
@@ -518,14 +518,25 @@ export default function UploadView({ user }) {
                 </select>
               </div>
               <div>
-                <label className="form-label">Pages Count</label>
-                <input type="number" min="1" className="form-input" value={bookData.pages_count} onChange={e => setBookData({ ...bookData, pages_count: e.target.value })} placeholder="120" />
+                <label className="form-label">Pages Count (Max 2000 Pages)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="2000"
+                  className="form-input"
+                  value={bookData.pages_count}
+                  onChange={e => {
+                    const val = Math.min(2000, Math.max(1, Number(e.target.value) || 1));
+                    setBookData({ ...bookData, pages_count: val });
+                  }}
+                  placeholder="e.g. 500"
+                />
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Choose Document File from Laptop (.pdf, .docx, .pptx) *</label>
+                <label className="form-label">Choose Document File from Laptop (.pdf, .docx, .pptx - Up to 2GB per File) *</label>
                 <input
                   type="file"
                   className="form-input"
@@ -724,7 +735,7 @@ export default function UploadView({ user }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Choose MP3 File from Laptop *</label>
+                <label className="form-label">Choose MP3 File from Laptop (Up to 2GB) *</label>
                 <input
                   type="file"
                   className="form-input"

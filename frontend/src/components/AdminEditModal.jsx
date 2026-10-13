@@ -148,12 +148,16 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>Pages Count</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>Pages Count (Max 2000 Pages)</label>
               <input
                 type="number"
                 min="1"
+                max="2000"
                 value={pagesCount}
-                onChange={(e) => setPagesCount(e.target.value)}
+                onChange={(e) => {
+                  const val = Math.min(2000, Math.max(1, Number(e.target.value) || 1));
+                  setPagesCount(val);
+                }}
                 style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
               />
             </div>
