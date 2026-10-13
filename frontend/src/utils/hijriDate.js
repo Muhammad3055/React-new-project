@@ -33,7 +33,7 @@ export function getPrayerMethodAndAdjustment(countryCode) {
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       if (tz) {
-        if (tz.includes('Karachi')) code = 'PK';
+        if (tz.includes('Karachi') || tz.includes('Asia/Karachi')) code = 'PK';
         else if (tz.includes('Kolkata') || tz.includes('Calcutta')) code = 'IN';
         else if (tz.includes('Dhaka')) code = 'BD';
         else if (tz.includes('Casablanca')) code = 'MA';
@@ -46,10 +46,12 @@ export function getPrayerMethodAndAdjustment(countryCode) {
 
   let method = 4; // Default Umm Al-Qura
   let hijriAdjustment = 0;
+  let school = 0; // 0 = Shafi/Standard, 1 = Hanafi
 
-  if (['PK', 'IN', 'BD'].includes(code)) {
+  if (['PK', 'IN', 'BD', 'AF'].includes(code)) {
     method = 1; // University of Islamic Sciences, Karachi
     hijriAdjustment = -1; // 1 day behind Makkah (Umm Al-Qura)
+    school = 1; // Hanafi (Asr currently around 4:30 PM in Pakistan)
   } else if (['MA'].includes(code)) {
     method = 3; // Muslim World League
     hijriAdjustment = -1;
@@ -61,6 +63,6 @@ export function getPrayerMethodAndAdjustment(countryCode) {
     method = 3; // Muslim World League
     hijriAdjustment = -1;
   }
-  return { method, hijriAdjustment, countryCode: code };
+  return { method, hijriAdjustment, school, countryCode: code };
 }
 

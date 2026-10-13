@@ -204,7 +204,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     setLocationType(type);
 
     const activeCode = code || countryCode;
-    const { method, hijriAdjustment, countryCode: detectedCode } = getPrayerMethodAndAdjustment(activeCode);
+    const { method, hijriAdjustment, school = 0, countryCode: detectedCode } = getPrayerMethodAndAdjustment(activeCode);
     
     if (detectedCode && detectedCode !== countryCode) {
       setCountryCode(detectedCode);
@@ -212,11 +212,12 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     }
 
     // Daily Timings
-    fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}&hijriAdjustment=${hijriAdjustment}`)
+    fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}&school=${school}&hijriAdjustment=${hijriAdjustment}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) {
           setTimings(data.data.timings);
+          localStorage.setItem('user_prayer_timings', JSON.stringify(data.data.timings));
           const h = data.data.date.hijri;
           const g = data.data.date.gregorian;
           setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
@@ -239,7 +240,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
       .catch(() => setLoading(false));
 
     // Monthly Calendar
-    fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=${method}&hijriAdjustment=${hijriAdjustment}&month=${month}&year=${year}`)
+    fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=${method}&school=${school}&hijriAdjustment=${hijriAdjustment}&month=${month}&year=${year}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) setMonthlyTimings(data.data);
@@ -252,9 +253,9 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     setLocationType('custom');
 
     const activeCode = forceCode || countryCode;
-    const { method, hijriAdjustment } = getPrayerMethodAndAdjustment(activeCode);
+    const { method, hijriAdjustment, school = 0 } = getPrayerMethodAndAdjustment(activeCode);
 
-    fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country || '')}&method=${method}&hijriAdjustment=${hijriAdjustment}`)
+    fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country || '')}&method=${method}&school=${school}&hijriAdjustment=${hijriAdjustment}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.data) {
@@ -276,6 +277,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
           }
 
           setTimings(data.data.timings);
+          localStorage.setItem('user_prayer_timings', JSON.stringify(data.data.timings));
           const h = data.data.date.hijri;
           const g = data.data.date.gregorian;
           setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);

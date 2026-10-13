@@ -169,13 +169,20 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const cachedLng = localStorage.getItem('user_lng');
     const cachedCode = localStorage.getItem('user_country_code');
     const cachedLabel = localStorage.getItem('user_location_name');
+    const cachedTimingsStr = localStorage.getItem('user_prayer_timings');
+    let cachedTimings = null;
+    try {
+      if (cachedTimingsStr) cachedTimings = JSON.parse(cachedTimingsStr);
+    } catch(e) {}
+
     if (cachedLat && cachedLng) {
       setLocationInfo({
         hijri: { year: new Date().getFullYear() - 579 },
         lat: parseFloat(cachedLat),
         lng: parseFloat(cachedLng),
         countryCode: cachedCode || '',
-        city: cachedLabel || 'Local City'
+        city: cachedLabel || 'Local City',
+        timings: cachedTimings
       });
     }
   }, []);
