@@ -626,6 +626,16 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             gap: '0.85rem'
           }}>
             <div 
+              onClick={() => handleNav('asanNimaz')}
+              className="card"
+              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid #10b981', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)', color: '#fff', boxShadow: '0 4px 14px rgba(6,78,59,0.2)' }}
+            >
+              <i className="fas fa-mosque" style={{ fontSize: '1.7rem', color: '#fde68a', marginBottom: '0.5rem' }}></i>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: '#fde68a' }}>آسان نماز</h4>
+              <p style={{ fontSize: '0.72rem', color: '#d1fae5', margin: '0.25rem 0 0 0' }}>مکمل طریقہ و احکام</p>
+            </div>
+
+            <div 
               onClick={() => handleNav('read')}
               className="card"
               style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}

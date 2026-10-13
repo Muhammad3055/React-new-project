@@ -39,6 +39,7 @@ const DuasView = lazy(() => import('./views/DuasView'));
 const KhatamTrackerView = lazy(() => import('./views/KhatamTrackerView'));
 const UserDashboardView = lazy(() => import('./views/UserDashboardView'));
 const PrayersView = lazy(() => import('./views/PrayersView'));
+const AsanNimazView = lazy(() => import('./views/AsanNimazView'));
 const QuizView = lazy(() => import('./views/QuizView'));
 const SeerahView = lazy(() => import('./views/SeerahView'));
 const ZakatView = lazy(() => import('./views/ZakatView'));
@@ -83,6 +84,7 @@ function MainAppContent() {
 
     hadith: '/hadith',
     prayers: '/prayers',
+    asanNimaz: '/asan-nimaz',
     qibla: '/qibla',
     fazail: '/fazail',
     namesOfAllah: '/names-of-allah',
@@ -522,6 +524,10 @@ function MainAppContent() {
 
           {activeTab === 'prayers' && (
             <PrayersView navigateToTab={navigateToTab} />
+          )}
+
+          {activeTab === 'asanNimaz' && (
+            <AsanNimazView navigateToTab={navigateToTab} />
           )}
 
           {activeTab === 'qibla' && (

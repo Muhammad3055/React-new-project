@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 export default function PrayersView({ navigateToTab }) {
   const { t } = useLanguage();
   const tools = [
+    { title: 'آسان نماز و مسنون احکام (Asan Nimaz)', desc: 'نماز کا مکمل طریقہ، ۵ نمازوں کی رکعتیں، وضو، غسل، جنازہ، قبرستان اور روزمرہ کی دعائیں۔', icon: 'fas fa-mosque', tab: 'asanNimaz', color: '#059669' },
     { title: t('qiblaCompassTitle', 'Qibla Direction Compass'), desc: t('qiblaCompassDesc', 'Accurate live Qibla direction for your exact location.'), icon: 'fas fa-compass', tab: 'qibla', color: '#0d9488' },
     { title: t('khatamTrackerTitle', '30-Day Khatam Tracker'), desc: t('khatamTrackerDesc', 'Track your daily Juz reading progress to complete Quran.'), icon: 'fas fa-calendar-check', tab: 'khatam', color: '#b45309' },
     { title: t('masnoonDuasTitle', 'Masnoon Duas & Azkar'), desc: t('masnoonDuasDesc', 'Morning & evening Azkar with audio recitations.'), icon: 'fas fa-hands', tab: 'duas', color: '#059669' },
@@ -25,9 +26,65 @@ export default function PrayersView({ navigateToTab }) {
       </div>
 
       {/* Main Prayer Times & Live Widget */}
-      <section style={{ marginBottom: '3rem' }}>
+      <section style={{ marginBottom: '2rem' }}>
         <PrayerTimesWidget />
       </section>
+
+      {/* Featured Banner: Asan Nimaz Guide */}
+      <div
+        onClick={() => navigateToTab && navigateToTab('asanNimaz')}
+        style={{
+          background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
+          color: '#ffffff',
+          borderRadius: '20px',
+          padding: '1.5rem 2rem',
+          marginBottom: '3rem',
+          cursor: 'pointer',
+          boxShadow: '0 8px 24px rgba(6,78,59,0.18)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          transition: 'transform 0.2s ease'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', color: '#fde68a' }}>
+            <i className="fas fa-mosque" />
+          </div>
+          <div>
+            <span style={{ background: '#f59e0b', color: '#78350f', padding: '2px 10px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900 }}>نئی خصوصیت • Featured</span>
+            <h3 style={{ margin: '4px 0 2px 0', fontSize: '1.35rem', fontWeight: 900, color: '#ffffff' }}>
+              آسان نماز اور مکمل مسنون احکام (Asan Nimaz Guide)
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.88rem', color: '#d1fae5' }}>
+              نماز کا مرحلہ وار طریقہ، ۵ نمازوں کی رکعتیں، وضو، غسل، جنازہ، قبرستان اور مسنون دعائیں
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          style={{
+            background: '#ffffff',
+            color: '#064e3b',
+            border: 'none',
+            padding: '10px 22px',
+            borderRadius: '12px',
+            fontWeight: 800,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+          }}
+        >
+          <span>کھولیں (Open Guide)</span>
+          <i className="fas fa-arrow-right" />
+        </button>
+      </div>
 
       {/* Spiritual Tools Cards */}
       <section style={{ marginTop: '3rem' }}>

@@ -31,6 +31,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    { label: '🕌 ' + t('asanNimaz', 'آسان نماز و احکام (Asan Nimaz)'), icon: 'fas fa-mosque', action: () => { navigateToTab('asanNimaz'); setShowExtrasMenu(false); } },
     { label: t('mp3Audio'), icon: 'fas fa-headphones', action: () => { navigateToTab('quran'); setShowExtrasMenu(false); setMobileActive(false); } },
     { label: '💰 ' + t('zakatCalc', 'Zakat Calculator'), icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
     { label: '🕋 ' + t('hajjUmrahGuide', 'Hajj & Umrah Guide'), icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },
