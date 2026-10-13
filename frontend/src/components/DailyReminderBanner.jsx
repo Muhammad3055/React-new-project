@@ -95,11 +95,96 @@ const PRAYER_DUAS = {
   }
 };
 
+// Authentic Post-Prayer 33-Times Tasbeeh Data
+const POST_PRAYER_TASBEEH = [
+  {
+    id: 'subhanAllah',
+    titleUrdu: 'سُبْحَانَ اللَّهِ',
+    romanTitle: 'SubhanAllah',
+    countTarget: 33,
+    meaningUrdu: 'اللہ پاک ہے (ہر عیب و کمزوری سے پاک ہے)',
+    meaningEn: 'Glory be to Allah',
+    badgeColor: '#059669',
+    bgLight: '#ecfdf5',
+    borderLight: '#a7f3d0'
+  },
+  {
+    id: 'subhanAllahAzeem',
+    titleUrdu: 'سُبْحَانَ اللَّهِ الْعَظِيمِ',
+    altTitleUrdu: 'الْحَمْدُ لِلَّهِ',
+    romanTitle: 'SubhanAllahil Azeem / Alhamdulillah',
+    countTarget: 33,
+    meaningUrdu: 'عظمت والا اللہ پاک ہے • تمام تعریفیں اللہ کے لیے ہیں',
+    meaningEn: 'Glory be to Allah the Magnificent • All praise is due to Allah',
+    badgeColor: '#0284c7',
+    bgLight: '#f0f9ff',
+    borderLight: '#bae6fd'
+  },
+  {
+    id: 'allahuAkbar',
+    titleUrdu: 'اللَّهُ أَكْبَرُ',
+    romanTitle: 'Allahu Akbar',
+    countTarget: 33,
+    meaningUrdu: 'اللہ سب سے بڑا اور برتر ہے',
+    meaningEn: 'Allah is the Greatest',
+    badgeColor: '#d97706',
+    bgLight: '#fffbeb',
+    borderLight: '#fde68a'
+  }
+];
+
+const COMPLETION_KALIMAH = {
+  arabic: 'لَا إِلَـٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ',
+  meaningUrdu: 'اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اسی کی بادشاہی ہے، اسی کے لیے تمام تعریف ہے، اور وہ ہر چیز پر کامل قدرت رکھتا ہے۔',
+  meaningEn: 'None has the right to be worshipped except Allah alone, with no partner. His is the majesty and His is all praise, and He has power over everything.',
+  fazeelatUrdu: 'رسول اللہ ﷺ نے فرمایا: "جس نے ہر نماز کے بعد ۳۳ بار سُبْحَانَ اللَّهِ، ۳۳ بار سُبْحَانَ اللَّهِ الْعَظِيمِ / الْحَمْدُ لِلَّهِ، اور ۳۳ بار اللَّهُ أَكْبَرُ پڑھا، اور سوواں عدد پورا کرنے کے لیے یہ کلمہ پڑھا، اس کے تمام گناہ بخش دیے جاتے ہیں اگرچہ وہ سمندر کے جھاگ کے برابر ہی کیوں نہ ہوں۔" (صحیح مسلم: 597)',
+  hadithRef: 'صحیح مسلم: 597 • سنن ابو داؤد: 1504 • سنن نسائی: 1350'
+};
+
 export default function DailyReminderBanner({ timings, navigateToTab }) {
   const { t } = useLanguage();
   const [activeReminders, setActiveReminders] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
   const [previewPrayer, setPreviewPrayer] = useState(null); // Allows user/admin to preview any prayer's Dua
+
+  // Interactive 33-times Tasbeeh counters with local persistence
+  const [tasbeehCounts, setTasbeehCounts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('post_prayer_tasbeeh_counts');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return { subhanAllah: 0, subhanAllahAzeem: 0, allahuAkbar: 0 };
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('post_prayer_tasbeeh_counts', JSON.stringify(tasbeehCounts));
+    } catch (e) {}
+  }, [tasbeehCounts]);
+
+  const incrementTasbeeh = (key) => {
+    if (navigator.vibrate) {
+      try { navigator.vibrate(35); } catch (e) {}
+    }
+    setTasbeehCounts(prev => ({
+      ...prev,
+      [key]: Math.min(33, (prev[key] || 0) + 1)
+    }));
+  };
+
+  const setTasbeehComplete = (key) => {
+    setTasbeehCounts(prev => ({
+      ...prev,
+      [key]: 33
+    }));
+  };
+
+  const resetAllTasbeeh = () => {
+    setTasbeehCounts({ subhanAllah: 0, subhanAllahAzeem: 0, allahuAkbar: 0 });
+  };
+
+  const totalTasbeehCount = (tasbeehCounts.subhanAllah || 0) + (tasbeehCounts.subhanAllahAzeem || 0) + (tasbeehCounts.allahuAkbar || 0);
+  const isTasbeehComplete = (tasbeehCounts.subhanAllah >= 33) && (tasbeehCounts.subhanAllahAzeem >= 33) && (tasbeehCounts.allahuAkbar >= 33);
 
   useEffect(() => {
     // Resolve prayer timings (from prop, localStorage cache, or default)
@@ -240,6 +325,25 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(textToCopy);
       setCopiedId(dua.id);
+      setTimeout(() => setCopiedId(null), 3000);
+    }
+  };
+
+  // Copy Full 33x Tasbeeh to Clipboard
+  const handleCopyTasbeeh = () => {
+    const textToCopy = `ہر فرض نماز کے بعد کی مسنون تسبیح (۳۳ بار):\n\n` +
+      `۱. سُبْحَانَ اللَّهِ (۳۳ مرتبہ) - اللہ پاک ہے\n` +
+      `۲. سُبْحَانَ اللَّهِ الْعَظِيمِ / الْحَمْدُ لِلَّهِ (۳۳ مرتبہ) - عظمت والا اللہ پاک ہے • تمام تعریفیں اللہ کے لیے ہیں\n` +
+      `۳. اللَّهُ أَكْبَرُ (۳۳ مرتبہ) - اللہ سب سے بڑا ہے\n\n` +
+      `سوواں (100) کلمہ برائے تکمیلِ تسبیح:\n${COMPLETION_KALIMAH.arabic}\n\n` +
+      `ترجمہ:\n${COMPLETION_KALIMAH.meaningUrdu}\n\n` +
+      `فضیلت:\n${COMPLETION_KALIMAH.fazeelatUrdu}\n\n` +
+      `حوالہ: ${COMPLETION_KALIMAH.hadithRef}\n\n` +
+      `مکتبۃ المسلم • maktabatulmuslim.com`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(textToCopy);
+      setCopiedId('tasbeeh_full');
       setTimeout(() => setCopiedId(null), 3000);
     }
   };
@@ -385,6 +489,304 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
               <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#78350f', lineHeight: 1.5, fontStyle: 'italic' }}>
                 {dua.fazeelatEn}
               </p>
+            </div>
+
+            {/* 📿 ۳۳ بار والی مسنون تسبیح (SubhanAllah 33x, SubhanAllahil Azeem / Alhamdulillah 33x, Allahu Akbar 33x + 100th Kalimah) */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%)',
+                border: '2px solid #10b981',
+                borderRadius: '20px',
+                padding: '1.4rem 1.6rem',
+                marginBottom: '1.25rem',
+                boxShadow: '0 8px 24px rgba(16,185,129,0.08)'
+              }}
+            >
+              {/* Header: Title + Controls */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span style={{ background: '#059669', color: '#ffffff', padding: '3px 10px', borderRadius: '12px', fontSize: '0.76rem', fontWeight: 800 }}>
+                      📿 مسنون تسبیح (33 × 33 × 33)
+                    </span>
+                    <h4 style={{ margin: 0, color: '#064e3b', fontSize: '1.18rem', fontWeight: 900 }}>
+                      ہر فرض نماز کے بعد کی تسبیح (۳۳، ۳۳، ۳۳ مرتبہ)
+                    </h4>
+                  </div>
+                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.82rem', color: '#475569' }}>
+                    سُبْحَانَ اللَّهِ (۳۳ بار) • سُبْحَانَ اللَّهِ الْعَظِيمِ / الْحَمْدُ لِلَّهِ (۳۳ بار) • اللَّهُ أَكْبَرُ (۳۳ بار)
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={handleCopyTasbeeh}
+                    style={{
+                      background: copiedId === 'tasbeeh_full' ? '#10b981' : '#ffffff',
+                      color: copiedId === 'tasbeeh_full' ? '#ffffff' : '#065f46',
+                      border: '1px solid #a7f3d0',
+                      padding: '5px 12px',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <i className={copiedId === 'tasbeeh_full' ? "fas fa-check" : "fas fa-copy"}></i>
+                    {copiedId === 'tasbeeh_full' ? 'کاپی ہو گیا!' : 'Copy Tasbeeh'}
+                  </button>
+
+                  {totalTasbeehCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={resetAllTasbeeh}
+                      style={{
+                        background: '#ffffff',
+                        color: '#dc2626',
+                        border: '1px solid #fecaca',
+                        padding: '5px 12px',
+                        borderRadius: '10px',
+                        fontWeight: 700,
+                        fontSize: '0.78rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem'
+                      }}
+                      title="تسبیح کاؤنٹر دوبارہ شروع کریں"
+                    >
+                      <i className="fas fa-undo"></i> Reset
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Overall Progress Meter */}
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.7rem 1rem', marginBottom: '1.15rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.82rem', fontWeight: 800 }}>
+                  <span style={{ color: isTasbeehComplete ? '#059669' : '#334155' }}>
+                    {isTasbeehComplete ? '🎉 ماشاء اللہ! ۹۹ مرتبہ تسبیح مکمل ہو گئی' : 'مجموعی تسبیح کاؤنٹر:'}
+                  </span>
+                  <span style={{ color: '#059669' }}>
+                    {totalTasbeehCount} / 99
+                  </span>
+                </div>
+                <div style={{ width: '100%', height: '7px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      width: `${(totalTasbeehCount / 99) * 100}%`,
+                      height: '100%',
+                      background: isTasbeehComplete ? '#059669' : 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+                      transition: 'width 0.25s ease'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 3 Interactive Counter Cards */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: '0.9rem',
+                  marginBottom: '1.15rem'
+                }}
+              >
+                {POST_PRAYER_TASBEEH.map((item, idx) => {
+                  const currentCount = tasbeehCounts[item.id] || 0;
+                  const isItemDone = currentCount >= item.countTarget;
+                  return (
+                    <div
+                      key={item.id}
+                      style={{
+                        background: isItemDone ? item.bgLight : '#ffffff',
+                        border: `2px solid ${isItemDone ? item.badgeColor : item.borderLight}`,
+                        borderRadius: '16px',
+                        padding: '1.1rem 1.2rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        boxShadow: isItemDone ? '0 4px 14px rgba(5,150,105,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {/* Top: Index & Counter badge */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ background: item.bgLight, color: item.badgeColor, border: `1px solid ${item.borderLight}`, padding: '2px 8px', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 800 }}>
+                          {idx + 1}. {item.romanTitle}
+                        </span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: isItemDone ? '#059669' : '#64748b' }}>
+                          {currentCount} / {item.countTarget}
+                        </span>
+                      </div>
+
+                      {/* Arabic Text */}
+                      <div style={{ textAlign: 'center', margin: '0.4rem 0' }}>
+                        <p style={{
+                          margin: 0,
+                          fontSize: '1.75rem',
+                          fontWeight: 800,
+                          fontFamily: "'Amiri', 'Traditional Arabic', serif",
+                          color: '#064e3b',
+                          direction: 'rtl',
+                          lineHeight: 1.5
+                        }}>
+                          {item.titleUrdu}
+                        </p>
+                        {item.altTitleUrdu && (
+                          <span style={{ fontSize: '0.85rem', color: '#0284c7', fontWeight: 700, direction: 'rtl', display: 'block', marginTop: '2px' }}>
+                            (یا: {item.altTitleUrdu})
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Meanings */}
+                      <div style={{ textAlign: 'center', margin: '0.25rem 0 0.75rem 0' }}>
+                        <p style={{ margin: 0, fontSize: '0.86rem', color: '#1e293b', direction: 'rtl', fontFamily: "'Amiri', serif", fontWeight: 700 }}>
+                          "{item.meaningUrdu}"
+                        </p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b', fontStyle: 'italic' }}>
+                          {item.meaningEn}
+                        </p>
+                      </div>
+
+                      {/* Mini Progress */}
+                      <div style={{ width: '100%', height: '5px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.75rem' }}>
+                        <div style={{ width: `${(currentCount / item.countTarget) * 100}%`, height: '100%', background: item.badgeColor, transition: 'width 0.2s' }} />
+                      </div>
+
+                      {/* Tap / Complete Buttons */}
+                      <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => incrementTasbeeh(item.id)}
+                          disabled={isItemDone}
+                          style={{
+                            flex: 1,
+                            background: isItemDone ? '#e2e8f0' : `linear-gradient(135deg, ${item.badgeColor} 0%, #047857 100%)`,
+                            color: isItemDone ? '#64748b' : '#ffffff',
+                            border: 'none',
+                            padding: '9px 12px',
+                            borderRadius: '10px',
+                            fontWeight: 800,
+                            fontSize: '0.9rem',
+                            cursor: isItemDone ? 'default' : 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.4rem',
+                            boxShadow: isItemDone ? 'none' : '0 3px 10px rgba(5,150,105,0.2)',
+                            userSelect: 'none'
+                          }}
+                        >
+                          {isItemDone ? (
+                            <>
+                              <i className="fas fa-check-circle" style={{ color: '#059669' }}></i>
+                              <span>۳۳ بار مکمل!</span>
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-fingerprint"></i>
+                              <span>+1 پڑھا ({currentCount}/33)</span>
+                            </>
+                          )}
+                        </button>
+
+                        {!isItemDone && (
+                          <button
+                            type="button"
+                            onClick={() => setTasbeehComplete(item.id)}
+                            style={{
+                              background: '#f8fafc',
+                              color: '#475569',
+                              border: '1px solid #cbd5e1',
+                              padding: '8px 9px',
+                              borderRadius: '8px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap'
+                            }}
+                            title="اگر انگلیوں پر پڑھ لیا ہے تو ۳۳ مکمل نشان زد کریں"
+                          >
+                            ✓ 33 مکمل
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 🌟 100th Completion Kalimah (سوواں کلمہ) */}
+              <div
+                style={{
+                  background: isTasbeehComplete ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : '#ffffff',
+                  border: `2px dashed ${isTasbeehComplete ? '#d97706' : '#94a3b8'}`,
+                  borderRadius: '16px',
+                  padding: '1.2rem 1.4rem',
+                  marginBottom: '1rem',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#ffffff', color: '#92400e', border: '1px solid #fde68a', padding: '3px 12px', borderRadius: '12px', fontSize: '0.78rem', fontWeight: 800, marginBottom: '0.65rem' }}>
+                  <span>✨ سوواں (100) کلمہ برائے تکمیلِ تسبیح</span>
+                  {isTasbeehComplete && <span style={{ color: '#059669', fontWeight: 900 }}>• اب یہ کلمہ پڑھیں!</span>}
+                </div>
+
+                <p style={{
+                  margin: '0 0 0.45rem 0',
+                  fontSize: 'clamp(1.2rem, 3vw, 1.55rem)',
+                  fontWeight: 800,
+                  fontFamily: "'Amiri', 'Traditional Arabic', serif",
+                  color: '#064e3b',
+                  direction: 'rtl',
+                  lineHeight: 1.9
+                }}>
+                  {COMPLETION_KALIMAH.arabic}
+                </p>
+
+                <p style={{ margin: '0 0 0.3rem 0', fontSize: '0.98rem', color: '#1e293b', direction: 'rtl', fontFamily: "'Amiri', serif", lineHeight: 1.7 }}>
+                  "{COMPLETION_KALIMAH.meaningUrdu}"
+                </p>
+
+                <p style={{ margin: 0, fontSize: '0.82rem', color: '#475569', fontStyle: 'italic', lineHeight: 1.5 }}>
+                  "{COMPLETION_KALIMAH.meaningEn}"
+                </p>
+              </div>
+
+              {/* 📖 Hadith Fazeelat Banner */}
+              <div
+                style={{
+                  background: 'rgba(255,255,255,0.85)',
+                  border: '1px solid #a7f3d0',
+                  borderRadius: '12px',
+                  padding: '0.85rem 1.15rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+                  <span style={{ fontSize: '1.25rem', color: '#059669' }}>💫</span>
+                  <div>
+                    <p style={{ margin: 0, fontSize: '0.92rem', color: '#065f46', direction: 'rtl', fontFamily: "'Amiri', serif", fontWeight: 700, lineHeight: 1.7 }}>
+                      {COMPLETION_KALIMAH.fazeelatUrdu}
+                    </p>
+                  </div>
+                </div>
+                <span style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '3px 10px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 800 }}>
+                  📚 {COMPLETION_KALIMAH.hadithRef}
+                </span>
+              </div>
             </div>
 
             {/* Bottom Actions */}
