@@ -94,11 +94,8 @@ urlpatterns = [
     path('logout/', root_health_view, name='logout'),
 
     path('', include('core.urls')),
+    re_path(r'^media/(?P<path>.*)$', serve_static_root_file('media', 'application/octet-stream') if False else lambda req, path: __import__('django.views.static', fromlist=['serve']).serve(req, path, document_root=settings.MEDIA_ROOT)),
+    re_path(r'^static/(?P<path>.*)$', lambda req, path: __import__('django.views.static', fromlist=['serve']).serve(req, path, document_root=settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT)),
     re_path(r'^.*$', root_health_view, name='spa_catchall'),
 ]
 
-
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

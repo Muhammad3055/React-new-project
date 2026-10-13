@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function TafseerView({ openReportModal, user }) {
   const { t } = useLanguage();
@@ -22,7 +23,7 @@ export default function TafseerView({ openReportModal, user }) {
 
   useEffect(() => {
     if (!user) return;
-    fetch('/api/user/dashboard/')
+    fetch(getApiUrl('/api/user/dashboard/'))
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -57,7 +58,7 @@ export default function TafseerView({ openReportModal, user }) {
     
     setUserSavedTafseers(updated);
     
-    fetch('/api/user/preferences/update/', {
+    fetch(getApiUrl('/api/user/preferences/update/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ saved_tafseers: updated })
@@ -67,7 +68,7 @@ export default function TafseerView({ openReportModal, user }) {
   const logTafseerHistory = (surah, ayah) => {
     if (!user) return;
     
-    fetch('/api/user/dashboard/')
+    fetch(getApiUrl('/api/user/dashboard/'))
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -81,7 +82,7 @@ export default function TafseerView({ openReportModal, user }) {
           history.unshift(historyItem);
           history = history.slice(0, 30);
           
-          fetch('/api/user/preferences/update/', {
+          fetch(getApiUrl('/api/user/preferences/update/'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tafseer_history: history })
@@ -97,7 +98,7 @@ export default function TafseerView({ openReportModal, user }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/tafseer/?q=${encodeURIComponent(debouncedQuery)}&surah=${encodeURIComponent(selectedSurah)}&page=${page}`)
+    fetch(getApiUrl(`/api/tafseer/?q=${encodeURIComponent(debouncedQuery)}&surah=${encodeURIComponent(selectedSurah)}&page=${page}`))
       .then(res => res.json())
       .then(data => {
         setTafseers(data.results || []);
@@ -136,7 +137,7 @@ export default function TafseerView({ openReportModal, user }) {
           <select
             className="filter-select"
             value={selectedSurah}
-            onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
+            onChange={(e) => { setSelectedSurah(e.target.value); setPage(1); }}
           >
             <option value="">{t('allSurahs', 'All Surahs')}</option>
             {surahList.map((s) => (

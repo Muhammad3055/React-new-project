@@ -62,7 +62,9 @@ class QuranAudio(models.Model):
     def get_playable_url(self):
         if self.audio_file:
             return self.audio_file.url
-        return self.audio_url or "#"
+        if self.audio_url and not self.audio_url.startswith('blob:'):
+            return self.audio_url
+        return "#"
 
     def save(self, *args, **kwargs):
         if self.audio_file and self.audio_file.name:
@@ -138,7 +140,9 @@ class TaqreerAudio(models.Model):
     def get_playable_url(self):
         if self.audio_file:
             return self.audio_file.url
-        return self.audio_url or "#"
+        if self.audio_url and not self.audio_url.startswith('blob:'):
+            return self.audio_url
+        return "#"
 
     def save(self, *args, **kwargs):
         if self.audio_file and self.audio_file.name:

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
   const [bookmarks, setBookmarks] = useState([]);
@@ -12,7 +13,7 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
 
   useEffect(() => {
     if (user) {
-      fetch('/api/bookmarks/')
+      fetch(getApiUrl('/api/bookmarks/'))
         .then(res => res.json())
         .then(data => {
           setBookmarks(data.bookmarks || []);
@@ -23,7 +24,7 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
   }, [user]);
 
   const removeBookmark = (surahNum, ayahNum) => {
-    fetch('/api/bookmark/toggle/', {
+    fetch(getApiUrl('/api/bookmark/toggle/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ surah_number: surahNum, ayah_number: ayahNum })

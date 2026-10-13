@@ -13,9 +13,13 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const defaultSurah = ALL_114_SURAHS[0] || { name: 'Al-Fatihah', englishName: 'The Opening', arabic: 'الفاتحة' };
+  const initialTitle = editItem?.title || editItem?.surah_name_english || (defaultContentType === 'quran' ? `Surah ${defaultSurah.name} (${defaultSurah.englishName})` : '');
+  const initialArabicTitle = editItem?.arabic_title || editItem?.surah_name_arabic || (defaultContentType === 'quran' ? `سورة ${defaultSurah.arabic}` : '');
+
   // General Form Fields
-  const [title, setTitle] = useState(editItem?.title || editItem?.surah_name_english || '');
-  const [arabicTitle, setArabicTitle] = useState(editItem?.arabic_title || editItem?.surah_name_arabic || '');
+  const [title, setTitle] = useState(initialTitle);
+  const [arabicTitle, setArabicTitle] = useState(initialArabicTitle);
   const [authorSpeaker, setAuthorSpeaker] = useState(editItem?.speaker || editItem?.author || editItem?.reciter || '');
   const [tarjumaQari, setTarjumaQari] = useState(editItem?.tarjuma_qari || '');
   const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
@@ -133,6 +137,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     const newItem = {
       title: itemTitle,
       arabic_title: arabicTitle,
+      surah_name_arabic: arabicTitle,
       author: finalSpeaker,
       speaker: finalSpeaker,
       reciter: finalSpeaker,
@@ -148,7 +153,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       category_id: selectedCategory,
       fileUrl: finalFileUrl,
       pdf_url: contentType === 'book' ? finalFileUrl : undefined,
-      audio_url: contentType === 'audio' ? finalFileUrl : undefined,
+      audio_url: (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') ? finalFileUrl : undefined,
       link_url: linkUrl || finalFileUrl,
       cover_url: finalCoverUrl,
       duration,
@@ -190,27 +195,36 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('tarjuma_qari', tarjumaQari);
     formData.append('surah_number', surahNumber);
     formData.append('surah_name_english', itemTitle);
-    formData.append('audio_url', finalFileUrl);
     formData.append('pages_count', pagesCount);
     formData.append('file_type', activeFileType);
     formData.append('destination', destination);
     formData.append('language', language);
-    formData.append('category_id', selectedCategory);
+    formData.append('category_id', selectedCategory || '');
     formData.append('description', description);
     formData.append('content_type', contentType);
-    formData.append('pdf_url', finalFileUrl);
-    formData.append('cover_url', finalCoverUrl);
-    formData.append('link_url', linkUrl || finalFileUrl);
     formData.append('duration', duration);
     formData.append('text_content', postContent || hadithTranslation || tafseerText || description);
 
-    if (selectedCategory) {
-      formData.append('category_id', selectedCategory);
+    // Only append real URLs, NEVER append blob: URLs to backend!
+    const cleanFileUrl = (finalFileUrl && !finalFileUrl.startsWith('blob:')) ? finalFileUrl : '';
+    if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
+      if (cleanFileUrl) formData.append('audio_url', cleanFileUrl);
+    } else {
+      if (cleanFileUrl) formData.append('pdf_url', cleanFileUrl);
+      if (linkUrl || cleanFileUrl) formData.append('link_url', linkUrl || cleanFileUrl);
     }
+    if (finalCoverUrl && !finalCoverUrl.startsWith('blob:')) {
+      formData.append('cover_url', finalCoverUrl);
+    }
+
+    // Append file with the correct field name per content type
     if (selectedFile) {
-      formData.append('file', selectedFile);
-      formData.append('pdf_file', selectedFile);
-      formData.append('audio_file', selectedFile);
+      if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
+        formData.append('audio_file', selectedFile);
+      } else {
+        formData.append('pdf_file', selectedFile);
+        formData.append('file', selectedFile);
+      }
     }
     if (selectedCoverFile) {
       formData.append('cover_image', selectedCoverFile);
@@ -258,35 +272,69 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     } : {
       method: method,
       body: formData
+      // No Content-Type header — browser sets multipart/form-data with boundary automatically
     };
 
     fetch(getApiUrl(apiEndpoint), fetchOptions)
       .then(res => res.json())
       .then((data) => {
-        if (data && (data.audio_url || data.document_url || data.id)) {
-          const realUrl = data.audio_url || data.document_url || finalFileUrl;
-          newItem.id = data.id || newItem.id;
-          newItem.fileUrl = realUrl;
-          if (contentType === 'audio' || contentType === 'quran') {
-            newItem.audio_url = realUrl;
-          } else if (contentType === 'book') {
-            newItem.pdf_url = realUrl;
+        if (data && (data.audio_url || data.document_url || data.id || data.status === 'success')) {
+          const realUrl = data.audio_url || data.document_url || '';
+          if (data.id) newItem.id = data.id;
+          if (realUrl) {
+            newItem.fileUrl = realUrl;
+            if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
+              newItem.audio_url = realUrl;
+            } else if (contentType === 'book') {
+              newItem.pdf_url = realUrl;
+            }
           }
-        }
-        addAdminItem(newItem);
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-      })
-      .catch(() => {
-        addAdminItem(newItem);
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-      });
+          if (data.surah_name_arabic) {
+            newItem.surah_name_arabic = data.surah_name_arabic;
+            newItem.arabic_title = data.surah_name_arabic;
+          }
+          if (data.arabic_title) {
+            newItem.arabic_title = data.arabic_title;
+            newItem.surah_name_arabic = data.arabic_title;
+          }
+          if (data.surah_name_english) {
+            newItem.surah_name_english = data.surah_name_english;
+            newItem.title = data.surah_name_english;
+          }
 
-    setUploading(false);
-    setSubmitted(true);
-    setTimeout(() => {
-      if (onSuccess) onSuccess();
-      if (onClose) onClose();
-    }, 1500);
+          // Clean up any stale local admin duplicate with matching title, surah_number or ID
+          const existingAdminItems = getAdminItems();
+          const cleaned = existingAdminItems.filter(item => {
+            if (!item) return false;
+            if (String(item.id) === String(newItem.id)) return false;
+            if (contentType === 'quran' && item.contentType === 'quran' && item.destination === newItem.destination && Number(item.surah_number) === Number(newItem.surah_number)) return false;
+            if (item.title && newItem.title && item.title.trim().toLowerCase() === newItem.title.trim().toLowerCase()) return false;
+            return true;
+          });
+          localStorage.setItem('quran_portal_admin_items', JSON.stringify([newItem, ...cleaned]));
+        } else {
+          addAdminItem(newItem);
+        }
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
+        setUploading(false);
+        setSubmitted(true);
+        setTimeout(() => {
+          if (onSuccess) onSuccess();
+          if (onClose) onClose();
+        }, 1200);
+      })
+      .catch((err) => {
+        console.error('Upload error:', err);
+        // Fallback: Still add to local store so admin can see it
+        addAdminItem(newItem);
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
+        setUploading(false);
+        setSubmitted(true);
+        setTimeout(() => {
+          if (onSuccess) onSuccess();
+          if (onClose) onClose();
+        }, 1200);
+      });
   };
 
   return (
@@ -371,7 +419,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
                 <button
                   type="button"
-                  onClick={() => setContentType('quran')}
+                  onClick={() => {
+                    setContentType('quran');
+                    if (!title || title.startsWith('Untitled')) {
+                      const match = ALL_114_SURAHS.find(s => s.number === Number(surahNumber)) || ALL_114_SURAHS[0];
+                      setTitle(`Surah ${match.name} (${match.englishName})`);
+                      setArabicTitle(`سورة ${match.arabic}`);
+                    }
+                  }}
                   style={{ padding: '0.65rem 0.3rem', borderRadius: '10px', border: contentType === 'quran' ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.2)', background: contentType === 'quran' ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.05)', color: '#fff', cursor: 'pointer', fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem' }}
                 >
                   <i className="fas fa-quran fa-lg" style={{ color: '#10b981' }}></i>

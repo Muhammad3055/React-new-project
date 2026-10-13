@@ -44,13 +44,140 @@ QARIS_LIST = [
 ]
 
 
+SURAH_NAMES_MAP = {
+    1: ("Surah Al-Fatihah", "سُورَةُ الفَاتِحَةِ"),
+    2: ("Surah Al-Baqarah", "سُورَةُ البَقَرَةِ"),
+    3: ("Surah Ali 'Imran", "سُورَةُ آلِ عِمْرَانَ"),
+    4: ("Surah An-Nisa", "سُورَةُ النِّسَاءِ"),
+    5: ("Surah Al-Ma'idah", "سُورَةُ المَائِدَةِ"),
+    6: ("Surah Al-An'am", "سُورَةُ الأَنْعَامِ"),
+    7: ("Surah Al-A'raf", "سُورَةُ الأَعْرَافِ"),
+    8: ("Surah Al-Anfal", "سُورَةُ الأَنْفَالِ"),
+    9: ("Surah At-Tawbah", "سُورَةُ التَّوْبَةِ"),
+    10: ("Surah Yunus", "سُورَةُ يُونُسَ"),
+    11: ("Surah Hud", "سُورَةُ هُودٍ"),
+    12: ("Surah Yusuf", "سُورَةُ يُوسُفَ"),
+    13: ("Surah Ar-Ra'd", "سُورَةُ الرَّعْدِ"),
+    14: ("Surah Ibrahim", "سُورَةُ إِبْرَاهِيمَ"),
+    15: ("Surah Al-Hijr", "سُورَةُ الحِجْرِ"),
+    16: ("Surah An-Nahl", "سُورَةُ النَّحْلِ"),
+    17: ("Surah Al-Isra", "سُورَةُ الإِسْرَاءِ"),
+    18: ("Surah Al-Kahf", "سُورَةُ الكَهْفِ"),
+    19: ("Surah Maryam", "سُورَةُ مَرْيَمَ"),
+    20: ("Surah Taha", "سُورَةُ طه"),
+    21: ("Surah Al-Anbiya", "سُورَةُ الأَنْبِيَاءِ"),
+    22: ("Surah Al-Hajj", "سُورَةُ الحَجِّ"),
+    23: ("Surah Al-Mu'minun", "سُورَةُ المُؤْمِنُونَ"),
+    24: ("Surah An-Nur", "سُورَةُ النُّورِ"),
+    25: ("Surah Al-Furqan", "سُورَةُ الفُرْقَانِ"),
+    26: ("Surah Ash-Shu'ara", "سُورَةُ الشُّعَرَاءِ"),
+    27: ("Surah An-Naml", "سُورَةُ النَّمْلِ"),
+    28: ("Surah Al-Qasas", "سُورَةُ القَصَصِ"),
+    29: ("Surah Al-'Ankabut", "سُورَةُ العَنْكَبُوتِ"),
+    30: ("Surah Ar-Rum", "سُورَةُ الرُّومِ"),
+    31: ("Surah Luqman", "سُورَةُ لُقْمَانَ"),
+    32: ("Surah As-Sajdah", "سُورَةُ السَّجْدَةِ"),
+    33: ("Surah Al-Ahzab", "سُورَةُ الأَحْزَابِ"),
+    34: ("Surah Saba", "سُورَةُ سَبَإٍ"),
+    35: ("Surah Fatir", "سُورَةُ فَاطِرٍ"),
+    36: ("Surah Ya-Sin", "سُورَةُ يس"),
+    37: ("Surah As-Saffat", "سُورَةُ الصَّافَّاتِ"),
+    38: ("Surah Sad", "سُورَةُ ص"),
+    39: ("Surah Az-Zumar", "سُورَةُ الزُّمَرِ"),
+    40: ("Surah Ghafir", "سُورَةُ غَافِرٍ"),
+    41: ("Surah Fussilat", "سُورَةُ فُصِّلَتْ"),
+    42: ("Surah Ash-Shura", "سُورَةُ الشُّورَى"),
+    43: ("Surah Az-Zukhruf", "سُورَةُ الزُّخْرُفِ"),
+    44: ("Surah Ad-Dukhan", "سُورَةُ الدُّخَانِ"),
+    45: ("Surah Al-Jathiyah", "سُورَةُ الجَاثِيَةِ"),
+    46: ("Surah Al-Ahqaf", "سُورَةُ الأَحْقَافِ"),
+    47: ("Surah Muhammad", "سُورَةُ مُحَمَّدٍ"),
+    48: ("Surah Al-Fath", "سُورَةُ الفَتْحِ"),
+    49: ("Surah Al-Hujurat", "سُورَةُ الحُجُرَاتِ"),
+    50: ("Surah Qaf", "سُورَةُ ق"),
+    51: ("Surah Adh-Dhariyat", "سُورَةُ الذَّارِيَاتِ"),
+    52: ("Surah At-Tur", "سُورَةُ الطُّورِ"),
+    53: ("Surah An-Najm", "سُورَةُ النَّجْمِ"),
+    54: ("Surah Al-Qamar", "سُورَةُ القَمَرِ"),
+    55: ("Surah Ar-Rahman", "سُورَةُ الرَّحْمَنِ"),
+    56: ("Surah Al-Waqi'ah", "سُورَةُ الوَاقِعَةِ"),
+    57: ("Surah Al-Hadid", "سُورَةُ الحَدِيدِ"),
+    58: ("Surah Al-Mujadila", "سُورَةُ المُجَادَلَةِ"),
+    59: ("Surah Al-Hashr", "سُورَةُ الحَشْرِ"),
+    60: ("Surah Al-Mumtahanah", "سُورَةُ المُمْتَحَنَةِ"),
+    61: ("Surah As-Saff", "سُورَةُ الصَّفِّ"),
+    62: ("Surah Al-Jumu'ah", "سُورَةُ الجُمُعَةِ"),
+    63: ("Surah Al-Munafiqun", "سُورَةُ المُنَافِقُونَ"),
+    64: ("Surah At-Taghabun", "سُورَةُ التَّغَابُنِ"),
+    65: ("Surah At-Talaq", "سُورَةُ الطَّلَاقِ"),
+    66: ("Surah At-Tahrim", "سُورَةُ التَّحْرِيمِ"),
+    67: ("Surah Al-Mulk", "سُورَةُ المُلْكِ"),
+    68: ("Surah Al-Qalam", "سُورَةُ القَلَمِ"),
+    69: ("Surah Al-Haqqah", "سُورَةُ الحَاقَّةِ"),
+    70: ("Surah Al-Ma'arij", "سُورَةُ المَعَارِجِ"),
+    71: ("Surah Nuh", "سُورَةُ نُوحٍ"),
+    72: ("Surah Al-Jinn", "سُورَةُ الجِنِّ"),
+    73: ("Surah Al-Muzzammil", "سُورَةُ المُزَّمِّلِ"),
+    74: ("Surah Al-Muddaththir", "سُورَةُ المُدَّثِّرِ"),
+    75: ("Surah Al-Qiyamah", "سُورَةُ القِيَامَةِ"),
+    76: ("Surah Al-Insan", "سُورَةُ الإِنْسَانِ"),
+    77: ("Surah Al-Mursalat", "سُورَةُ المُرْسَلَاتِ"),
+    78: ("Surah An-Naba", "سُورَةُ النَّبَإِ"),
+    79: ("Surah An-Nazi'at", "سُورَةُ النَّازِعَاتِ"),
+    80: ("Surah 'Abasa", "سُورَةُ عَبَسَ"),
+    81: ("Surah At-Takwir", "سُورَةُ التَّكْوِيرِ"),
+    82: ("Surah Al-Infitar", "سُورَةُ الانْفِطَارِ"),
+    83: ("Surah Al-Mutaffifin", "سُورَةُ المُطَفِّفِينَ"),
+    84: ("Surah Al-Inshiqaq", "سُورَةُ الانْشِقَاقِ"),
+    85: ("Surah Al-Buruj", "سُورَةُ البُرُوجِ"),
+    86: ("Surah At-Tariq", "سُورَةُ الطَّارِقِ"),
+    87: ("Surah Al-A'la", "سُورَةُ الأَعْلَى"),
+    88: ("Surah Al-Ghashiyah", "سُورَةُ الغَاشِيَةِ"),
+    89: ("Surah Al-Fajr", "سُورَةُ الفَجْرِ"),
+    90: ("Surah Al-Balad", "سُورَةُ البَلَدِ"),
+    91: ("Surah Ash-Shams", "سُورَةُ الشَّمْسِ"),
+    92: ("Surah Al-Layl", "سُورَةُ اللَّيْلِ"),
+    93: ("Surah Ad-Duhaa", "سُورَةُ الضُّحَى"),
+    94: ("Surah Ash-Sharh", "سُورَةُ الشَّرْحِ"),
+    95: ("Surah At-Tin", "سُورَةُ التِّينِ"),
+    96: ("Surah Al-'Alaq", "سُورَةُ العَلَقِ"),
+    97: ("Surah Al-Qadr", "سُورَةُ القَدْرِ"),
+    98: ("Surah Al-Bayyinah", "سُورَةُ البَيِّنَةِ"),
+    99: ("Surah Az-Zalzalah", "سُورَةُ الزَّلْزَلَةِ"),
+    100: ("Surah Al-'Adiyat", "سُورَةُ العَادِيَاتِ"),
+    101: ("Surah Al-Qari'ah", "سُورَةُ القَارِعَةِ"),
+    102: ("Surah At-Takathur", "سُورَةُ التَّكَاثُرِ"),
+    103: ("Surah Al-'Asr", "سُورَةُ العَصْرِ"),
+    104: ("Surah Al-Humazah", "سُورَةُ الهُمَزَةِ"),
+    105: ("Surah Al-Fil", "سُورَةُ الفِيلِ"),
+    106: ("Surah Quraysh", "سُورَةُ قُرَيْشٍ"),
+    107: ("Surah Al-Ma'un", "سُورَةُ المَاعُونِ"),
+    108: ("Surah Al-Kawthar", "سُورَةُ الكَوْثَرِ"),
+    109: ("Surah Al-Kafirun", "سُورَةُ الكَافِرُونَ"),
+    110: ("Surah An-Nasr", "سُورَةُ النَّصْرِ"),
+    111: ("Surah Al-Masad", "سُورَةُ المَسَدِ"),
+    112: ("Surah Al-Ikhlas", "سُورَةُ الإِخْلَاصِ"),
+    113: ("Surah Al-Falaq", "سُورَةُ الفَلَقِ"),
+    114: ("Surah An-Nas", "سُورَةُ النَّاسِ"),
+}
+
+def get_surah_names(surah_num):
+    try:
+        num = int(surah_num)
+        return SURAH_NAMES_MAP.get(num, (f"Surah {num}", f"سورة {num}"))
+    except Exception:
+        return ("Surah", "سورة")
+
+
 # --- REST API Endpoints for React SPA ---
 
 @csrf_exempt
 def api_quran_list(request):
     if request.method == 'POST':
         try:
-            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            # Support both multipart/form-data (file uploads) and application/json
+            has_files = bool(request.FILES)
+            body = request.POST if has_files or request.content_type.startswith('multipart') else (json.loads(request.body) if request.body else {})
             audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
             category_id_raw = body.get('category_id')
             category_id = int(category_id_raw) if (category_id_raw and str(category_id_raw).isdigit()) else None
@@ -60,22 +187,37 @@ def api_quran_list(request):
             if not dest or dest == 'books':
                 dest = f"quran_{lang}"
 
+            surah_num = int(body.get('surah_number') or 1)
+            default_en, default_ar = get_surah_names(surah_num)
+
+            surah_en = (body.get('surah_name_english') or body.get('title') or '').strip()
+            if not surah_en or surah_en.startswith('Untitled'):
+                surah_en = default_en
+
+            surah_ar = (body.get('surah_name_arabic') or body.get('arabic_title') or '').strip()
+            if not surah_ar or surah_ar in ['سورة', 'سورة سورة']:
+                surah_ar = default_ar
+
+            raw_audio_url = (body.get('audio_url') or '').strip()
+            if raw_audio_url.startswith('blob:'):
+                raw_audio_url = ''
+
             qa = QuranAudio.objects.create(
-                surah_number=int(body.get('surah_number', 1)),
-                surah_name_english=body.get('surah_name_english') or body.get('title') or '',
-                surah_name_arabic=body.get('surah_name_arabic', 'سورة'),
-                reciter=body.get('reciter', 'Islamic Scholar') or body.get('speaker', 'Islamic Scholar'),
-                tarjuma_qari=body.get('tarjuma_qari', ''),
+                surah_number=surah_num,
+                surah_name_english=surah_en,
+                surah_name_arabic=surah_ar,
+                reciter=body.get('reciter') or body.get('speaker') or body.get('author') or 'Islamic Scholar',
+                tarjuma_qari=body.get('tarjuma_qari') or '',
                 language=lang,
                 destination_folder=dest,
                 category_id=category_id,
-                audio_url=body.get('audio_url', ''),
-                duration=body.get('duration', '00:00')
+                audio_url=raw_audio_url,
+                duration=body.get('duration') or '00:00'
             )
             if audio_file:
                 qa.audio_file = audio_file
                 qa.save()
-            return JsonResponse({'status': 'success', 'id': qa.id, 'audio_url': qa.get_playable_url(), 'message': 'Quran Audio uploaded successfully!'})
+            return JsonResponse({'status': 'success', 'id': qa.id, 'audio_url': qa.get_playable_url(), 'surah_name_arabic': qa.surah_name_arabic, 'surah_name_english': qa.surah_name_english, 'message': 'Quran Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
@@ -251,9 +393,11 @@ def api_videos_list(request):
 def api_taqreer_list(request):
     if request.method == 'POST':
         try:
-            body = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            # Support both multipart/form-data (file uploads) and application/json
+            has_files = bool(request.FILES)
+            body = request.POST if has_files or request.content_type.startswith('multipart') else (json.loads(request.body) if request.body else {})
             audio_file = request.FILES.get('audio_file') or request.FILES.get('file')
-            
+
             category_id_raw = body.get('category_id')
             category_id = int(category_id_raw) if (category_id_raw and str(category_id_raw).isdigit()) else None
 
@@ -262,22 +406,29 @@ def api_taqreer_list(request):
             if not dest or dest == 'books':
                 dest = f"taqreer_{lang}"
 
+            raw_audio_url = (body.get('audio_url') or '').strip()
+            if raw_audio_url.startswith('blob:'):
+                raw_audio_url = ''
+
+            title = (body.get('title') or '').strip() or 'Taqreer Audio Lecture'
+            arabic_title = (body.get('arabic_title') or body.get('surah_name_arabic') or '').strip()
+
             tq = TaqreerAudio.objects.create(
-                title=body.get('title', 'Untitled Audio'),
-                arabic_title=body.get('arabic_title', ''),
-                speaker=body.get('speaker', 'Islamic Scholar') or body.get('author', 'Islamic Scholar'),
-                tarjuma_qari=body.get('tarjuma_qari', ''),
+                title=title,
+                arabic_title=arabic_title,
+                speaker=body.get('speaker') or body.get('author') or body.get('reciter') or 'Islamic Scholar',
+                tarjuma_qari=body.get('tarjuma_qari') or '',
                 language=lang,
                 destination_folder=dest,
                 category_id=category_id,
-                audio_url=body.get('audio_url', ''),
-                duration=body.get('duration', '00:00'),
-                description=body.get('description', '')
+                audio_url=raw_audio_url,
+                duration=body.get('duration') or '00:00',
+                description=body.get('description') or ''
             )
             if audio_file:
                 tq.audio_file = audio_file
                 tq.save()
-            return JsonResponse({'status': 'success', 'id': tq.id, 'audio_url': tq.get_playable_url(), 'message': 'Taqreer Audio uploaded successfully!'})
+            return JsonResponse({'status': 'success', 'id': tq.id, 'audio_url': tq.get_playable_url(), 'arabic_title': tq.arabic_title, 'title': tq.title, 'message': 'Taqreer Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
@@ -1800,7 +1951,7 @@ def api_admin_delete_content(request):
                 return JsonResponse({'status': 'error', 'message': 'Missing item ID or title'}, status=400)
 
             deleted_count = 0
-            str_id = String(item_id) if 'String' in globals() else str(item_id)
+            str_id = str(item_id)
 
             # Models to check
             models_to_check = []
@@ -1856,7 +2007,9 @@ def api_admin_delete_content(request):
 def api_admin_edit_content(request):
     if request.method in ['POST', 'PUT']:
         try:
-            body = json.loads(request.body.decode('utf-8')) if (request.content_type == 'application/json' and request.body) else request.POST
+            # Support both multipart/form-data (file uploads) and application/json
+            has_files = bool(request.FILES)
+            body = request.POST if has_files or request.content_type.startswith('multipart') else (json.loads(request.body.decode('utf-8')) if request.body else {})
             content_type = body.get('content_type', 'book').lower()
             item_id = body.get('id') or body.get('item_id')
 

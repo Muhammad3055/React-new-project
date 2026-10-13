@@ -106,13 +106,15 @@ export function getAdminItems(destination = null) {
 export function addAdminItem(item) {
   try {
     const existing = getAdminItems();
+    const itemId = item.id || ('admin_item_' + Date.now());
     const newItem = {
-      id: 'admin_item_' + Date.now(),
       created_at: new Date().toISOString(),
-      ...item
+      ...item,
+      id: itemId
     };
-    existing.unshift(newItem);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
+    const filtered = existing.filter(i => String(i.id) !== String(newItem.id));
+    filtered.unshift(newItem);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
     clearApiCache();
     window.dispatchEvent(new CustomEvent('admin_content_updated'));
     return newItem;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchWithCache } from '../utils/apiCache';
+import { fetchWithCache, getApiUrl } from '../utils/apiCache';
 import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import { getFormattedHijriDate } from '../utils/hijriDate';
 import { useLanguage } from '../context/LanguageContext';
@@ -235,14 +235,48 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       const lang = subCategory === 'quran_brahui' ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
       setLoadingTranslationAudios(true);
       const adminAudios = getAdminItems(subCategory);
-      fetch(`/api/quran/?destination=${subCategory}&language=${lang}`)
+      fetch(getApiUrl(`/api/quran/?destination=${subCategory}&language=${lang}`))
         .then(res => res.json())
         .then(data => {
           const apiResults = data && data.results ? data.results : (Array.isArray(data) ? data : []);
+
+          // Deduplicate apiResults and adminAudios
+          const merged = [];
+          const seenIds = new Set();
+          const seenSurahNums = new Set();
+          const seenTitles = new Set();
+
+          // 1. First add all apiResults from backend database (single source of truth)
+          for (const item of apiResults) {
+            if (!item) continue;
+            if (item.id) seenIds.add(String(item.id));
+            if (item.surah_number) seenSurahNums.add(Number(item.surah_number));
+            const t = (item.title || item.surah_name_english || '').trim().toLowerCase();
+            if (t) seenTitles.add(t);
+            merged.push(item);
+          }
+
+          // 2. Add local admin items ONLY if not already present from database
+          for (const item of adminAudios) {
+            if (!item) continue;
+            const strId = String(item.id || '');
+            const num = Number(item.surah_number);
+            const t = (item.title || item.surah_name_english || '').trim().toLowerCase();
+
+            if (strId && seenIds.has(strId)) continue;
+            if (num && seenSurahNums.has(num)) continue;
+            if (t && seenTitles.has(t)) continue;
+
+            if (strId) seenIds.add(strId);
+            if (num) seenSurahNums.add(num);
+            if (t) seenTitles.add(t);
+            merged.push(item);
+          }
+
           if (lang === 'arabic') {
-            setArabicTilawatAudios(filterOutDeleted([...adminAudios, ...apiResults]));
+            setArabicTilawatAudios(filterOutDeleted(merged));
           } else {
-            let combined = filterOutDeleted([...adminAudios, ...apiResults]);
+            let combined = filterOutDeleted(merged);
             combined.sort((a, b) => (Number(a.surah_number) || 999) - (Number(b.surah_number) || 999));
             setTranslationAudios(combined);
           }
@@ -363,8 +397,13 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   ];
 
   const safePlayTrack = (url, title, artist) => {
+    if (!url) {
+      alert("Audio file URL is not available.");
+      return;
+    }
+    const playableUrl = getApiUrl(url);
     if (typeof playTrack === 'function') {
-      playTrack(url, title, artist);
+      playTrack(playableUrl, title, artist);
     }
   };
 
@@ -445,17 +484,58 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   };
 
   const currentTaqreerLang = subCategory.replace('taqreer_', '');
-  const adminTaqreers = [...getAdminItems('taqreer'), ...getAdminItems('audio'), ...getAdminItems(subCategory)].map(item => ({
-    id: item.id,
-    title: item.title,
-    speaker: item.speaker || item.author || 'Admin Upload',
-    language: item.language || currentTaqreerLang,
-    duration: item.duration || '15:00',
-    audio_url: item.fileUrl || item.audio_url,
-    description: item.description || 'Uploaded by Administrator',
-    addedByAdmin: true
-  }));
-  const rawActiveTaqreers = filterOutDeleted([...adminTaqreers, ...taqreers]);
+  
+  // 1. Collect and deduplicate local admin items
+  const rawAdminTaqreerList = [...getAdminItems('taqreer'), ...getAdminItems('audio'), ...getAdminItems(subCategory)];
+  const seenAdminTaqreerIds = new Set();
+  const uniqueLocalTaqreers = [];
+  for (const item of rawAdminTaqreerList) {
+    if (!item) continue;
+    const strId = String(item.id || '');
+    if (strId && seenAdminTaqreerIds.has(strId)) continue;
+    if (strId) seenAdminTaqreerIds.add(strId);
+    uniqueLocalTaqreers.push({
+      id: item.id,
+      title: item.title,
+      arabic_title: item.arabic_title || item.surah_name_arabic || '',
+      surah_name_arabic: item.surah_name_arabic || item.arabic_title || '',
+      speaker: item.speaker || item.author || 'Admin Upload',
+      tarjuma_qari: item.tarjuma_qari || '',
+      language: item.language || currentTaqreerLang,
+      duration: item.duration || '15:00',
+      audio_url: item.audio_url || item.fileUrl,
+      description: item.description || 'Uploaded by Administrator',
+      addedByAdmin: true
+    });
+  }
+
+  // 2. Prioritize backend database taqreers and filter out local duplicates
+  const combinedTaqreers = [];
+  const seenTaqreerIds = new Set();
+  const seenTaqreerTitles = new Set();
+
+  for (const tq of taqreers) {
+    if (!tq) continue;
+    const idKey = tq.id ? String(tq.id) : null;
+    const titleKey = (tq.title || '').trim().toLowerCase();
+    if (idKey) seenTaqreerIds.add(idKey);
+    if (titleKey) seenTaqreerTitles.add(titleKey);
+    combinedTaqreers.push(tq);
+  }
+
+  for (const tq of uniqueLocalTaqreers) {
+    if (!tq) continue;
+    const idKey = tq.id ? String(tq.id) : null;
+    const titleKey = (tq.title || '').trim().toLowerCase();
+    if (idKey && seenTaqreerIds.has(idKey)) continue;
+    if (titleKey && seenTaqreerTitles.has(titleKey)) continue;
+
+    if (idKey) seenTaqreerIds.add(idKey);
+    if (titleKey) seenTaqreerTitles.add(titleKey);
+    combinedTaqreers.push(tq);
+  }
+
+  const rawActiveTaqreers = filterOutDeleted(combinedTaqreers);
   const activeTaqreers = rawActiveTaqreers.filter(tq => {
     if (!tq) return false;
     const q = (taqreerQuery || quranQuery || '').trim().toLowerCase();
@@ -632,8 +712,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       <h3 className="card-title" style={{ fontSize: '0.95rem', marginBottom: '0.15rem', color: '#1c1917', fontWeight: 800 }}>
                         {audio.title || audio.surah_name_english || 'Translation Audio'}
                       </h3>
-                      {audio.surah_name_arabic && (
-                        <p className="arabic-font card-arabic" style={{ fontSize: '1.25rem', margin: '0.2rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
+                      {(audio.surah_name_arabic || audio.arabic_title) && (
+                        <p className="arabic-font card-arabic" style={{ fontSize: '1.25rem', margin: '0.2rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic || audio.arabic_title}</p>
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <p className="card-subtitle" style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
@@ -831,8 +911,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           <h3 className="card-title" style={{ fontSize: '0.95rem', marginBottom: '0.15rem', color: '#1c1917', fontWeight: 800 }}>
                             {audio.title || audio.surah_name_english || 'Translation Audio'}
                           </h3>
-                          {audio.surah_name_arabic && (
-                            <p className="arabic-font card-arabic" style={{ fontSize: '1.25rem', margin: '0.2rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic}</p>
+                          {(audio.surah_name_arabic || audio.arabic_title) && (
+                            <p className="arabic-font card-arabic" style={{ fontSize: '1.25rem', margin: '0.2rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{audio.surah_name_arabic || audio.arabic_title}</p>
                           )}
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.2rem', flexWrap: 'wrap' }}>
                             <p className="card-subtitle" style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
@@ -979,8 +1059,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         </div>
 
                         <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '0.2rem', color: '#1c1917', fontWeight: 800 }}>{tq.title}</h3>
-                        {tq.arabic_title && (
-                          <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title}</p>
+                        {(tq.arabic_title || tq.surah_name_arabic) && (
+                          <p className="arabic-font card-arabic" style={{ fontSize: '1.45rem', margin: '0.35rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{tq.arabic_title || tq.surah_name_arabic}</p>
                         )}
                         <p style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
                           <i className="fas fa-user-tie" style={{ color: 'var(--accent-gold)' }}></i> {tq.speaker}

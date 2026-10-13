@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
 import { getAdminItems, addAdminItem, deleteContentItem } from '../utils/adminContentStore';
 import AdminEditModal from '../components/AdminEditModal';
+import { ALL_114_SURAHS } from '../data/quran_data';
 
 export default function UploadView({ user }) {
   if (!user || !user.is_staff) {
@@ -44,7 +45,7 @@ export default function UploadView({ user }) {
   }, [submittedMessage]);
 
   // Taqreer Form State
-  const [taqreerData, setTaqreerData] = useState({ title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
+  const [taqreerData, setTaqreerData] = useState({ title: '', arabic_title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
   const [taqreerFile, setTaqreerFile] = useState(null);
 
   // Book Form State
@@ -61,29 +62,15 @@ export default function UploadView({ user }) {
   const [linkData, setLinkData] = useState({ title: '', link_url: '', button_label: 'Open Link', icon: 'fas fa-external-link-alt', description: '' });
 
   // Audio Recitation Form State
-  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
+  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
   const [audioFile, setAudioFile] = useState(null);
 
   const handleTaqreerSubmit = (e) => {
     e.preventDefault();
-    const finalAudioUrl = taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url;
-
-    addAdminItem({
-      title: taqreerData.title,
-      speaker: taqreerData.speaker,
-      author: taqreerData.speaker,
-      destination: 'taqreer',
-      contentType: 'audio',
-      language: taqreerData.language,
-      duration: taqreerData.duration,
-      description: taqreerData.description,
-      fileUrl: finalAudioUrl,
-      audio_url: finalAudioUrl,
-      addedByAdmin: true
-    });
 
     const formData = new FormData();
     formData.append('title', taqreerData.title);
+    formData.append('arabic_title', taqreerData.arabic_title || '');
     formData.append('speaker', taqreerData.speaker);
     formData.append('language', taqreerData.language);
     formData.append('duration', taqreerData.duration);
@@ -91,7 +78,8 @@ export default function UploadView({ user }) {
     if (taqreerFile) {
       formData.append('audio_file', taqreerFile);
     } else {
-      formData.append('audio_url', taqreerData.audio_url);
+      const cleanUrl = (taqreerData.audio_url && !taqreerData.audio_url.startsWith('blob:')) ? taqreerData.audio_url : '';
+      formData.append('audio_url', cleanUrl);
     }
 
     fetch(getApiUrl('/api/taqreer/'), {
@@ -101,13 +89,29 @@ export default function UploadView({ user }) {
       .then(res => res.json())
       .then((data) => {
         setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully!');
-        setTaqreerData({ title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
+        setTaqreerData({ title: '', arabic_title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
         setTaqreerFile(null);
         window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
-      .catch(() => {
-        setSubmittedMessage('Taqreer MP3 saved!');
+      .catch((err) => {
+        console.error('Taqreer upload error:', err);
+        // Fallback: save to local store only if backend call fails
+        addAdminItem({
+          title: taqreerData.title,
+          arabic_title: taqreerData.arabic_title,
+          speaker: taqreerData.speaker,
+          author: taqreerData.speaker,
+          destination: 'taqreer',
+          contentType: 'audio',
+          language: taqreerData.language,
+          duration: taqreerData.duration,
+          description: taqreerData.description,
+          fileUrl: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
+          audio_url: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
+          addedByAdmin: true
+        });
+        setSubmittedMessage('Taqreer MP3 saved locally!');
         window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       });
@@ -262,12 +266,15 @@ export default function UploadView({ user }) {
     const formData = new FormData();
     formData.append('surah_number', audioData.surah_number);
     formData.append('surah_name_english', audioData.surah_name_english);
+    formData.append('surah_name_arabic', audioData.surah_name_arabic);
+    formData.append('arabic_title', audioData.surah_name_arabic);
     formData.append('reciter', audioData.reciter);
     formData.append('language', audioData.language);
     if (audioFile) {
       formData.append('audio_file', audioFile);
     } else {
-      formData.append('audio_url', audioData.audio_url);
+      const cleanUrl = (audioData.audio_url && !audioData.audio_url.startsWith('blob:')) ? audioData.audio_url : '';
+      formData.append('audio_url', cleanUrl);
     }
 
     fetch(getApiUrl('/api/quran/'), {
@@ -275,13 +282,15 @@ export default function UploadView({ user }) {
       body: formData
     })
       .then(res => res.json())
-      .then(() => {
-        setSubmittedMessage('Quran Audio recitation uploaded successfully!');
-        setAudioData({ surah_number: 1, surah_name_english: '', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
+      .then((data) => {
+        setSubmittedMessage(data.message || 'Quran Audio recitation uploaded successfully!');
+        setAudioData({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
         setAudioFile(null);
+        window.dispatchEvent(new CustomEvent('admin_content_updated'));
         setTimeout(() => setSubmittedMessage(''), 4000);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Quran audio upload error:', err);
         setSubmittedMessage('Audio saved!');
         setTimeout(() => setSubmittedMessage(''), 4000);
       });
@@ -421,10 +430,14 @@ export default function UploadView({ user }) {
         {activeTab === 'taqreer' && (
           <form onSubmit={handleTaqreerSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3><i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> Add New Lecture (Muhazirah) MP3</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
               <div>
                 <label className="form-label">Lecture (Muhazirah) Title *</label>
                 <input type="text" className="form-input" required value={taqreerData.title} onChange={e => setTaqreerData({ ...taqreerData, title: e.target.value })} placeholder="e.g. Virtue of Reflecting on Quran" />
+              </div>
+              <div>
+                <label className="form-label">Arabic Title (العنوان بالعربية)</label>
+                <input type="text" className="form-input arabic-font" dir="auto" value={taqreerData.arabic_title} onChange={e => setTaqreerData({ ...taqreerData, arabic_title: e.target.value })} placeholder="مثال: فضل تدبر القرآن الكريم" />
               </div>
               <div>
                 <label className="form-label">Speaker / Scholar *</label>
@@ -667,12 +680,33 @@ export default function UploadView({ user }) {
             <h3><i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Add Quran Audio Recitation</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div>
-                <label className="form-label">Surah Number *</label>
-                <input type="number" min="1" max="114" className="form-input" required value={audioData.surah_number} onChange={e => setAudioData({ ...audioData, surah_number: e.target.value })} />
+                <label className="form-label">Surah Number (1 - 114) *</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="114"
+                  className="form-input"
+                  required
+                  value={audioData.surah_number}
+                  onChange={e => {
+                    const num = Number(e.target.value);
+                    const match = ALL_114_SURAHS.find(s => s.number === num);
+                    setAudioData({
+                      ...audioData,
+                      surah_number: e.target.value,
+                      surah_name_english: match ? match.name : audioData.surah_name_english,
+                      surah_name_arabic: match ? (match.arabic.startsWith('سورة') ? match.arabic : `سُورَةُ ${match.arabic}`) : audioData.surah_name_arabic
+                    });
+                  }}
+                />
               </div>
               <div>
                 <label className="form-label">Surah Name (English)</label>
-                <input type="text" className="form-input" value={audioData.surah_name_english} onChange={e => setAudioData({ ...audioData, surah_name_english: e.target.value })} placeholder="e.g. Al-Fatiha" />
+                <input type="text" className="form-input" value={audioData.surah_name_english} onChange={e => setAudioData({ ...audioData, surah_name_english: e.target.value })} placeholder="e.g. Al-Fatihah" />
+              </div>
+              <div>
+                <label className="form-label">Surah Name (Arabic)</label>
+                <input type="text" className="form-input arabic-font" dir="auto" value={audioData.surah_name_arabic} onChange={e => setAudioData({ ...audioData, surah_name_arabic: e.target.value })} placeholder="e.g. سُورَةُ الفَاتِحَةِ" />
               </div>
               <div>
                 <label className="form-label">Audio Type / Language *</label>

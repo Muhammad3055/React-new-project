@@ -45,6 +45,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     { label: '🌙 ' + t('dreamInterpretation', 'AI Dream Interpretation'), icon: 'fas fa-moon', action: () => { navigateToTab('dream'); setShowExtrasMenu(false); } },
     { label: '📊 ' + t('muhasabaTracker', 'Daily Muhasaba Tracker'), icon: 'fas fa-tasks', action: () => { navigateToTab('muhasaba'); setShowExtrasMenu(false); } },
     { label: '🗺️ ' + t('quranicMaps', 'Interactive Quranic Maps'), icon: 'fas fa-map-marked-alt', action: () => { navigateToTab('maps'); setShowExtrasMenu(false); } },
+    { label: '🏛️ ' + t('brahuiHeritage', 'Brahui Islamic Heritage'), icon: 'fas fa-landmark', action: () => { navigateToTab('brahui'); setShowExtrasMenu(false); } },
+    { label: '🎴 ' + t('quranWords', 'Quran Vocabulary Flashcards'), icon: 'fas fa-layer-group', action: () => { navigateToTab('words'); setShowExtrasMenu(false); } },
 
     { label: '🛡️ ' + t('dailyProtection', 'Daily Protection (Nazar)'), icon: 'fas fa-shield-alt', action: () => { if (openProtection) openProtection(); setShowExtrasMenu(false); } },
     { label: '🧠 ' + t('dailyQuiz', 'Daily Islamic Quiz'), icon: 'fas fa-question-circle', action: () => { navigateToTab('quiz'); setShowExtrasMenu(false); } },

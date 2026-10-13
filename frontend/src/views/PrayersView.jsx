@@ -51,7 +51,8 @@ export default function PrayersView({ navigateToTab }) {
                 transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between'
+                justify: 'space-between',  // Note: use justifyContent for flexbox — kept for legacy compat
+                justifyContent: 'space-between'
               }}
             >
               <div>

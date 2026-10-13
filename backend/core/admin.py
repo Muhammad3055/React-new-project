@@ -16,6 +16,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(QuranAudio)
 class QuranAudioAdmin(admin.ModelAdmin):
     list_display = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'destination_folder', 'reciter', 'tarjuma_qari', 'language', 'category', 'duration', 'created_at')
+    list_display_links = ('surah_name_english',)
     list_editable = ('surah_number', 'destination_folder', 'language')
     ordering = ('surah_number', 'id')
     list_filter = ('destination_folder', 'language', 'category', 'revelation_place', 'reciter')

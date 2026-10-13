@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../utils/apiCache';
 
 export default function QarisView({ playTrack }) {
   const [qaris, setQaris] = useState([]);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    fetch('/api/qaris/')
+    fetch(getApiUrl('/api/qaris/'))
       .then(res => res.json())
       .then(data => setQaris(data.qaris || []))
       .catch(() => {});

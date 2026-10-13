@@ -188,7 +188,7 @@ export default function QuizView() {
             Come Back Tomorrow!
           </h2>
           <p style={{ color: '#cbd5e1', fontSize: '1.1rem', marginBottom: '1.5rem', maxWidth: '500px', margin: '0 auto 2rem auto' }}>
-            You have already completed your daily 10 questions. Take a rest, review what you learned, and come back tomorrow for a new set of questions!
+            You have already completed your daily 5 questions. Take a rest, review what you learned, and come back tomorrow for a new set of questions!
           </p>
           <div style={{ display: 'inline-block', background: 'rgba(245,158,11,0.1)', border: '1px solid #f59e0b', borderRadius: '12px', padding: '0.8rem 1.5rem', color: '#f59e0b', fontWeight: '700' }}>
              Current Streak: {streak} Days 🔥

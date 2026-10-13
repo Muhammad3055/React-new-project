@@ -54,6 +54,8 @@ const WorldClockView = lazy(() => import('./views/WorldClockView'));
 const DreamView = lazy(() => import('./views/DreamView'));
 const MuhasabaView = lazy(() => import('./views/MuhasabaView'));
 const QuranicMapsView = lazy(() => import('./views/QuranicMapsView'));
+const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
+const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
 import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
@@ -63,9 +65,7 @@ import { LanguageProvider } from './context/LanguageContext';
 export default function App() {
   return (
     <ErrorBoundary>
-      <LanguageProvider>
-        <MainAppContent />
-      </LanguageProvider>
+      <MainAppContent />
     </ErrorBoundary>
   );
 }
@@ -98,7 +98,14 @@ function MainAppContent() {
     cardCreator: '/card-creator',
     live: '/live',
     brahui: '/brahui',
+    words: '/words',
     worldClock: '/world-clock',
+    quiz: '/quiz',
+    seerah: '/seerah',
+    dream: '/dream',
+    muhasaba: '/muhasaba',
+    maps: '/maps',
+    azkar: '/azkar',
     contact: '/contact',
     about: '/about',
     bookmarks: '/bookmarks',
@@ -131,7 +138,7 @@ function MainAppContent() {
 
   // Register PWA Service Worker & sync browser URL
   useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
@@ -576,6 +583,14 @@ function MainAppContent() {
 
           {activeTab === 'azkar' && (
             <DailyAzkarView />
+          )}
+
+          {activeTab === 'brahui' && (
+            <BrahuiHeritageView />
+          )}
+
+          {activeTab === 'words' && (
+            <QuranWordsView />
           )}
 
           {activeTab === 'worldClock' && (

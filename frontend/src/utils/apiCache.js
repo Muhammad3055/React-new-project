@@ -2,13 +2,20 @@
 const memoryCache = new Map();
 
 export function getApiUrl(url) {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  if (url.startsWith('/api/') || url.startsWith('/media/')) {
-    const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
-    return `${baseUrl}${url}`;
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('blob:') || trimmed.startsWith('data:')) return trimmed;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+
+  let normalized = trimmed;
+  if (normalized.startsWith('api/') || normalized.startsWith('media/')) {
+    normalized = '/' + normalized;
   }
-  return url;
+  if (normalized.startsWith('/api/') || normalized.startsWith('/media/')) {
+    const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+    return `${baseUrl}${normalized}`;
+  }
+  return normalized;
 }
 
 /**
