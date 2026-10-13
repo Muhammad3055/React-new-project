@@ -615,7 +615,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   color: '#ffffff',
                   padding: '1px 5px',
                   borderRadius: '6px'
-                }}>NEW</span>
+                }}>جدید</span>
               )}
             </button>
           ))}

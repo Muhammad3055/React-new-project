@@ -1,11 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function AsanNimazView({ navigateToTab }) {
-  const { t } = useLanguage();
+  const { lang, setLang } = useLanguage();
+
+  // Page language state: defaults to 'ar' if site is Arabic, otherwise 'ur'
+  const [pageLang, setPageLang] = useState(() => (lang === 'ar' ? 'ar' : 'ur'));
   const [activeTab, setActiveTab] = useState('nimaz');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+
+  // Sync with global site language if it changes
+  useEffect(() => {
+    if (lang === 'ar') {
+      setPageLang('ar');
+    } else if (lang === 'ur') {
+      setPageLang('ur');
+    }
+  }, [lang]);
+
+  const switchLanguage = (newLang) => {
+    setPageLang(newLang);
+    if (setLang && (newLang === 'ar' || newLang === 'ur')) {
+      setLang(newLang);
+    }
+  };
 
   const copyToClipboard = (text, id) => {
     if (navigator.clipboard) {
@@ -15,18 +34,50 @@ export default function AsanNimazView({ navigateToTab }) {
     }
   };
 
-  // Tabs definition
+  const isAr = pageLang === 'ar';
+
+  // Tabs definition in Urdu and Arabic (No English)
   const tabs = [
-    { id: 'nimaz', label: 'نماز کا طریقہ و رکعتیں', labelEn: 'Namaz Method & Rak\'ats', icon: 'fas fa-mosque' },
-    { id: 'wudu_ghusl', label: 'وضو، غسل و طہارت', labelEn: 'Wudu, Ghusl & Purity', icon: 'fas fa-hands-wash' },
-    { id: 'mayat_janaza', label: 'میت، جنازہ و قبرستان', labelEn: 'Funeral, Janaza & Graves', icon: 'fas fa-star-and-crescent' },
-    { id: 'daily_duas', label: 'دن و رات کی دعائیں', labelEn: 'Daily Day & Night Duas', icon: 'fas fa-praying-hands' },
-    { id: 'masael', label: 'ضروری مسائل، قضا و سہو', labelEn: 'Fiqh Masail, Qaza & Sahw', icon: 'fas fa-balance-scale' },
-    { id: 'special_prayers', label: 'دیگر مسنون و نفل نمازیں', labelEn: 'Special & Nafl Prayers', icon: 'fas fa-heart' },
+    {
+      id: 'nimaz',
+      labelUr: 'نماز کا طریقہ و رکعتیں',
+      labelAr: 'صفة الصلاة وعدد الركعات',
+      icon: 'fas fa-mosque'
+    },
+    {
+      id: 'wudu_ghusl',
+      labelUr: 'وضو، غسل و طہارت',
+      labelAr: 'الوضوء والغسل والتيمم',
+      icon: 'fas fa-hands-wash'
+    },
+    {
+      id: 'mayat_janaza',
+      labelUr: 'میت، جنازہ و قبرستان',
+      labelAr: 'الجنائز وصلاة الجنازة والمقابر',
+      icon: 'fas fa-star-and-crescent'
+    },
+    {
+      id: 'daily_duas',
+      labelUr: 'دن و رات کی دعائیں',
+      labelAr: 'أذكار اليوم والليلة المأثورة',
+      icon: 'fas fa-praying-hands'
+    },
+    {
+      id: 'masael',
+      labelUr: 'ضروری مسائل، قضا و سہو',
+      labelAr: 'المسائل الفقهية وسجود السهو',
+      icon: 'fas fa-balance-scale'
+    },
+    {
+      id: 'special_prayers',
+      labelUr: 'دیگر مسنون و نفل نمازیں',
+      labelAr: 'السنن والنوافل وصلاة الوتر',
+      icon: 'fas fa-heart'
+    },
   ];
 
   return (
-    <div style={{ minHeight: '85vh', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', padding: '2rem 1rem' }}>
+    <div style={{ minHeight: '85vh', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', padding: '2rem 1rem', direction: 'rtl' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Page Hero Header */}
@@ -44,30 +95,77 @@ export default function AsanNimazView({ navigateToTab }) {
           <div style={{ position: 'absolute', bottom: '-50px', left: '-20px', width: '220px', height: '220px', borderRadius: '50%', background: 'rgba(245,158,11,0.08)', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.15)', padding: '5px 14px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', backdropFilter: 'blur(8px)' }}>
-                <span>📖 مستند اسلامی فقہی انسائیکلوپیڈیا</span>
+            <div style={{ flex: '1', minWidth: '300px' }}>
+              
+              {/* Language Switcher Bar: Urdu & Arabic */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,255,255,0.18)', padding: '4px', borderRadius: '16px', gap: '4px', marginBottom: '1rem', border: '1px solid rgba(255,255,255,0.25)' }}>
+                <button
+                  type="button"
+                  onClick={() => switchLanguage('ur')}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    background: !isAr ? '#ffffff' : 'transparent',
+                    color: !isAr ? '#065f46' : '#ffffff',
+                    transition: 'all 0.2s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <span>🇵🇰</span>
+                  <span>اردو (ترجمہ و تشریح)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchLanguage('ar')}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    background: isAr ? '#ffffff' : 'transparent',
+                    color: isAr ? '#065f46' : '#ffffff',
+                    transition: 'all 0.2s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <span>🇸🇦</span>
+                  <span>العربية (المعنى والبيان)</span>
+                </button>
               </div>
+
               <h1 style={{ margin: '0 0 0.5rem 0', fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, fontFamily: "'Amiri', serif" }}>
-                آسان نماز اور مکمل مسنون احکام
+                {isAr ? 'الميسر في أحكام الصلاة والأدعية المأثورة' : 'آسان نماز اور مکمل مسنون احکام'}
               </h1>
-              <p style={{ margin: 0, fontSize: '1.05rem', color: '#d1fae5', maxWidth: '750px', lineHeight: 1.6 }}>
-                نماز کے ارکان، پنج وقتہ رکعتیں، طریقہ، مرد و عورت کا فرق، وضو و غسل، تجہیز و تکفین، نمازِ جنازہ، قبرستان کی دعائیں، ضروری مسائل اور روزمرہ کی مسنون دعائیں
+              <p style={{ margin: 0, fontSize: '1.02rem', color: '#d1fae5', maxWidth: '780px', lineHeight: 1.7 }}>
+                {isAr
+                  ? 'أركان الصلاة وشروطها، عدد الركعات، كيفية أداء الصلاة خطوة بخطوة، الفرق بين صلاة الرجل والمرأة، أحكام الوضوء والغسل والتيمم، صلاة الجنازة وأدعية المقابر، سجود السهو وقضاء الفوائت والأذكار اليومية.'
+                  : 'نماز کے ارکان، پنج وقتہ رکعتیں، طریقہ، مرد و عورت کا فرق، وضو و غسل، تجہیز و تکفین، نمازِ جنازہ، قبرستان کی دعائیں، ضروری مسائل اور روزمرہ کی مسنون دعائیں۔'
+                }
               </p>
             </div>
 
             {/* In-Page Quick Search */}
             <div style={{ minWidth: '280px', flex: '1', maxWidth: '380px' }}>
               <div style={{ position: 'relative' }}>
-                <i className="fas fa-search" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <i className="fas fa-search" style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="کوئی بھی دعا، مسئلہ یا نماز تلاش کریں..."
+                  placeholder={isAr ? 'ابحث عن أي دعاء، حكم، أو صلاة...' : 'کوئی بھی دعا، مسئلہ یا نماز تلاش کریں...'}
                   style={{
                     width: '100%',
-                    padding: '12px 14px 12px 42px',
+                    padding: '12px 42px 12px 14px',
                     borderRadius: '16px',
                     border: '1.5px solid rgba(255,255,255,0.3)',
                     background: '#ffffff',
@@ -117,39 +215,39 @@ export default function AsanNimazView({ navigateToTab }) {
               }}
             >
               <i className={tab.icon} style={{ color: activeTab === tab.id ? '#fde68a' : '#059669' }} />
-              <span>{tab.label}</span>
+              <span>{isAr ? tab.labelAr : tab.labelUr}</span>
             </button>
           ))}
         </div>
 
-        {/* Tab 1: نماز کا مکمل طریقہ اور رکعتیں */}
+        {/* Tab 1: نماز کا مکمل طریقہ اور رکعتیں / صفة الصلاة وعدد الركعات */}
         {activeTab === 'nimaz' && (
-          <NimazTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} />
+          <NimazTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} isAr={isAr} />
         )}
 
-        {/* Tab 2: وضو، غسل اور طہارت */}
+        {/* Tab 2: وضو، غسل اور طہارت / الوضوء والغسل والتيمم */}
         {activeTab === 'wudu_ghusl' && (
-          <WuduGhuslTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} />
+          <WuduGhuslTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} isAr={isAr} />
         )}
 
-        {/* Tab 3: میت، جنازہ، تدفین و قبرستان */}
+        {/* Tab 3: میت، جنازہ، تدفین و قبرستان / الجنائز وصلاة الجنازة والمقابر */}
         {activeTab === 'mayat_janaza' && (
-          <MayatJanazaTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} />
+          <MayatJanazaTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} isAr={isAr} />
         )}
 
-        {/* Tab 4: دن اور رات کی مسنون دعائیں */}
+        {/* Tab 4: دن اور رات کی مسنون دعائیں / أذكار اليوم والليلة */}
         {activeTab === 'daily_duas' && (
-          <DailyDuasTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} />
+          <DailyDuasTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} isAr={isAr} />
         )}
 
-        {/* Tab 5: ضروری مسائل، قضا اور سجدہ سہو */}
+        {/* Tab 5: ضروری مسائل، قضا اور سجدہ سہو / المسائل وسجود السهو والقضاء */}
         {activeTab === 'masael' && (
-          <MasaelTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} />
+          <MasaelTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} isAr={isAr} />
         )}
 
-        {/* Tab 6: دیگر مخصوص و نفل نمازیں */}
+        {/* Tab 6: دیگر مخصوص و نفل نمازیں / السنن والنوافل وصلاة الوتر */}
         {activeTab === 'special_prayers' && (
-          <SpecialPrayersTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} />
+          <SpecialPrayersTab copyToClipboard={copyToClipboard} copiedId={copiedId} searchQuery={searchQuery} isAr={isAr} />
         )}
 
       </div>
@@ -158,13 +256,13 @@ export default function AsanNimazView({ navigateToTab }) {
 }
 
 // ==============================================================================
-// TAB 1: نماز (Salah Guide, Rak'ats, Pillars, Step-by-Step, Men vs Women)
+// TAB 1: نماز / صفة الصلاة وعدد الركعات
 // ==============================================================================
-function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
+function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
-      {/* 1.1: روزانہ کی ۵ نمازیں اور کل رکعتیں */}
+      {/* 1.1: روزانہ کی ۵ نمازیں اور کل رکعتیں / جدول ركعات الصلوات الخمس */}
       <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#ecfdf5', color: '#059669', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -172,10 +270,10 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#064e3b' }}>
-              روزانہ کی ۵ نمازیں اور کل رکعتوں کی تفصیل
+              {isAr ? 'تفصيل ركعات الصلوات الخمس وصلاة الجمعة' : 'روزانہ کی ۵ نمازیں اور کل رکعتوں کی تفصیل'}
             </h2>
             <p style={{ margin: '3px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              فرض، سنتِ مؤکدہ، سنتِ غیر مؤکدہ، واجب اور نفل رکعتوں کا مستند شیڈول
+              {isAr ? 'الفرائض، السنن المؤكدة وغير المؤكدة، الوتر والنوافل' : 'فرض، سنتِ مؤکدہ، سنتِ غیر مؤکدہ، واجب اور نفل رکعتوں کا مستند شیڈول'}
             </p>
           </div>
         </div>
@@ -184,116 +282,124 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', direction: 'rtl', minWidth: '600px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #059669' }}>
-                <th style={{ padding: '12px 14px', color: '#064e3b', fontWeight: 800 }}>نماز</th>
-                <th style={{ padding: '12px 14px', color: '#0f172a', fontWeight: 800 }}>پہلے سنتیں</th>
-                <th style={{ padding: '12px 14px', color: '#dc2626', fontWeight: 800 }}>فرض</th>
-                <th style={{ padding: '12px 14px', color: '#0f172a', fontWeight: 800 }}>بعد کی سنتیں</th>
-                <th style={{ padding: '12px 14px', color: '#7c3aed', fontWeight: 800 }}>وتر واجب</th>
-                <th style={{ padding: '12px 14px', color: '#059669', fontWeight: 800 }}>نفل</th>
-                <th style={{ padding: '12px 14px', color: '#064e3b', fontWeight: 900 }}>کل رکعتیں</th>
+                <th style={{ padding: '12px 14px', color: '#064e3b', fontWeight: 800 }}>{isAr ? 'الصلاة' : 'نماز'}</th>
+                <th style={{ padding: '12px 14px', color: '#0f172a', fontWeight: 800 }}>{isAr ? 'السنة القبلية' : 'پہلے سنتیں'}</th>
+                <th style={{ padding: '12px 14px', color: '#dc2626', fontWeight: 800 }}>{isAr ? 'الفرض' : 'فرض'}</th>
+                <th style={{ padding: '12px 14px', color: '#0f172a', fontWeight: 800 }}>{isAr ? 'السنة البعدية' : 'بعد کی سنتیں'}</th>
+                <th style={{ padding: '12px 14px', color: '#7c3aed', fontWeight: 800 }}>{isAr ? 'الوتر الواجب' : 'وتر واجب'}</th>
+                <th style={{ padding: '12px 14px', color: '#059669', fontWeight: 800 }}>{isAr ? 'النوافل' : 'نفل'}</th>
+                <th style={{ padding: '12px 14px', color: '#064e3b', fontWeight: 900 }}>{isAr ? 'المجموع' : 'کل رکعتیں'}</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>فجر (Fajr)</td>
-                <td style={{ padding: '12px 14px' }}>۲ سنت مؤکدہ</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>۲ فرض</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>{isAr ? 'صلاة الفجر' : 'فجر'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ سنة مؤكدة' : '۲ سنت مؤکدہ'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>{isAr ? '٢ فرض' : '۲ فرض'}</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>۴ رکعتیں</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>{isAr ? '٤ ركعات' : '۴ رکعتیں'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>ظہر (Zuhr)</td>
-                <td style={{ padding: '12px 14px' }}>۴ سنت مؤکدہ</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>۴ فرض</td>
-                <td style={{ padding: '12px 14px' }}>۲ سنت مؤکدہ</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>{isAr ? 'صلاة الظهر' : 'ظہر'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٤ سنة مؤكدة' : '۴ سنت مؤکدہ'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>{isAr ? '٤ فرض' : '۴ فرض'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ سنة مؤكدة' : '۲ سنت مؤکدہ'}</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
-                <td style={{ padding: '12px 14px' }}>۲ نفل</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>۱۲ رکعتیں</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ نفل' : '۲ نفل'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>{isAr ? '١٢ ركعة' : '۱۲ رکعتیں'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>عصر (Asr)</td>
-                <td style={{ padding: '12px 14px' }}>۴ سنت غیر مؤکدہ</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>۴ فرض</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>{isAr ? 'صلاة العصر' : 'عصر'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٤ سنة غير مؤكدة' : '۴ سنت غیر مؤکدہ'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>{isAr ? '٤ فرض' : '۴ فرض'}</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>۸ رکعتیں</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>{isAr ? '٨ ركعات' : '۸ رکعتیں'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>مغرب (Maghrib)</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>{isAr ? 'صلاة المغرب' : 'مغرب'}</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>۳ فرض</td>
-                <td style={{ padding: '12px 14px' }}>۲ سنت مؤکدہ</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>{isAr ? '٣ فرض' : '۳ فرض'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ سنة مؤكدة' : '۲ سنت مؤکدہ'}</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
-                <td style={{ padding: '12px 14px' }}>۲ نفل</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>۷ رکعتیں</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ نفل' : '۲ نفل'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>{isAr ? '٧ ركعات' : '۷ رکعتیں'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>عشاء (Isha)</td>
-                <td style={{ padding: '12px 14px' }}>۴ سنت غیر مؤکدہ</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>۴ فرض</td>
-                <td style={{ padding: '12px 14px' }}>۲ سنت مؤکدہ</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#7c3aed' }}>۳ وتر واجب</td>
-                <td style={{ padding: '12px 14px' }}>۲ نفل + ۲ نفل</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>۱۷ رکعتیں</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>{isAr ? 'صلاة العشاء' : 'عشاء'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٤ سنة غير مؤكدة' : '۴ سنت غیر مؤکدہ'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>{isAr ? '٤ فرض' : '۴ فرض'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ سنة مؤكدة' : '۲ سنت مؤکدہ'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#7c3aed' }}>{isAr ? '٣ وتر واجب' : '۳ وتر واجب'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٤ نفل' : '۴ نفل'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>{isAr ? '١٧ ركعة' : '۱۷ رکعتیں'}</td>
               </tr>
               <tr style={{ background: '#ecfdf5' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>جمعہ المبارک (Jumu'ah)</td>
-                <td style={{ padding: '12px 14px' }}>۴ سنت مؤکدہ</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>۲ فرض</td>
-                <td style={{ padding: '12px 14px' }}>۴ سنت + ۲ سنت</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800, color: '#065f46' }}>{isAr ? 'صلاة الجمعة المباركة' : 'جمعہ المبارک'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٤ سنة مؤكدة' : '۴ سنت مؤکدہ'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#dc2626' }}>{isAr ? '٢ فرض' : '۲ فرض'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٤+٢ سنة بعدية' : '۴+۲ سنتیں'}</td>
                 <td style={{ padding: '12px 14px', color: '#94a3b8' }}>-</td>
-                <td style={{ padding: '12px 14px' }}>۲ نفل</td>
-                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>۱۴ رکعتیں</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? '٢ نفل' : '۲ نفل'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 900, color: '#059669', fontSize: '1.05rem' }}>{isAr ? '١٤ ركعة' : '۱۴ رکعتیں'}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* 1.2: نماز کے فرائض (شرائط و ارکان) */}
+      {/* 1.2: نماز کے فرائض (شرائط و ارکان) / شروط الصلاة وأركانها */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
         
-        {/* ۷ شرائط (خارجی فرائض) */}
+        {/* ۷ شرائط (خارجی فرائض) / شروط الصلاة */}
         <div style={{ background: '#ffffff', border: '1.5px solid #fed7aa', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <span style={{ background: '#ffedd5', color: '#c2410c', padding: '6px 10px', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem' }}>خارجی فرائض</span>
-            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#9a3412' }}>نماز کی ۷ شرائط (نماز شروع ہونے سے پہلے)</h3>
+            <span style={{ background: '#ffedd5', color: '#c2410c', padding: '6px 10px', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem' }}>
+              {isAr ? 'شروط الصلاة' : 'خارجی فرائض'}
+            </span>
+            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#9a3412' }}>
+              {isAr ? 'شروط الصلاة السبعة (قبل الشروع في الصلاة)' : 'نماز کی ۷ شرائط (نماز شروع ہونے سے پہلے)'}
+            </h3>
           </div>
           <ol style={{ margin: 0, paddingRight: '1.25rem', direction: 'rtl', color: '#334155', lineHeight: 2, fontSize: '0.94rem' }}>
-            <li><strong>بدن کا پاک ہونا:</strong> حدثِ اصغر (بے وضو ہونا) اور حدثِ اکبر (ناپاکی) سے پاک ہونا۔</li>
-            <li><strong>کپڑوں کا پاک ہونا:</strong> پہننے والے لباس کا نجاست سے پاک ہونا۔</li>
-            <li><strong>جگہ کا پاک ہونا:</strong> جہاں سجدہ اور قیام کریں وہ جگہ پاک ہو۔</li>
-            <li><strong>سترِ عورت:</strong> مرد کا ناف سے گھٹنوں تک، عورت کا چہرہ و ہاتھوں کے سوا تمام جسم ڈھانپنا۔</li>
-            <li><strong>استقبالِ قبلہ:</strong> خانہ کعبہ کی سمت رخ کرنا۔</li>
-            <li><strong>وقت کا ہونا:</strong> جس نماز کو ادا کر رہے ہیں اس کا مقررہ وقت داخل ہو چکا ہو۔</li>
-            <li><strong>نیت کرنا:</strong> دل میں پختہ ارادہ کرنا کہ میں فلاں نماز ادا کر رہا ہوں۔</li>
+            <li><strong>{isAr ? 'طهارة البدن:' : 'بدن کا پاک ہونا:'}</strong> {isAr ? 'التطهر من الحدث الأصغر بالوضوء ومن الحدث الأكبر بالغسل.' : 'حدثِ اصغر (بے وضو ہونا) اور حدثِ اکبر (ناپاکی) سے پاک ہونا۔'}</li>
+            <li><strong>{isAr ? 'طهارة الثياب:' : 'کپڑوں کا پاک ہونا:'}</strong> {isAr ? 'خلو ملابس المصلي تماماً من النجاسات الحقيقية.' : 'پہننے والے لباس کا نجاست سے پاک ہونا۔'}</li>
+            <li><strong>{isAr ? 'طهارة المكان:' : 'جگہ کا پاک ہونا:'}</strong> {isAr ? 'طهارة الموضع الذي يقف ويسجد عليه المصلي.' : 'جہاں سجدہ اور قیام کریں وہ جگہ پاک ہو۔'}</li>
+            <li><strong>{isAr ? 'ستر العورة:' : 'سترِ عورت:'}</strong> {isAr ? 'للرجل ما بين السرة إلى الركبة، وللمرأة جميع بدنها عدا الوجه والكفين.' : 'مرد کا ناف سے گھٹنوں تک، عورت کا چہرہ و ہاتھوں کے سوا تمام جسم ڈھانپنا۔'}</li>
+            <li><strong>{isAr ? 'استقبال القبلة:' : 'استقبالِ قبلہ:'}</strong> {isAr ? 'التوجه تلقاء المسجد الحرام والكعبة المشرفة.' : 'خانہ کعبہ کی سمت رخ کرنا۔'}</li>
+            <li><strong>{isAr ? 'دخول الوقت:' : 'وقت کا ہونا:'}</strong> {isAr ? 'التأكد من دخول الوقت المحدد لكل صلاة.' : 'جس نماز کو ادا کر رہے ہیں اس کا مقررہ وقت داخل ہو چکا ہو۔'}</li>
+            <li><strong>{isAr ? 'النية:' : 'نیت کرنا:'}</strong> {isAr ? 'قصد أداء الصلاة المعينة بالقلب مخلصاً لله تعالى.' : 'دل میں پختہ ارادہ کرنا کہ میں فلاں نماز ادا کر رہا ہوں۔'}</li>
           </ol>
         </div>
 
-        {/* ۶ ارکان (داخلی فرائض) */}
+        {/* ۶ ارکان (داخلی فرائض) / أركان الصلاة */}
         <div style={{ background: '#ffffff', border: '1.5px solid #a7f3d0', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <span style={{ background: '#ecfdf5', color: '#047857', padding: '6px 10px', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem' }}>داخلی فرائض</span>
-            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#065f46' }}>نماز کے ۶ ارکان (نماز کے اندر کے فرائض)</h3>
+            <span style={{ background: '#ecfdf5', color: '#047857', padding: '6px 10px', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem' }}>
+              {isAr ? 'أركان الصلاة' : 'داخلی فرائض'}
+            </span>
+            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#065f46' }}>
+              {isAr ? 'أركان الصلاة الستة (داخل الصلاة)' : 'نماز کے ۶ ارکان (نماز کے اندر کے فرائض)'}
+            </h3>
           </div>
           <ol style={{ margin: 0, paddingRight: '1.25rem', direction: 'rtl', color: '#334155', lineHeight: 2, fontSize: '0.94rem' }}>
-            <li><strong>تکبیرِ تحریمہ:</strong> زبان سے 'اللَّهُ أَكْبَرُ' کہہ کر نماز شروع کرنا۔</li>
-            <li><strong>قیام:</strong> فرض و واجب نمازوں میں سیدھا کھڑا ہونا (بغیر عذر بیٹھ کر پڑھنا جائز نہیں)۔</li>
-            <li><strong>قراءت:</strong> کم از کم ایک بڑی آیت یا تین چھوٹی آیات قرآن مجید کی پڑھنا۔</li>
-            <li><strong>رکوع:</strong> اس قدر جھکنا کہ ہاتھ گھٹنوں تک پہنچ جائیں اور پیٹھ برابر ہو۔</li>
-            <li><strong>دونوں سجدے:</strong> پیشانی، ناک، دونوں ہاتھوں، گھٹنوں اور پاؤں کی انگلیوں کو زمین پر جمانا۔</li>
-            <li><strong>قعدہ اخیرہ:</strong> آخری رکعت کے اختتام پر تشہد (التحیات) پڑھنے کی مقدار بیٹھنا۔</li>
+            <li><strong>{isAr ? 'تكبيرة الإحرام:' : 'تکبیرِ تحریمہ:'}</strong> {isAr ? 'قول المصلي: "اللَّهُ أَكْبَرُ" عند ابتداء الصلاة.' : 'زبان سے "اللَّهُ أَكْبَرُ" کہہ کر نماز شروع کرنا۔'}</li>
+            <li><strong>{isAr ? 'القيام في الفرض:' : 'قیام:'}</strong> {isAr ? 'الوقوف منتصباً للقادر عليه في الصلوات المفروضة.' : 'فرض و واجب نمازوں میں سیدھا کھڑا ہونا (بغیر عذر بیٹھنا جائز نہیں)۔'}</li>
+            <li><strong>{isAr ? 'القراءة:' : 'قراءت:'}</strong> {isAr ? 'قراءة ما تيسر من القرآن الحكيم (الفاتحة وسورة).' : 'کم از کم ایک بڑی آیت یا تین چھوٹی آیات قرآن مجید کی پڑھنا۔'}</li>
+            <li><strong>{isAr ? 'الركوع:' : 'رکوع:'}</strong> {isAr ? 'الانحناء حتى تبلغ اليدان الركبتين وتستوي الظهر.' : 'اس قدر جھکنا کہ ہاتھ گھٹنوں تک پہنچ جائیں اور پیٹھ برابر ہو۔'}</li>
+            <li><strong>{isAr ? 'السجود:' : 'دونوں سجدے:'}</strong> {isAr ? 'السجود على سبعة أعظم: الجبهة والأنف واليدين والركبتين وأطراف القدمين.' : 'پیشانی، ناک، دونوں ہاتھوں، گھٹنوں اور پاؤں کی انگلیوں کو زمین پر جمانا۔'}</li>
+            <li><strong>{isAr ? 'القعود الأخير:' : 'قعدہ اخیرہ:'}</strong> {isAr ? 'الجلوس في نهاية الصلاة بمقدار قراءة التشهد.' : 'آخری رکعت کے اختتام پر تشہد (التحیات) پڑھنے کی مقدار بیٹھنا۔'}</li>
           </ol>
         </div>
       </div>
 
-      {/* 1.3: نماز کا مرحلہ وار طریقہ مع عربی دعائیں و ترجمہ */}
+      {/* 1.3: نماز کا مرحلہ وار طریقہ مع عربی دعائیں و معانی */}
       <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', textAlign: 'center' }}>
-          نماز کا مکمل مسنون طریقہ (Step-by-Step Complete Method)
+          {isAr ? 'صفة الصلاة خطوة بخطوة مع الأذكار والمعاني' : 'نماز کا مکمل مسنون طریقہ مع دعائیں و ترجمہ'}
         </h2>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -301,154 +407,230 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
           {/* مرحلہ ۱: نیت و تکبیرِ تحریمہ */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۱</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>نیت اور تکبیرِ تحریمہ</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة الأولى' : 'مرحلہ ۱'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'النية وتكبيرة الإحرام' : 'نیت اور تکبیرِ تحریمہ'}
+              </h4>
             </div>
             <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#475569', direction: 'rtl' }}>
-              قبلہ رخ کھڑے ہو کر نیت کریں۔ مرد دونوں ہاتھ کانوں کی لو تک اٹھائیں اور عورتیں سینے تک، پھر کہیں:
+              {isAr
+                ? 'استقبل القبلة مع النية، وارفع يديك حذو الأذنين (وللمرأة حذو المنكبين)، ثم كبّر قائلاً:'
+                : 'قبلہ رخ کھڑے ہو کر نیت کریں۔ مرد دونوں ہاتھ کانوں کی لو تک اٹھائیں اور عورتیں سینے تک، پھر کہیں:'
+              }
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.75rem', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
+            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.85rem', textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                 اللَّهُ أَكْبَرُ
               </p>
-              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>اللہ سب سے بڑا ہے</p>
+              <p style={{ margin: '6px 0 0 0', fontSize: '0.9rem', color: '#475569', lineHeight: 1.6 }}>
+                {isAr ? 'المعنى: "اللَّهُ أَعْظَمُ وَأَجَلُّ وَأَكْبَرُ مِنْ كُلِّ شَيْءٍ فِي الْوُجُودِ."' : 'ترجمہ: "اللہ سب سے بڑا ہے"'}
+              </p>
             </div>
           </div>
 
-          {/* مرحلہ ۲: ہاتھ باندھنا اور ثناء پڑھنا */}
+          {/* مرحلہ ۲: ثناء */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۲</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>ثناء (سبحانک اللھم) پڑھنا</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة الثانية' : 'مرحلہ ۲'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'دعاء الاستفتاح (الSeqناء)' : 'ثناء (سبحانک اللھم) پڑھنا'}
+              </h4>
             </div>
             <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#475569', direction: 'rtl' }}>
-              مرد دائیں ہاتھ سے بائیں کلائی پکڑ کر ناف کے نیچے باندھیں اور عورتیں سینے پر ہاتھ رکھیں، پھر ثناء پڑھیں:
+              {isAr
+                ? 'ضع اليد اليمنى على اليسرى تحت السرة (وللمرأة على الصدر) ثم اقرأ دعاء الاستفتاح:'
+                : 'مرد دائیں ہاتھ سے بائیں کلائی پکڑ کر ناف کے نیچے باندھیں اور عورتیں سینے پر ہاتھ رکھیں، پھر ثناء پڑھیں:'
+              }
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.8 }}>
+            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.1rem', textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.9 }}>
                 سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، وَتَبَارَكَ اسْمُكَ، وَتَعَالَىٰ جَدُّكَ، وَلَا إِلَـٰهَ غَيْرُكَ
               </p>
-              <p style={{ margin: '6px 0 0 0', fontSize: '0.9rem', color: '#334155', direction: 'rtl' }}>
-                "اے اللہ! تو پاک ہے اپنی تعریفوں کے ساتھ، تیرا نام بابرکت ہے، تیری شان بلند و برتر ہے، اور تیرے سوا کوئی معبود نہیں۔"
+              <p style={{ margin: '8px 0 0 0', fontSize: '0.92rem', color: '#334155', direction: 'rtl', lineHeight: 1.7 }}>
+                {isAr
+                  ? 'المعنى: "أُنَزِّهُكَ يَا اللهُ عَنْ كُلِّ عَيْبٍ وَنَقْصٍ مُصَاحِبًا لِحَمْدِكَ، وَكَثُرَتْ بَرَكَاتُ اسْمِكَ، وَعَلَتْ عَظَمَتُكَ وَجَلَالُكَ، وَلَا مَعْبُودَ بِحَقٍّ سِوَاكَ."'
+                  : 'ترجمہ: "اے اللہ! تو پاک ہے اپنی تعریفوں کے ساتھ، تیرا نام بابرکت ہے، تیری شان بلند و برتر ہے، اور تیرے سوا کوئی معبود نہیں۔"'
+                }
               </p>
             </div>
           </div>
 
-          {/* مرحلہ ۳: تعوذ، تسمیہ، سورۃ الفاتحہ و سورت */}
+          {/* مرحلہ ۳: الفاتحة والسورة */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۳</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>تعوذ، تسمیہ اور سورۃ الفاتحہ</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة الثالثة' : 'مرحلہ ۳'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'التعوذ والتسمية وقراءة سورة الفاتحة' : 'تعوذ، تسمیہ اور سورۃ الفاتحہ'}
+              </h4>
             </div>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center', lineHeight: 2 }}>
+            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.1rem', textAlign: 'center', lineHeight: 2.1 }}>
               <p style={{ margin: 0, fontSize: '1.25rem', fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                 أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ • بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
               </p>
               <p style={{ margin: '8px 0 0 0', fontSize: '1.25rem', fontFamily: "'Amiri', serif", color: '#0f172a' }}>
                 الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ (آمین)
               </p>
-              <p style={{ margin: '6px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                سورۃ الفاتحہ کے بعد کوئی بھی سورت (جیسے سورۃ الاخلاص یا کم از کم ۳ چھوٹی آیات) ملائیں۔
+              <p style={{ margin: '8px 0 0 0', fontSize: '0.88rem', color: '#64748b', lineHeight: 1.6 }}>
+                {isAr
+                  ? 'ثم اقرأ ما تيسر من القرآن بعدها (كسورة الإخلاص أو ثلاث آيات قصار على الأقل).'
+                  : 'سورۃ الفاتحہ کے بعد کوئی بھی سورت (جیسے سورۃ الاخلاص یا کم از کم ۳ چھوٹی آیات) ملائیں۔'
+                }
               </p>
             </div>
           </div>
 
-          {/* مرحلہ ۴: رکوع اور قومہ */}
+          {/* مرحلہ ۴: الركوع والرفع منه */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۴</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>رکوع اور قومہ (سیدھا کھڑے ہونا)</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة الرابعة' : 'مرحلہ ۴'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'الركوع والاعتدال منه (القومـة)' : 'رکوع اور قومہ (سیدھا کھڑے ہونا)'}
+              </h4>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem' }}>
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
-                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>رکوع کی تسبیح (۳ بار):</span>
+                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
+                  {isAr ? 'تسبيح الركوع (٣ مرات):' : 'رکوع کی تسبیح (۳ بار):'}
+                </span>
                 <p style={{ margin: '6px 0 0 0', fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                   سُبْحَانَ رَبِّيَ الْعَظِيمِ
                 </p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#475569' }}>"میرا عظمت والا رب پاک ہے"</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: '#475569' }}>
+                  {isAr ? 'المعنى: "أُنَزِّهُ رَبِّيَ صَاحِبَ الْعَظَمَةِ وَالْكِبْرِيَاءِ عَنْ كُلِّ عَيْبٍ."' : 'ترجمہ: "میرا عظمت والا رب پاک ہے"'}
+                </p>
               </div>
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
-                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>قومہ (رکوع سے اٹھتے وقت):</span>
+                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
+                  {isAr ? 'عند الرفع من الركوع (القومـة):' : 'قومہ (رکوع سے اٹھتے وقت):'}
+                </span>
                 <p style={{ margin: '6px 0 0 0', fontSize: '1.25rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                   سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ • رَبَّنَا لَكَ الْحَمْدُ
                 </p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#475569' }}>"اللہ نے اس کی سن لی جس نے اس کی تعریف کی۔ اے ہمارے رب! تیرے ہی لیے سب تعریف ہے۔"</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: '#475569' }}>
+                  {isAr
+                    ? 'المعنى: "اسْتَجَابَ اللَّهُ تَعَالَى وَقَبِلَ حَمْدَ مَنْ حَمِدَهُ، وَلَكَ يَا رَبَّنَا الْحَمْدُ كُلُّهُ."'
+                    : 'ترجمہ: "اللہ نے اس کی سن لی جس نے اس کی تعریف کی۔ اے ہمارے رب! تیرے ہی لیے سب تعریف ہے۔"'
+                  }
+                </p>
               </div>
             </div>
           </div>
 
-          {/* مرحلہ ۵: سجدہ اور جلسہ */}
+          {/* مرحلہ ۵: السجود والجلوس بين السجدتين */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۵</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>سجدہ اور جلسہ (دو سجدوں کے درمیان بیٹھنا)</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة الخامسة' : 'مرحلہ ۵'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'السجود والجلوس بين السجدتين' : 'سجدہ اور جلسہ (دو سجدوں کے درمیان بیٹھنا)'}
+              </h4>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem' }}>
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
-                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>سجدے کی تسبیح (۳ بار):</span>
+                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
+                  {isAr ? 'تسبيح السجود (٣ مرات):' : 'سجدے کی تسبیح (۳ بار):'}
+                </span>
                 <p style={{ margin: '6px 0 0 0', fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                   سُبْحَانَ رَبِّيَ الْأَعْلَىٰ
                 </p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#475569' }}>"میرا بلند و برتر رب پاک ہے"</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: '#475569' }}>
+                  {isAr ? 'المعنى: "أُنَزِّهُ رَبِّيَ الْعَلِيَّ الْأَعْلَى فِي ذَاتِهِ وَصِفَاتِهِ عَنْ كُلِّ نَقْصٍ."' : 'ترجمہ: "میرا بلند و برتر رب پاک ہے"'}
+                </p>
               </div>
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
-                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>دو سجدوں کے درمیان دعا:</span>
+                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
+                  {isAr ? 'الدعاء بين السجدتين (الجلسة):' : 'دو سجدوں کے درمیان دعا:'}
+                </span>
                 <p style={{ margin: '6px 0 0 0', fontSize: '1.25rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                   رَبِّ اغْفِرْ لِي، رَبِّ اغْفِرْ لِي
                 </p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#475569' }}>"اے میرے رب! مجھے بخش دے، اے میرے رب! مجھے بخش دے"</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: '#475569' }}>
+                  {isAr ? 'المعنى: "سُؤَالُ اللَّهِ مَغْفِرَةَ الذُّنُوبِ وَالتَّجَاوُزَ عَنِ الزَّلَّاتِ."' : 'ترجمہ: "اے میرے رب! مجھے بخش دے، اے میرے رب! مجھے بخش دے"'}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* مرحلہ ۶: تشہد (التحیات) */}
+          {/* مرحلہ ۶: التشهد */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۶</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>قعدہ میں تشہد (التحیات)</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة السادسة' : 'مرحلہ ۶'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'التشهد في القعود (التحيات لله)' : 'قعدہ میں تشہد (التحیات)'}
+              </h4>
             </div>
             <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2 }}>
+              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2.1 }}>
                 التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا اللَّهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ
               </p>
-              <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem', color: '#334155', direction: 'rtl', lineHeight: 1.7 }}>
-                "تمام زبانی، بدنی اور مالی عبادتیں اللہ کے لیے ہیں۔ اے نبی! آپ پر سلامتی ہو اور اللہ کی رحمت اور اس کی برکتیں ہوں۔ سلام ہو ہم پر اور اللہ کے نیک بندوں پر۔ میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں اور محمد ﷺ اس کے بندے اور رسول ہیں۔"
+              <p style={{ margin: '8px 0 0 0', fontSize: '0.92rem', color: '#334155', direction: 'rtl', lineHeight: 1.8 }}>
+                {isAr
+                  ? 'المعنى: "جَمِيعُ التَّعْظِيمَاتِ الْقَوْلِيَّةِ وَالْبَدَنِيَّةِ وَالْمَالِيَّةِ خَالِصَةٌ لِلَّهِ، وَالدُّعَاءُ بِالسَّلَامَةِ وَالرَّحْمَةِ لِلنَّبِيِّ ﷺ وَلِعِبَادِ اللَّهِ الصَّالِحِينَ، وَتَجْدِيدُ شَهَادَةِ التَّوْحِيدِ وَالرِّسَالَةِ."'
+                  : 'ترجمہ: "تمام زبانی، بدنی اور مالی عبادتیں اللہ کے لیے ہیں۔ اے نبی! آپ پر سلامتی ہو اور اللہ کی رحمت اور اس کی برکتیں ہوں۔ سلام ہو ہم پر اور اللہ کے نیک بندوں پر۔ میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں اور محمد ﷺ اس کے بندے اور رسول ہیں۔"'
+                }
               </p>
             </div>
           </div>
 
-          {/* مرحلہ ۷: درودِ ابراہیمی */}
+          {/* مرحلہ ۷: الصلاة الإبراهيمية */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۷</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>درودِ ابراہیمی</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة السابعة' : 'مرحلہ ۷'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'الصلاة الإبراهيمية المباركة' : 'درودِ ابراہیمی'}
+              </h4>
             </div>
             <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2 }}>
+              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2.1 }}>
                 اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ
               </p>
-              <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem', color: '#334155', direction: 'rtl', lineHeight: 1.7 }}>
-                "اے اللہ! محمد ﷺ اور ان کی آل پر رحمت نازل فرما جیسا کہ تو نے ابراہیم علیہ السلام اور ان کی آل پر رحمت نازل فرمائی، بے شک تو تعریف کیا گیا بزرگی والا ہے۔ اے اللہ! محمد ﷺ اور ان کی آل پر برکت نازل فرما جیسا کہ تو نے ابراہیم علیہ السلام اور ان کی آل پر برکت نازل فرمائی، بے شک تو تعریف کیا گیا بزرگی والا ہے۔"
+              <p style={{ margin: '8px 0 0 0', fontSize: '0.92rem', color: '#334155', direction: 'rtl', lineHeight: 1.8 }}>
+                {isAr
+                  ? 'المعنى: "الصَّلَاةُ مِنَ اللَّهِ ثَنَاؤُهُ عَلَى نَبِيِّهِ فِي الْمَلَإِ الْأَعْلَى وَتَعْظِيمُ شَأْنِهِ فِي الدُّنْيَا وَالْآخِرَةِ، وَالْبَرَكَةُ طَلَبُ نَمَاءِ الْخَيْرِ وَدَوَامِهِ لِلنَّبِيِّ ﷺ وَلِآلِهِ."'
+                  : 'ترجمہ: "اے اللہ! محمد ﷺ اور ان کی آل پر رحمت نازل فرما جیسا کہ تو نے ابراہیم علیہ السلام اور ان کی آل پر رحمت نازل فرمائی، بے شک تو تعریف کیا گیا بزرگی والا ہے۔ اے اللہ! محمد ﷺ اور ان کی آل پر برکت نازل فرما جیسا کہ تو نے ابراہیم علیہ السلام اور ان کی آل پر برکت نازل فرمائی، بے شک تو تعریف کیا گیا بزرگی والا ہے۔"'
+                }
               </p>
             </div>
           </div>
 
-          {/* مرحلہ ۸: دعائے ماثورہ اور سلام */}
+          {/* مرحلہ ۸: الدعاء المأثور والتسليم */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>مرحلہ ۸</span>
-              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>دعائے ماثورہ اور سلام</h4>
+              <span style={{ background: '#059669', color: '#ffffff', padding: '2px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800 }}>
+                {isAr ? 'الخطوة الثامنة' : 'مرحلہ ۸'}
+              </span>
+              <h4 style={{ margin: 0, color: '#065f46', fontSize: '1.1rem' }}>
+                {isAr ? 'الدعاء المأثور والتسليم' : 'دعائے ماثورہ اور سلام'}
+              </h4>
             </div>
             <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2 }}>
+              <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2.1 }}>
                 اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا، وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ، وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ
               </p>
-              <p style={{ margin: '6px 0 12px 0', fontSize: '0.9rem', color: '#334155', direction: 'rtl' }}>
-                "اے اللہ! میں نے اپنی جان پر بہت ظلم کیا اور تیرے سوا گناہوں کو کوئی نہیں بخش سکتا، پس اپنی خاص بخشش سے میری مغفرت فرما اور مجھ پر رحم فرما، بے شک تو ہی بخشنے والا نہایت رحم کرنے والا ہے۔"
+              <p style={{ margin: '6px 0 12px 0', fontSize: '0.92rem', color: '#334155', direction: 'rtl', lineHeight: 1.8 }}>
+                {isAr
+                  ? 'المعنى: "اعْتِرَافٌ بِالتَّقْصِيرِ وَالذُّنُوبِ بَيْنَ يَدَيِ اللَّهِ، وَطَلَبٌ لِلْمَغْفِرَةِ الشَّامِلَةِ وَالرَّحْمَةِ الْوَاسِعَةِ الَّتِي لَا يَمْلِكُهَا إِلَّا هُوَ سُبْحَانَهُ."'
+                  : 'ترجمہ: "اے اللہ! میں نے اپنی جان پر بہت ظلم کیا اور تیرے سوا گناہوں کو کوئی نہیں بخش سکتا، پس اپنی خاص بخشش سے میری مغفرت فرما اور مجھ پر رحم فرما، بے شک تو ہی بخشنے والا نہایت رحم کرنے والا ہے۔"'
+                }
               </p>
               <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '10px' }}>
-                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.85rem' }}>پھر دائیں اور بائیں طرف سلام پھیریں:</span>
-                <p style={{ margin: '6px 0 0 0', fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
+                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.85rem' }}>
+                  {isAr ? 'ثم يُسلّم يمنة ويسرة قائلاً:' : 'پھر دائیں اور بائیں طرف سلام پھیریں:'}
+                </span>
+                <p style={{ margin: '6px 0 0 0', fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                   السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ
                 </p>
               </div>
@@ -458,7 +640,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
         </div>
       </div>
 
-      {/* 1.4: مرد اور عورت کی نماز میں مستند فرق */}
+      {/* 1.4: مرد اور عورت کی نماز میں مستند فرق / الفروق بين صلاة الرجل والمرأة */}
       <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#fdf2f8', color: '#db2777', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -466,10 +648,10 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#831843' }}>
-              مرد اور عورت کی نماز میں فقہی و مسنون فرق
+              {isAr ? 'الفروق الفقهية المسنونة بين صلاة الرجل وصلاة المرأة' : 'مرد اور عورت کی نماز میں فقہی و مسنون فرق'}
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              اہل سنت والجماعت کے حنفی و جمہور فقہاء کے مطابق ستر اور حیاء کے تقاضے
+              {isAr ? 'مراعاة الستر والحياء بحسب ما قرره فقهاء أهل السنة' : 'اہل سنت والجماعت کے حنفی و جمہور فقہاء کے مطابق ستر اور حیاء کے تقاضے'}
             </p>
           </div>
         </div>
@@ -478,36 +660,36 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', direction: 'rtl' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #db2777' }}>
-                <th style={{ padding: '12px 14px', color: '#0f172a', fontWeight: 800, width: '25%' }}>رکن / حالت</th>
-                <th style={{ padding: '12px 14px', color: '#0284c7', fontWeight: 800, width: '37%' }}>مرد کی ہیئت</th>
-                <th style={{ padding: '12px 14px', color: '#db2777', fontWeight: 800, width: '38%' }}>عورت کی ہیئت</th>
+                <th style={{ padding: '12px 14px', color: '#0f172a', fontWeight: 800, width: '25%' }}>{isAr ? 'الهيئة / الركن' : 'رکن / حالت'}</th>
+                <th style={{ padding: '12px 14px', color: '#0284c7', fontWeight: 800, width: '37%' }}>{isAr ? 'صلاة الرجل' : 'مرد کی ہیئت'}</th>
+                <th style={{ padding: '12px 14px', color: '#db2777', fontWeight: 800, width: '38%' }}>{isAr ? 'صلاة المرأة' : 'عورت کی ہیئت'}</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800 }}>تکبیرِ تحریمہ پر ہاتھ اٹھانا</td>
-                <td style={{ padding: '12px 14px' }}>کانوں کی لو تک ہاتھ اٹھائیں گے اور چادر سے ہاتھ باہر نکالیں گے۔</td>
-                <td style={{ padding: '12px 14px' }}>صرف کندھوں یا سینے تک ہاتھ اٹھائیں گی اور چادر کے اندر ہی رکھیں گی۔</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800 }}>{isAr ? 'رفع اليدين في تكبيرة الإحرام' : 'تکبیرِ تحریمہ پر ہاتھ اٹھانا'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'يرفع يديه حتى تبلغ إبهاماه شحمتي أذنيه.' : 'کانوں کی لو تک ہاتھ اٹھائیں گے اور چادر سے ہاتھ باہر نکالیں گے۔'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'ترفع يديها حذو منكبيها أو صدرها تحت ثيابها ستراً لها.' : 'صرف کندھوں یا سینے تک ہاتھ اٹھائیں گی اور چادر کے اندر ہی رکھیں گی۔'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800 }}>ہاتھ باندھنے کی جگہ</td>
-                <td style={{ padding: '12px 14px' }}>ناف کے نیچے دائیں ہاتھ سے بائیں کلائی کا حلقہ بنا کر باندھیں گے۔</td>
-                <td style={{ padding: '12px 14px' }}>سینے پر دایاں ہاتھ بائیں ہاتھ کی پشت پر بغیر حلقہ بنائے رکھیں گی۔</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800 }}>{isAr ? 'موضع وضع اليدين في القيام' : 'ہاتھ باندھنے کی جگہ'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'يضع يده اليمنى على اليسرى تحت السرة.' : 'ناف کے نیچے دائیں ہاتھ سے بائیں کلائی کا حلقہ بنا کر باندھیں گے۔'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'تضع يدها اليمنى على ظهر اليسرى على صدرها.' : 'سینے پر دایاں ہاتھ بائیں ہاتھ کی پشت پر بغیر حلقہ بنائے رکھیں گی۔'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800 }}>رکوع کی کیفیت</td>
-                <td style={{ padding: '12px 14px' }}>پیٹھ بالکل سیدھی رکھیں گے، انگلیاں کشادہ کر کے گھٹنوں کو مضبوط پکڑیں گے۔</td>
-                <td style={{ padding: '12px 14px' }}>صرف اس قدر جھکیں گی کہ ہاتھ گھٹنوں تک پہنچ جائیں، انگلیاں ملا کر رکھیں گی اور پیٹھ کمان کی طرح رہے گی۔</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800 }}>{isAr ? 'هيئة الركوع' : 'رکوع کی کیفیت'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'يسوي ظهره ويفرج بين أصابعه قابضاً على ركبتيه.' : 'پیٹھ بالکل سیدھی رکھیں گے، انگلیاں کشادہ کر کے گھٹنوں کو مضبوط پکڑیں گے۔'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'تنحني يسيراً لتصل يداها إلى ركبتيها وتضم أصابعها.' : 'صرف اس قدر جھکیں گی کہ ہاتھ گھٹنوں تک پہنچ جائیں، انگلیاں ملا کر رکھیں گی اور پیٹھ کمان کی طرح رہے گی۔'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800 }}>سجدے کی کیفیت</td>
-                <td style={{ padding: '12px 14px' }}>پیٹ رانوں سے اور کہنیاں زمین اور پسلیوں سے بالکل الگ رکھیں گے۔</td>
-                <td style={{ padding: '12px 14px' }}>بالکل سمٹ کر، پیٹ رانوں سے ملا کر اور کہنیاں زمین پر بچھا کر سجدہ کریں گی۔</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800 }}>{isAr ? 'هيئة السجود' : 'سجدے کی کیفیت'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'يجافي بطنه عن فخذيه وعضديه عن جنبيه.' : 'پیٹ رانوں سے اور کہنیاں زمین اور پسلیوں سے بالکل الگ رکھیں گے۔'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'تنضم وتلصق بطنها بفخذيها وتبسط ذراعيها على الأرض.' : 'بالکل سمٹ کر، پیٹ رانوں سے ملا کر اور کہنیاں زمین پر بچھا کر سجدہ کریں گی۔'}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 14px', fontWeight: 800 }}>قعدہ میں بیٹھنا</td>
-                <td style={{ padding: '12px 14px' }}>بایاں پاؤں بچھا کر اس پر بیٹھیں گے اور دایاں پاؤں کھڑا رکھیں گے۔</td>
-                <td style={{ padding: '12px 14px' }}>دونوں پاؤں دائیں طرف نکال کر زمین (چوتڑ) پر سمٹ کر بیٹھیں گی (تورّک)۔</td>
+                <td style={{ padding: '12px 14px', fontWeight: 800 }}>{isAr ? 'الجلوس في التشهد' : 'قعدہ میں بیٹھنا'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'يفترش رجله اليسرى ويجلس عليها وينصب اليمنى (الافتراش).' : 'بایاں پاؤں بچھا کر اس پر بیٹھیں گے اور دایاں پاؤں کھڑا رکھیں گے۔'}</td>
+                <td style={{ padding: '12px 14px' }}>{isAr ? 'تخرج رجليها من الجانب الأيمن وتجلس على أليتها (التورك).' : 'دونوں پاؤں دائیں طرف نکال کر زمین پر سمٹ کر بیٹھیں گی (تورّک)۔'}</td>
               </tr>
             </tbody>
           </table>
@@ -519,13 +701,20 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery }) {
 }
 
 // ==============================================================================
-// TAB 2: وضو، غسل، طہارت و تیمم
+// TAB 2: وضو، غسل و طہارت / الوضوء والغسل والتيمم
 // ==============================================================================
-function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery }) {
+function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr }) {
+  const wuduFaraiz = [
+    { num: '١', titleUr: 'چہرہ دھونا', titleAr: 'غسل الوجه', descUr: 'پیشانی کے بالوں سے ٹھوڑی کے نیچے تک اور ایک کان کی لو سے دوسرے کان کی لو تک ایک بار دھونا فرض ہے۔', descAr: 'غسل الوجه كاملاً من منابت شعر الرأس المعتاد إلى أسفل الذقن، ومن شحمة الأذن إلى شحمة الأذن الأخرى.' },
+    { num: '٢', titleUr: 'دونوں ہاتھ کہنیوں سمیت دھونا', titleAr: 'غسل اليدين مع المرفقين', descUr: 'انگلیوں کے پوروں سے لے کر کہنیوں سمیت دونوں ہاتھوں کو ایک بار دھونا فرض ہے۔', descAr: 'غسل اليدين من أطراف الأصابع إلى المرفقين وإدخال المرفقين في الغسل.' },
+    { num: '٣', titleUr: 'چوتھائی سر کا مسح کرنا', titleAr: 'مسح ربع الرأس', descUr: 'کم از کم ایک چوتھائی سر پر بھیگا ہوا ہاتھ پھیرنا فرض ہے۔', descAr: 'إمرار اليد المبتلة بالماء على ربع الرأس على الأقل.' },
+    { num: '٤', titleUr: 'دونوں پاؤں ٹخنوں سمیت دھونا', titleAr: 'غسل الرجلين مع الكعبين', descUr: 'دونوں پاؤں انگلیوں سے ٹخنوں سمیت اچھی طرح دھونا فرض ہے۔', descAr: 'غسل الرجلين مع الكعبين وتعميم الماء عليهما حتى ينقى.' },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
-      {/* 2.1: وضو کے ۴ فرائض اور طریقہ */}
+      {/* 2.1: فرائض الوضوء / وضو کے ۴ فرائض */}
       <div style={{ background: '#ffffff', border: '1.5px solid #0284c7', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(2,132,199,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#e0f2fe', color: '#0284c7', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -533,57 +722,67 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0369a1' }}>
-              وضو کے ۴ فرائض اور مکمل مسنون طریقہ
+              {isAr ? 'فرائض الوضوء الأربعة والصفة المسنونة' : 'وضو کے ۴ فرائض اور مکمل مسنون طریقہ'}
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              قرآن مجید (سورۃ المائدہ: 6) کے احکام کے عین مطابق
+              {isAr ? 'لقوله تعالى في سورة المائدة: {يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ...}' : 'قرآن مجید (سورۃ المائدہ: 6) کے احکام کے عین مطابق'}
             </p>
           </div>
         </div>
 
         {/* ۴ فرائض کارڈز */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-          {[
-            { num: '۱', title: 'چہرہ دھونا', desc: 'پیشانی کے بالوں سے ٹھوڑی کے نیچے تک اور ایک کان کی لو سے دوسرے کان کی لو تک ایک بار دھونا فرض ہے۔' },
-            { num: '۲', title: 'دونوں ہاتھ کہنیوں سمیت دھونا', desc: 'انگلیوں کے پوروں سے لے کر کہنیوں سمیت دونوں ہاتھوں کو ایک بار دھونا فرض ہے۔' },
-            { num: '۳', title: 'چوتھائی سر کا مسح کرنا', desc: 'کم از کم ایک چوتھائی سر پر بھیگا ہوا ہاتھ پھیرنا فرض ہے۔' },
-            { num: '۴', title: 'دونوں پاؤں ٹخنوں سمیت دھونا', desc: 'دونوں پاؤں انگلیوں سے ٹخنوں سمیت اچھی طرح دھونا فرض ہے۔' },
-          ].map((item, idx) => (
+          {wuduFaraiz.map((item, idx) => (
             <div key={idx} style={{ background: '#f0f9ff', border: '1.5px solid #bae6fd', borderRadius: '16px', padding: '1.25rem', direction: 'rtl', textAlign: 'right' }}>
-              <span style={{ background: '#0284c7', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>فرض {item.num}</span>
-              <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#0369a1', fontSize: '1.05rem', fontWeight: 800 }}>{item.title}</h4>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>{item.desc}</p>
+              <span style={{ background: '#0284c7', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>
+                {isAr ? `الفرض ${item.num}` : `فرض ${item.num}`}
+              </span>
+              <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#0369a1', fontSize: '1.05rem', fontWeight: 800 }}>
+                {isAr ? item.titleAr : item.titleUr}
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>
+                {isAr ? item.descAr : item.descUr}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* وضو کی دعائیں */}
+        {/* وضو کی دعائیں مع معانی */}
         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.25rem' }}>
           <h3 style={{ margin: '0 0 1rem 0', color: '#0f172a', fontSize: '1.15rem', fontWeight: 800, textAlign: 'center' }}>
-            وضو کی مسنون دعائیں (مع فضیلت)
+            {isAr ? 'الأدعية المأثورة في الوضوء مع المعاني والفضائل' : 'وضو کی مسنون دعائیں مع ترجمہ و فضیلت'}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
-              <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem' }}>وضو شروع کرتے وقت:</span>
-              <p style={{ margin: '6px 0 0 0', fontSize: '1.4rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
+              <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem' }}>
+                {isAr ? 'عند ابتداء الوضوء:' : 'وضو شروع کرتے وقت:'}
+              </span>
+              <p style={{ margin: '6px 0 0 0', fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                 بِسْمِ اللَّهِ وَالْحَمْدُ لِلَّهِ
               </p>
-              <p style={{ margin: '3px 0 0 0', fontSize: '0.85rem', color: '#475569' }}>"اللہ کے نام سے اور تمام تعریفیں اللہ کے لیے ہیں"</p>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: '#475569' }}>
+                {isAr ? 'المعنى: "الابْتِدَاءُ بِذِكْرِ اسْمِ اللَّهِ تَعَالَى تَبَرُّكًا، وَحَمْدُهُ سُبْحَانَهُ عَلَى نِعْمَةِ الْإِسْلَامِ وَالْمَاءِ الطَّهُورِ."' : 'ترجمہ: "اللہ کے نام سے اور تمام تعریفیں اللہ کے لیے ہیں"'}
+              </p>
             </div>
             <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
-              <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem' }}>وضو کے بعد کی دعا (جنت کے آٹھوں دروازے کھل جاتے ہیں - مسلم: 234):</span>
-              <p style={{ margin: '6px 0 0 0', fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.8 }}>
+              <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem' }}>
+                {isAr ? 'الدعاء بعد الفراغ من الوضوء (تُفتح له أبواب الجنة الثمانية - صحيح مسلم: 234):' : 'وضو کے بعد کی دعا (جنت کے آٹھوں دروازے کھل جاتے ہیں - مسلم: 234):'}
+              </span>
+              <p style={{ margin: '6px 0 0 0', fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.9 }}>
                 أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ، اللَّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ وَاجْعَلْنِي مِنَ الْمُتَطَهِّرِينَ
               </p>
-              <p style={{ margin: '5px 0 0 0', fontSize: '0.88rem', color: '#334155', direction: 'rtl' }}>
-                "میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اور محمد ﷺ اس کے بندے اور رسول ہیں۔ اے اللہ! مجھے خوب توبہ کرنے والوں اور خوب پاکیزگی اختیار کرنے والوں میں بنا دے۔"
+              <p style={{ margin: '6px 0 0 0', fontSize: '0.92rem', color: '#334155', direction: 'rtl', lineHeight: 1.7 }}>
+                {isAr
+                  ? 'المعنى: "إِعْلَانُ التَّوْحِيدِ الْخَالِصِ وَالرِّسَالَةِ، وَسُؤَالُ اللَّهِ أَنْ يَجْعَلَ الْعَبْدَ مُتَطَهِّرًا بَاطِنًا بِالتَّوْبَةِ كَمَا تَطَهَّرَ ظَاهِرًا بِالْمَاءِ."'
+                  : 'ترجمہ: "میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اور محمد ﷺ اس کے بندے اور رسول ہیں۔ اے اللہ! مجھے خوب توبہ کرنے والوں اور خوب پاکیزگی اختیار کرنے والوں میں بنا دے۔"'
+                }
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2.2: غسل کے ۳ فرائض اور مسنون طریقہ */}
+      {/* 2.2: فرائض الغسل والصفة المسنونة */}
       <div style={{ background: '#ffffff', border: '1.5px solid #059669', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#ecfdf5', color: '#059669', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -591,47 +790,62 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#064e3b' }}>
-              غسل کے ۳ فرائض اور مسنون طریقہ (جنابت، حیض و نفاس)
+              {isAr ? 'فرائض الغسل الثلاثة والصفة المسنونة (الجنابة والحيض)' : 'غسل کے ۳ فرائض اور مسنون طریقہ (جنابت، حیض و نفاس)'}
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              پاکیزگی حاصل کرنے کا مکمل شرعی طریقہ
+              {isAr ? 'الصفة الشرعية الكاملة للتطهر ورفع الحدث الأكبر' : 'پاکیزگی حاصل کرنے کا مکمل شرعی طریقہ'}
             </p>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '1.25rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>فرض ۱</span>
-            <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>غرغرہ کے ساتھ کلی کرنا</h4>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>حلق کی جڑ تک پانی پہنچانا (روزے کی حالت میں غرغرہ نہ کریں)۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>{isAr ? 'الفرض ١' : 'فرض ۱'}</span>
+            <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>{isAr ? 'المضمضة مع المبالغة' : 'غرغرہ کے ساتھ کلی کرنا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>{isAr ? 'إيصال الماء إلى أصل الفم والحلق (لغير الصائم).' : 'حلق کی جڑ تک پانی پہنچانا (روزے کی حالت میں غرغرہ نہ کریں)۔'}</p>
           </div>
           <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '1.25rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>فرض ۲</span>
-            <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>ناک میں نرم ہڈی تک پانی چڑھانا</h4>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>ناک کے دونوں نتھنوں کو نرم ہڈی تک اچھی طرح صاف کرنا۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>{isAr ? 'الفرض ٢' : 'فرض ۲'}</span>
+            <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>{isAr ? 'الاستنشاق إلى المارن' : 'ناک میں نرم ہڈی تک پانی چڑھانا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>{isAr ? 'جذب الماء حتى يصل إلى أقصى عظم الأنف اللين.' : 'ناک کے دونوں نتھنوں کو نرم ہڈی تک اچھی طرح صاف کرنا۔'}</p>
           </div>
           <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '1.25rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>فرض ۳</span>
-            <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>پورے جسم پر پانی بہانا</h4>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>سر سے پاؤں تک اس طرح پانی بہانا کہ بال برابر جگہ بھی خشک نہ رہے۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>{isAr ? 'الفرض ٣' : 'فرض ۳'}</span>
+            <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>{isAr ? 'تعميم الجسد كله بالماء' : 'پورے جسم پر پانی بہانا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>{isAr ? 'إفاضة الماء على جميع البدن من شعر الرأس إلى أخمص القدمين دون ترك موضع شعرة.' : 'سر سے پاؤں تک اس طرح پانی بہانا کہ بال برابر جگہ بھی خشک نہ رہے۔'}</p>
           </div>
         </div>
 
         {/* غسل کا مسنون طریقہ */}
         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', direction: 'rtl' }}>
-          <h4 style={{ margin: '0 0 0.75rem 0', color: '#065f46', fontSize: '1.05rem', fontWeight: 800 }}>غسل کا مرحلہ وار مسنون طریقہ:</h4>
+          <h4 style={{ margin: '0 0 0.75rem 0', color: '#065f46', fontSize: '1.05rem', fontWeight: 800 }}>
+            {isAr ? 'خطوات الغسل المسنونة بالترتيب:' : 'غسل کا مرحلہ وار مسنون طریقہ:'}
+          </h4>
           <ol style={{ margin: 0, paddingRight: '1.25rem', color: '#334155', lineHeight: 2, fontSize: '0.92rem' }}>
-            <li>دل میں پاکی حاصل کرنے کی نیت کریں۔</li>
-            <li>دونوں ہاتھوں کو کلائیوں تک ۳ بار دھوئیں اور جسم سے نجاست دور کریں۔</li>
-            <li>استنجا کریں خواہ نجاست لگی ہو یا نہ لگی ہو۔</li>
-            <li>نماز جیسا مکمل وضو کریں (پاؤں غسل کے آخر میں دھوئیں اگر پانی جمع ہو رہا ہو)۔</li>
-            <li>تین بار سر پر پانی ڈالیں کہ بالوں کی جڑوں تک پانی پہنچ جائے۔</li>
-            <li>تین بار دائیں کندھے پر اور تین بار بائیں کندھے پر پانی ڈال کر پورے بدن کو مل کر دھوئیں کہ کہیں خشک نہ رہے۔</li>
+            {isAr ? (
+              <>
+                <li>استحضار نية رفع الحدث الأكبر والتطهر لله تعالى.</li>
+                <li>غسل الكفين إلى الرسغين ثلاثاً وإزالة أي أذى أو نجاسة عن البدن.</li>
+                <li>الاستنجاء وغسل الفرج ومواضع النجاسة.</li>
+                <li>الوضوء الكامل كوضوء الصلاة (مع تأخير غسل القدمين إن كان الماء يجتمع).</li>
+                <li>إفاضة الماء على الرأس ثلاث مرات مع تخليل أصول الشعر.</li>
+                <li>غسل الشق الأيمن ثلاثاً ثم الشق الأيسر ثلاثاً مع دلك البدن ليعم الماء كل موضع.</li>
+              </>
+            ) : (
+              <>
+                <li>دل میں پاکی حاصل کرنے کی نیت کریں۔</li>
+                <li>دونوں ہاتھوں کو کلائیوں تک ۳ بار دھوئیں اور جسم سے نجاست دور کریں۔</li>
+                <li>استنجا کریں خواہ نجاست لگی ہو یا نہ لگی ہو۔</li>
+                <li>نماز جیسا مکمل وضو کریں (پاؤں غسل کے آخر میں دھوئیں اگر پانی جمع ہو رہا ہو)۔</li>
+                <li>تین بار سر پر پانی ڈالیں کہ بالوں کی جڑوں تک پانی پہنچ جائے۔</li>
+                <li>تین بار دائیں کندھے پر اور تین بار بائیں کندھے پر پانی ڈال کر پورے بدن کو مل کر دھوئیں کہ کہیں خشک نہ رہے۔</li>
+              </>
+            )}
           </ol>
         </div>
       </div>
 
-      {/* 2.3: تیمم کا طریقہ اور شرائط */}
+      {/* 2.3: التيمم وصفته / تیمم کا طریقہ اور شرائط */}
       <div style={{ background: '#ffffff', border: '1.5px solid #f59e0b', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
           <span style={{ background: '#fef3c7', color: '#d97706', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -639,20 +853,32 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#92400e' }}>
-              تیمم کا طریقہ اور شرائط (پانی نہ ملنے پر)
+              {isAr ? 'أحكام التيمم وصفته (عند تعذر وجود الماء أو المرض)' : 'تیمم کا طریقہ اور شرائط (پانی نہ ملنے پر)'}
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              بیماری کی صورت میں یا پانی ایک میل کی دوری پر دستیاب نہ ہونے کی صورت میں
+              {isAr ? 'رخصة شرعية عند العجز عن استعمال الماء لمرض أو بعده مسافة ميل فأكثر' : 'بیماری کی صورت میں یا پانی ایک میل کی دوری پر دستیاب نہ ہونے کی صورت میں'}
             </p>
           </div>
         </div>
 
         <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '14px', padding: '1.25rem', direction: 'rtl', lineHeight: 1.9, fontSize: '0.93rem', color: '#78350f' }}>
-          <p style={{ margin: '0 0 0.5rem 0' }}><strong>تیمم کے ۳ فرائض ہیں:</strong></p>
+          <p style={{ margin: '0 0 0.5rem 0' }}>
+            <strong>{isAr ? 'فرائض التيمم ثلاثة:' : 'تیمم کے ۳ فرائض ہیں:'}</strong>
+          </p>
           <ol style={{ margin: 0, paddingRight: '1.25rem' }}>
-            <li><strong>نیت:</strong> ناپاکی دور کرنے اور نماز کو حلال کرنے کی نیت کرنا۔</li>
-            <li><strong>چہرے کا مسح:</strong> پاک مٹی یا پتھر پر دونوں ہاتھ مار کر، جھاڑ کر پورے چہرے پر ملنا۔</li>
-            <li><strong>دونوں ہاتھوں کا کہنیوں سمیت مسح:</strong> دوبارہ پاک مٹی پر ہاتھ مار کر دائیں ہاتھ سے بائیں بازو کا اور بائیں ہاتھ سے دائیں بازو کا کہنیوں سمیت مسح کرنا۔</li>
+            {isAr ? (
+              <>
+                <li><strong>النية:</strong> نية استباحة الصلاة ورفع الحدث.</li>
+                <li><strong>مسح الوجه:</strong> ضرب اليدين على صعيد طاهر ثم نفضهما ومسح كامل الوجه بهما.</li>
+                <li><strong>مسح اليدين إلى المرفقين:</strong> ضربة ثانية لمسح الذراعين واليدين إلى المرفقين.</li>
+              </>
+            ) : (
+              <>
+                <li><strong>نیت:</strong> ناپاکی دور کرنے اور نماز کو حلال کرنے کی نیت کرنا۔</li>
+                <li><strong>چہرے کا مسح:</strong> پاک مٹی یا پتھر پر دونوں ہاتھ مار کر، جھاڑ کر پورے چہرے پر ملنا۔</li>
+                <li><strong>دونوں ہاتھوں کا کہنیوں سمیت مسح:</strong> دوبارہ پاک مٹی پر ہاتھ مار کر دائیں ہاتھ سے بائیں بازو کا اور بائیں ہاتھ سے دائیں بازو کا کہنیوں سمیت مسح کرنا۔</li>
+              </>
+            )}
           </ol>
         </div>
       </div>
@@ -662,13 +888,13 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery }) {
 }
 
 // ==============================================================================
-// TAB 3: میت، تجہیز و تکفین، نمازِ جنازہ اور قبرستان کی دعائیں
+// TAB 3: میت، جنازہ و قبرستان / الجنائز وصلاة الجنازة والقبور
 // ==============================================================================
-function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery }) {
+function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
-      {/* 3.1: نمازِ جنازہ کا طریقہ */}
+      {/* 3.1: صلاة الجنازة / نمازِ جنازہ کا طریقہ */}
       <div style={{ background: '#ffffff', border: '1.5px solid #059669', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#ecfdf5', color: '#059669', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -676,99 +902,120 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#064e3b' }}>
-              نمازِ جنازہ کا مسنون طریقہ (۴ تکبیرات)
+              {isAr ? 'صفة صلاة الجنازة (أربع تكبيرات)' : 'نمازِ جنازہ کا مسنون طریقہ (۴ تکبیرات)'}
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              نمازِ جنازہ فرضِ کفایہ ہے، اس میں نہ اذان ہے، نہ اقامت، نہ رکوع اور نہ سجدہ
+              {isAr ? 'صلاة الجنازة فرض كفاية، ليس فيها أذان ولا إقامة ولا ركوع ولا سجود' : 'نمازِ جنازہ فرضِ کفایہ ہے، اس میں نہ اذان ہے، نہ اقامت، نہ رکوع اور نہ سجدہ'}
             </p>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.1rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>تکبیر ۱</span>
-            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>ثناء پڑھنا</h4>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>پہلی تکبیر پر ہاتھ کانوں تک اٹھا کر باندھ لیں اور ثناء (مع 'وَجَلَّ ثَنَاؤُكَ') پڑھیں۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>{isAr ? 'التكبيرة الأولى' : 'تکبیر ۱'}</span>
+            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>{isAr ? 'الثناء والفاتحة' : 'ثناء پڑھنا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>{isAr ? 'يرفع يديه ويكبر ثم يعقد يديه ويقرأ الثناء وسورة الفاتحة.' : 'پہلی تکبیر پر ہاتھ کانوں تک اٹھا کر باندھ لیں اور ثناء (مع وَجَلَّ ثَنَاؤُكَ) پڑھیں۔'}</p>
           </div>
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.1rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>تکبیر ۲</span>
-            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>درودِ ابراہیمی پڑھنا</h4>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>بغیر ہاتھ اٹھائے دوسری تکبیر کہہ کر نماز والا درودِ ابراہیمی پڑھیں۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>{isAr ? 'التكبيرة الثانية' : 'تکبیر ۲'}</span>
+            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>{isAr ? 'الصلاة الإبراهيمية' : 'درودِ ابراہیمی پڑھنا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>{isAr ? 'يكبر دون رفع اليدين ويصلي على النبي ﷺ الصلاة الإبراهيمية.' : 'بغیر ہاتھ اٹھائے دوسری تکبیر کہہ کر نماز والا درودِ ابراہیمی پڑھیں۔'}</p>
           </div>
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.1rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>تکبیر ۳</span>
-            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>میت کے لیے دعا پڑھنا</h4>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>بغیر ہاتھ اٹھائے تیسری تکبیر کہہ کر میت کی مخصوص مسنون دعا پڑھیں۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>{isAr ? 'التكبيرة الثالثة' : 'تکبیر ۳'}</span>
+            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>{isAr ? 'الدعاء للميت' : 'میت کے لیے دعا پڑھنا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>{isAr ? 'يكبر ويدعو للميت بالأدعية النبوية المأثورة بحسب حاله.' : 'بغیر ہاتھ اٹھائے تیسری تکبیر کہہ کر میت کی مخصوص مسنون دعا پڑھیں۔'}</p>
           </div>
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.1rem', direction: 'rtl', textAlign: 'right' }}>
-            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>تکبیر ۴</span>
-            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>سلام پھیرنا</h4>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>چوتھی تکبیر کہہ کر دائیں اور بائیں جانب سلام پھیر کر ہاتھ کھول دیں۔</p>
+            <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>{isAr ? 'التكبيرة الرابعة' : 'تکبیر ۴'}</span>
+            <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>{isAr ? 'التسليم' : 'سلام پھیرنا'}</h4>
+            <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.6 }}>{isAr ? 'يكبر ويسلم عن يمينه وعن شماله ويسدل يديه.' : 'چوتھی تکبیر کہہ کر دائیں اور بائیں جانب سلام پھیر کر ہاتھ کھول دیں۔'}</p>
           </div>
         </div>
       </div>
 
-      {/* 3.2: نمازِ جنازہ کی ۳ مستند دعائیں */}
+      {/* 3.2: أدعية صلاة الجنازة المأثورة مع المعاني */}
       <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', textAlign: 'center' }}>
-          نمازِ جنازہ کی مسنون دعائیں (Adult & Children Janaza Duas)
+          {isAr ? 'الأدعية المأثورة في صلاة الجنازة مع المعنى والبيان' : 'نمازِ جنازہ کی مسنون دعائیں مع ترجمہ'}
         </h2>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
-          {/* دعا ۱: بالغ مرد اور عورت کی دعا */}
+          {/* دعا ۱: دعاء الجنازة للبالغين */}
           <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '1.4rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <span style={{ background: '#059669', color: '#ffffff', padding: '3px 12px', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 800 }}>
-                ۱. بالغ مرد اور عورت کا جنازہ
+                {isAr ? '١. دعاء الجنازة للبالغ (رجلاً كان أو امرأة)' : '۱. بالغ مرد اور عورت کا جنازہ'}
               </span>
-              <span style={{ color: '#065f46', fontSize: '0.8rem', fontWeight: 700 }}>📚 سنن ابو داؤد: 3201 • سنن ترمذی: 1024 (صحیح)</span>
+              <span style={{ color: '#065f46', fontSize: '0.8rem', fontWeight: 700 }}>
+                {isAr ? 'سنن أبي داود: 3201 • الترمذي: 1024 (صحيح)' : 'سنن ابو داؤد: 3201 • سنن ترمذی: 1024 (صحیح)'}
+              </span>
             </div>
             <p style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', textAlign: 'center', lineHeight: 2.1, direction: 'rtl' }}>
               اللَّهُمَّ اغْفِرْ لِحَيِّنَا وَمَيِّتِنَا، وَشَاهِدِنَا وَغَائِبِنَا، وَصَغِيرِنَا وَكَبِيرِنَا، وَذَكَرِنَا وَأُنْثَانَا، اللَّهُمَّ مَنْ أَحْيَيْتَهُ مِنَّا فَأَحْيِهِ عَلَى الْإِسْلَامِ، وَمَنْ تَوَفَّيْتَهُ مِنَّا فَتَوَفَّهُ عَلَى الْإِيمَانِ
             </p>
             <div style={{ background: '#ffffff', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: 'rtl' }}>
-              <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>اردو ترجمہ:</span>
+              <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>
+                {isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
+              </span>
               <p style={{ margin: 0, fontSize: '0.98rem', color: '#1e293b', lineHeight: 1.7 }}>
-                "اے اللہ! ہمارے زندوں اور ہمارے مُردوں کو بخش دے، ہمارے حاضرین اور ہمارے غائبین کو، ہمارے چھوٹوں اور ہمارے بڑوں کو، اور ہمارے مردوں اور ہماری عورتوں کو۔ اے اللہ! تو ہم میں سے جس کو زندہ رکھے اسے اسلام پر زندہ رکھ، اور جس کو موت دے اسے ایمان پر موت دے۔"
+                {isAr
+                  ? 'دُعَاءٌ جَامِعٌ لِجَمِيعِ أُمَّةِ الْإِسْلَامِ أَحْيَائِهِمْ وَأَمْوَاتِهِمْ بِالْمَغْفِرَةِ وَالرَّحْمَةِ، وَسُؤَالُ اللَّهِ أَنْ يُثَبِّتَنَا عَلَى شَرَائِعِ الْإِسْلَامِ فِي الْحَيَاةِ، وَأَنْ يَخْتِمَ لَنَا بِكَمَالِ الْإِيمَانِ عِنْدَ الْمَمَاتِ.'
+                  : '"اے اللہ! ہمارے زندوں اور ہمارے مُردوں کو بخش دے، ہمارے حاضرین اور ہمارے غائبین کو، ہمارے چھوٹوں اور ہمارے بڑوں کو، اور ہمارے مردوں اور ہماری عورتوں کو۔ اے اللہ! تو ہم میں سے جس کو زندہ رکھے اسے اسلام پر زندہ رکھ، اور جس کو موت دے اسے ایمان پر موت دے۔"'
+                }
               </p>
             </div>
           </div>
 
-          {/* دعا ۲: نابالغ لڑکے (بچے) کی دعا */}
+          {/* دعا ۲: دعاء الجنازة للصبي */}
           <div style={{ background: '#f0f9ff', border: '1.5px solid #bae6fd', borderRadius: '16px', padding: '1.4rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <span style={{ background: '#0284c7', color: '#ffffff', padding: '3px 12px', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 800 }}>
-                ۲. نابالغ لڑکے (بچے) کا جنازہ
+                {isAr ? '٢. دعاء الجنازة للصبي غير البالغ' : '۲. نابالغ لڑکے (بچے) کا جنازہ'}
               </span>
-              <span style={{ color: '#0369a1', fontSize: '0.8rem', fontWeight: 700 }}>📚 مصنف ابن ابی شیبہ: 11496 • صحیح بخاری تعلیقاً</span>
+              <span style={{ color: '#0369a1', fontSize: '0.8rem', fontWeight: 700 }}>
+                {isAr ? 'مصنف ابن أبي شيبة: 11496 • البخاري تعليقاً' : 'مصنف ابن ابی شیبہ: 11496 • صحیح بخاری تعلیقاً'}
+              </span>
             </div>
             <p style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#0369a1', textAlign: 'center', lineHeight: 2.1, direction: 'rtl' }}>
               اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطًا، وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا، وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا
             </p>
             <div style={{ background: '#ffffff', border: '1px solid #bae6fd', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: 'rtl' }}>
-              <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>اردو ترجمہ:</span>
+              <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>
+                {isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
+              </span>
               <p style={{ margin: 0, fontSize: '0.98rem', color: '#1e293b', lineHeight: 1.7 }}>
-                "اے اللہ! اس بچے کو ہمارے لیے آگے پہنچ کر سامانِ راحت مہیا کرنے والا بنا، اور اس کو ہمارے لیے اجر و ثواب اور ذخیرۂ آخرت بنا، اور اس کو ہمارے حق میں سفارش کرنے والا اور مقبول الشفاعت بنا۔"
+                {isAr
+                  ? 'الْفَرَطُ هُوَ السَّابِقُ الَّذِي يَتَقَدَّمُ الْقَوْمَ لِيُهَيِّئَ لَهُمْ الْمَنْزِلَ، فَيَكُونُ هَذَا الصَّغِيرُ سَابِقًا لِوَالِدَيْهِ لِيَكُونَ لَهُمَا ذُخْرًا وَأَجْرًا مُضَاعَفًا عِنْدَ اللَّهِ، وَشَافِعًا مَقْبُولَ الشَّفَاعَةِ يَوْمَ الْقِيَامَةِ.'
+                  : '"اے اللہ! اس بچے کو ہمارے لیے آگے پہنچ کر سامانِ راحت مہیا کرنے والا بنا، اور اس کو ہمارے لیے اجر و ثواب اور ذخیرۂ آخرت بنا، اور اس کو ہمارے حق میں سفارش کرنے والا اور مقبول الشفاعت بنا۔"'
+                }
               </p>
             </div>
           </div>
 
-          {/* دعا ۳: نابالغ لڑکی (بچی) کی دعا */}
+          {/* دعا ۳: دعاء الجنازة للصبية */}
           <div style={{ background: '#fdf2f8', border: '1.5px solid #fbcfe8', borderRadius: '16px', padding: '1.4rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <span style={{ background: '#db2777', color: '#ffffff', padding: '3px 12px', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 800 }}>
-                ۳. نابالغ لڑکی (بچی) کا جنازہ
+                {isAr ? '٣. دعاء الجنازة للصبية غير البالغة' : '۳. نابالغ لڑکی (بچی) کا جنازہ'}
               </span>
-              <span style={{ color: '#9d174d', fontSize: '0.8rem', fontWeight: 700 }}>📚 کتب فقہ و سنن</span>
+              <span style={{ color: '#9d174d', fontSize: '0.8rem', fontWeight: 700 }}>
+                {isAr ? 'كتب الفقه والسنة' : 'کتب فقہ و سنن'}
+              </span>
             </div>
             <p style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#831843', textAlign: 'center', lineHeight: 2.1, direction: 'rtl' }}>
               اللَّهُمَّ اجْعَلْهَا لَنَا فَرَطًا، وَاجْعَلْهَا لَنَا أَجْرًا وَذُخْرًا، وَاجْعَلْهَا لَنَا شَافِعَةً وَمُشَفَّعَةً
             </p>
             <div style={{ background: '#ffffff', border: '1px solid #fbcfe8', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: 'rtl' }}>
-              <span style={{ color: '#db2777', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>اردو ترجمہ:</span>
+              <span style={{ color: '#db2777', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>
+                {isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
+              </span>
               <p style={{ margin: 0, fontSize: '0.98rem', color: '#1e293b', lineHeight: 1.7 }}>
-                "اے اللہ! اس بچی کو ہمارے لیے آگے پہنچ کر سامانِ راحت مہیا کرنے والی بنا، اور اس کو ہمارے لیے اجر و ثواب اور ذخیرۂ آخرت بنا، اور اس کو ہمارے حق میں سفارش کرنے والی اور مقبول الشفاعت بنا۔"
+                {isAr
+                  ? 'الدُّعَاءُ لِلْبِنْتِ الصَّغِيرَةِ بِأَنْ يَجْعَلَهَا اللَّهُ سَابِقَةً لِأَهْلِهَا إِلَى الْجَنَّةِ، وَذُخْرًا وَأَجْرًا صَالِحًا، وَشَافِعَةً مُشَفَّعَةً لِوَالِدَيْهَا.'
+                  : '"اے اللہ! اس بچی کو ہمارے لیے آگے پہنچ کر سامانِ راحت مہیا کرنے والی بنا، اور اس کو ہمارے لیے اجر و ثواب اور ذخیرۂ آخرت بنا، اور اس کو ہمارے حق میں سفارش کرنے والی اور مقبول الشفاعت بنا۔"'
+                }
               </p>
             </div>
           </div>
@@ -776,76 +1023,58 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery }) {
         </div>
       </div>
 
-      {/* 3.3: تدفین اور قبرستان کی دعائیں */}
+      {/* 3.3: أدعية الدفن وزيارة القبور / تدفین اور قبرستان کی دعائیں */}
       <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1.35rem', fontWeight: 900, color: '#064e3b', textAlign: 'center' }}>
-          میت کو قبر میں اتارنے، مٹی ڈالنے اور قبرستان کی دعائیں
+          {isAr ? 'أدعية إنزال الميت، إهالة التراب، وزيارة المقابر' : 'میت کو قبر میں اتارنے، مٹی ڈالنے اور قبرستان کی دعائیں'}
         </h2>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
           
           {/* میت کو قبر میں اتارتے وقت */}
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.25rem', textAlign: 'center' }}>
-            <span style={{ background: '#ecfdf5', color: '#065f46', padding: '3px 10px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>میت کو قبر میں اتارنے کی دعا</span>
+            <span style={{ background: '#ecfdf5', color: '#065f46', padding: '3px 10px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>
+              {isAr ? 'دعاء إنزال الميت في اللحد (أبو داود: 3213)' : 'میت کو قبر میں اتارنے کی دعا'}
+            </span>
             <p style={{ margin: '0.75rem 0', fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
               بِسْمِ اللَّهِ وَعَلَىٰ مِلَّةِ رَسُولِ اللَّهِ
             </p>
             <p style={{ margin: 0, fontSize: '0.88rem', color: '#475569', direction: 'rtl' }}>
-              "اللہ کے نام سے اور رسول اللہ ﷺ کے طریقے (ملت) پر اتارتے ہیں۔" (ابو داؤد: 3213)
+              {isAr ? 'المعنى: "إِيدَاعُ الْمَيِّتِ فِي قَبْرِهِ بِاسْمِ اللَّهِ وَعَلَى هَدْيِ وَسُنَّةِ وَشَرِيعَةِ نَبِيِّهِ مُحَمَّدٍ ﷺ."' : 'ترجمہ: "اللہ کے نام سے اور رسول اللہ ﷺ کے طریقے (ملت) پر اتارتے ہیں۔"'}
             </p>
           </div>
 
           {/* قبر پر مٹی ڈالتے وقت */}
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.25rem', textAlign: 'center' }}>
-            <span style={{ background: '#fef3c7', color: '#92400e', padding: '3px 10px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>قبر پر ۳ مٹھی مٹی ڈالتے وقت</span>
-            <p style={{ margin: '0.5rem 0', fontSize: '1.15rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#92400e', lineHeight: 1.8 }}>
-              ۱. مِنْهَا خَلَقْنَاكُمْ <br />
-              ۲. وَفِيهَا نُعِيدُكُمْ <br />
-              ۳. وَمِنْهَا نُخْرِجُكُمْ تَارَةً أُخْرَىٰ
+            <span style={{ background: '#fef3c7', color: '#92400e', padding: '3px 10px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>
+              {isAr ? 'الآيات عند إهالة الحثيات الثلاث من التراب' : 'قبر پر ۳ مٹھی مٹی ڈالتے وقت'}
+            </span>
+            <p style={{ margin: '0.5rem 0', fontSize: '1.2rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#92400e', lineHeight: 1.8 }}>
+              ١. مِنْهَا خَلَقْنَاكُمْ <br />
+              ٢. وَفِيهَا نُعِيدُكُمْ <br />
+              ٣. وَمِنْهَا نُخْرِجُكُمْ تَارَةً أُخْرَىٰ
             </p>
-            <p style={{ margin: 0, fontSize: '0.82rem', color: '#475569', direction: 'rtl' }}>
-              (ہم نے اسی مٹی سے تمہیں پیدا کیا، اسی میں لوٹائیں گے، اور اسی سے دوبارہ نکالیں گے)
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', direction: 'rtl' }}>
+              {isAr ? 'المعنى: "تَذَكُّرُ أَصْلِ خَلْقِ الْإِنْسَانِ مِنَ التُّرَابِ، وَعَوْدَتِهِ إِلَيْهِ عِنْدَ الْمَوْتِ، وَبَعْثِهِ مِنْهُ يَوْمَ الْقِيَامَةِ."' : 'ترجمہ: (ہم نے اسی مٹی سے تمہیں پیدا کیا، اسی میں لوٹائیں گے، اور اسی سے دوبارہ نکالیں گے)'}
             </p>
           </div>
 
           {/* قبرستان میں داخل ہونے کی دعا */}
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.25rem', textAlign: 'center', gridColumn: '1 / -1' }}>
-            <span style={{ background: '#f0fdf4', color: '#047857', padding: '3px 12px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800 }}>قبرستان میں داخل ہونے کی مسنون دعا (صحیح مسلم: 975)</span>
+            <span style={{ background: '#f0fdf4', color: '#047857', padding: '3px 12px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800 }}>
+              {isAr ? 'دعاء دخول المقابر والسلام على أهل القبور (صحيح مسلم: 975)' : 'قبرستان میں داخل ہونے کی مسنون دعا (صحیح مسلم: 975)'}
+            </span>
             <p style={{ margin: '0.75rem 0', fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.9 }}>
               السَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللَّهُ بِكُمْ لَاحِقُونَ، أَسْأَلُ اللَّهَ لَنَا وَلَكُمُ الْعَافِيَةَ
             </p>
             <p style={{ margin: 0, fontSize: '0.92rem', color: '#334155', direction: 'rtl' }}>
-              "سلامتی ہو تم پر اے بستی والوں، مومنوں اور مسلمانوں میں سے! اور ہم بھی، اگر اللہ نے چاہا، تمہارے ساتھ ضرور ملنے والے ہیں۔ میں اللہ تعالیٰ سے اپنے لیے اور تمہارے لیے عافیت و سلامتی مانگتا ہوں۔"
+              {isAr
+                ? 'المعنى: "إِلْقَاءُ السَّلَامِ عَلَى أَهْلِ الْقُبُورِ مِنَ الْمُؤْمِنِينَ، وَتَذَكُّرُ اللِّحَاقِ بِهِمْ قَرِيبًا، وَسُؤَالُ اللَّهِ الْعَفْوَ وَالْعَافِيَةَ وَالسَّلَامَةَ مِنَ الْعَذَابِ."'
+                : 'ترجمہ: "سلامتی ہو تم پر اے بستی والوں، مومنوں اور مسلمانوں میں سے! اور ہم بھی، اگر اللہ نے چاہا، تمہارے ساتھ ضرور ملنے والے ہیں۔ میں اللہ تعالیٰ سے اپنے لیے اور تمہارے لیے عافیت و سلامتی مانگتا ہوں۔"'
+              }
             </p>
           </div>
 
-        </div>
-      </div>
-
-      {/* 3.4: کفن کا طریقہ (Mard & Aurat) */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
-        <h3 style={{ margin: '0 0 1rem 0', color: '#065f46', fontSize: '1.25rem', fontWeight: 800 }}>
-          کفن کے مسنون کپڑے اور احکام:
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-          <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', direction: 'rtl' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#0284c7' }}>مرد کے لیے ۳ کپڑے مسنون ہیں:</h4>
-            <ol style={{ margin: 0, paddingRight: '1.25rem', lineHeight: 1.9, fontSize: '0.9rem', color: '#334155' }}>
-              <li><strong>لفافہ (بڑی چادر):</strong> سر سے پاؤں تک جس سے دونوں طرف گرہ لگ سکے۔</li>
-              <li><strong>ازار (تہبند):</strong> سر کی چوٹی سے پاؤں تک۔</li>
-              <li><strong>قمیص (کرتہ):</strong> گردن سے گھٹنوں سے نیچے۔</li>
-            </ol>
-          </div>
-          <div style={{ background: '#fdf2f8', padding: '1.25rem', borderRadius: '14px', border: '1px solid #fbcfe8', direction: 'rtl' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#db2777' }}>عورت کے لیے ۵ کپڑے مسنون ہیں:</h4>
-            <ol style={{ margin: 0, paddingRight: '1.25rem', lineHeight: 1.9, fontSize: '0.9rem', color: '#334155' }}>
-              <li><strong>لفافہ:</strong> سر سے پاؤں تک بڑی چادر۔</li>
-              <li><strong>ازار:</strong> چوٹی سے پاؤں تک۔</li>
-              <li><strong>قمیص:</strong> گردن سے پاؤں تک کرتہ۔</li>
-              <li><strong>اوڑھنی (سر بند):</strong> سر اور بالوں کو ڈھانپنے کے لیے۔</li>
-              <li><strong>سینہ بند:</strong> سینے سے رانوں تک لپیٹنے کے لیے۔</li>
-            </ol>
-          </div>
         </div>
       </div>
 
@@ -854,93 +1083,129 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery }) {
 }
 
 // ==============================================================================
-// TAB 4: دن اور رات کی مسنون دعائیں (Daily Day & Night Duas)
+// TAB 4: أذكار اليوم والليلة / دن اور رات کی مسنون دعائیں
 // ==============================================================================
-function DailyDuasTab({ copyToClipboard, copiedId, searchQuery }) {
+function DailyDuasTab({ copyToClipboard, copiedId, searchQuery, isAr }) {
   const duasList = [
     {
       id: 'dua_sleep_wake',
-      title: 'صبح بیدار ہونے کی دعا',
+      titleUr: 'صبح بیدار ہونے کی دعا',
+      titleAr: 'أذكار الاستيقاظ من النوم',
       arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
-      urdu: 'تمام تعریفیں اللہ کے لیے ہیں جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔',
-      ref: 'صحیح بخاری: 6312'
+      meaningUr: 'تمام تعریفیں اللہ کے لیے ہیں جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔',
+      meaningAr: 'الحمد والشكر لله الذي رد إلينا أرواحنا بعد النوم (الموتة الصغرى)، وإليه المرجع والبعث والنشور يوم القيامة.',
+      refUr: 'صحیح بخاری: 6312',
+      refAr: 'صحيح البخاري: 6312'
     },
     {
       id: 'dua_sleep_night',
-      title: 'رات سونے کی دعا',
+      titleUr: 'رات سونے کی دعا',
+      titleAr: 'دعاء النوم عند الاضطجاع',
       arabic: 'اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا',
-      urdu: 'اے اللہ! میں تیرے ہی نام کے ساتھ مرتا ہوں (سوتا ہوں) اور جیتا ہوں (جاگتا ہوں)۔',
-      ref: 'صحیح بخاری: 6314'
+      meaningUr: 'اے اللہ! میں تیرے ہی نام کے ساتھ مرتا ہوں (سوتا ہوں) اور جیتا ہوں (جاگتا ہوں)۔',
+      meaningAr: 'أنام وأستيقظ باسمك وبركتك ورعايتك يا الله.',
+      refUr: 'صحیح بخاری: 6314',
+      refAr: 'صحيح البخاري: 6314'
     },
     {
       id: 'dua_washroom_enter',
-      title: 'بیت الخلاء (واش روم) جانے کی دعا',
+      titleUr: 'بیت الخلاء (واش روم) جانے کی دعا',
+      titleAr: 'دعاء دخول الخلاء',
       arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',
-      urdu: 'اے اللہ! میں خبیث جنوں (نر) اور خبیث جننیوں (مادہ) کی برائی سے تیری پناہ مانگتا ہوں۔',
-      ref: 'صحیح بخاری: 142 • صحیح مسلم: 375'
+      meaningUr: 'اے اللہ! میں خبیث جنوں (نر) اور خبیث جننیوں (مادہ) کی برائی سے تیری پناہ مانگتا ہوں۔',
+      meaningAr: 'الاستعاذة بالله من ذكور الشياطين وإناثهم ومن كل شر ونجاسة.',
+      refUr: 'صحیح بخاری: 142 • صحیح مسلم: 375',
+      refAr: 'صحيح البخاري: 142 • صحيح مسلم: 375'
     },
     {
       id: 'dua_washroom_exit',
-      title: 'بیت الخلاء سے نکلنے کی دعا',
+      titleUr: 'بیت الخلاء سے نکلنے کی دعا',
+      titleAr: 'دعاء الخروج من الخلاء',
       arabic: 'غُفْرَانَكَ، الْحَمْدُ لِلَّهِ الَّذِي أَذْهَبَ عَنِّي الْأَذَىٰ وَعَافَانِي',
-      urdu: 'اے اللہ! میں تیری بخشش مانگتا ہوں۔ تمام تعریفیں اس اللہ کے لیے ہیں جس نے مجھ سے تکلیف دہ چیز کو دور کیا اور مجھے عافیت بخشی۔',
-      ref: 'سنن ابو داؤد: 17 • ابن ماجہ: 300'
+      meaningUr: 'اے اللہ! میں تیری بخشش مانگتا ہوں۔ تمام تعریفیں اس اللہ کے لیے ہیں جس نے مجھ سے تکلیف دہ چیز کو دور کیا اور مجھے عافیت بخشی۔',
+      meaningAr: 'طلب مغفرة الله وشكره على نعمة إخراج الفضلات المؤذية وتفضل العافية والصحة.',
+      refUr: 'سنن ابو داؤد: 17 • ابن ماجہ: 300',
+      refAr: 'سنن أبي داود: 17 • ابن ماجه: 300'
     },
     {
       id: 'dua_food_before',
-      title: 'کھانا شروع کرنے کی دعا',
+      titleUr: 'کھانا شروع کرنے کی دعا',
+      titleAr: 'الدعاء عند ابتداء الطعام',
       arabic: 'بِسْمِ اللَّهِ وَعَلَىٰ بَرَكَةِ اللَّهِ',
-      urdu: 'اللہ کے نام سے اور اللہ کی برکت کے ساتھ (کھانا شروع کرتا ہوں)۔',
-      ref: 'مستدرک حاکم: 7084'
+      meaningUr: 'اللہ کے نام سے اور اللہ کی برکت کے ساتھ (کھانا شروع کرتا ہوں)۔',
+      meaningAr: 'التسمية وطلب بركة الله تعالى ونمائها في الرزق والطعام.',
+      refUr: 'مستدرک حاکم: 7084',
+      refAr: 'مستدرك الحاكم: 7084'
     },
     {
       id: 'dua_food_after',
-      title: 'کھانے کے بعد کی دعا',
+      titleUr: 'کھانے کے بعد کی دعا',
+      titleAr: 'دعاء الفراغ من الطعام',
       arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الْمُسْلِمِينَ',
-      urdu: 'تمام تعریفیں اس اللہ کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور ہمیں مسلمانوں میں سے بنایا۔',
-      ref: 'سنن ابو داؤد: 3850 • ترمذی: 3457'
+      meaningUr: 'تمام تعریفیں اس اللہ کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور ہمیں مسلمانوں میں سے بنایا۔',
+      meaningAr: 'شكر المنعم سبحانه على نعم الرزق والطعام والشراب وأجل نعمة: نعمة الإسلام.',
+      refUr: 'سنن ابو داؤد: 3850 • ترمذی: 3457',
+      refAr: 'سنن أبي داود: 3850 • الترمذي: 3457'
     },
     {
       id: 'dua_house_exit',
-      title: 'گھر سے نکلتے وقت کی دعا',
+      titleUr: 'گھر سے نکلتے وقت کی دعا',
+      titleAr: 'دعاء الخروج من المنزل',
       arabic: 'بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
-      urdu: 'اللہ کے نام کے ساتھ، میں نے اللہ ہی پر بھروسہ کیا، برائی سے بچنے اور نیکی کرنے کی طاقت صرف اللہ ہی کی توفیق سے ہے۔',
-      ref: 'سنن ابو داؤد: 5095 • ترمذی: 3426'
+      meaningUr: 'اللہ کے نام کے ساتھ، میں نے اللہ ہی پر بھروسہ کیا، برائی سے بچنے اور نیکی کرنے کی طاقت صرف اللہ ہی کی توفیق سے ہے۔',
+      meaningAr: 'تفويض الأمور لله تعالى والاعتماد عليه وحده؛ يقال له: كفيت وهديت ووقيت وتنحى عنه الشيطان.',
+      refUr: 'سنن ابو داؤد: 5095 • ترمذی: 3426',
+      refAr: 'سنن أبي داود: 5095 • الترمذي: 3426'
     },
     {
       id: 'dua_house_enter',
-      title: 'گھر میں داخل ہونے کی دعا',
+      titleUr: 'گھر میں داخل ہونے کی دعا',
+      titleAr: 'دعاء الدخول إلى المنزل',
       arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا',
-      urdu: 'اے اللہ! میں تجھ سے اندر آنے کی بھلائی اور باہر نکلنے کی بھلائی کا سوال کرتا ہوں۔ اللہ کے نام کے ساتھ ہم داخل ہوئے اور اللہ کے نام کے ساتھ نکلے اور اپنے رب اللہ پر ہم نے بھروسہ کیا۔',
-      ref: 'سنن ابو داؤد: 5096'
+      meaningUr: 'اے اللہ! میں تجھ سے اندر آنے کی بھلائی اور باہر نکلنے کی بھلائی کا سوال کرتا ہوں۔ اللہ کے نام کے ساتھ ہم داخل ہوئے اور اللہ کے نام کے ساتھ نکلے اور اپنے رب اللہ پر ہم نے بھروسہ کیا۔',
+      meaningAr: 'سؤال الله البركة والسلامة في الدخول والخروج والاعتماد على حفظه.',
+      refUr: 'سنن ابو داؤد: 5096',
+      refAr: 'سنن أبي داود: 5096'
     },
     {
       id: 'dua_masjid_enter',
-      title: 'مسجد میں داخل ہونے کی دعا',
+      titleUr: 'مسجد میں داخل ہونے کی دعا',
+      titleAr: 'دعاء دخول المسجد',
       arabic: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
-      urdu: 'اے اللہ! میرے لیے اپنی رحمت کے دروازے کھول دے۔',
-      ref: 'صحیح مسلم: 713'
+      meaningUr: 'اے اللہ! میرے لیے اپنی رحمت کے دروازے کھول دے۔',
+      meaningAr: 'سؤال الله تعالى أن ينزل رحمته وفيوضاته وتوفيقه في بيته الحرام.',
+      refUr: 'صحیح مسلم: 713',
+      refAr: 'صحيح مسلم: 713'
     },
     {
       id: 'dua_masjid_exit',
-      title: 'مسجد سے نکلنے کی دعا',
+      titleUr: 'مسجد سے نکلنے کی دعا',
+      titleAr: 'دعاء الخروج من المسجد',
       arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ',
-      urdu: 'اے اللہ! میں تجھ سے تیرے فضل کا سوال کرتا ہوں۔',
-      ref: 'صحیح مسلم: 713'
+      meaningUr: 'اے اللہ! میں تجھ سے تیرے فضل کا سوال کرتا ہوں۔',
+      meaningAr: 'طلب الرزق الحلال والخير والفضل عند الخروج لمشاغل الدنيا.',
+      refUr: 'صحیح مسلم: 713',
+      refAr: 'صحيح مسلم: 713'
     },
     {
       id: 'dua_travel',
-      title: 'سفر کی مسنون دعا',
+      titleUr: 'سفر کی مسنون دعا',
+      titleAr: 'دعاء السفر وركوب الدابة',
       arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَىٰ رَبِّنَا لَمُنْقَلِبُونَ',
-      urdu: 'پاک ہے وہ ذات جس نے اس (سواری) کو ہمارے قابو میں کر دیا حالانکہ ہم اسے قابو میں لانے والے نہ تھے، اور بے شک ہم اپنے رب ہی کی طرف لوٹنے والے ہیں۔',
-      ref: 'صحیح مسلم: 1342'
+      meaningUr: 'پاک ہے وہ ذات جس نے اس (سواری) کو ہمارے قابو میں کر دیا حالانکہ ہم اسے قابو میں لانے والے نہ تھے، اور بے شک ہم اپنے رب ہی کی طرف لوٹنے والے ہیں۔',
+      meaningAr: 'تسبيح الله على تيسير وسائل الركوب والسفر وتذكر سفر الآخرة والرجوع إلى الله.',
+      refUr: 'صحیح مسلم: 1342',
+      refAr: 'صحيح مسلم: 1342'
     },
     {
       id: 'dua_anxiety_debt',
-      title: 'پریشانی، غم اور قرض سے نجات کی دعا',
+      titleUr: 'پریشانی، غم اور قرض سے نجات کی دعا',
+      titleAr: 'دعاء تفريج الهم والحزن وقضاء الدين',
       arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',
-      urdu: 'اے اللہ! میں غم اور فکر سے تیری پناہ مانگتا ہوں، اور عاجزی اور سستی سے تیری پناہ مانگتا ہوں، اور بزدلی اور بخل سے تیری پناہ مانگتا ہوں، اور قرض کے غلبے اور لوگوں کے دباؤ سے تیری پناہ مانگتا ہوں۔',
-      ref: 'صحیح بخاری: 2893 • ابو داؤد: 1555'
+      meaningUr: 'اے اللہ! میں غم اور فکر سے تیری پناہ مانگتا ہوں، اور عاجزی اور سستی سے تیری پناہ مانگتا ہوں، اور بزدلی اور بخل سے تیری پناہ مانگتا ہوں، اور قرض کے غلبے اور لوگوں کے دباؤ سے تیری پناہ مانگتا ہوں۔',
+      meaningAr: 'الاستعاذة الشاملة بالله من الآفات النفسية والمادية، وتفريج الكرب وقضاء الديون وغلبة الظالمين.',
+      refUr: 'صحیح بخاری: 2893 • ابو داؤد: 1555',
+      refAr: 'صحيح البخاري: 2893 • سنن أبي داود: 1555'
     }
   ];
 
@@ -948,10 +1213,10 @@ function DailyDuasTab({ copyToClipboard, copiedId, searchQuery }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
         <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 900, color: '#064e3b' }}>
-          صبح و شام اور روزمرہ کی اہم ترین مسنون دعائیں
+          {isAr ? 'أذكار اليوم والليلة والأدعية النبوية المأثورة' : 'صبح و شام اور روزمرہ کی اہم ترین مسنون دعائیں'}
         </h2>
         <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', color: '#64748b' }}>
-          صحیح احادیثِ نبویہ سے ماخوذ دعائیں مع اردو ترجمہ و حوالہ
+          {isAr ? 'أدعية من صحيح السنة النبوية مع بيان المعاني والمصادر' : 'صحیح احادیثِ نبویہ سے ماخوذ دعائیں مع اردو ترجمہ و حوالہ'}
         </p>
       </div>
 
@@ -973,39 +1238,39 @@ function DailyDuasTab({ copyToClipboard, copiedId, searchQuery }) {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '3px 10px', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 800 }}>
-                  {item.title}
+                  {isAr ? item.titleAr : item.titleUr}
                 </span>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard(`${item.title}\n\n${item.arabic}\n\nترجمہ: ${item.urdu}\n\nحوالہ: ${item.ref}`, item.id)}
+                  onClick={() => copyToClipboard(`${isAr ? item.titleAr : item.titleUr}\n\n${item.arabic}\n\n${isAr ? 'المعنى: ' + item.meaningAr : 'ترجمہ: ' + item.meaningUr}\n\n${item.refAr}`, item.id)}
                   style={{
                     background: copiedId === item.id ? '#10b981' : '#f8fafc',
                     color: copiedId === item.id ? '#ffffff' : '#64748b',
                     border: '1px solid #cbd5e1',
-                    padding: '4px 9px',
+                    padding: '4px 10px',
                     borderRadius: '8px',
                     fontSize: '0.75rem',
                     fontWeight: 700,
                     cursor: 'pointer'
                   }}
                 >
-                  <i className={copiedId === item.id ? "fas fa-check" : "fas fa-copy"} /> {copiedId === item.id ? 'کاپی ہو گئی' : 'Copy'}
+                  <i className={copiedId === item.id ? "fas fa-check" : "fas fa-copy"} /> {copiedId === item.id ? (isAr ? 'تم النسخ' : 'کاپی ہو گئی') : (isAr ? 'نسخ' : 'کاپی')}
                 </button>
               </div>
 
               <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '0.75rem' }}>
-                <p style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.8 }}>
+                <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.9 }}>
                   {item.arabic}
                 </p>
               </div>
 
-              <p style={{ margin: 0, fontSize: '0.92rem', color: '#1e293b', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', serif", lineHeight: 1.6 }}>
-                "{item.urdu}"
+              <p style={{ margin: 0, fontSize: '0.92rem', color: '#1e293b', direction: 'rtl', textAlign: 'right', lineHeight: 1.7 }}>
+                "{isAr ? item.meaningAr : item.meaningUr}"
               </p>
             </div>
 
             <div style={{ marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px dashed #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700 }}>📚 {item.ref}</span>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700 }}>📚 {isAr ? item.refAr : item.refUr}</span>
             </div>
           </div>
         ))}
@@ -1015,74 +1280,120 @@ function DailyDuasTab({ copyToClipboard, copiedId, searchQuery }) {
 }
 
 // ==============================================================================
-// TAB 5: ضروری مسائل، قضا اور سجدہ سہو (Fiqh Masail, Qaza & Sajda-e-Sahw)
+// TAB 5: المسائل وسجود السهو والقضاء / ضروری مسائل
 // ==============================================================================
-function MasaelTab({ copyToClipboard, copiedId, searchQuery }) {
+function MasaelTab({ copyToClipboard, copiedId, searchQuery, isAr }) {
   const masaelList = [
     {
-      title: 'سجدہ سہو کا طریقہ اور واجب ہونے کے اسباب',
-      badge: 'سجدہ سہو',
+      titleUr: 'سجدہ سہو کا طریقہ اور واجب ہونے کے اسباب',
+      titleAr: 'أحكام سجود السهو وموجباته وكيفيته',
+      badgeUr: 'سجدہ سہو',
+      badgeAr: 'سجود السهو',
       badgeColor: '#c2410c',
       bgLight: '#fff7ed',
-      desc: 'اگر نماز میں بھولے سے کوئی واجب چھوٹ جائے یا کسی واجب یا فرض میں تاخیر ہو جائے تو سجدہ سہو واجب ہو جاتا ہے۔',
-      steps: [
+      descUr: 'اگر نماز میں بھولے سے کوئی واجب چھوٹ جائے یا کسی واجب یا فرض میں تاخیر ہو جائے تو سجدہ سہو واجب ہو جاتا ہے۔',
+      descAr: 'يجب سجود السهو عند ترك واجب من واجبات الصلاة سهواً أو تأخير ركن أو واجب.',
+      stepsUr: [
         'قعدہ اخیرہ میں صرف تشہد (التحیات) پڑھیں۔',
         'دائیں طرف سلام پھیریں۔',
         'تکبیر کہہ کر معمول کے مطابق دو سجدے کریں اور تسبیحات پڑھیں۔',
         'دوبارہ تشہد، درودِ ابراہیمی اور دعائے ماثورہ پڑھ کر دونوں طرف سلام پھیریں۔'
+      ],
+      stepsAr: [
+        'الجلوس في القعود الأخير وقراءة التشهد فقط.',
+        'التسليم عن اليمين تسليمة واحدة.',
+        'التكبير وسجود سجدتين كسجود الصلاة مع التسبيح فيهما.',
+        'إعادة قراءة التشهد والصلاة الإبراهيمية والدعاء المأثور ثم التسليم عن اليمين واليسار.'
       ]
     },
     {
-      title: 'قضا نمازوں کا حساب اور ادا کرنے کا آسان طریقہ',
-      badge: 'قضا نمازیں',
+      titleUr: 'قضا نمازوں کا حساب اور ادا کرنے کا آسان طریقہ',
+      titleAr: 'كيفية قضاء الصلوات الفائتة وجدولها',
+      badgeUr: 'قضا نمازیں',
+      badgeAr: 'قضاء الفوائت',
       badgeColor: '#059669',
       bgLight: '#ecfdf5',
-      desc: 'جو نمازیں غفلت یا کسی عذر سے چھوٹ گئیں ان کی قضا فرض ہے، توبہ کے ساتھ قضا ادا کرنا ضروری ہے۔',
-      steps: [
+      descUr: 'جو نمازیں غفلت یا کسی عذر سے چھوٹ گئیں ان کی قضا فرض ہے، توبہ کے ساتھ قضا ادا کرنا ضروری ہے۔',
+      descAr: 'الصلوات التي فاتت المسلم لعذر أو تهاون يجب قضاؤها باتفاق الفقهاء مع التوبة والاستغفار.',
+      stepsUr: [
         'ایک اندازہ لگائیں کہ کل کتنی نمازیں قضا ہوئیں (مثلاً ۲ سال یا ۳ سال کی)۔',
         'روزانہ ہر وقتی نماز کے ساتھ اسی وقت کی ایک قضا نماز پڑھیں (مثلاً ظہر کے ساتھ ایک قضا ظہر)۔',
-        'قضا نماز میں صرف فرض اور وتر پڑھے جاتے ہیں (سنتیں قضا نہیں ہوتیں سوائے فجر کی سنتوں کے اسی دن زوال سے پہلے)۔',
+        'قضا نماز میں صرف فرض اور وتر پڑھے جاتے ہیں (سنتیں قضا نہیں ہوتیں)۔',
         'نیت یوں کریں: "میری سب سے پہلی فوت شدہ نماز جو باقی ہے وہ ادا کرتا ہوں۔"'
+      ],
+      stepsAr: [
+        'تقدير عدد الصلوات الفائتة بالتقريب والتحوط.',
+        'أداء صلاة فائتة مع كل صلاة حاضرة يومياً (كقضاء ظهر مع الظهر).',
+        'يُقضى الفرض والوتر فقط دون السنن الرواتب.',
+        'النية: "أنوي قضاء أول صلاة ظهر فاتتني ولم أؤدها".'
       ]
     },
     {
-      title: 'مسافر کی نماز (قصر کے فقہی احکام)',
-      badge: 'مسافر و قصر',
+      titleUr: 'مسافر کی نماز (قصر کے فقہی احکام)',
+      titleAr: 'صلاة المسافر وأحكام القصر في السفر',
+      badgeUr: 'مسافر و قصر',
+      badgeAr: 'قصر الصلاة',
       badgeColor: '#0284c7',
       bgLight: '#f0f9ff',
-      desc: 'جب کوئی شخص اپنے شہر یا آبادی سے 48 میل (تقریباً 77.5 کلومیٹر) کی دوری کے ارادے سے نکلے تو وہ مسافر بن جاتا ہے۔',
-      steps: [
+      descUr: 'جب کوئی شخص اپنے شہر یا آبادی سے 48 میل (تقریباً 77.5 کلومیٹر) کی دوری کے ارادے سے نکلے تو وہ مسافر بن جاتا ہے۔',
+      descAr: 'إذا خرج المسلم قاصداً مسافة السفر (نحو 77.5 كم فأكثر) شُرع له قصر الصلاة الرباعية.',
+      stepsUr: [
         'مسافر کے لیے ظہر، عصر اور عشاء کے ۴ فرضوں کو ۲ رکعت پڑھنا (قصر کرنا) واجب ہے۔',
         'فجر (۲ فرض)، مغرب (۳ فرض) اور عشاء کے وتر (۳ رکعت) میں کوئی قصر نہیں، وہ پورے پڑھے جائیں گے۔',
         'اگر سفر میں جلدی اور مشقت ہو تو سنتیں چھوڑنے کی اجازت ہے، ورنہ پڑھ لینا بہتر ہے۔',
         'اگر کسی جگہ ۱۵ دن یا اس سے زیادہ ٹھہرنے کی نیت ہو تو وہ مقیم بن جائے گا اور پوری نماز پڑھے گا۔'
+      ],
+      stepsAr: [
+        'يقصر المسافر الصلاة الرباعية (الظهر والعصر والعشاء) إلى ركعتين.',
+        'لا قصر في الفجر (ركعتان) والمغرب (ثلاث) والوتر.',
+        'يجوز ترك السنن الرواتب في السفر تخفيفاً باستثناء سنة الفجر.',
+        'إذا نوى الإقامة في بلد 15 يوماً فأكثر أتم صلاته كالمقيم.'
       ]
     },
     {
-      title: 'مریض کی نماز (بیٹھ کر اور اشارے سے)',
-      badge: 'مریض کی نماز',
+      titleUr: 'مریض کی نماز (بیٹھ کر اور اشارے سے)',
+      titleAr: 'صلاة المريض بالقعود والإيماء',
+      badgeUr: 'مریض کی نماز',
+      badgeAr: 'صلاة المريض',
       badgeColor: '#7c3aed',
       bgLight: '#f5f3ff',
-      desc: 'اسلام میں بیماری کے وقت بھی نماز معاف نہیں کی گئی بلکہ آسانی فراہم کی گئی ہے۔',
-      steps: [
+      descUr: 'اسلام میں بیماری کے وقت بھی نماز معاف نہیں کی گئی بلکہ آسانی فراہم کی گئی ہے۔',
+      descAr: 'لا تسقط الصلاة عن المريض ما دام عقله ثابتاً، وإنما يصلي بحسب طاقته واستطاعته.',
+      stepsUr: [
         'اگر کھڑے ہونے پر قادر نہ ہو یا شدید تکلیف اور بیماری بڑھنے کا خطرہ ہو تو بیٹھ کر رکوع و سجدہ کر کے پڑھے۔',
         'اگر سجدہ کرنے پر قادر نہ ہو تو اشارے سے رکوع اور سجدہ کرے، اور سجدے کے لیے رکوع کی نسبت زیادہ جھکے۔',
         'اگر بیٹھنے پر بھی قادر نہ ہو تو چت لیٹ کر (پاؤں قبلہ رخ کر کے گھٹنے کھڑے کر کے) اشارے سے نماز پڑھے۔'
+      ],
+      stepsAr: [
+        'فإن لم يستطع القيام صلى قاعداً بركوع وسجود.',
+        'فإن عجز عن السجود أومأ برأسه وجعل سجوده أخفض من ركوعه.',
+        'فإن عجز عن القعود صلى مستلقياً على ظهره موجهاً رجليه إلى القبلة مومئاً برأسه.'
       ]
     },
     {
-      title: 'نماز توڑنے والی چیزیں (مفسداتِ نماز)',
-      badge: 'مفسداتِ نماز',
+      titleUr: 'نماز توڑنے والی چیزیں (مفسداتِ نماز)',
+      titleAr: 'مفسدات الصلاة ومبطلاتها',
+      badgeUr: 'مفسداتِ نماز',
+      badgeAr: 'مبطلات الصلاة',
       badgeColor: '#dc2626',
       bgLight: '#fef2f2',
-      desc: 'ان چیزوں کے پیش آنے سے نماز ٹوٹ جاتی ہے اور دوبارہ پڑھنا واجب ہوتا ہے:',
-      steps: [
+      descUr: 'ان چیزوں کے پیش آنے سے نماز ٹوٹ جاتی ہے اور دوبارہ پڑھنا واجب ہوتا ہے:',
+      descAr: 'الأفعال والأمور التي تبطل الصلاة وتوجب إعادتها:',
+      stepsUr: [
         'جان بوجھ کر یا بھول کر نماز میں بولنا۔',
         'کسی کو سلام کرنا یا سلام کا جواب دینا۔',
         'درد یا مصیبت کی وجہ سے ہائے، آہ یا اونچی آواز سے رونا (خوفِ خدا کے سوا)۔',
         'نماز میں کھلکھلا کر قہقہہ مار کر ہنسنا (اس سے وضو بھی ٹوٹ جاتا ہے)۔',
         'سینے کا قبلہ کے رخ سے پھر جانا۔',
         'عملِ کثیر (ایسا عمل جس کو دیکھ کر دور سے دیکھنے والا سمجھے کہ یہ نماز میں نہیں ہے)۔'
+      ],
+      stepsAr: [
+        'الكلام العمد أو السهو في الصلاة لغير مصلحتها.',
+        'السلام على أحد أو رد السلام أثناء الصلاة.',
+        'الأكل أو الشرب عمداً.',
+        'الضحك بصوت عالٍ والقهقهة (تنقض الوضوء أيضاً).',
+        'الانحراف بالصدر عن جهة القبلة.',
+        'العمل الكثير الذي يوهم الناظر أن فاعله ليس في صلاة.'
       ]
     }
   ];
@@ -1091,10 +1402,10 @@ function MasaelTab({ copyToClipboard, copiedId, searchQuery }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ textAlign: 'center' }}>
         <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 900, color: '#064e3b' }}>
-          اہم فقہی مسائل، قضا نمازیں اور سجدہ سہو کے احکام
+          {isAr ? 'أهم المسائل الفقهية وسجود السهو وصلاة المسافر' : 'اہم فقہی مسائل، قضا نمازیں اور سجدہ سہو کے احکام'}
         </h2>
         <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', color: '#64748b' }}>
-          روزمرہ پیش آنے والے فقہی احکام کی مستند وضاحت
+          {isAr ? 'أحكام فقهية معتمدة وميسرة لكل مسلم ومسلمة' : 'روزمرہ پیش آنے والے فقہی احکام کی مستند وضاحت'}
         </p>
       </div>
 
@@ -1103,16 +1414,18 @@ function MasaelTab({ copyToClipboard, copiedId, searchQuery }) {
           <div key={idx} style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '18px', padding: '1.5rem 1.75rem', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
               <span style={{ background: item.bgLight, color: item.badgeColor, border: `1px solid ${item.badgeColor}40`, padding: '3px 12px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 800 }}>
-                {item.badge}
+                {isAr ? item.badgeAr : item.badgeUr}
               </span>
-              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{item.title}</h3>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                {isAr ? item.titleAr : item.titleUr}
+              </h3>
             </div>
             <p style={{ margin: '0 0 0.85rem 0', fontSize: '0.93rem', color: '#475569', direction: 'rtl', lineHeight: 1.6 }}>
-              {item.desc}
+              {isAr ? item.descAr : item.descUr}
             </p>
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', direction: 'rtl' }}>
               <ol style={{ margin: 0, paddingRight: '1.25rem', color: '#1e293b', lineHeight: 2, fontSize: '0.9rem' }}>
-                {item.steps.map((st, sidx) => (
+                {(isAr ? item.stepsAr : item.stepsUr).map((st, sidx) => (
                   <li key={sidx}>{st}</li>
                 ))}
               </ol>
@@ -1125,13 +1438,13 @@ function MasaelTab({ copyToClipboard, copiedId, searchQuery }) {
 }
 
 // ==============================================================================
-// TAB 6: دیگر مخصوص و نفل نمازیں (Witr, Qunoot, Eidain, Tahajjud, Tasbeeh)
+// TAB 6: السنن والنوافل وصلاة الوتر / دیگر مسنون و نفل نمازیں
 // ==============================================================================
-function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery }) {
+function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery, isAr }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
-      {/* 6.1: نمازِ وتر اور دعائے قنوت */}
+      {/* 6.1: صلاة الوتر ودعاء القنوت */}
       <div style={{ background: '#ffffff', border: '1.5px solid #7c3aed', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(124,58,237,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#f5f3ff', color: '#7c3aed', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
@@ -1139,16 +1452,20 @@ function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery }) {
           </span>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#5b21b6' }}>
-              نمازِ وتر اور دعائے قنوت (مکمل اعراب اور ترجمہ)
+              {isAr ? 'صلاة الوتر ودعاء القنوت المأثور بالتشكيل والمعنى' : 'نمازِ وتر اور دعائے قنوت (مکمل اعراب اور ترجمہ)'}
             </h2>
             <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              عشاء کی نماز کے بعد ۳ رکعت وتر واجب ہیں
+              {isAr ? 'ثلاث ركعات واجبة بعد صلاة العشاء' : 'عشاء کی نماز کے بعد ۳ رکعت وتر واجب ہیں'}
             </p>
           </div>
         </div>
 
         <p style={{ margin: '0 0 1rem 0', fontSize: '0.92rem', color: '#334155', direction: 'rtl', lineHeight: 1.7 }}>
-          <strong>وتر کا طریقہ:</strong> پہلی دو رکعتیں عام نماز کی طرح پڑھ کر قعدہ اولیٰ میں صرف التحیات پڑھ کر تیسری رکعت کے لیے کھڑے ہوں۔ سورۃ الفاتحہ اور سورت پڑھنے کے بعد رکوع میں جانے سے پہلے 'اللہ اکبر' کہتے ہوئے دونوں ہاتھ کانوں تک اٹھائیں اور پھر ہاتھ باندھ کر دعائے قنوت پڑھیں:
+          {isAr ? (
+            <strong>صفة صلاة الوتر: يصلي ركعتين ثم يجلس للتشهد، ثم يقوم للثالثة فيقرأ الفاتحة وسورة، وقبل الركوع يرفع يديه مكبراً ثم يعقد يديه ويقنت بهذا الدعاء المبارك:</strong>
+          ) : (
+            <strong>وتر کا طریقہ: پہلی دو رکعتیں پڑھ کر قعدہ اولیٰ میں صرف التحیات پڑھ کر تیسری رکعت کے لیے کھڑے ہوں۔ سورۃ الفاتحہ اور سورت پڑھنے کے بعد رکوع میں جانے سے پہلے 'اللہ اکبر' کہتے ہوئے دونوں ہاتھ کانوں تک اٹھائیں اور پھر ہاتھ باندھ کر دعائے قنوت پڑھیں:</strong>
+          )}
         </p>
 
         <div style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', border: '1.5px solid #c4b5fd', borderRadius: '16px', padding: '1.5rem', textAlign: 'center', marginBottom: '1rem' }}>
@@ -1158,65 +1475,113 @@ function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery }) {
         </div>
 
         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.1rem 1.4rem', direction: 'rtl' }}>
-          <span style={{ color: '#7c3aed', fontWeight: 800, fontSize: '0.82rem', display: 'block', marginBottom: '4px' }}>اردو ترجمہ:</span>
+          <span style={{ color: '#7c3aed', fontWeight: 800, fontSize: '0.82rem', display: 'block', marginBottom: '4px' }}>
+            {isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
+          </span>
           <p style={{ margin: 0, fontSize: '1rem', color: '#1e293b', lineHeight: 1.8 }}>
-            "اے اللہ! ہم تجھ ہی سے مدد مانگتے ہیں اور تجھ ہی سے بخشش چاہتے ہیں، تجھ پر ایمان لاتے ہیں اور تجھ پر بھروسہ کرتے ہیں، اور تیری بہترین تعریف بیان کرتے ہیں، اور تیرا شکر ادا کرتے ہیں اور تیری ناشکری نہیں کرتے، اور جو تیری نافرمانی کرے ہم اس سے الگ ہوتے ہیں اور اسے چھوڑتے ہیں۔ اے اللہ! ہم تیری ہی عبادت کرتے ہیں اور تیرے ہی لیے نماز پڑھتے اور سجدہ کرتے ہیں، اور تیری ہی طرف دوڑتے اور حاضر ہوتے ہیں، ہم تیری رحمت کے امیدوار ہیں اور تیرے عذاب سے ڈرتے ہیں، بے شک تیرا عذاب کافروں کو پہنچنے والا ہے۔"
+            {isAr
+              ? 'نَطْلُبُ عَوْنَكَ وَمَغْفِرَتَكَ، وَنُؤْمِنُ بِكَ وَنَفَوِّضُ أُمُورَنَا إِلَيْكَ، وَنُثْنِي عَلَيْكَ أَحْسَنَ الثَّنَاءِ، وَنَشْكُرُ أَيَادِيَكَ وَنَبْرَأُ مِمَّنْ يَعْصِيكَ وَيَكْفُرُ بِكَ، نَخُصُّكَ وَحْدَكَ بِالْعِبَادَةِ وَالسُّجُودِ وَنَسْعَى فِي طَاعَتِكَ، طَمَعًا فِي رَحْمَتِكَ وَخَوْفًا مِنْ عَذَابِكَ الْوَاقِعِ بِالْكَافِرِينَ.'
+              : '"اے اللہ! ہم تجھ ہی سے مدد مانگتے ہیں اور تجھ ہی سے بخشش چاہتے ہیں، تجھ پر ایمان لاتے ہیں اور تجھ پر بھروسہ کرتے ہیں، اور تیری بہترین تعریف بیان کرتے ہیں، اور تیرا شکر ادا کرتے ہیں اور تیری ناشکری نہیں کرتے، اور جو تیری نافرمانی کرے ہم اس سے الگ ہوتے ہیں اور اسے چھوڑتے ہیں۔ اے اللہ! ہم تیری ہی عبادت کرتے ہیں اور تیرے ہی لیے نماز پڑھتے اور سجدہ کرتے ہیں، اور تیری ہی طرف دوڑتے اور حاضر ہوتے ہیں، ہم تیری رحمت کے امیدوار ہیں اور تیرے عذاب سے ڈرتے ہیں، بے شک تیرا عذاب کافروں کو پہنچنے والا ہے۔"'
+            }
           </p>
         </div>
       </div>
 
-      {/* 6.2: نمازِ عیدین کا طریقہ */}
+      {/* 6.2: صلاة العيدين */}
       <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h3 style={{ margin: '0 0 0.85rem 0', color: '#065f46', fontSize: '1.25rem', fontWeight: 800 }}>
-          نمازِ عیدین (عید الفطر و عید الاضحیٰ) کا طریقہ:
+          {isAr ? 'صفة صلاة العيدين (ست تكبيرات زوائد واجبة):' : 'نمازِ عیدین (عید الفطر و عید الاضحیٰ) کا طریقہ:'}
         </h3>
         <p style={{ margin: '0 0 1rem 0', fontSize: '0.92rem', color: '#475569', direction: 'rtl', lineHeight: 1.7 }}>
-          عیدین کی نماز میں کل ۶ زائد تکبیریں ہوتی ہیں جو واجب ہیں:
+          {isAr ? 'صلاة العيد ركعتان بـ ٦ تكبيرات زوائد واجبة:' : 'عیدین کی نماز میں کل ۶ زائد تکبیریں ہوتی ہیں جو واجب ہیں:'}
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
           <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1.25rem', borderRadius: '14px', direction: 'rtl' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#065f46' }}>پہلی رکعت میں ۳ زائد تکبیریں:</h4>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#065f46' }}>
+              {isAr ? 'في الركعة الأولى (٣ تكبيرات زوائد):' : 'پہلی رکعت میں ۳ زائد تکبیریں:'}
+            </h4>
             <ol style={{ margin: 0, paddingRight: '1.25rem', lineHeight: 1.8, fontSize: '0.88rem', color: '#334155' }}>
-              <li>تکبیرِ تحریمہ کہہ کر ہاتھ باندھیں اور ثناء پڑھیں۔</li>
-              <li>پھر ۳ بار 'اللہ اکبر' کہتے ہوئے کانوں تک ہاتھ اٹھائیں گے۔ پہلی دو تکبیروں پر ہاتھ کھلے چھوڑیں گے اور تیسری پر ہاتھ باندھ لیں گے۔</li>
-              <li>اس کے بعد امام قرأت کرے گا اور رکوع و سجود ادا ہوں گے۔</li>
+              {isAr ? (
+                <>
+                  <li>تكبيرة الإحرام وعقد اليدين وقراءة دعاء الاستفتاح.</li>
+                  <li>رفع اليدين والتكبير ٣ مرات زوائد: يرسل يديه في الأولى والثانية ويعقدهما في الثالثة.</li>
+                  <li>قراءة الفاتحة وسورة ثم الركوع والسجود.</li>
+                </>
+              ) : (
+                <>
+                  <li>تکبیرِ تحریمہ کہہ کر ہاتھ باندھیں اور ثناء پڑھیں۔</li>
+                  <li>پھر ۳ بار 'اللہ اکبر' کہتے ہوئے کانوں تک ہاتھ اٹھائیں گے۔ پہلی دو تکبیروں پر ہاتھ کھلے چھوڑیں گے اور تیسری پر ہاتھ باندھ لیں گے۔</li>
+                  <li>اس کے بعد امام قرأت کرے گا اور رکوع و سجود ادا ہوں گے۔</li>
+                </>
+              )}
             </ol>
           </div>
           <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1.25rem', borderRadius: '14px', direction: 'rtl' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#065f46' }}>دوسری رکعت میں ۳ زائد تکبیریں:</h4>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#065f46' }}>
+              {isAr ? 'في الركعة الثانية (٣ تكبيرات زوائد):' : 'دوسری رکعت میں ۳ زائد تکبیریں:'}
+            </h4>
             <ol style={{ margin: 0, paddingRight: '1.25rem', lineHeight: 1.8, fontSize: '0.88rem', color: '#334155' }}>
-              <li>دوسری رکعت میں پہلے امام قرأت کرے گا۔</li>
-              <li>قرأت کے بعد رکوع میں جانے سے پہلے ۳ بار کانوں تک ہاتھ اٹھا کر 'اللہ اکبر' کہیں گے اور ہاتھ چھوڑ دیں گے۔</li>
-              <li>چوتھی تکبیر پر بغیر ہاتھ اٹھائے رکوع میں چلے جائیں گے۔</li>
+              {isAr ? (
+                <>
+                  <li>يبدأ الإمام بقراءة الفاتحة وسورة أولاً.</li>
+                  <li>بعد القراءة وقبل الركوع يكبر ٣ مرات زوائد رافعاً يديه ومرسلاً لهما.</li>
+                  <li>يكبر التكبيرة الرابعة للركوع دون رفع اليدين.</li>
+                </>
+              ) : (
+                <>
+                  <li>دوسری رکعت میں پہلے امام قرأت کرے گا۔</li>
+                  <li>قرأت کے بعد رکوع میں جانے سے پہلے ۳ بار کانوں تک ہاتھ اٹھا کر 'اللہ اکبر' کہیں گے اور ہاتھ چھوڑ دیں گے۔</li>
+                  <li>چوتھی تکبیر پر بغیر ہاتھ اٹھائے رکوع میں چلے جائیں گے۔</li>
+                </>
+              )}
             </ol>
           </div>
         </div>
       </div>
 
-      {/* 6.3: صلوٰۃ التسبیح کا طریقہ */}
+      {/* 6.3: صلاة التسابيح */}
       <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h3 style={{ margin: '0 0 0.85rem 0', color: '#0284c7', fontSize: '1.25rem', fontWeight: 800 }}>
-          صلوٰۃ التسبیح کا مسنون طریقہ (۴ رکعتوں میں ۳۰۰ بار تسبیح):
+          {isAr ? 'صفة صلاة التسابيح (٤ ركعات بـ ٣٠٠ تسبيحة):' : 'صلوٰۃ التسبیح کا مسنون طریقہ (۴ رکعتوں میں ۳۰۰ بار تسبیح):'}
         </h3>
         <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', color: '#334155', direction: 'rtl' }}>
-          رسول اللہ ﷺ نے حضرت عباس رضی اللہ عنہ سے فرمایا کہ اگر ہو سکے تو روزانہ، نہیں تو ہفتے میں ایک بار، نہیں تو مہینے میں، ورنہ سال میں، ورنہ زندگی میں ایک بار ضرور پڑھیں (ابو داؤد: 1297)۔
+          {isAr ? (
+            'وصية النبي ﷺ لعمه العباس رضي الله عنه أن يصليها كل يوم، أو في كل جمعة، أو في كل شهر، أو في كل سنة، أو في العمر مرة تكفيراً للذنوب (سنن أبي داود: 1297).'
+          ) : (
+            'رسول اللہ ﷺ نے حضرت عباس رضی اللہ عنہ سے فرمایا کہ اگر ہو سکے تو روزانہ، نہیں تو ہفتے میں ایک بار، نہیں تو مہینے میں، ورنہ سال میں، ورنہ زندگی میں ایک بار ضرور پڑھیں (ابو داؤد: 1297)۔'
+          )}
         </p>
         <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '12px', border: '1px solid #bae6fd', textAlign: 'center', marginBottom: '1rem' }}>
-          <p style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#0369a1' }}>
+          <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#0369a1' }}>
             سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَـٰهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ
           </p>
         </div>
         <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', direction: 'rtl', fontSize: '0.88rem', lineHeight: 1.9, color: '#334155' }}>
-          <strong>ہر رکعت میں ۷۵ مرتبہ تسبیح یوں پڑھی جاتی ہے:</strong>
+          <strong>{isAr ? 'توزيع ٧٥ تسبيحة في كل ركعة:' : 'ہر رکعت میں ۷۵ مرتبہ تسبیح یوں پڑھی جاتی ہے:'}</strong>
           <ul style={{ margin: 0, paddingRight: '1.25rem' }}>
-            <li>ثناء کے بعد سورت ملانے سے پہلے: ۱۵ مرتبہ</li>
-            <li>قرأت کے بعد رکوع میں جانے سے پہلے: ۱۰ مرتبہ</li>
-            <li>رکوع کی تسبیح کے بعد: ۱۰ مرتبہ</li>
-            <li>قومہ میں (رکوع سے سیدھا کھڑے ہو کر): ۱۰ مرتبہ</li>
-            <li>پہلے سجدے کی تسبیح کے بعد: ۱۰ مرتبہ</li>
-            <li>جلسہ میں (دونوں سجدوں کے درمیان بیٹھ کر): ۱۰ مرتبہ</li>
-            <li>دوسرے سجدے کی تسبیح کے بعد: ۱۰ مرتبہ</li>
-            <li>(کل ۷۵ مرتبہ فی رکعت، ۴ رکعتوں میں کل ۳۰۰ مرتبہ مکمل)</li>
+            {isAr ? (
+              <>
+                <li>بعد دعاء الاستفتاح وقبل القراءة: ١٥ مرة</li>
+                <li>بعد القراءة وقبل الركوع: ١٠ مرات</li>
+                <li>في الركوع بعد تسبيحاته: ١٠ مرات</li>
+                <li>في الاعتدال من الركوع (القومـة): ١٠ مرات</li>
+                <li>في السجدة الأولى بعد تسبيحاتها: ١٠ مرات</li>
+                <li>في الجلوس بين السجدتين: ١٠ مرات</li>
+                <li>في السجدة الثانية بعد تسبيحاتها: ١٠ مرات</li>
+                <li>(المجموع: ٧٥ تسبيحة في كل ركعة، و٣٠٠ تسبيحة في ٤ ركعات)</li>
+              </>
+            ) : (
+              <>
+                <li>ثناء کے بعد سورت ملانے سے پہلے: ۱۵ مرتبہ</li>
+                <li>قرأت کے بعد رکوع میں جانے سے پہلے: ۱۰ مرتبہ</li>
+                <li>رکوع کی تسبیح کے بعد: ۱۰ مرتبہ</li>
+                <li>قومہ میں (رکوع سے سیدھا کھڑے ہو کر): ۱۰ مرتبہ</li>
+                <li>پہلے سجدے کی تسبیح کے بعد: ۱۰ مرتبہ</li>
+                <li>جلسہ میں (دونوں سجدوں کے درمیان بیٹھ کر): ۱۰ مرتبہ</li>
+                <li>دوسرے سجدے کی تسبیح کے بعد: ۱۰ مرتبہ</li>
+                <li>(کل ۷۵ مرتبہ فی رکعت، ۴ رکعتوں میں کل ۳۰۰ مرتبہ مکمل)</li>
+              </>
+            )}
           </ul>
         </div>
       </div>
