@@ -796,30 +796,53 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
                 مستند مسنون دعا • صحیح احادیثِ مبارکہ سے تصدیق شدہ
               </span>
 
-              <button
-                type="button"
-                onClick={() => { if (navigateToTab) navigateToTab('azkar'); }}
-                style={{
-                  background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '9px 20px',
-                  borderRadius: '12px',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  boxShadow: '0 4px 14px rgba(5,150,105,0.25)',
-                  transition: 'transform 0.15s ease'
-                }}
-                onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                <span>تمام مسنون اذکار و تسبیح دیکھیں (View All Azkar)</span>
-                <i className="fas fa-arrow-right"></i>
-              </button>
+              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => { if (navigateToTab) navigateToTab('asanNimaz'); }}
+                  style={{
+                    background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '9px 18px',
+                    borderRadius: '12px',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    boxShadow: '0 4px 14px rgba(6,78,59,0.25)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                  onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  <i className="fas fa-mosque" style={{ color: '#fde68a' }}></i>
+                  <span>آسان نماز (مکمل طریقہ و مسائل)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { if (navigateToTab) navigateToTab('azkar'); }}
+                  style={{
+                    background: '#f8fafc',
+                    color: '#065f46',
+                    border: '1.5px solid #a7f3d0',
+                    padding: '8px 16px',
+                    borderRadius: '12px',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem'
+                  }}
+                >
+                  <span>تمام اذکار و تسبیحات</span>
+                  <i className="fas fa-arrow-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         ))}

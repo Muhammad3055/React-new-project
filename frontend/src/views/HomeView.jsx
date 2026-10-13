@@ -310,6 +310,15 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       arabic: "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ"
     },
     {
+      badge: "نئی گائیڈ • NEW FEATURE",
+      title: "آسان نماز اور مکمل مسنون احکام",
+      subtitle: "نماز کا مرحلہ وار طریقہ، ۵ نمازوں کی رکعتیں، فرائض، وضو، غسل، جنازہ، قبرستان اور مسنون دعائیں",
+      btnText: "آسان نماز کھولیں (Open Guide)",
+      btnIcon: "fas fa-mosque",
+      tab: "asanNimaz",
+      arabic: "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا"
+    },
+    {
       badge: t('slide2Badge'),
       title: t('slide2Title'),
       subtitle: t('slide2Desc'),
@@ -551,6 +560,68 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             </p>
           </div>
         )}
+
+        {/* ═══ ASAN NIMAZ FEATURED HERO BANNER ═══ */}
+        <div
+          onClick={() => handleNav('asanNimaz')}
+          style={{
+            marginTop: '1.75rem',
+            borderRadius: '24px',
+            background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
+            border: '2px solid #10b981',
+            padding: '1.5rem 2rem',
+            color: '#ffffff',
+            boxShadow: '0 12px 35px rgba(6, 78, 59, 0.22)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1.25rem',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease'
+          }}
+          onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '18px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.85rem', color: '#fde68a', flexShrink: 0 }}>
+              <i className="fas fa-mosque"></i>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '3px' }}>
+                <span style={{ background: '#f59e0b', color: '#78350f', padding: '2px 9px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 900 }}>نئی خصوصیت • Featured</span>
+                <span style={{ fontSize: '0.8rem', color: '#d1fae5', fontWeight: 700 }}>مکمل تصویری و فقہی گائیڈ</span>
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, color: '#ffffff' }}>
+                آسان نماز اور مکمل مسنون احکام (Asan Nimaz Guide)
+              </h3>
+              <p style={{ margin: '3px 0 0', fontSize: '0.88rem', color: '#d1fae5', lineHeight: 1.5 }}>
+                نماز کا مرحلہ وار طریقہ، رکعتیں، فرائض، وضو، غسل، جنازہ، قبرستان کی دعائیں اور روزمرہ کے مسائل
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            style={{
+              background: '#ffffff',
+              color: '#064e3b',
+              border: 'none',
+              padding: '10px 22px',
+              borderRadius: '12px',
+              fontWeight: 800,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.15)'
+            }}
+          >
+            <span>مکمل گائیڈ کھولیں</span>
+            <i className="fas fa-arrow-right"></i>
+          </button>
+        </div>
 
         {/* ═══ HADITH OF THE DAY BANNER ═══ */}
         <div style={{

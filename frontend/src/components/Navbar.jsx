@@ -74,6 +74,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
+    { id: 'asanNimaz', label: 'آسان نماز', icon: 'fas fa-mosque' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
     { id: 'books', label: t('books', 'Books'), icon: 'fa-solid fa-book' },
