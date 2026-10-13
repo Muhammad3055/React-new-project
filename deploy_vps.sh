@@ -90,7 +90,7 @@ After=network.target
 User=$USER
 Group=www-data
 WorkingDirectory=$PROJECT_DIR/backend
-ExecStart=$PROJECT_DIR/backend/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 quran_project.wsgi:application
+ExecStart=$PROJECT_DIR/backend/venv/bin/gunicorn --workers 3 --timeout 600 --bind 127.0.0.1:8000 quran_project.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -107,7 +107,11 @@ server {
     listen 80;
     server_name _;
 
-    client_max_body_size 100M;
+    client_max_body_size 1000M;
+    client_body_timeout 600s;
+    proxy_read_timeout 600s;
+    proxy_connect_timeout 600s;
+    proxy_send_timeout 600s;
 
     # Serve React Frontend Build
     location / {
@@ -122,6 +126,8 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 600s;
+        proxy_connect_timeout 600s;
     }
 
     location /admin/ {
@@ -130,6 +136,8 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 600s;
+        proxy_connect_timeout 600s;
     }
 
     # Static & Media Files
