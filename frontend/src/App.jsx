@@ -58,6 +58,8 @@ const QuranicMapsView = lazy(() => import('./views/QuranicMapsView'));
 const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
 const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
 const QadaView = lazy(() => import('./views/QadaView'));
+const HalalCheckerView = lazy(() => import('./views/HalalCheckerView'));
+const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal'));
 import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
@@ -99,6 +101,9 @@ function MainAppContent() {
     inheritance: '/inheritance',
     wasiyyah: '/inheritance',
     qada: '/qada',
+    halal: '/halal',
+    janazah: '/asan-nimaz',
+    janaza: '/asan-nimaz',
     ramadan: '/ramadan',
     cardCreator: '/card-creator',
     live: '/live',
@@ -140,6 +145,19 @@ function MainAppContent() {
   const [isFridayOpen, setIsFridayOpen] = useState(false);
   const [isProtectionOpen, setIsProtectionOpen] = useState(false);
   const [isDailySurahsOpen, setIsDailySurahsOpen] = useState(false);
+  const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
+
+  // Global Ctrl + K / Cmd + K keyboard shortcut for Spotlight Search
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSpotlightOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
 
   // Register PWA Service Worker & sync browser URL
   useEffect(() => {
@@ -443,6 +461,7 @@ function MainAppContent() {
         openFriday={() => setIsFridayOpen(true)}
         openProtection={() => setIsProtectionOpen(true)}
         openDailySurahs={() => setIsDailySurahsOpen(true)}
+        openSpotlight={() => setIsSpotlightOpen(true)}
       />
 
       <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
@@ -582,6 +601,10 @@ function MainAppContent() {
             <QadaView navigateToTab={navigateToTab} user={user} />
           )}
 
+          {activeTab === 'halal' && (
+            <HalalCheckerView navigateToTab={navigateToTab} />
+          )}
+
           {activeTab === 'ramadan' && (
             <RamadanView />
           )}
@@ -665,6 +688,7 @@ function MainAppContent() {
         {isFridayOpen && <FridaySpecialModal isOpen={isFridayOpen} onClose={() => setIsFridayOpen(false)} playTrack={playTrack} />}
         {isProtectionOpen && <ProtectionSurahsModal isOpen={isProtectionOpen} onClose={() => setIsProtectionOpen(false)} playTrack={playTrack} />}
         {isDailySurahsOpen && <DailySurahsModal isOpen={isDailySurahsOpen} onClose={() => setIsDailySurahsOpen(false)} playTrack={playTrack} />}
+        {isSpotlightOpen && <GlobalSearchModal isOpen={isSpotlightOpen} onClose={() => setIsSpotlightOpen(false)} navigateToTab={navigateToTab} />}
       </Suspense>
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}

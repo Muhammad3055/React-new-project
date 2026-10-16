@@ -4,7 +4,7 @@ import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
 import UserProfileModal from './UserProfileModal';
 
-export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection, openDailySurahs }) {
+export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection, openDailySurahs, openSpotlight }) {
   const { lang, setLang, t, supportedLanguages = [] } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +31,34 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   }, [globalTheme]);
 
   const extraMenuItems = [
+    {
+      id: 'spotlightSearch',
+      label: '⚡ ' + (lang === 'ar' ? 'البحث الشامل الفوري (Ctrl+K)' : (lang === 'ur' || lang === 'br') ? 'اسپاٹ لائٹ گلوبل سرچ (Ctrl+K)' : 'Spotlight Search (Ctrl+K)'),
+      icon: 'fas fa-search',
+      highlight: true,
+      action: () => { if (openSpotlight) openSpotlight(); setShowExtrasMenu(false); setMobileActive(false); }
+    },
+    {
+      id: 'halalChecker',
+      label: '🍽️ ' + (lang === 'ar' ? 'دليل الأغذية الحلال والأرقام E' : (lang === 'ur' || lang === 'br') ? 'حلال فوڈ و ای-کوڈز گائیڈ' : 'Halal Food & E-Codes Guide'),
+      icon: 'fas fa-shield-alt',
+      highlight: true,
+      action: () => { navigateToTab('halal'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
+    {
+      id: 'khatamRooms',
+      label: '👥 ' + (lang === 'ar' ? 'ختمة القرآن العائلية (جماعي)' : (lang === 'ur' || lang === 'br') ? 'اجتماعی و خاندانی ختمِ قرآن رومز' : 'Family Khatam Quran Rooms'),
+      icon: 'fas fa-users',
+      highlight: true,
+      action: () => { navigateToTab('khatam'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
+    {
+      id: 'muhasabaHabits',
+      label: '🔥 ' + (lang === 'ar' ? 'متابعة العبادات والاستقامة' : (lang === 'ur' || lang === 'br') ? 'روزانہ نیکیوں کا اسٹریک و اعمال' : 'Daily Habits & Streak Tracker'),
+      icon: 'fas fa-tasks',
+      highlight: true,
+      action: () => { navigateToTab('muhasaba'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
     {
       id: 'asanNimaz',
       label: t('asanNimaz', 'آسان نماز و احکام'),
@@ -272,40 +300,30 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               </select>
             </div>
 
-            {/* Search (Desktop) */}
-            <div className="search-wrapper desktop-only" style={{ position: 'relative' }}>
+            {/* Search (Desktop) & Spotlight Trigger */}
+            <div 
+              className="search-wrapper desktop-only" 
+              onClick={() => { if (openSpotlight) openSpotlight(); }}
+              style={{ position: 'relative', cursor: 'pointer' }}
+              title="Click or press Ctrl + K to search everything"
+            >
               <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
               <input
                 type="text"
                 className="search-input"
-                placeholder={t('searchPlaceholder')}
+                placeholder={t('searchPlaceholder') + " (Ctrl+K)"}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                style={{ paddingLeft: '2.1rem' }}
+                readOnly
+                style={{ paddingLeft: '2.1rem', paddingRight: '3rem', cursor: 'pointer' }}
               />
-              {showDropdown && searchResults.length > 0 && (
-                <div className="search-results-dropdown" style={{ minWidth: '320px', borderRadius: '14px', boxShadow: '0 12px 30px rgba(0,0,0,0.35)', border: '1px solid var(--accent-gold)', overflow: 'hidden', background: 'var(--bg-card)', position: 'absolute', right: 0, top: '45px', zIndex: 10 }}>
-                  {searchResults.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="search-item"
-                      onClick={() => handleResultClick(item)}
-                      style={{ padding: '0.7rem 0.9rem', borderBottom: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', transition: 'background 0.2s ease', textAlign: 'left' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                        <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
-                          <i className={item.badge_icon || 'fas fa-search'} style={{ fontSize: '0.8rem', marginRight: '0.4rem' }}></i> {item.title}
-                        </div>
-                        <span className="search-item-type" style={{ fontSize: '0.68rem', padding: '2px 7px', borderRadius: '10px', background: 'rgba(245,158,11,0.18)', color: 'var(--accent-gold)', fontWeight: 800 }}>
-                          {item.type}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <span style={{
+                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
+                background: 'rgba(245,158,11,0.2)', border: '1px solid var(--accent-gold)',
+                color: 'var(--accent-gold)', fontSize: '0.68rem', fontWeight: 800,
+                padding: '2px 6px', borderRadius: '6px', pointerEvents: 'none'
+              }}>
+                Ctrl+K
+              </span>
             </div>
 
             {/* Persistent Header Auth Area - Desktop Only */}
