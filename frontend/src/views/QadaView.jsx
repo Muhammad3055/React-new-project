@@ -185,15 +185,15 @@ export default function QadaView({ navigateToTab }) {
         }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Clock size={16} style={{ color: '#f59e0b' }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Spiritual Debt Clearance (قضائے عمری)
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px' }}>
+              {t('qadaTrackerTitle', 'قضائے عمری (Spiritual Debt Clearance)')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Qaza-e-Umri (Missed Salah &amp; Fasting) Tracker
+            {t('qadaTrackerTitle', 'Qaza-e-Umri (Missed Salah & Fasting) Tracker')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.02rem', maxWidth: '720px', margin: '0 auto', lineHeight: 1.6 }}>
-            Fulfill your divine obligations with peace of mind. Calculate past missed prayers, log daily makeups, and track your steady path to spiritual debt freedom.
+            {t('qadaSubtitle', 'Fulfill your divine obligations with peace of mind. Calculate past missed prayers, log daily makeups, and track your steady path to spiritual debt freedom.')}
           </p>
 
           {/* Navigation Sub-Tabs */}
@@ -209,7 +209,7 @@ export default function QadaView({ navigateToTab }) {
               }}
             >
               <CheckCircle2 size={18} />
-              <span>1. Active Qaza Tracker</span>
+              <span>{t('qadaTabTracker', '1. Active Qaza Tracker')}</span>
             </button>
 
             <button
@@ -223,7 +223,7 @@ export default function QadaView({ navigateToTab }) {
               }}
             >
               <Calculator size={18} />
-              <span>2. Qaza Calculator Wizard</span>
+              <span>{t('qadaTabCalculator', '2. Qaza Calculator Wizard')}</span>
             </button>
 
             <button
@@ -237,7 +237,7 @@ export default function QadaView({ navigateToTab }) {
               }}
             >
               <BookOpen size={18} />
-              <span>3. Method &amp; Fiqh Rulings</span>
+              <span>{t('qadaTabFiqh', '3. Method & Fiqh Rulings')}</span>
             </button>
           </div>
         </div>
@@ -253,42 +253,42 @@ export default function QadaView({ navigateToTab }) {
               {/* Total Completed */}
               <div style={statCardStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={statLabelStyle}>Total Prayers Made Up</span>
+                  <span style={statLabelStyle}>{t('completedPrayers', 'Total Prayers Made Up')}</span>
                   <Award size={20} style={{ color: '#059669' }} />
                 </div>
                 <div style={{ fontSize: '2rem', fontWeight: 900, color: '#059669' }}>
                   {totalPrayersDone.toLocaleString()}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px' }}>
-                  Out of {totalPrayersOwed.toLocaleString()} total owed ({overallPrayerPercent}%)
+                  {totalPrayersOwed.toLocaleString()} ({overallPrayerPercent}%)
                 </div>
               </div>
 
               {/* Remaining */}
               <div style={statCardStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={statLabelStyle}>Remaining Balance</span>
+                  <span style={statLabelStyle}>{t('remainingDebt', 'Remaining Balance')}</span>
                   <Clock size={20} style={{ color: '#d97706' }} />
                 </div>
                 <div style={{ fontSize: '2rem', fontWeight: 900, color: '#d97706' }}>
                   {totalPrayersRemaining.toLocaleString()}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px' }}>
-                  Equivalent to ≈ {remainingDaysEquivalent.toLocaleString()} days of Salah
+                  ≈ {remainingDaysEquivalent.toLocaleString()} {t('daysOfFasting', 'days')}
                 </div>
               </div>
 
               {/* Projected Completion Date */}
               <div style={statCardStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={statLabelStyle}>Estimated Completion Date</span>
+                  <span style={statLabelStyle}>{t('estimatedDebtFree', 'Estimated Completion Date')}</span>
                   <Calendar size={20} style={{ color: '#2563eb' }} />
                 </div>
                 <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#1e293b' }}>
                   {formattedEta}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px' }}>
-                  At pace of {dailyPace} Qaza day{dailyPace > 1 ? 's' : ''} per day
+                  {dailyPace} {t('daysRemaining', 'days/day')}
                 </div>
               </div>
 
@@ -303,10 +303,10 @@ export default function QadaView({ navigateToTab }) {
             }}>
               <div>
                 <h3 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-                  ⚡ Quick Daily Makeup Batch Actions
+                  ⚡ {t('batchLog1Day', 'Quick Daily Makeup Batch Actions')}
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-                  Conveniently log complete days of Qaza in a single tap instead of logging each prayer individually.
+                  {t('qadaSubtitle', 'Conveniently log complete days of Qaza in a single tap instead of logging each prayer individually.')}
                 </p>
               </div>
 
@@ -321,7 +321,7 @@ export default function QadaView({ navigateToTab }) {
                     alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(5,150,105,0.25)'
                   }}
                 >
-                  <Plus size={16} /> Log 1 Full Day (All 6 Prayers)
+                  <Plus size={16} /> {t('batchLog1Day', 'Log 1 Full Day (All 6 Prayers)')}
                 </button>
 
                 <button
@@ -334,12 +334,12 @@ export default function QadaView({ navigateToTab }) {
                     alignItems: 'center', gap: '6px'
                   }}
                 >
-                  <Plus size={16} /> Log 5 Days Batch
+                  <Plus size={16} /> {t('batchLog5Days', 'Log 5 Days Batch')}
                 </button>
 
                 {/* Daily Target Pace Dropdown */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', padding: '6px 12px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569' }}>Target Pace:</span>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569' }}>{t('dailyMakeupPace', 'Target Pace')}:</span>
                   <select
                     value={dailyPace}
                     onChange={e => setDailyPace(parseInt(e.target.value, 10))}
@@ -416,7 +416,7 @@ export default function QadaView({ navigateToTab }) {
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                         }}
                       >
-                        <Plus size={16} /> +1 Made Up
+                        <Plus size={16} /> +1 {t('completed', 'Made Up')}
                       </button>
 
                       <button
@@ -439,7 +439,7 @@ export default function QadaView({ navigateToTab }) {
                           background: '#fee2e2', color: '#dc2626', border: 'none',
                           fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer'
                         }}
-                        title="Undo 1 entry"
+                        title="Undo"
                       >
                         <Minus size={16} />
                       </button>
@@ -462,10 +462,10 @@ export default function QadaView({ navigateToTab }) {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
-                    Ramadan Missed Fasts (قضاء روزے)
+                    {t('fastsMissed', 'Ramadan Missed Fasts (قضاء روزے)')}
                   </h3>
                   <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                    Keep track of past missed Ramadan fasts due to illness, travel, or negligence.
+                    {t('qadaSubtitle', 'Keep track of past missed Ramadan fasts due to illness, travel, or negligence.')}
                   </p>
                 </div>
               </div>
@@ -475,7 +475,7 @@ export default function QadaView({ navigateToTab }) {
                   <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#b45309' }}>
                     {Math.max(0, (qadaData.fasts?.total || 0) - (qadaData.fasts?.completed || 0))}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Fasts Remaining</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>{t('remainingDebt', 'Fasts Remaining')}</div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -489,7 +489,7 @@ export default function QadaView({ navigateToTab }) {
                       alignItems: 'center', gap: '4px'
                     }}
                   >
-                    <Plus size={16} /> +1 Fast Made Up
+                    <Plus size={16} /> +1 {t('completed', 'Fast Made Up')}
                   </button>
 
                   <button
@@ -500,7 +500,7 @@ export default function QadaView({ navigateToTab }) {
                       padding: '10px 14px', borderRadius: '12px', fontWeight: 800,
                       fontSize: '0.88rem', cursor: 'pointer'
                     }}
-                    title="Undo 1 Fast"
+                    title="Undo"
                   >
                     <Minus size={16} />
                   </button>
@@ -553,17 +553,17 @@ export default function QadaView({ navigateToTab }) {
                   <Calculator size={30} />
                 </div>
                 <h2 style={{ margin: '0 0 6px', fontSize: '1.6rem', fontWeight: 800, color: '#0f172a' }}>
-                  Qaza-e-Umri Calculation Wizard
+                  {t('qadaCalcTitle', 'Qaza-e-Umri Calculation Wizard')}
                 </h2>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.92rem' }}>
-                  Estimate your total missed prayers accurately based on your age of puberty (Bulugh) and when you began praying regularly.
+                  {t('qadaCalcDesc', 'Estimate your total missed prayers accurately based on your age of puberty (Bulugh) and when you began praying regularly.')}
                 </p>
               </div>
 
               <form onSubmit={handleCalculateQada} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
-                    <label style={labelStyle}>Your Current Age (Years)</label>
+                    <label style={labelStyle}>{t('currentAge', 'Your Current Age (Years)')}</label>
                     <input
                       type="number"
                       min="15"
@@ -576,7 +576,7 @@ export default function QadaView({ navigateToTab }) {
                   </div>
 
                   <div>
-                    <label style={labelStyle}>Age of Puberty / Bulugh (Defaults: 14 Boys, 12 Girls)</label>
+                    <label style={labelStyle}>{t('bulughAge', 'Age of Puberty / Bulugh (Defaults: 14 Boys, 12 Girls)')}</label>
                     <input
                       type="number"
                       min="10"
@@ -590,7 +590,7 @@ export default function QadaView({ navigateToTab }) {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Age When You Began Praying All 5 Daily Prayers Regularly</label>
+                  <label style={labelStyle}>{t('regularAge', 'Age When You Began Praying All 5 Daily Prayers Regularly')}</label>
                   <input
                     type="number"
                     min={calcInputs.bulughAge}
@@ -601,17 +601,17 @@ export default function QadaView({ navigateToTab }) {
                     required
                   />
                   <span style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
-                    Years missed without regular Salah: <strong>{Math.max(0, calcInputs.regularStartAge - calcInputs.bulughAge)} years</strong>
+                    {t('yearsMissed', 'Years missed without regular Salah')}: <strong>{Math.max(0, calcInputs.regularStartAge - calcInputs.bulughAge)} {t('yearsMissed', 'years')}</strong>
                   </span>
                 </div>
 
                 <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem' }}>
                   <label style={{ ...labelStyle, color: '#0f172a', fontWeight: 800 }}>
-                    OR Enter Direct Custom Missed Time (Optional Override)
+                    {t('yearsMissed', 'OR Enter Direct Custom Missed Time (Optional Override)')}
                   </label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div>
-                      <label style={labelStyle}>Exact Missed Years</label>
+                      <label style={labelStyle}>{t('yearsMissed', 'Exact Missed Years')}</label>
                       <input
                         type="number"
                         min="0"
@@ -622,7 +622,7 @@ export default function QadaView({ navigateToTab }) {
                       />
                     </div>
                     <div>
-                      <label style={labelStyle}>Additional Missed Months</label>
+                      <label style={labelStyle}>{t('monthsMissed', 'Additional Missed Months')}</label>
                       <input
                         type="number"
                         min="0"
@@ -637,7 +637,7 @@ export default function QadaView({ navigateToTab }) {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Extra Missed Ramadan Fasts (Travel, Sickness, Postnatal, etc.)</label>
+                  <label style={labelStyle}>{t('fastsMissed', 'Extra Missed Ramadan Fasts (Travel, Sickness, Postnatal, etc.)')}</label>
                   <input
                     type="number"
                     min="0"
@@ -658,7 +658,7 @@ export default function QadaView({ navigateToTab }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
                   }}
                 >
-                  <Calculator size={18} /> Apply Calculated Totals to Tracker
+                  <Calculator size={18} /> {t('calculateMyQada', 'Apply Calculated Totals to Tracker')}
                 </button>
               </form>
             </div>
@@ -675,7 +675,7 @@ export default function QadaView({ navigateToTab }) {
               border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)'
             }}>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#064e3b', marginBottom: '1.25rem', borderBottom: '2px solid #f1f5f9', paddingBottom: '0.75rem' }}>
-                Islamic Jurisprudence (Fiqh) of Qaza-e-Umri
+                {t('qadaFiqhTitle', 'Islamic Jurisprudence (Fiqh) of Qaza-e-Umri')}
               </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', color: '#334155', lineHeight: 1.7, fontSize: '0.94rem' }}>

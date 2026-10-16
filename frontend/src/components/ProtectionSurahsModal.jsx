@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ShieldAlert, BookOpen, Volume2, Copy, Check, Heart, Shield } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const PROTECTION_DATA = [
   {
@@ -74,6 +75,7 @@ const PROTECTION_DATA = [
 ];
 
 export default function ProtectionSurahsModal({ isOpen, onClose, playTrack }) {
+  const { t } = useLanguage();
   const [selectedSurahId, setSelectedSurahId] = useState('ayat-al-kursi');
   const [showTransliteration, setShowTransliteration] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState(null);
@@ -206,7 +208,7 @@ export default function ProtectionSurahsModal({ isOpen, onClose, playTrack }) {
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.3px', color: 'var(--accent-gold, #f59e0b)' }}>
-                Daily Protection & Nazar Surahs
+                {t('dailyProtection', 'Daily Protection & Nazar Surahs')}
               </h2>
               <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: '#a7f3d0', fontWeight: 600 }}>
                 Mu'awwidhatayn & Ayat al-Kursi against Evil Eye, Magic & Harm (العين والشرور)

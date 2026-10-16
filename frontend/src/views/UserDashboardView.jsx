@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getApiUrl } from '../utils/apiCache';
 import { ALL_114_SURAHS } from '../data/quran_data';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function UserDashboardView({ user, openAuthModal, navigateToTab, playTrack }) {
+  const { t, lang } = useLanguage();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'reflections' | 'saved' | 'collections' | 'history' | 'namaz' | 'duas' | 'achievements' | 'calendar' | 'notifications' | 'preferences'
@@ -711,16 +713,16 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       {/* 📌 PREMIUM NAVIGATION TABS */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', borderBottom: '2px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem', overflowX: 'auto' }}>
         {[
-          { id: 'overview', label: '🏠 Today\'s Overview', icon: 'fas fa-home' },
-          { id: 'saved', label: '⭐ Saved & Bookmarks', icon: 'fas fa-star' },
-          { id: 'collections', label: '📁 Study Collections', icon: 'fas fa-folder-open' },
-          { id: 'reflections', label: '✍️ Reflections Journal', icon: 'fas fa-pen-nib' },
-          { id: 'history', label: '⌛ Private History', icon: 'fas fa-history' },
-          { id: 'namaz', label: '🕌 Prayer Streak (' + completedNamazCount + '/5)', icon: 'fas fa-pray' },
-          { id: 'duas', label: '🤲 Daily Adhkar & Tasbeeh', icon: 'fas fa-hands' },
-          { id: 'calendar', label: '📅 Islamic Events', icon: 'fas fa-calendar-alt' },
-          { id: 'notifications', label: `🔔 Notifications (${unreadNotifsCount})`, icon: 'fas fa-bell' },
-          { id: 'preferences', label: '⚙️ Settings & Privacy', icon: 'fas fa-cog' },
+          { id: 'overview', label: '🏠 ' + t('accountOverview', "Today's Overview"), icon: 'fas fa-home' },
+          { id: 'saved', label: '⭐ ' + t('savedItems', 'Saved & Bookmarks'), icon: 'fas fa-star' },
+          { id: 'collections', label: '📁 ' + t('collections', 'Study Collections'), icon: 'fas fa-folder-open' },
+          { id: 'reflections', label: '✍️ ' + t('myReflections', 'Reflections Journal'), icon: 'fas fa-pen-nib' },
+          { id: 'history', label: '⌛ ' + t('history', 'Private History'), icon: 'fas fa-history' },
+          { id: 'namaz', label: '🕌 ' + t('namazTracker', 'Prayer Streak') + ' (' + completedNamazCount + '/5)', icon: 'fas fa-pray' },
+          { id: 'duas', label: '🤲 ' + t('duasCollection', 'Daily Adhkar & Tasbeeh'), icon: 'fas fa-hands' },
+          { id: 'calendar', label: '📅 ' + t('islamicCalendar', 'Islamic Events'), icon: 'fas fa-calendar-alt' },
+          { id: 'notifications', label: '🔔 ' + t('notifications', 'Notifications') + ` (${unreadNotifsCount})`, icon: 'fas fa-bell' },
+          { id: 'preferences', label: '⚙️ ' + t('settings', 'Settings & Privacy'), icon: 'fas fa-cog' },
         ].map(tab => {
           const isActive = activeTab === tab.id;
           return (

@@ -214,7 +214,7 @@ export default function InheritanceView() {
               }}
             >
               <Scale size={18} />
-              <span>1. Mirath Estate Calculator (حساب الميراث)</span>
+              <span>{t('wasiyyahTabInheritance', '1. Mirath Estate Calculator (علم المواريث)')}</span>
             </button>
 
             <button
@@ -229,7 +229,7 @@ export default function InheritanceView() {
               }}
             >
               <FileText size={18} />
-              <span>2. Islamic Will (Wasiyyah) Generator (الوصية الشرعية)</span>
+              <span>{t('wasiyyahTabDeclaration', '2. Islamic Will (Wasiyyah) Generator (الوصية الشرعية)')}</span>
             </button>
           </div>
         </div>

@@ -3,19 +3,22 @@ import { getApiUrl } from '../utils/apiCache';
 import { getAdminItems, addAdminItem, deleteContentItem } from '../utils/adminContentStore';
 import AdminEditModal from '../components/AdminEditModal';
 import { ALL_114_SURAHS } from '../data/quran_data';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function UploadView({ user }) {
+  const { t } = useLanguage();
+
   if (!user || !user.is_staff) {
     return (
       <div className="container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
         <div className="card" style={{ maxWidth: '550px', margin: '0 auto', padding: '2.5rem 2rem' }}>
           <i className="fas fa-lock fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1.25rem' }}></i>
-          <h2 style={{ color: 'var(--primary-dark)', fontSize: '1.5rem', fontWeight: 800 }}>Admin Permission Required</h2>
+          <h2 style={{ color: 'var(--primary-dark)', fontSize: '1.5rem', fontWeight: 800 }}>{t('adminPermissionRequired', 'Admin Permission Required')}</h2>
           <p style={{ color: 'var(--text-muted)', margin: '0.85rem 0 1.5rem 0', lineHeight: '1.6' }}>
-            This Content Upload & Media Portal is restricted exclusively to site administrators and staff members.
+            {t('adminPermissionDesc', 'This Content Upload & Media Portal is restricted exclusively to site administrators and staff members.')}
           </p>
           <a href={getApiUrl('/admin/')} target="_blank" rel="noreferrer" className="btn-play" style={{ display: 'inline-flex', margin: '0 auto' }}>
-            <i className="fas fa-user-shield"></i> Login to Django Admin Panel
+            <i className="fas fa-user-shield"></i> {t('login', 'Login to Django Admin Panel')}
           </a>
         </div>
       </div>

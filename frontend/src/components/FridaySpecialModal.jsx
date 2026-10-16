@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Star, BookOpen, Volume2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Friday Surah Data — Ayat, Tarjuma, Fazeelat (authentic Hadith references)
@@ -110,6 +111,7 @@ const FRIDAY_SURAHS = [
 ];
 
 export default function FridaySpecialModal({ isOpen, onClose, playTrack }) {
+  const { t } = useLanguage();
   const [openSurah, setOpenSurah] = useState(0);
   const [tabState, setTabState] = useState({});
 
@@ -167,7 +169,7 @@ export default function FridaySpecialModal({ isOpen, onClose, playTrack }) {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#f59e0b' }}>
-                  یوم الجمعہ — Friday Special
+                  {t('fridaySpecial', "یوم الجمعہ — Friday Special")}
                 </h3>
                 <span style={{
                   fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: '8px',

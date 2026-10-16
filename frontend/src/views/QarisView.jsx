@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function QarisView({ playTrack }) {
+  const { t } = useLanguage();
   const [qaris, setQaris] = useState([]);
   const [query, setQuery] = useState('');
 
@@ -25,17 +27,17 @@ export default function QarisView({ playTrack }) {
   return (
     <div className="container">
       <div className="section-header">
-        <h1 className="section-title"><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)' }}></i> 20 Famous Reciters (Qaris)</h1>
+        <h1 className="section-title"><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)' }}></i> {t('qarisTitle', '20 Famous Reciters (Qaris)')}</h1>
       </div>
 
       <div className="filter-bar">
         <div className="filter-group" style={{ width: '100%' }}>
-          <span className="filter-label"><i className="fas fa-search"></i> Search Qari:</span>
+          <span className="filter-label"><i className="fas fa-search"></i> {t('search', 'Search')}:</span>
           <input
             type="text"
             className="filter-input"
             style={{ width: '100%', maxWidth: '400px' }}
-            placeholder="Search by name, arabic title..."
+            placeholder={t('searchQariPlaceholder', 'Search by name, arabic title...')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -56,7 +58,7 @@ export default function QarisView({ playTrack }) {
               style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
               onClick={() => playTrack(`https://server8.mp3quran.net/${qari.slug}/001.mp3`, `Surah Al-Fatiha`, qari.name)}
             >
-              <i className="fas fa-play"></i> Play Sample
+              <i className="fas fa-play"></i> {t('playSample', 'Play Sample')}
             </button>
           </div>
         ))}

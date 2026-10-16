@@ -5,7 +5,7 @@ import { getFormattedHijriDate } from '../utils/hijriDate';
 import UserProfileModal from './UserProfileModal';
 
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection, openDailySurahs }) {
-  const { lang, setLang, t } = useLanguage();
+  const { lang, setLang, t, supportedLanguages = [] } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -256,9 +256,19 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   transition: 'all 0.2s ease'
                 }}
               >
-                <option value="en" style={{ background: '#022c22', color: '#ffffff' }}>🇬🇧 English</option>
-                <option value="ur" style={{ background: '#022c22', color: '#ffffff' }}>🇵🇰 اردو</option>
-                <option value="ar" style={{ background: '#022c22', color: '#ffffff' }}>🇸🇦 العربية</option>
+                <optgroup label="✨ Native Shariah Languages" style={{ background: '#022c22', color: '#f59e0b' }}>
+                  <option value="en" style={{ background: '#022c22', color: '#ffffff' }}>🇬🇧 English</option>
+                  <option value="ur" style={{ background: '#022c22', color: '#ffffff' }}>🇵🇰 اردو</option>
+                  <option value="ar" style={{ background: '#022c22', color: '#ffffff' }}>🇸🇦 العربية</option>
+                  <option value="br" style={{ background: '#022c22', color: '#ffffff' }}>🏛️ براہوئی (Brahui)</option>
+                </optgroup>
+                <optgroup label="🌐 Custom World Languages (Auto Convert)" style={{ background: '#0f172a', color: '#94a3b8' }}>
+                  {supportedLanguages.filter(l => !['en', 'ur', 'ar', 'br'].includes(l.code)).map(item => (
+                    <option key={item.code} value={item.code} style={{ background: '#0f172a', color: '#ffffff' }}>
+                      {item.flag} {item.nativeName} ({item.name})
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
 
@@ -492,9 +502,19 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 borderRadius: '14px'
               }}
             >
-              <option value="en">🇬🇧 English</option>
-              <option value="ur">🇵🇰 اردو</option>
-              <option value="ar">🇸🇦 العربية</option>
+              <optgroup label="✨ Native Shariah Languages">
+                <option value="en">🇬🇧 English</option>
+                <option value="ur">🇵🇰 اردو</option>
+                <option value="ar">🇸🇦 العربية</option>
+                <option value="br">🏛️ براہوئی (Brahui)</option>
+              </optgroup>
+              <optgroup label="🌐 Custom World Languages (Auto Convert)">
+                {supportedLanguages.filter(l => !['en', 'ur', 'ar', 'br'].includes(l.code)).map(item => (
+                  <option key={item.code} value={item.code}>
+                    {item.flag} {item.nativeName} ({item.name})
+                  </option>
+                ))}
+              </optgroup>
             </select>
           </div>
 
@@ -704,9 +724,19 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                     cursor: 'pointer'
                   }}
                 >
-                  <option value="en">🇬🇧 English</option>
-                  <option value="ur">🇵🇰 اردو</option>
-                  <option value="ar">🇸🇦 العربية</option>
+                  <optgroup label="✨ Native Shariah Languages">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ur">🇵🇰 اردو</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="br">🏛️ براہوئی (Brahui)</option>
+                  </optgroup>
+                  <optgroup label="🌐 Custom World Languages (Auto Convert)">
+                    {supportedLanguages.filter(l => !['en', 'ur', 'ar', 'br'].includes(l.code)).map(item => (
+                      <option key={item.code} value={item.code}>
+                        {item.flag} {item.nativeName} ({item.name})
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
               </div>
 
