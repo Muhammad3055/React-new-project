@@ -38,6 +38,19 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
       highlight: true,
       action: () => { navigateToTab('asanNimaz'); setShowExtrasMenu(false); setMobileActive(false); }
     },
+    {
+      id: 'qadaTracker',
+      label: '🕌 ' + t('qadaTrackerTitle', 'قضائے عمری (Qaza Tracker)'),
+      icon: 'fas fa-history',
+      highlight: true,
+      action: () => { navigateToTab('qada'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
+    {
+      id: 'wasiyyahWill',
+      label: '📜 ' + t('wasiyyahTitle', 'الوصية الشرعية (Islamic Will)'),
+      icon: 'fas fa-file-contract',
+      action: () => { navigateToTab('wasiyyah'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
     { label: t('mp3Audio'), icon: 'fas fa-headphones', action: () => { navigateToTab('quran'); setShowExtrasMenu(false); setMobileActive(false); } },
     { label: '💰 ' + t('zakatCalc', 'Zakat Calculator'), icon: 'fas fa-calculator', action: () => { navigateToTab('zakat'); setShowExtrasMenu(false); } },
     { label: '🕋 ' + t('hajjUmrahGuide', 'Hajj & Umrah Guide'), icon: 'fas fa-kaaba', action: () => { navigateToTab('hajjUmrah'); setShowExtrasMenu(false); } },

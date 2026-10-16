@@ -57,6 +57,7 @@ const MuhasabaView = lazy(() => import('./views/MuhasabaView'));
 const QuranicMapsView = lazy(() => import('./views/QuranicMapsView'));
 const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
 const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
+const QadaView = lazy(() => import('./views/QadaView'));
 import SocialCardModal from './components/SocialCardModal';
 
 import { getApiUrl } from './utils/apiCache';
@@ -96,6 +97,8 @@ function MainAppContent() {
     tajweed: '/tajweed',
     names: '/names',
     inheritance: '/inheritance',
+    wasiyyah: '/inheritance',
+    qada: '/qada',
     ramadan: '/ramadan',
     cardCreator: '/card-creator',
     live: '/live',
@@ -573,6 +576,10 @@ function MainAppContent() {
 
           {activeTab === 'inheritance' && (
             <InheritanceView />
+          )}
+
+          {activeTab === 'qada' && (
+            <QadaView navigateToTab={navigateToTab} user={user} />
           )}
 
           {activeTab === 'ramadan' && (

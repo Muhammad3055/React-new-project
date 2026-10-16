@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -23,6 +23,107 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   const [countdownText, setCountdownText] = useState('');
   const [sehriCountdown, setSehriCountdown] = useState('');
   const [iftarCountdown, setIftarCountdown] = useState('');
+
+  // Audio Adhan & Prayer Notification Alarm State
+  const adhanAudioRef = useRef(null);
+  const [showAdhanSettings, setShowAdhanSettings] = useState(false);
+  const [isAdhanPlaying, setIsAdhanPlaying] = useState(false);
+  const [activeAdhanAlert, setActiveAdhanAlert] = useState(null);
+  const lastTriggeredPrayerRef = useRef(() => {
+    try {
+      return localStorage.getItem('maktaba_last_triggered_adhan') || '';
+    } catch (e) {
+      return '';
+    }
+  });
+
+  const [adhanSettings, setAdhanSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('maktaba_adhan_settings');
+      return saved ? JSON.parse(saved) : {
+        soundEnabled: true,
+        notificationsEnabled: false,
+        volume: 85,
+        prayers: { Fajr: true, Dhuhr: true, Asr: true, Maghrib: true, Isha: true }
+      };
+    } catch (e) {
+      return {
+        soundEnabled: true,
+        notificationsEnabled: false,
+        volume: 85,
+        prayers: { Fajr: true, Dhuhr: true, Asr: true, Maghrib: true, Isha: true }
+      };
+    }
+  });
+
+  const [notifPermission, setNotifPermission] = useState(() => {
+    return typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('maktaba_adhan_settings', JSON.stringify(adhanSettings));
+    } catch (e) {}
+    if (adhanAudioRef.current) {
+      adhanAudioRef.current.volume = (adhanSettings.volume || 85) / 100;
+    }
+  }, [adhanSettings]);
+
+  const requestNotificationPermission = async () => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      try {
+        const perm = await Notification.requestPermission();
+        setNotifPermission(perm);
+        if (perm === 'granted') {
+          setAdhanSettings(prev => ({ ...prev, notificationsEnabled: true }));
+          new Notification('🕌 Maktab tul Muslim Adhan Alarm Active', {
+            body: 'You will receive authentic Adhan reminders at prayer times.',
+            icon: '/favicon-96x96.png'
+          });
+        }
+      } catch (err) {
+        console.error('Notification permission error:', err);
+      }
+    }
+  };
+
+  const playAdhanAudio = (prayerName = 'Salah') => {
+    if (!adhanAudioRef.current) {
+      adhanAudioRef.current = new Audio('/audio/adhan.mp3');
+    }
+    const audio = adhanAudioRef.current;
+    audio.volume = (adhanSettings.volume || 85) / 100;
+    audio.currentTime = 0;
+    audio.play().then(() => {
+      setIsAdhanPlaying(true);
+    }).catch(err => {
+      console.warn('Audio autoplay prevented or error:', err);
+    });
+
+    audio.onended = () => {
+      setIsAdhanPlaying(false);
+      setActiveAdhanAlert(null);
+    };
+  };
+
+  const stopAdhanAudio = () => {
+    if (adhanAudioRef.current) {
+      adhanAudioRef.current.pause();
+      adhanAudioRef.current.currentTime = 0;
+    }
+    setIsAdhanPlaying(false);
+    setActiveAdhanAlert(null);
+  };
+
+  const togglePrayerAlarm = (prayerKey) => {
+    setAdhanSettings(prev => ({
+      ...prev,
+      prayers: {
+        ...prev.prayers,
+        [prayerKey]: !prev.prayers[prayerKey]
+      }
+    }));
+  };
 
   // Ticking digital clock & live countdown timer
   useEffect(() => {
@@ -69,12 +170,52 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
           const mSecs = Math.floor((diffMaghrib % 60000) / 1000);
           setIftarCountdown(`${mHrs > 0 ? mHrs + 'h ' : ''}${mMins}m ${mSecs}s`);
         }
+
+        // Real-Time Adhan & Notification Alarm Trigger
+        const curHours = String(now.getHours()).padStart(2, '0');
+        const curMins = String(now.getMinutes()).padStart(2, '0');
+        const curTimeStr = `${curHours}:${curMins}`;
+        const todayDateStr = now.toISOString().split('T')[0];
+
+        const prayersToCheck = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+        for (const pName of prayersToCheck) {
+          const pTime = timings[pName]?.split(' ')[0];
+          if (pTime === curTimeStr) {
+            const triggerKey = `${todayDateStr}_${pName}`;
+            let lastTriggered = '';
+            try {
+              lastTriggered = localStorage.getItem('maktaba_last_triggered_adhan') || '';
+            } catch (e) {}
+
+            if (lastTriggered !== triggerKey) {
+              try {
+                localStorage.setItem('maktaba_last_triggered_adhan', triggerKey);
+              } catch (e) {}
+
+              const isPrayerEnabled = adhanSettings?.prayers?.[pName] !== false;
+              if (isPrayerEnabled) {
+                setActiveAdhanAlert({ prayer: pName, time: pTime });
+                if (adhanSettings?.soundEnabled) {
+                  playAdhanAudio(pName);
+                }
+                if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && adhanSettings?.notificationsEnabled) {
+                  try {
+                    new Notification(`🕌 Time for ${pName} Salah!`, {
+                      body: `Allahu Akbar! It is now time for ${pName} prayer in ${locationName}. Hayya 'ala-s-Salah.`,
+                      icon: '/favicon-96x96.png'
+                    });
+                  } catch (e) {}
+                }
+              }
+            }
+          }
+        }
       }
     };
     updateClock();
     const interval = setInterval(updateClock, 1000);
     return () => clearInterval(interval);
-  }, [timings, nextPrayer]);
+  }, [timings, nextPrayer, adhanSettings, locationName]);
 
   // Location & Prayer Times Auto-Detection
   useEffect(() => {
@@ -408,6 +549,48 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
             </div>
           )}
           <button
+            onClick={() => setShowAdhanSettings(true)}
+            style={{
+              background: adhanSettings.soundEnabled ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.12)',
+              color: adhanSettings.soundEnabled ? '#34d399' : '#ffffff',
+              border: '1px solid ' + (adhanSettings.soundEnabled ? '#10b981' : 'rgba(255,255,255,0.2)'),
+              padding: '0.35rem 0.85rem',
+              borderRadius: '20px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease'
+            }}
+            title="Configure Adhan Call to Prayer & Alarm"
+          >
+            <i className={`fas ${adhanSettings.soundEnabled ? 'fa-bell' : 'fa-bell-slash'}`}></i>
+            <span>{adhanSettings.soundEnabled ? t('adhanAlarmOn', 'Adhan Alarm ON') : t('adhanAlarmOff', 'Adhan Alarm OFF')}</span>
+          </button>
+          {isAdhanPlaying && (
+            <button
+              onClick={stopAdhanAudio}
+              style={{
+                background: '#ef4444',
+                color: '#ffffff',
+                border: 'none',
+                padding: '0.35rem 0.85rem',
+                borderRadius: '20px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <i className="fas fa-stop-circle"></i>
+              <span>{t('stopAdhan', 'Stop Adhan')}</span>
+            </button>
+          )}
+          <button
             onClick={() => setShowCalendarView(!showCalendarView)}
             style={{
               background: showCalendarView ? 'var(--accent-gold)' : 'rgba(255,255,255,0.12)',
@@ -444,6 +627,203 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
             <i className="fas fa-crosshairs"></i> {t('autoGps', 'Auto GPS')}
           </button>
         </form>
+      )}
+
+      {/* Active Adhan Alert Banner */}
+      {(activeAdhanAlert || isAdhanPlaying) && (
+        <div style={{
+          background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
+          border: '2px solid #f59e0b',
+          borderRadius: '16px',
+          padding: '1rem 1.25rem',
+          margin: '0.85rem 0',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          color: '#ffffff',
+          boxShadow: '0 8px 25px rgba(6,78,59,0.3)',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b', fontSize: '1.25rem' }}>
+              <i className="fas fa-volume-up"></i>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {t('adhanCallToPrayer', 'Call to Prayer • Hayya \'ala-s-Salah')}
+              </div>
+              <h3 style={{ margin: '2px 0 0', fontSize: '1.2rem', fontWeight: 900, color: '#ffffff' }}>
+                🕌 {activeAdhanAlert?.prayer || nextPrayer.name || 'Prayer'} Adhan Calling ({activeAdhanAlert?.time || nextPrayer.time})
+              </h3>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={stopAdhanAudio}
+              style={{
+                background: '#ef4444',
+                color: '#ffffff',
+                border: 'none',
+                padding: '8px 18px',
+                borderRadius: '12px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                fontSize: '0.88rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <i className="fas fa-stop"></i> {t('stopAdhan', 'Stop Adhan')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Adhan & Prayer Notification Alarm Settings Modal */}
+      {showAdhanSettings && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 99999, padding: '1rem'
+        }}>
+          <div style={{
+            background: 'var(--bg-card, #ffffff)', color: 'var(--text-main, #0f172a)',
+            width: '100%', maxWidth: '480px', borderRadius: '24px',
+            padding: '1.75rem', border: '2px solid var(--accent-gold, #f59e0b)',
+            boxShadow: '0 20px 45px rgba(0,0,0,0.4)', position: 'relative'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color, #e2e8f0)', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1.35rem', color: 'var(--accent-gold, #f59e0b)' }}>🔔</span>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{t('adhanSettingsTitle', 'Adhan & Prayer Alarms')}</h3>
+              </div>
+              <button
+                onClick={() => setShowAdhanSettings(false)}
+                style={{ background: 'transparent', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Master Sound Switch */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: '14px', marginBottom: '1rem', border: '1px solid #e2e8f0' }}>
+              <div>
+                <strong style={{ fontSize: '0.95rem' }}>{t('masterAdhanSound', 'Play Audio Adhan')}</strong>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>{t('masterAdhanSoundDesc', 'Plays authentic Adhan audio when prayer time begins.')}</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={adhanSettings.soundEnabled}
+                onChange={e => setAdhanSettings(prev => ({ ...prev, soundEnabled: e.target.checked }))}
+                style={{ width: '22px', height: '22px', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Browser Push Notifications Switch */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: '14px', marginBottom: '1rem', border: '1px solid #e2e8f0' }}>
+              <div>
+                <strong style={{ fontSize: '0.95rem' }}>{t('browserPushAlerts', 'Browser Push Notifications')}</strong>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>
+                  {notifPermission === 'granted' ? t('notificationsActive', 'System notifications are active.') : t('clickToEnableNotif', 'Permission required for popup alarms.')}
+                </p>
+              </div>
+              {notifPermission !== 'granted' ? (
+                <button
+                  type="button"
+                  onClick={requestNotificationPermission}
+                  style={{ background: '#059669', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  {t('enable', 'Enable')}
+                </button>
+              ) : (
+                <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.9rem' }}>✓ {t('enabled', 'Enabled')}</span>
+              )}
+            </div>
+
+            {/* Volume Slider */}
+            <div style={{ marginBottom: '1.25rem', padding: '0 4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', fontWeight: 700, marginBottom: '6px' }}>
+                <span>{t('adhanVolume', 'Adhan Volume')}</span>
+                <span style={{ color: 'var(--accent-gold, #f59e0b)' }}>{adhanSettings.volume}%</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                value={adhanSettings.volume}
+                onChange={e => setAdhanSettings(prev => ({ ...prev, volume: parseInt(e.target.value, 10) }))}
+                style={{ width: '100%', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Per-Prayer Toggles */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#475569', marginBottom: '8px' }}>
+                {t('activePrayerAlarms', 'Select Prayers to Sound Adhan')}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
+                {['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(pName => (
+                  <label
+                    key={pName}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '8px 12px', borderRadius: '10px',
+                      background: adhanSettings.prayers?.[pName] ? 'rgba(5, 150, 105, 0.1)' : '#f1f5f9',
+                      border: '1px solid ' + (adhanSettings.prayers?.[pName] ? '#059669' : '#cbd5e1'),
+                      cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700
+                    }}
+                  >
+                    <span>{t(pName.toLowerCase(), pName)}</span>
+                    <input
+                      type="checkbox"
+                      checked={!!adhanSettings.prayers?.[pName]}
+                      onChange={() => togglePrayerAlarm(pName)}
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Test & Action Buttons */}
+            <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (isAdhanPlaying) {
+                    stopAdhanAudio();
+                  } else {
+                    playAdhanAudio('Test');
+                  }
+                }}
+                style={{
+                  flex: 1, padding: '10px', borderRadius: '12px',
+                  background: isAdhanPlaying ? '#ef4444' : '#0f172a',
+                  color: '#ffffff', border: 'none', fontWeight: 800,
+                  fontSize: '0.88rem', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                }}
+              >
+                <i className={`fas ${isAdhanPlaying ? 'fa-stop' : 'fa-play'}`}></i>
+                <span>{isAdhanPlaying ? t('stopTest', 'Stop Test') : t('testAdhanAudio', 'Test Adhan Audio')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAdhanSettings(false)}
+                style={{
+                  padding: '10px 20px', borderRadius: '12px',
+                  background: 'var(--accent-gold, #f59e0b)',
+                  color: '#000000', border: 'none', fontWeight: 800,
+                  fontSize: '0.88rem', cursor: 'pointer'
+                }}
+              >
+                {t('saveClose', 'Done')}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {!showCalendarView ? (

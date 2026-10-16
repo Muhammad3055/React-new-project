@@ -6,6 +6,7 @@ export default function PrayersView({ navigateToTab }) {
   const { t } = useLanguage();
   const tools = [
     { title: 'آسان نماز و مسنون احکام (Asan Nimaz)', desc: 'نماز کا مکمل طریقہ، ۵ نمازوں کی رکعتیں، وضو، غسل، جنازہ، قبرستان اور روزمرہ کی دعائیں۔', icon: 'fas fa-mosque', tab: 'asanNimaz', color: '#059669' },
+    { title: 'قضائے عمری ٹریکر (Qaza-e-Umri Tracker)', desc: 'چھوٹی ہوئی نمازوں اور روزوں کا مکمل حساب، روزانہ قضاء ادا کرنے کا لائیو ٹریکر۔', icon: 'fas fa-history', tab: 'qada', color: '#b45309' },
     { title: t('qiblaCompassTitle', 'Qibla Direction Compass'), desc: t('qiblaCompassDesc', 'Accurate live Qibla direction for your exact location.'), icon: 'fas fa-compass', tab: 'qibla', color: '#0d9488' },
     { title: t('khatamTrackerTitle', '30-Day Khatam Tracker'), desc: t('khatamTrackerDesc', 'Track your daily Juz reading progress to complete Quran.'), icon: 'fas fa-calendar-check', tab: 'khatam', color: '#b45309' },
     { title: t('masnoonDuasTitle', 'Masnoon Duas & Azkar'), desc: t('masnoonDuasDesc', 'Morning & evening Azkar with audio recitations.'), icon: 'fas fa-hands', tab: 'duas', color: '#059669' },

@@ -1619,8 +1619,26 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               </div>
             </div>
 
-            <div style={{ background: 'rgba(6,78,59,0.3)', border: '1px solid rgba(16,185,129,0.3)', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.85rem', color: '#6ee7b7' }}>
+            <div style={{ background: 'rgba(6,78,59,0.3)', border: '1px solid rgba(16,185,129,0.3)', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.85rem', color: '#6ee7b7', marginBottom: '1rem' }}>
               <i className="fas fa-star"></i> <strong>Recommended Sunnah Fasts:</strong> Mondays & Thursdays, 13th, 14th, 15th of Hijri month (White Days).
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#27272a', padding: '12px 16px', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.3)' }}>
+              <div>
+                <strong style={{ fontSize: '0.92rem', color: '#fcd34d', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <i className="fas fa-history"></i> Qaza-e-Umri (Missed Salah) Tracker
+                </strong>
+                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#cbd5e1' }}>
+                  Full calculator & daily makeup tracker for missed prayers (Fajr to Witr).
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigateToTab && navigateToTab('qada')}
+                style={{ background: '#f59e0b', color: '#000000', border: 'none', padding: '8px 16px', borderRadius: '10px', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                Open Tracker →
+              </button>
             </div>
           </div>
 

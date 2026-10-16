@@ -2,14 +2,8 @@
 
 
 ssh: root@ip.address
-ssh root@169.58.117.130
-password :quranportal
+ssh root@
+password :
 ---
 login
-id:root
-pwd:admin
 
-
-in mohd@gmail peronal/app /
-quran_portal
-actsdxlfrbhlsfth
