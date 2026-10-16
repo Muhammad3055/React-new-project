@@ -123,7 +123,12 @@ export default function QadaView({ navigateToTab }) {
   };
 
   const resetAllQada = () => {
-    if (window.confirm('Are you sure you want to reset all Qaza tracker records to zero?')) {
+    const confirmMsg = lang === 'ar'
+      ? 'هل أنت متأكد من رغبتك في تصفير جميع سجلات قضاء الصلوات؟'
+      : (lang === 'ur' || lang === 'br')
+      ? 'کیا آپ واقعی تمام قضا نمازوں کا ریکارڈ صفر کرنا چاہتے ہیں؟'
+      : 'Are you sure you want to reset all Qaza tracker records to zero?';
+    if (window.confirm(confirmMsg)) {
       setQadaData({
         fajr: { total: 0, completed: 0 },
         dhuhr: { total: 0, completed: 0 },
@@ -138,12 +143,12 @@ export default function QadaView({ navigateToTab }) {
 
   // Calculations & Progress Statistics
   const prayersList = [
-    { key: 'fajr', name: 'Fajr', urdu: 'فجر', rakats: '2 Fard', icon: <Sun size={20} style={{ color: '#d97706' }} /> },
-    { key: 'dhuhr', name: 'Dhuhr', urdu: 'ظہر', rakats: '4 Fard', icon: <Sun size={20} style={{ color: '#059669' }} /> },
-    { key: 'asr', name: 'Asr', urdu: 'عصر', rakats: '4 Fard', icon: <Sun size={20} style={{ color: '#2563eb' }} /> },
-    { key: 'maghrib', name: 'Maghrib', urdu: 'مغرب', rakats: '3 Fard', icon: <Moon size={20} style={{ color: '#dc2626' }} /> },
-    { key: 'isha', name: 'Isha', urdu: 'عشاء', rakats: '4 Fard', icon: <Moon size={20} style={{ color: '#7c3aed' }} /> },
-    { key: 'witr', name: 'Witr', urdu: 'وتر واجب', rakats: '3 Wajib', icon: <Sparkles size={20} style={{ color: '#f59e0b' }} /> }
+    { key: 'fajr', name: 'Fajr', urdu: 'فجر', arabic: 'الفجر', rakats: '2 Fard', icon: <Sun size={20} style={{ color: '#d97706' }} /> },
+    { key: 'dhuhr', name: 'Dhuhr', urdu: 'ظہر', arabic: 'الظهر', rakats: '4 Fard', icon: <Sun size={20} style={{ color: '#059669' }} /> },
+    { key: 'asr', name: 'Asr', urdu: 'عصر', arabic: 'العصر', rakats: '4 Fard', icon: <Sun size={20} style={{ color: '#2563eb' }} /> },
+    { key: 'maghrib', name: 'Maghrib', urdu: 'مغرب', arabic: 'المغرب', rakats: '3 Fard', icon: <Moon size={20} style={{ color: '#dc2626' }} /> },
+    { key: 'isha', name: 'Isha', urdu: 'عشاء', arabic: 'العشاء', rakats: '4 Fard', icon: <Moon size={20} style={{ color: '#7c3aed' }} /> },
+    { key: 'witr', name: 'Witr', urdu: 'وتر واجب', arabic: 'الوتر واجب', rakats: '3 Wajib', icon: <Sparkles size={20} style={{ color: '#f59e0b' }} /> }
   ];
 
   let totalPrayersOwed = 0;
@@ -170,10 +175,13 @@ export default function QadaView({ navigateToTab }) {
 
   const formattedEta = calendarDaysToFinish > 0 
     ? estimatedEndDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-    : 'Fully Complete!';
+    : (t('debtFreeMubarak', 'Fully Complete!'));
 
   return (
-    <div style={{ background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem' }}>
+    <div style={{
+      background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem',
+      direction: (lang === 'ar' || lang === 'ur' || lang === 'br') ? 'rtl' : 'ltr'
+    }}>
       <div style={{ maxWidth: '1150px', margin: '0 auto' }}>
 
         {/* ── Banner Header ── */}
@@ -186,7 +194,7 @@ export default function QadaView({ navigateToTab }) {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Clock size={16} style={{ color: '#f59e0b' }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px' }}>
-              {t('qadaTrackerTitle', 'قضائے عمری (Spiritual Debt Clearance)')}
+              {lang === 'ar' ? 'قضاء الصلوات الفائتة (براءة الذمة)' : (lang === 'ur' || lang === 'br') ? 'قضائے عمری (ادائیگی فرائض و روزے)' : 'Qaza-e-Umri (Spiritual Debt Clearance)'}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
@@ -274,7 +282,7 @@ export default function QadaView({ navigateToTab }) {
                   {totalPrayersRemaining.toLocaleString()}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px' }}>
-                  ≈ {remainingDaysEquivalent.toLocaleString()} {t('daysOfFasting', 'days')}
+                  ≈ {remainingDaysEquivalent.toLocaleString()} {lang === 'ar' ? 'يوم صلاة' : (lang === 'ur' || lang === 'br') ? 'دن کے فرائض' : 'days'}
                 </div>
               </div>
 
@@ -288,7 +296,7 @@ export default function QadaView({ navigateToTab }) {
                   {formattedEta}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px' }}>
-                  {dailyPace} {t('daysRemaining', 'days/day')}
+                  {dailyPace} {t('daysPerDay', 'days/day')}
                 </div>
               </div>
 
@@ -303,10 +311,10 @@ export default function QadaView({ navigateToTab }) {
             }}>
               <div>
                 <h3 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-                  ⚡ {t('batchLog1Day', 'Quick Daily Makeup Batch Actions')}
+                  ⚡ {t('quickBatchActionsTitle', 'Quick Daily Makeup Batch Actions')}
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-                  {t('qadaSubtitle', 'Conveniently log complete days of Qaza in a single tap instead of logging each prayer individually.')}
+                  {t('quickBatchActionsSubtitle', 'Conveniently log complete days of Qaza in a single tap instead of logging each prayer individually.')}
                 </p>
               </div>
 
@@ -345,10 +353,10 @@ export default function QadaView({ navigateToTab }) {
                     onChange={e => setDailyPace(parseInt(e.target.value, 10))}
                     style={{ background: 'transparent', border: 'none', fontWeight: 800, color: '#059669', cursor: 'pointer', outline: 'none' }}
                   >
-                    <option value={1}>1 day / day (+1 with each Fard)</option>
-                    <option value={2}>2 days / day (+2 with each Fard)</option>
-                    <option value={3}>3 days / day (+3 with each Fard)</option>
-                    <option value={5}>5 days / day (Fast track)</option>
+                    <option value={1}>{lang === 'ar' ? 'يوم واحد يومياً (+١ مع كل فريضة)' : (lang === 'ur' || lang === 'br') ? '1 دن روزانہ (ہر فرض کے ساتھ +1)' : '1 day / day (+1 with each Fard)'}</option>
+                    <option value={2}>{lang === 'ar' ? 'يومان يومياً (+٢ مع كل فريضة)' : (lang === 'ur' || lang === 'br') ? '2 دن روزانہ (ہر فرض کے ساتھ +2)' : '2 days / day (+2 with each Fard)'}</option>
+                    <option value={3}>{lang === 'ar' ? '٣ أيام يومياً (+٣ مع كل فريضة)' : (lang === 'ur' || lang === 'br') ? '3 دن روزانہ (ہر فرض کے ساتھ +3)' : '3 days / day (+3 with each Fard)'}</option>
+                    <option value={5}>{lang === 'ar' ? '٥ أيام يومياً (إنجاز سريع)' : (lang === 'ur' || lang === 'br') ? '5 دن روزانہ (تیز رفتار)' : '5 days / day (Fast track)'}</option>
                   </select>
                 </div>
               </div>
@@ -378,24 +386,30 @@ export default function QadaView({ navigateToTab }) {
                           </div>
                           <div>
                             <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
-                              {prayer.name} ({prayer.urdu})
+                              {lang === 'ar' ? prayer.arabic : (lang === 'ur' || lang === 'br') ? prayer.urdu : `${prayer.name} (${prayer.urdu})`}
                             </h4>
-                            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{prayer.rakats}</span>
+                            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              {lang === 'ar' 
+                                ? (prayer.key === 'witr' ? '٣ ركعات واجب' : `${prayer.rakats.split(' ')[0]} ركعات فرض`)
+                                : (lang === 'ur' || lang === 'br')
+                                ? (prayer.key === 'witr' ? '3 رکعت واجب' : `${prayer.rakats.split(' ')[0]} رکعت فرض`)
+                                : prayer.rakats}
+                            </span>
                           </div>
                         </div>
 
-                        <div style={{ textAlign: 'right' }}>
+                        <div style={{ textAlign: (lang === 'ar' || lang === 'ur' || lang === 'br') ? 'left' : 'right' }}>
                           <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a' }}>
                             {remaining.toLocaleString()}
                           </span>
-                          <span style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>Remaining</span>
+                          <span style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase' }}>{t('remainingDebt', 'Remaining')}</span>
                         </div>
                       </div>
 
                       {/* Progress Bar */}
                       <div style={{ marginBottom: '1.25rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '4px', fontWeight: 700 }}>
-                          <span>Done: {item.completed.toLocaleString()} / {item.total.toLocaleString()}</span>
+                          <span>{t('completedPrayers', 'Done')}: {item.completed.toLocaleString()} / {item.total.toLocaleString()}</span>
                           <span style={{ color: '#059669' }}>{percent}%</span>
                         </div>
                         <div style={{ height: '8px', background: '#f1f5f9', borderRadius: '6px', overflow: 'hidden' }}>
@@ -416,7 +430,7 @@ export default function QadaView({ navigateToTab }) {
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                         }}
                       >
-                        <Plus size={16} /> +1 {t('completed', 'Made Up')}
+                        <Plus size={16} /> +1 {lang === 'ar' ? 'تم القضاء' : (lang === 'ur' || lang === 'br') ? 'ادا کی' : 'Made Up'}
                       </button>
 
                       <button
@@ -439,7 +453,7 @@ export default function QadaView({ navigateToTab }) {
                           background: '#fee2e2', color: '#dc2626', border: 'none',
                           fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer'
                         }}
-                        title="Undo"
+                        title={lang === 'ar' ? 'تراجع' : (lang === 'ur' || lang === 'br') ? 'واپس کریں' : 'Undo'}
                       >
                         <Minus size={16} />
                       </button>
@@ -465,7 +479,7 @@ export default function QadaView({ navigateToTab }) {
                     {t('fastsMissed', 'Ramadan Missed Fasts (قضاء روزے)')}
                   </h3>
                   <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                    {t('qadaSubtitle', 'Keep track of past missed Ramadan fasts due to illness, travel, or negligence.')}
+                    {t('ramadanFastsDesc', 'Keep track of past missed Ramadan fasts due to illness, travel, or negligence.')}
                   </p>
                 </div>
               </div>
@@ -475,7 +489,7 @@ export default function QadaView({ navigateToTab }) {
                   <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#b45309' }}>
                     {Math.max(0, (qadaData.fasts?.total || 0) - (qadaData.fasts?.completed || 0))}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>{t('remainingDebt', 'Fasts Remaining')}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>{t('fastsRemaining', 'Fasts Remaining')}</div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -489,7 +503,7 @@ export default function QadaView({ navigateToTab }) {
                       alignItems: 'center', gap: '4px'
                     }}
                   >
-                    <Plus size={16} /> +1 {t('completed', 'Fast Made Up')}
+                    <Plus size={16} /> +1 {t('fastMadeUp', 'Fast Made Up')}
                   </button>
 
                   <button
@@ -500,7 +514,7 @@ export default function QadaView({ navigateToTab }) {
                       padding: '10px 14px', borderRadius: '12px', fontWeight: 800,
                       fontSize: '0.88rem', cursor: 'pointer'
                     }}
-                    title="Undo"
+                    title={lang === 'ar' ? 'تراجع' : (lang === 'ur' || lang === 'br') ? 'واپس کریں' : 'Undo'}
                   >
                     <Minus size={16} />
                   </button>
@@ -520,7 +534,7 @@ export default function QadaView({ navigateToTab }) {
                   alignItems: 'center', gap: '6px'
                 }}
               >
-                <Calculator size={16} /> Re-calculate with Wizard
+                <Calculator size={16} /> {t('recalculateWithWizard', 'Re-calculate with Wizard')}
               </button>
 
               <button
@@ -533,7 +547,7 @@ export default function QadaView({ navigateToTab }) {
                   alignItems: 'center', gap: '6px'
                 }}
               >
-                <RotateCcw size={16} /> Reset All Qaza Data
+                <RotateCcw size={16} /> {t('resetAllQada', 'Reset All Qaza Data')}
               </button>
             </div>
           </div>
@@ -601,17 +615,17 @@ export default function QadaView({ navigateToTab }) {
                     required
                   />
                   <span style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
-                    {t('yearsMissed', 'Years missed without regular Salah')}: <strong>{Math.max(0, calcInputs.regularStartAge - calcInputs.bulughAge)} {t('yearsMissed', 'years')}</strong>
+                    {t('yearsMissedWithoutRegularSalah', 'Years missed without regular Salah')}: <strong>{Math.max(0, calcInputs.regularStartAge - calcInputs.bulughAge)} {lang === 'ar' ? 'سنوات' : (lang === 'ur' || lang === 'br') ? 'سال' : 'years'}</strong>
                   </span>
                 </div>
 
                 <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem' }}>
                   <label style={{ ...labelStyle, color: '#0f172a', fontWeight: 800 }}>
-                    {t('yearsMissed', 'OR Enter Direct Custom Missed Time (Optional Override)')}
+                    {t('customMissedOverride', 'OR Enter Direct Custom Missed Time (Optional Override)')}
                   </label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div>
-                      <label style={labelStyle}>{t('yearsMissed', 'Exact Missed Years')}</label>
+                      <label style={labelStyle}>{t('exactMissedYears', 'Exact Missed Years')}</label>
                       <input
                         type="number"
                         min="0"
@@ -622,7 +636,7 @@ export default function QadaView({ navigateToTab }) {
                       />
                     </div>
                     <div>
-                      <label style={labelStyle}>{t('monthsMissed', 'Additional Missed Months')}</label>
+                      <label style={labelStyle}>{t('additionalMissedMonths', 'Additional Missed Months')}</label>
                       <input
                         type="number"
                         min="0"
@@ -637,7 +651,7 @@ export default function QadaView({ navigateToTab }) {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>{t('fastsMissed', 'Extra Missed Ramadan Fasts (Travel, Sickness, Postnatal, etc.)')}</label>
+                  <label style={labelStyle}>{t('extraMissedFastsLabel', 'Extra Missed Ramadan Fasts (Travel, Sickness, Postnatal, etc.)')}</label>
                   <input
                     type="number"
                     min="0"
@@ -658,7 +672,7 @@ export default function QadaView({ navigateToTab }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
                   }}
                 >
-                  <Calculator size={18} /> {t('calculateMyQada', 'Apply Calculated Totals to Tracker')}
+                  <Calculator size={18} /> {t('applyCalculatedTotals', 'Apply Calculated Totals to Tracker')}
                 </button>
               </form>
             </div>
@@ -679,53 +693,155 @@ export default function QadaView({ navigateToTab }) {
               </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', color: '#334155', lineHeight: 1.7, fontSize: '0.94rem' }}>
-                <div>
-                  <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
-                    1. Is Qaza-e-Umri Obligatory in Islam?
-                  </h4>
-                  <p style={{ margin: 0 }}>
-                    Yes. All four recognized schools of Islamic Sunni jurisprudence (Hanafi, Maliki, Shafi'i, and Hanbali) hold that missed obligatory prayers remain a debt upon the person until prayed or forgiven by Allah. Prophet Muhammad (PBUH) stated: <em>"A debt owed to Allah has more right to be paid."</em> (Sahih al-Bukhari).
-                  </p>
-                </div>
+                {lang === 'ar' ? (
+                  <>
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        ١. هل قضاء ما فات من صلوات العمر واجب شرعاً؟
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        نعم، أجمع أئمة المذاهب الفقهية الأربعة المتبعة (الحنفية، والمالكية، والشافعية، والحنابلة) على أن الصلوات المفروضة الفائتة تظل ديناً لازماً في ذمة المكلف حتى يقضيها أو يتجاوز الله عنه برحمته. قال رسول الله ﷺ: <em>«فَدَيْنُ اللَّهِ أَحَقُّ أَنْ يُقْضَى»</em> (صحيح البخاري).
+                      </p>
+                    </div>
 
-                <div>
-                  <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
-                    2. Method to Pray Qaza Quickly &amp; Efficiently
-                  </h4>
-                  <p style={{ margin: 0 }}>
-                    To make fulfilling years of missed prayers achievable without burnout, Islamic scholars have outlined permissible sunnah facilitations:
-                  </p>
-                  <ul style={{ margin: '6px 0 0', paddingLeft: '22px' }}>
-                    <li><strong>Only Fard &amp; Witr:</strong> In Qaza-e-Umri, only the 17 obligatory Rakats of the day are made up: Fajr (2 Fard), Dhuhr (4 Fard), Asr (4 Fard), Maghrib (3 Fard), Isha (4 Fard), and Witr (3 Wajib). Sunnah Mu'akkadah from the past are not made up.</li>
-                    <li><strong>3rd &amp; 4th Rakat:</strong> In the 3rd and 4th Rakat of Fard prayers, reciting only Surah Al-Fatiha or simply saying <em>"SubhanAllah"</em> three times is permissible according to Hanafi jurists.</li>
-                    <li><strong>Ruku &amp; Sujud:</strong> Recite <em>"Subhana Rabbiyal Azeem"</em> and <em>"Subhana Rabbiyal A'la"</em> exactly 3 times without prolonging.</li>
-                    <li><strong>Tashahhud:</strong> In the final sitting, recite the standard Tashahhud (Attahiyyat), brief Durood-e-Ibrahim, and a short supplication (e.g. <em>"Rabbana Atina fid-dunya hasanah"</em>).</li>
-                  </ul>
-                </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        ٢. كيفية قضاء الصلوات الفائتة بيسر وتيسير شرعي
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        لتيسير قضاء سنوات عديدة دون مشقة تؤدي إلى الانقطاع، بيّن علماء الفقه رخصاً شرعية معتبرة:
+                      </p>
+                      <ul style={{ margin: '6px 0 0', paddingRight: '22px', paddingLeft: 0 }}>
+                        <li><strong>الفرائض والوتر فقط:</strong> تُقضى فقط الـ 17 ركعة المفروضة يومياً (الفجر: ركعتان، الظهر: 4 ركعات، العصر: 4 ركعات، المغرب: 3 ركعات، العشاء: 4 ركعات، والوتر: 3 ركعات واجبة عند الحنفية). ولا يُقضى ما فات من السنن الرواتب والنوافل السابقة.</li>
+                        <li><strong>الركعتان الثالثة والرابعة:</strong> يقتصر المصلي فيهما على قراءة سورة الفاتحة فقط، أو الاكتفاء بثلاث تسبيحات (سبحان الله) عند فقهاء الحنفية.</li>
+                        <li><strong>الركوع والسجود:</strong> يكتفى بالتسبيح ثلاث مرات فقط (سبحان ربي العظيم / سبحان ربي الأعلى) دون إطالة زائدة.</li>
+                        <li><strong>التشهد الأخير:</strong> يكتفى بالتشهد (التحيات) والصلاة الإبراهيمية الموجزة ودعاء مختصر مثل (ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار).</li>
+                      </ul>
+                    </div>
 
-                <div>
-                  <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
-                    3. Prohibited Times for Praying Qaza
-                  </h4>
-                  <p style={{ margin: 0 }}>
-                    Qaza Salah may be prayed at any hour of the day or night, except during the <strong>three strictly forbidden times</strong>:
-                  </p>
-                  <ul style={{ margin: '6px 0 0', paddingLeft: '22px' }}>
-                    <li>During Sunrise (from when the sun begins to rise until it is above the horizon, approx. 15 minutes).</li>
-                    <li>At exact solar noon / Zenith (Zawal - when the sun is at its highest meridian, approx. 5-10 minutes before Dhuhr begins).</li>
-                    <li>During Sunset (when the sun turns pale yellow until it sets, except for that day's Maghrib).</li>
-                  </ul>
-                </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        ٣. الأوقات المنهي عن صلاة القضاء فيها (الأوقات المكروهة)
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        يجوز قضاء الصلوات في أي وقت من ليل أو نهار، ما عدا الأوقات الثلاثة التي يُكره فيها أداء الصلاة تحريماً:
+                      </p>
+                      <ul style={{ margin: '6px 0 0', paddingRight: '22px', paddingLeft: 0 }}>
+                        <li><strong>عند طلوع الشمس:</strong> من بداية الشروق حتى ترتفع الشمس قيد رمح (نحو 15 إلى 20 دقيقة بعد الشروق).</li>
+                        <li><strong>عند استواء الشمس في كبد السماء (وقت الزوال):</strong> قبل أذان الظهر بنحو 5 إلى 10 دقائق.</li>
+                        <li><strong>عند اصفرار الشمس وتغير ضوئها قبل الغروب:</strong> حتى تغرب الشمس تماماً (باستثناء عصر ذلك اليوم نفسه).</li>
+                      </ul>
+                    </div>
 
-                <div>
-                  <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
-                    4. Practical Strategy: "+1 With Each Fard"
-                  </h4>
-                  <p style={{ margin: 0 }}>
-                    The easiest, most consistent method recommended by scholars is to pray <strong>one Qaza prayer with every corresponding daily Fard prayer</strong>:
-                    e.g. after today's Fajr prayer, pray 2 Rakats of Qaza Fajr. After Dhuhr, pray 4 Rakats of Qaza Dhuhr. In this manner, you effortlessly complete 1 full year of missed Salah every single calendar year!
-                  </p>
-                </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        ٤. خطة عملية مجربة: «صلاة قضاء مع كل فريضة حاضرة»
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        أيسر منهجية وأكثرها استمرارية نصح بها الفقهاء هي أن تصلي فريضة قضاء واحدة مع كل صلاة حاضرة: مثلاً بعد صلاة فجر اليوم اقضِ ركعتي فجر قضاء، وبعد الظهر اقضِ 4 ركعات ظهر قضاء، وهكذا مع بقية الأوقات. بهذه الخطة السهلة تَقضي سنة كاملة من الفوائت في كل سنة تقويمية دون أي إجهاد أو انقطاع!
+                      </p>
+                    </div>
+                  </>
+                ) : (lang === 'ur' || lang === 'br') ? (
+                  <>
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        1۔ کیا قضائے عمری ادا کرنا شرعاً فرض و لازم ہے؟
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        جی ہاں، جمہور فقہائے امت اور چاروں مسالکِ حقہ (احناف، شوافع، مالکیہ، حنابلہ) کا اس پر مکمل اتفاق ہے کہ زندگی میں چھوٹ جانے والی تمام فرض نمازیں انسان کے ذمے پر قرض ہیں جن کی قضا ادا کرنا لازم ہے۔ نبی کریم ﷺ کا ارشاد گرامی ہے: <em>«اللہ کا قرض زیادہ حق رکھتا ہے کہ اسے ادا کیا جائے»</em> (صحیح بخاری)۔
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        2۔ قضا نمازیں جلد اور آسان طریقے سے ادا کرنے کی شرعی سہولتیں
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        برسوں کی چھوٹی ہوئی نمازوں کو بغیر تھکن و رکاوٹ تسلسل کے ساتھ ادا کرنے کے لیے فقہائے کرام نے شریعت کی دی ہوئی درج ذیل آسانیاں اور رخصتیں بیان فرمائی ہیں:
+                      </p>
+                      <ul style={{ margin: '6px 0 0', paddingRight: '22px', paddingLeft: 0 }}>
+                        <li><strong>صرف فرائض اور وتر:</strong> قضائے عمری میں روزانہ صرف 17 رکعتیں ادا کی جاتی ہیں (فجر: 2 فرض، ظہر: 4 فرض، عصر: 4 فرض، مغرب: 3 فرض، عشاء: 4 فرض، وتر: 3 واجب)۔ ماضی کی چھوٹی ہوئی سنتِ مؤکدہ یا نفل نمازوں کی قضا نہیں ہوتی۔</li>
+                        <li><strong>تیسری اور چوتھی رکعت:</strong> چار رکعتی فرض نمازوں کی آخری دو رکعتوں میں صرف سورۃ الفاتحہ پر اکتفا کرنا یا فقہائے احناف کے نزدیک تین مرتبہ <em>«سبحان اللہ»</em> کہنا جائز ہے۔</li>
+                        <li><strong>رکوع اور سجدہ:</strong> رکوع اور سجدے میں صرف تین تین مرتبہ مسنون تسبیح (سبحان ربی العظیم / سبحان ربی الاعلیٰ) پڑھیں، زیادہ طوالت اختیار نہ کریں۔</li>
+                        <li><strong>التحیات اور دعا:</strong> آخری قعدہ میں التحیات کے بعد مختصر درود پاک اور مختصر مسنون دعا (جیسے <em>«ربنا آتنا فی الدنیا حسنۃ»</em>) پڑھ کر سلام پھیر دیں۔</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        3۔ قضا نماز کے لیے ممنوعہ و مکروہ اوقات
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        قضا نماز دن اور رات کے کسی بھی لمحے ادا کی جا سکتی ہے، سوائے ان تین مکروہ اوقات کے جن میں نماز پڑھنا سختی سے منع ہے:
+                      </p>
+                      <ul style={{ margin: '6px 0 0', paddingRight: '22px', paddingLeft: 0 }}>
+                        <li><strong>طلوعِ آفتاب کے وقت:</strong> سورج نکلنے سے لے کر اس کے کم از کم ایک نیزہ بلند ہونے تک (تقریباً 15 تا 20 منٹ)۔</li>
+                        <li><strong>عین نصف النہار (زوال کا وقت):</strong> سورج کے آسمان کے عین وسط میں ہونے کے وقت، ظہر کا وقت شروع ہونے سے 5 تا 10 منٹ پہلے۔</li>
+                        <li><strong>غروبِ آفتاب کے وقت:</strong> جب سورج زرد پڑ جائے یہاں تک کہ مکمل غروب ہو جائے (سوائے اسی دن کی عصر کے)۔</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        4۔ آسان و مجرب طریقہ: «ہر فرض کے ساتھ ایک قضا»
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        علمائے کرام کا سب سے آسان، پر اثر اور مجرب طریقہ یہ ہے کہ روزانہ ہر وقتی فرض نماز کے ساتھ اسی وقت کی ایک قضا نماز پڑھ لی جائے: مثلاً آج کی فجر کے بعد 2 رکعت قضا فجر پڑھ لیں، ظہر کے بعد 4 رکعت قضا ظہر پڑھ لیں، مغرب اور عشاء میں بھی ایسا ہی کریں۔ اس آسان طریقے سے آپ ہر ایک سال میں بغیر کسی بوجھ کے پچھلے پورے ایک سال کی قضا نمازیں ادا کر لیں گے!
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        1. Is Qaza-e-Umri Obligatory in Islam?
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        Yes. All four recognized schools of Islamic Sunni jurisprudence (Hanafi, Maliki, Shafi'i, and Hanbali) hold that missed obligatory prayers remain a debt upon the person until prayed or forgiven by Allah. Prophet Muhammad (PBUH) stated: <em>"A debt owed to Allah has more right to be paid."</em> (Sahih al-Bukhari).
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        2. Method to Pray Qaza Quickly &amp; Efficiently
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        To make fulfilling years of missed prayers achievable without burnout, Islamic scholars have outlined permissible sunnah facilitations:
+                      </p>
+                      <ul style={{ margin: '6px 0 0', paddingLeft: '22px' }}>
+                        <li><strong>Only Fard &amp; Witr:</strong> In Qaza-e-Umri, only the 17 obligatory Rakats of the day are made up: Fajr (2 Fard), Dhuhr (4 Fard), Asr (4 Fard), Maghrib (3 Fard), Isha (4 Fard), and Witr (3 Wajib). Sunnah Mu'akkadah from the past are not made up.</li>
+                        <li><strong>3rd &amp; 4th Rakat:</strong> In the 3rd and 4th Rakat of Fard prayers, reciting only Surah Al-Fatiha or simply saying <em>"SubhanAllah"</em> three times is permissible according to Hanafi jurists.</li>
+                        <li><strong>Ruku &amp; Sujud:</strong> Recite <em>"Subhana Rabbiyal Azeem"</em> and <em>"Subhana Rabbiyal A'la"</em> exactly 3 times without prolonging.</li>
+                        <li><strong>Tashahhud:</strong> In the final sitting, recite the standard Tashahhud (Attahiyyat), brief Durood-e-Ibrahim, and a short supplication (e.g. <em>"Rabbana Atina fid-dunya hasanah"</em>).</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        3. Prohibited Times for Praying Qaza
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        Qaza Salah may be prayed at any hour of the day or night, except during the <strong>three strictly forbidden times</strong>:
+                      </p>
+                      <ul style={{ margin: '6px 0 0', paddingLeft: '22px' }}>
+                        <li>During Sunrise (from when the sun begins to rise until it is above the horizon, approx. 15 minutes).</li>
+                        <li>At exact solar noon / Zenith (Zawal - when the sun is at its highest meridian, approx. 5-10 minutes before Dhuhr begins).</li>
+                        <li>During Sunset (when the sun turns pale yellow until it sets, except for that day's Maghrib).</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontSize: '1.05rem', fontWeight: 800 }}>
+                        4. Practical Strategy: "+1 With Each Fard"
+                      </h4>
+                      <p style={{ margin: 0 }}>
+                        The easiest, most consistent method recommended by scholars is to pray <strong>one Qaza prayer with every corresponding daily Fard prayer</strong>:
+                        e.g. after today's Fajr prayer, pray 2 Rakats of Qaza Fajr. After Dhuhr, pray 4 Rakats of Qaza Dhuhr. In this manner, you effortlessly complete 1 full year of missed Salah every single calendar year!
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

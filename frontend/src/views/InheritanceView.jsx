@@ -189,15 +189,15 @@ export default function InheritanceView() {
         }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '6px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: '30px', border: '1px solid rgba(245,158,11,0.4)', marginBottom: '1rem' }}>
             <Scale size={16} style={{ color: '#f59e0b' }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              Shariah Estate &amp; Legal Succession Hub
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fcd34d', letterSpacing: '0.5px' }}>
+              {t('inheritanceHubBadge', 'Shariah Estate & Legal Succession Hub')}
             </span>
           </div>
           <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 800, margin: '0 0 0.75rem', color: '#ffffff' }}>
-            Islamic Mirath &amp; Wasiyyah (Will) Portal
+            {t('mirathWasiyyahTitle', 'Islamic Mirath & Wasiyyah (Will) Portal')}
           </h1>
           <p style={{ color: '#a7f3d0', fontSize: '1.02rem', maxWidth: '720px', margin: '0 auto', lineHeight: 1.6 }}>
-            Accurately divide inheritance according to the Quranic verses of Surah An-Nisa (4:11-12) or draft a legally binding, authentic Islamic Last Will &amp; Testament (الوصية الشرعية).
+            {t('mirathWasiyyahSubtitle', 'Accurately divide inheritance according to the Quranic verses of Surah An-Nisa (4:11-12) or draft a legally binding, authentic Islamic Last Will & Testament (الوصية الشرعية).')}
           </p>
 
           {/* Mode Switcher Tabs */}
@@ -332,8 +332,8 @@ export default function InheritanceView() {
                   {motherPresent && (
                     <div style={resultRowStyle}>
                       <div>
-                        <div style={{ fontWeight: 800, color: '#ffffff' }}>Mother</div>
-                        <div style={{ fontSize: '0.78rem', color: '#93c5fd' }}>Quranic Share: {(motherShareFrac * 100).toFixed(1)}% ({hasChildren ? '1/6' : '1/3'})</div>
+                        <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('mother', 'Mother')}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#93c5fd' }}>{t('quranicShare', 'Quranic Share')}: {(motherShareFrac * 100).toFixed(1)}% ({hasChildren ? '1/6' : '1/3'})</div>
                       </div>
                       <div style={{ fontWeight: 900, color: '#fcd34d', fontSize: '1.1rem' }}>Rs. {motherVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
                     </div>
@@ -342,8 +342,8 @@ export default function InheritanceView() {
                   {fatherPresent && (
                     <div style={resultRowStyle}>
                       <div>
-                        <div style={{ fontWeight: 800, color: '#ffffff' }}>Father</div>
-                        <div style={{ fontSize: '0.78rem', color: '#93c5fd' }}>Quranic Share: {(fatherShareFrac * 100).toFixed(1)}% (1/6 as fixed sharer)</div>
+                        <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('father', 'Father')}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#93c5fd' }}>{t('quranicShare', 'Quranic Share')}: {(fatherShareFrac * 100).toFixed(1)}% (1/6)</div>
                       </div>
                       <div style={{ fontWeight: 900, color: '#fcd34d', fontSize: '1.1rem' }}>Rs. {fatherVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
                     </div>
@@ -353,7 +353,7 @@ export default function InheritanceView() {
                     <div style={resultRowStyle}>
                       <div>
                         <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('sons', 'Sons')} ({sonsCount} total)</div>
-                        <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachSonVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} per son (2x ratio)</div>
+                        <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachSonVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} {lang === 'ar' ? 'لكل ابن' : lang === 'ur' ? 'فی بیٹا' : 'per son'}</div>
                       </div>
                       <div style={{ fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>Rs. {totalSonsVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
                     </div>
@@ -363,7 +363,7 @@ export default function InheritanceView() {
                     <div style={resultRowStyle}>
                       <div>
                         <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('daughters', 'Daughters')} ({daughtersCount} total)</div>
-                        <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachDaughterVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} per daughter</div>
+                        <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachDaughterVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} {lang === 'ar' ? 'لكل بنت' : lang === 'ur' ? 'فی بیٹی' : 'per daughter'}</div>
                       </div>
                       <div style={{ fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>Rs. {totalDaughtersVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
                     </div>
@@ -372,7 +372,12 @@ export default function InheritanceView() {
 
                 <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.3)', fontSize: '0.82rem', color: '#fef3c7', lineHeight: 1.5 }}>
                   <i className="fas fa-info-circle" style={{ color: '#f59e0b', marginRight: '6px' }}></i>
-                  <strong>Quranic Reference:</strong> "Allah commands you regarding your children: for the male, what is equal to the share of two females..." (Surah An-Nisa 4:11).
+                  <strong>{lang === 'ar' ? 'الدليل القرآني: ' : lang === 'ur' ? 'قرآنی حوالہ: ' : 'Quranic Reference: '}</strong>
+                  {lang === 'ar' 
+                    ? '«يُوصِيكُمُ اللَّهُ فِي أَوْلَادِكُمْ ۖ لِلذَّكَرِ مِثْلُ حَظِّ الْأُنثَيَيْنِ» (سورة النساء: 11).' 
+                    : lang === 'ur'
+                    ? '«اللہ تمہیں تمہاری اولاد کے بارے میں حکم دیتا ہے: لڑکے کا حصہ دو لڑکیوں کے برابر ہے...» (سورۃ النساء: 11)۔'
+                    : '"Allah commands you regarding your children: for the male, what is equal to the share of two females..." (Surah An-Nisa 4:11).'}
                 </div>
               </div>
             </div>
@@ -392,11 +397,11 @@ export default function InheritanceView() {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem'
             }}>
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#b45309', background: '#fef3c7', padding: '2px 10px', borderRadius: '12px' }}>
-                  Prophetic Injunction (حديث نبوي شريف)
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '2px 10px', borderRadius: '12px' }}>
+                  {t('propheticInjunction', 'Prophetic Injunction (حديث نبوي شريف)')}
                 </span>
                 <p style={{ margin: '0.5rem 0 0', fontStyle: 'italic', color: '#451a03', fontSize: '0.94rem', lineHeight: 1.5 }}>
-                  "It is not permissible for any Muslim who has something to bequeath to stay for two nights without having his last will and testament written and kept ready with him." (Sahih al-Bukhari 2738, Sahih Muslim 1627)
+                  {t('wasiyyahHadithText', '"It is not permissible for any Muslim who has something to bequeath to stay for two nights without having his last will and testament written and kept ready with him." (Sahih al-Bukhari 2738, Sahih Muslim 1627)')}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -405,14 +410,14 @@ export default function InheritanceView() {
                   onClick={fillSampleWill}
                   style={{ background: '#064e3b', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <Sparkles size={16} /> Fill Sample
+                  <Sparkles size={16} /> {t('fillSample', 'Fill Sample')}
                 </button>
                 <button
                   type="button"
                   onClick={resetWill}
                   style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', padding: '8px 14px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <RotateCcw size={16} /> Reset
+                  <RotateCcw size={16} /> {t('reset', 'Reset')}
                 </button>
               </div>
             </div>
@@ -425,34 +430,34 @@ export default function InheritanceView() {
                 {/* 1. Testator Personal Information */}
                 <div style={cardStyle}>
                   <h3 style={sectionTitleStyle}>
-                    <Users size={18} style={{ color: '#059669' }} /> 1. Testator Information (الموصي)
+                    <Users size={18} style={{ color: '#059669' }} /> {t('testatorInfoSection', '1. Testator Information (الموصي)')}
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                     <div>
-                      <label style={labelStyle}>Full Legal Name *</label>
+                      <label style={labelStyle}>{t('fullNameLabel', 'Full Legal Name *')}</label>
                       <input type="text" placeholder="e.g. Muhammad Usman Khan" value={testator.fullName} onChange={e => setTestator({ ...testator, fullName: e.target.value })} style={inputStyle} />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={labelStyle}>Father's / Husband's Name *</label>
+                        <label style={labelStyle}>{t('fatherHusbandNameLabel', "Father's / Husband's Name *")}</label>
                         <input type="text" placeholder="e.g. Abdul Rashid Khan" value={testator.fatherName} onChange={e => setTestator({ ...testator, fatherName: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
-                        <label style={labelStyle}>CNIC / National ID / Passport *</label>
+                        <label style={labelStyle}>{t('nationalIdLabel', 'CNIC / National ID / Passport *')}</label>
                         <input type="text" placeholder="e.g. 42101-1234567-1" value={testator.nationalId} onChange={e => setTestator({ ...testator, nationalId: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
                     <div>
-                      <label style={labelStyle}>Permanent Residential Address</label>
+                      <label style={labelStyle}>{t('residentialAddressLabel', 'Permanent Residential Address')}</label>
                       <input type="text" placeholder="Street, Sector, City" value={testator.address} onChange={e => setTestator({ ...testator, address: e.target.value })} style={inputStyle} />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={labelStyle}>City &amp; Country</label>
+                        <label style={labelStyle}>{t('cityCountryLabel', 'City & Country')}</label>
                         <input type="text" placeholder="e.g. Karachi, Pakistan" value={testator.city} onChange={e => setTestator({ ...testator, city: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
-                        <label style={labelStyle}>Contact Phone</label>
+                        <label style={labelStyle}>{t('contactPhoneLabel', 'Contact Phone')}</label>
                         <input type="text" placeholder="+92 300 0000000" value={testator.phone} onChange={e => setTestator({ ...testator, phone: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
@@ -462,23 +467,23 @@ export default function InheritanceView() {
                 {/* 2. Islamic Burial & Funeral Directives */}
                 <div style={cardStyle}>
                   <h3 style={sectionTitleStyle}>
-                    <ShieldCheck size={18} style={{ color: '#059669' }} /> 2. Islamic Funeral Directives (توجيهات الجنازة)
+                    <ShieldCheck size={18} style={{ color: '#059669' }} /> {t('funeralDirectivesSection', '2. Islamic Funeral Directives (توجيهات الجنازة)')}
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#334155' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                       <input type="checkbox" checked={burialDirectives.sunnahBurial} onChange={e => setBurialDirectives({ ...burialDirectives, sunnahBurial: e.target.checked })} />
-                      <span>Perform Ghusl and simple shroud (Kafan) strictly according to Sunnah.</span>
+                      <span>{t('burialGhuslKafan', 'Perform Ghusl and simple shroud (Kafan) strictly according to Sunnah.')}</span>
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                       <input type="checkbox" checked={burialDirectives.immediateBurial} onChange={e => setBurialDirectives({ ...burialDirectives, immediateBurial: e.target.checked })} />
-                      <span>Burial without unjustified delay in the nearest Muslim cemetery.</span>
+                      <span>{t('burialNoDelay', 'Burial without unjustified delay in the nearest Muslim cemetery.')}</span>
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                       <input type="checkbox" checked={burialDirectives.noLoudMourning} onChange={e => setBurialDirectives({ ...burialDirectives, noLoudMourning: e.target.checked })} />
-                      <span>Strictly prohibit wailing, loud crying, non-Islamic rituals, or flowers.</span>
+                      <span>{t('burialNoWailing', 'Strictly prohibit wailing, loud crying, non-Islamic rituals, or flowers.')}</span>
                     </label>
                     <div>
-                      <label style={labelStyle}>Special Burial Wishes &amp; Imam Directives</label>
+                      <label style={labelStyle}>{t('burialSpecialWishes', 'Special Burial Wishes & Imam Directives')}</label>
                       <textarea rows="2" value={burialDirectives.specialNotes} onChange={e => setBurialDirectives({ ...burialDirectives, specialNotes: e.target.value })} style={{ ...inputStyle, width: '100%', resize: 'vertical' }} />
                     </div>
                   </div>
@@ -487,23 +492,23 @@ export default function InheritanceView() {
                 {/* 3. Debts & Religious Liabilities */}
                 <div style={cardStyle}>
                   <h3 style={sectionTitleStyle}>
-                    <Scale size={18} style={{ color: '#059669' }} /> 3. Debts &amp; Liabilities (قضاء الديون)
+                    <Scale size={18} style={{ color: '#059669' }} /> {t('debtsSection', '3. Debts & Liabilities (قضاء الديون)')}
                   </h3>
                   <p style={{ margin: '0 0 0.75rem', fontSize: '0.82rem', color: '#64748b' }}>
-                    In Shariah, all outstanding debts and funeral costs MUST be cleared before any inheritance or voluntary bequest is distributed.
+                    {t('debtsPriorityNote', 'In Shariah, all outstanding debts and funeral costs MUST be cleared before any inheritance or voluntary bequest is distributed.')}
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <div>
-                      <label style={labelStyle}>Debts Owed to People / Institutions</label>
+                      <label style={labelStyle}>{t('debtsOwedPeople', 'Debts Owed to People / Institutions')}</label>
                       <input type="text" placeholder="List creditor names and amounts" value={liabilities.personalDebts} onChange={e => setLiabilities({ ...liabilities, personalDebts: e.target.value })} style={inputStyle} />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={labelStyle}>Unpaid Mahr to Wife</label>
+                        <label style={labelStyle}>{t('unpaidMahrLabel', 'Unpaid Mahr to Wife')}</label>
                         <input type="text" placeholder="e.g. 50,000 PKR / Paid" value={liabilities.unpaidMahr} onChange={e => setLiabilities({ ...liabilities, unpaidMahr: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
-                        <label style={labelStyle}>Unpaid Zakat / Fidyah (Fasts &amp; Salah)</label>
+                        <label style={labelStyle}>{t('unpaidZakatFidyahLabel', 'Unpaid Zakat / Fidyah (Fasts & Salah)')}</label>
                         <input type="text" placeholder="e.g. Fidyah for 10 missed fasts" value={liabilities.fidyahSalahRoza} onChange={e => setLiabilities({ ...liabilities, fidyahSalahRoza: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
@@ -513,18 +518,18 @@ export default function InheritanceView() {
                 {/* 4. Voluntary Bequest (Wasiyyah - Max 1/3) */}
                 <div style={cardStyle}>
                   <h3 style={sectionTitleStyle}>
-                    <HeartHandshake size={18} style={{ color: '#059669' }} /> 4. Voluntary Bequest (الوصية بالثلث فما دون)
+                    <HeartHandshake size={18} style={{ color: '#059669' }} /> {t('bequestSection', '4. Voluntary Bequest (الوصية بالثلث فما دون)')}
                   </h3>
                   <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.85rem', fontSize: '0.82rem', color: '#475569' }}>
-                    <strong>Shariah Rule:</strong> The voluntary bequest cannot exceed <strong>one-third (1/3 or 33.3%)</strong> of the net estate and <strong>cannot</strong> be granted to any legal heir who already inherits by right of Quranic share.
+                    {t('bequestRuleText', 'Shariah Rule: The voluntary bequest cannot exceed one-third (1/3 or 33.3%) of the net estate and cannot be granted to any legal heir who already inherits by right of Quranic share.')}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <div>
-                      <label style={labelStyle}>Charity / Non-Heir Beneficiary Name</label>
+                      <label style={labelStyle}>{t('beneficiaryNameLabel', 'Charity / Non-Heir Beneficiary Name')}</label>
                       <input type="text" placeholder="e.g. Mosque construction, orphan fund, etc." value={bequest.beneficiaryName} onChange={e => setBequest({ ...bequest, beneficiaryName: e.target.value })} style={inputStyle} />
                     </div>
                     <div>
-                      <label style={labelStyle}>Bequest Share Percentage (Max 33.3%): <strong style={{ color: '#059669' }}>{bequest.percentage}%</strong></label>
+                      <label style={labelStyle}>{t('bequestPercentageLabel', 'Bequest Share Percentage (Max 33.3%):')} <strong style={{ color: '#059669' }}>{bequest.percentage}%</strong></label>
                       <input
                         type="range"
                         min="1"
@@ -535,7 +540,7 @@ export default function InheritanceView() {
                       />
                     </div>
                     <div>
-                      <label style={labelStyle}>Intended Cause / Sadaqah Jariyah Objective</label>
+                      <label style={labelStyle}>{t('bequestPurposeLabel', 'Intended Cause / Sadaqah Jariyah Objective')}</label>
                       <input type="text" value={bequest.purpose} onChange={e => setBequest({ ...bequest, purpose: e.target.value })} style={inputStyle} />
                     </div>
                   </div>
@@ -544,26 +549,26 @@ export default function InheritanceView() {
                 {/* 5. Executor & Witnesses */}
                 <div style={cardStyle}>
                   <h3 style={sectionTitleStyle}>
-                    <CheckCircle2 size={18} style={{ color: '#059669' }} /> 5. Executor (Wasi) &amp; Witnesses
+                    <CheckCircle2 size={18} style={{ color: '#059669' }} /> {t('executorSection', '5. Executor (Wasi) & Witnesses')}
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={labelStyle}>Primary Executor Name *</label>
+                        <label style={labelStyle}>{t('primaryExecutorLabel', 'Primary Executor Name *')}</label>
                         <input type="text" placeholder="e.g. Tariq Khan" value={executor.fullName} onChange={e => setExecutor({ ...executor, fullName: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
-                        <label style={labelStyle}>Executor CNIC / Phone</label>
+                        <label style={labelStyle}>{t('executorPhoneLabel', 'Executor CNIC / Phone')}</label>
                         <input type="text" placeholder="e.g. +92 300 0000000" value={executor.phone} onChange={e => setExecutor({ ...executor, phone: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={labelStyle}>Witness 1 (Adult Muslim Male)</label>
+                        <label style={labelStyle}>{t('witness1Label', 'Witness 1 (Adult Muslim Male)')}</label>
                         <input type="text" placeholder="Name & CNIC" value={witnesses.witness1Name} onChange={e => setWitnesses({ ...witnesses, witness1Name: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
-                        <label style={labelStyle}>Witness 2 (Adult Muslim Male)</label>
+                        <label style={labelStyle}>{t('witness2Label', 'Witness 2 (Adult Muslim Male)')}</label>
                         <input type="text" placeholder="Name & CNIC" value={witnesses.witness2Name} onChange={e => setWitnesses({ ...witnesses, witness2Name: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
@@ -579,8 +584,8 @@ export default function InheritanceView() {
                   {/* Print Action Bar */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', background: '#022c22', padding: '12px 18px', borderRadius: '16px', color: '#fff' }}>
                     <div>
-                      <span style={{ fontSize: '0.82rem', color: '#fcd34d', fontWeight: 800 }}>OFFICIAL DOCUMENT PREVIEW</span>
-                      <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', color: '#ffffff' }}>Islamic Legal Will &amp; Testament</h4>
+                      <span style={{ fontSize: '0.82rem', color: '#fcd34d', fontWeight: 800 }}>{t('officialDocPreview', 'OFFICIAL DOCUMENT PREVIEW')}</span>
+                      <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', color: '#ffffff' }}>{t('islamicLegalWillTitle', 'Islamic Legal Will & Testament')}</h4>
                     </div>
                     <button
                       type="button"
@@ -593,7 +598,7 @@ export default function InheritanceView() {
                       }}
                     >
                       <Printer size={18} />
-                      <span>Print / Save PDF Will</span>
+                      <span>{t('printSavePdfWill', 'Print / Save PDF Will')}</span>
                     </button>
                   </div>
 
@@ -603,7 +608,9 @@ export default function InheritanceView() {
                     style={{
                       background: '#ffffff', borderRadius: '18px', padding: '2.5rem 2rem',
                       border: '3px double #d97706', boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
-                      color: '#0f172a', fontFamily: 'serif', lineHeight: 1.6, maxHeight: '80vh', overflowY: 'auto'
+                      color: '#0f172a', fontFamily: 'serif', lineHeight: 1.6, maxHeight: '80vh', overflowY: 'auto',
+                      direction: (lang === 'ar' || lang === 'ur' || lang === 'br') ? 'rtl' : 'ltr',
+                      textAlign: (lang === 'ar' || lang === 'ur' || lang === 'br') ? 'right' : 'left'
                     }}
                   >
                     {/* Islamic Calligraphy Header */}
@@ -612,36 +619,50 @@ export default function InheritanceView() {
                         بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                       </div>
                       <div style={{ fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic', marginBottom: '4px' }}>
-                        "In the name of Allah, the Entirely Merciful, the Especially Merciful"
+                        {lang === 'ar' ? '«بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ»' : lang === 'ur' || lang === 'br' ? '«شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے»' : '"In the name of Allah, the Entirely Merciful, the Especially Merciful"'}
                       </div>
                       <h2 style={{ margin: '8px 0 4px', fontSize: '1.45rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', color: '#0f172a' }}>
-                        Last Will &amp; Testament (الوصية الشرعية)
+                        {lang === 'ar' ? 'وثيقة الوصية الشرعية الرسمية' : lang === 'ur' || lang === 'br' ? 'شرعی وصیت نامہ (الوصية الشرعية)' : 'Last Will & Testament (الوصية الشرعية)'}
                       </h2>
                       <div style={{ fontSize: '0.85rem', color: '#78716c' }}>
-                        Conforming to Islamic Shariah Law &amp; Sunnah of Prophet Muhammad (PBUH)
+                        {lang === 'ar' ? 'وفق أحكام الشريعة الإسلامية السمحة وسنة النبي المصطفى ﷺ' : lang === 'ur' || lang === 'br' ? 'کتاب و سنتِ نبوی ﷺ کے عین مطابق شرعی و قانونی دستاویز' : 'Conforming to Islamic Shariah Law & Sunnah of Prophet Muhammad (PBUH)'}
                       </div>
                     </div>
 
                     {/* Declaration of Faith */}
-                    <div style={{ marginBottom: '1.25rem', padding: '12px 14px', background: '#f8fafc', borderRadius: '10px', borderLeft: '4px solid #059669', fontSize: '0.88rem' }}>
-                      <strong>Preamble &amp; Shahadah:</strong><br />
-                      I, <strong>{testator.fullName || '[Your Full Name]'}</strong>, son/daughter of <strong>{testator.fatherName || '[Father\'s Name]'}</strong>, holder of National ID/Passport <strong>{testator.nationalId || '[ID/Passport No.]'}</strong>, resident of <strong>{testator.address || '[Address]'}</strong>, being of sound mind and sound memory, hereby declare that this is my Last Will and Testament, revoking all previous wills.
+                    <div style={{ marginBottom: '1.25rem', padding: '12px 14px', background: '#f8fafc', borderRadius: '10px', borderLeft: (lang === 'ar' || lang === 'ur' || lang === 'br') ? 'none' : '4px solid #059669', borderRight: (lang === 'ar' || lang === 'ur' || lang === 'br') ? '4px solid #059669' : 'none', fontSize: '0.88rem' }}>
+                      <strong>{lang === 'ar' ? 'الإقرار والشهادة:' : lang === 'ur' || lang === 'br' ? 'تمہید و کلمہ شہادت:' : 'Preamble & Shahadah:'}</strong><br />
+                      {lang === 'ar' ? (
+                        <>أنا الموقع أدناه، <strong>{testator.fullName || '[الاسم الكامل]'}</strong>، ابن/ابنة <strong>{testator.fatherName || '[اسم الأب/الزوج]'}</strong>، حامل الهوية/جواز السفر رقم <strong>{testator.nationalId || '[رقم الهوية]'}</strong>، والمقيم في <strong>{testator.address || '[العنوان الكامل]'}</strong>، وأنا بكامل قواي العقلية والأهلية المعتبرة شرعاً وقانوناً، أقر وأعلن أن هذه وصيتي الشرعية الأخيرة، وأبطل بها كل وصية سابقة لها.</>
+                      ) : lang === 'ur' || lang === 'br' ? (
+                        <>میں، مسمی/مسماۃ <strong>{testator.fullName || '[آپ کا مکمل نام]'}</strong>، ولد/زوجہ <strong>{testator.fatherName || '[والد/شوہر کا نام]'}</strong>، شناختی کارڈ/پاسپورٹ نمبر <strong>{testator.nationalId || '[شناختی کارڈ نمبر]'}</strong>، ساکن <strong>{testator.address || '[رہائشی پتہ]'}</strong>، بقائمی ہوش و حواس، بغیر کسی جبر و اکراہ کے یہ شرعی وصیت نامہ تحریر کر رہا/رہی ہوں اور تمام سابقہ وصیتوں کو منسوخ قرار دیتا/دیتی ہوں۔</>
+                      ) : (
+                        <>I, <strong>{testator.fullName || '[Your Full Name]'}</strong>, son/daughter of <strong>{testator.fatherName || '[Father\'s Name]'}</strong>, holder of National ID/Passport <strong>{testator.nationalId || '[ID/Passport No.]'}</strong>, resident of <strong>{testator.address || '[Address]'}</strong>, being of sound mind and sound memory, hereby declare that this is my Last Will and Testament, revoking all previous wills.</>
+                      )}
                       <p style={{ margin: '6px 0 0', fontStyle: 'italic', color: '#064e3b' }}>
-                        "I testify that there is no deity worthy of worship except Allah, Alone without partner, and that Muhammad (PBUH) is His servant and final Messenger. I believe in the Day of Judgement, Heaven, Hell, and the final resurrection."
+                        {lang === 'ar' 
+                          ? '«أشهد أن لا إله إلا الله وحده لا شريك له، وأشهد أن محمداً عبده ورسوله، وأن الموت حق، والجنة حق، والنار حق، وأن الساعة آتية لا ريب فيها، وأن الله يبعث من في القبور.»'
+                          : lang === 'ur' || lang === 'br'
+                          ? '«میں گواہی دیتا ہوں کہ اللہ تعالیٰ کے سوا کوئی معبود نہیں، وہ اکیلا ہے اس کا کوئی شریک نہیں، اور محمد ﷺ اس کے بندے اور رسول ہیں۔ قیامت، جنت اور دوزخ سب برحق ہیں۔»'
+                          : '"I testify that there is no deity worthy of worship except Allah, Alone without partner, and that Muhammad (PBUH) is His servant and final Messenger. I believe in the Day of Judgement, Heaven, Hell, and the final resurrection."'}
                       </p>
                     </div>
 
                     {/* Article 1: Funeral & Burial */}
                     <div style={{ marginBottom: '1.25rem', fontSize: '0.88rem' }}>
                       <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: '#064e3b' }}>
-                        Article 1: Islamic Funeral &amp; Burial Directives
+                        {lang === 'ar' ? 'البند الأول: الوصية بالجنازة والدفن الشرعي' : lang === 'ur' || lang === 'br' ? 'شق نمبر 1: تجہیز و تکفین اور تدفین کی مسنون ہدایات' : 'Article 1: Islamic Funeral & Burial Directives'}
                       </h4>
                       <p style={{ margin: 0 }}>
-                        I order and direct my executor and family that upon my demise, my body shall be washed (Ghusl) and shrouded (Kafan) according to the orthodox Sunnah of the Prophet (PBUH). I must be buried without unnecessary delay in a Muslim cemetery. Under no circumstances shall my body be subjected to cremation, autopsy (unless mandated by public law), un-Islamic wailing, mourning beyond the prescribed three days (except for a widow's Iddah), or superstitious celebrations.
+                        {lang === 'ar'
+                          ? 'أوصي أهلي وأولادي وعشيرتي بتقوى الله تعالى، وأن يُقتصر في تغسيلي وتكفيني ودفني على المحض من سنة رسول الله ﷺ في مقابر المسلمين دون أدنى تأخير، وأبرأ إلى الله من كل نياحة أو لطم أو بدع أو تقاليد مخالفة لهدي الإسلام.'
+                          : lang === 'ur' || lang === 'br'
+                          ? 'میری وفات پر مجھے خالص سنت نبوی ﷺ کے مطابق غسل اور سادہ مسنون کفن دیا جائے اور بلا تاخیر مسلمانوں کے قریبی قبرستان میں تدفین کی جائے۔ نوحہ خوانی، بین، غیر شرعی رسومات اور بدعات سے سختی سے اجتناب کیا جائے۔'
+                          : 'I order and direct my executor and family that upon my demise, my body shall be washed (Ghusl) and shrouded (Kafan) according to the orthodox Sunnah of the Prophet (PBUH). I must be buried without unnecessary delay in a Muslim cemetery. Under no circumstances shall my body be subjected to cremation, autopsy (unless mandated by public law), un-Islamic wailing, mourning beyond the prescribed three days (except for a widow\'s Iddah), or superstitious celebrations.'}
                       </p>
                       {burialDirectives.specialNotes && (
                         <p style={{ margin: '4px 0 0', fontStyle: 'italic', color: '#475569' }}>
-                          Special Directive: {burialDirectives.specialNotes}
+                          {lang === 'ar' ? 'توجيهات خاصة: ' : lang === 'ur' || lang === 'br' ? 'خصوصی ہدایات: ' : 'Special Directive: '}{burialDirectives.specialNotes}
                         </p>
                       )}
                     </div>
@@ -649,49 +670,67 @@ export default function InheritanceView() {
                     {/* Article 2: Settlement of Debts */}
                     <div style={{ marginBottom: '1.25rem', fontSize: '0.88rem' }}>
                       <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: '#064e3b' }}>
-                        Article 2: Liquidation of Debts &amp; Religious Duties
+                        {lang === 'ar' ? 'البند الثاني: قضاء الديون والحقوق والواجبات المالية' : lang === 'ur' || lang === 'br' ? 'شق نمبر 2: جملہ واجب الادا حقوق اور قرضوں کی ادائیگی' : 'Article 2: Liquidation of Debts & Religious Duties'}
                       </h4>
                       <p style={{ margin: 0 }}>
-                        I direct that all my outstanding debts, mortgages, medical and funeral expenses, unpaid dower (Mahr), unpaid Zakat, and unperformed Hajj/Fidyah commitments be paid in full from the gross estate prior to any further distribution.
+                        {lang === 'ar'
+                          ? 'أوصي بأن تُقضى ديوني كلها ومصروفات تجهيزي ودفني، ومؤخر مهر زوجتي وما عليّ من زكاة واجبة أو كفارات أو فدية صيام وصلوات، من رأس مالي قبل قسمة أي شيء من التركة.'
+                          : lang === 'ur' || lang === 'br'
+                          ? 'ترکے کی تقسیم سے قبل میرے تمام واجب الادا قرضے، بیوی کا غیر ادا شدہ مہر، زکوٰۃ، اور نماز و روزوں کے فدیے میرے اصل ترکے سے ادا کیے جائیں۔'
+                          : 'I direct that all my outstanding debts, mortgages, medical and funeral expenses, unpaid dower (Mahr), unpaid Zakat, and unperformed Hajj/Fidyah commitments be paid in full from the gross estate prior to any further distribution.'}
                       </p>
-                      <ul style={{ margin: '4px 0 0', paddingLeft: '20px', color: '#475569' }}>
-                        <li>Personal Debts: {liabilities.personalDebts || 'None listed'}</li>
-                        {liabilities.unpaidMahr && <li>Unpaid Mahr: {liabilities.unpaidMahr}</li>}
-                        {liabilities.fidyahSalahRoza && <li>Missed Fasting/Salah Fidyah: {liabilities.fidyahSalahRoza}</li>}
+                      <ul style={{ margin: '4px 0 0', paddingRight: (lang === 'ar' || lang === 'ur' || lang === 'br') ? '20px' : '0', paddingLeft: (lang === 'ar' || lang === 'ur' || lang === 'br') ? '0' : '20px', color: '#475569' }}>
+                        <li>{lang === 'ar' ? 'الديون المستحقة: ' : lang === 'ur' || lang === 'br' ? 'واجب الادا قرض: ' : 'Personal Debts: '}{liabilities.personalDebts || (lang === 'ar' ? 'لا توجد' : lang === 'ur' || lang === 'br' ? 'کوئی نہیں' : 'None listed')}</li>
+                        {liabilities.unpaidMahr && <li>{lang === 'ar' ? 'مؤخر المهر: ' : lang === 'ur' || lang === 'br' ? 'غیر ادا شدہ مہر: ' : 'Unpaid Mahr: '}{liabilities.unpaidMahr}</li>}
+                        {liabilities.fidyahSalahRoza && <li>{lang === 'ar' ? 'فدية الصيام والصلاة: ' : lang === 'ur' || lang === 'br' ? 'فدیہ نماز و روزہ: ' : 'Missed Fasting/Salah Fidyah: '}{liabilities.fidyahSalahRoza}</li>}
                       </ul>
                     </div>
 
                     {/* Article 3: Voluntary Bequest */}
                     <div style={{ marginBottom: '1.25rem', fontSize: '0.88rem' }}>
                       <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: '#064e3b' }}>
-                        Article 3: Voluntary Bequest (Wasiyyah)
+                        {lang === 'ar' ? 'البند الثالث: الوصية التبرعية (في حدود الثلث الشرعي فما دون)' : lang === 'ur' || lang === 'br' ? 'شق نمبر 3: تہائی (1/3) حصے تک نفلی وصیت' : 'Article 3: Voluntary Bequest (Wasiyyah)'}
                       </h4>
                       <p style={{ margin: 0 }}>
-                        In accordance with the ruling of Prophet Muhammad (PBUH) restricting voluntary bequests to a maximum of one-third (1/3) of the net remaining estate, I bequeath:
+                        {lang === 'ar'
+                          ? 'عملاً بحديث النبي ﷺ في شأن الوصية بالثلث، أوصي بما نسبته من صافي تركتي:'
+                          : lang === 'ur' || lang === 'br'
+                          ? 'فرمانِ رسول ﷺ کے مطابق ترکے کے ایک تہائی کے اندر اندر، میں اپنے ترکے کا نفلی حصہ وصیت کرتا/کرتی ہوں:'
+                          : 'In accordance with the ruling of Prophet Muhammad (PBUH) restricting voluntary bequests to a maximum of one-third (1/3) of the net remaining estate, I bequeath:'}
                       </p>
                       <div style={{ padding: '8px 12px', background: '#fdfbf7', border: '1px dashed #d97706', borderRadius: '8px', margin: '6px 0' }}>
-                        <strong>{bequest.percentage}%</strong> of my net estate to: <strong>{bequest.beneficiaryName}</strong>.<br />
-                        <span style={{ fontSize: '0.82rem', color: '#64748b' }}>Purpose: {bequest.purpose}</span>
+                        <strong>{bequest.percentage}%</strong> {lang === 'ar' ? 'من صافي التركة لصالح: ' : lang === 'ur' || lang === 'br' ? 'حصہ برائے: ' : 'of my net estate to: '}<strong>{bequest.beneficiaryName}</strong>.<br />
+                        <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{lang === 'ar' ? 'مصرف الوصية: ' : lang === 'ur' || lang === 'br' ? 'مقصد / مصرف: ' : 'Purpose: '}{bequest.purpose}</span>
                       </div>
                     </div>
 
                     {/* Article 4: Distribution of Remaining Estate */}
                     <div style={{ marginBottom: '1.25rem', fontSize: '0.88rem' }}>
                       <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: '#064e3b' }}>
-                        Article 4: Shariah Distribution of Residue
+                        {lang === 'ar' ? 'البند الرابع: قسمة ما تبقى من التركة وفق الفرائض الشرعية' : lang === 'ur' || lang === 'br' ? 'شق نمبر 4: مابقیہ ترکے کی تقسیم بحکمِ فرائض و قرآن مجید' : 'Article 4: Shariah Distribution of Residue'}
                       </h4>
                       <p style={{ margin: 0 }}>
-                        All the residue and remainder of my estate after debts, funeral costs, and the aforesaid voluntary bequest shall be distributed strictly in accordance with the Quranic laws of Mirath (Surah An-Nisa 4:11-12) under the guidance of recognized Islamic scholars. No heir shall take more or less than their ordained Quranic share.
+                        {lang === 'ar'
+                          ? 'يقسم سائر ما تبقى من أموالي وعقاراتي ومنقولاتی بين ورثتي الشرعيين وفق فرائض الله تعالى المبينة في سورة النساء (الآيات 11-12) ولا يزاد لوارث ولا يُنقص عن حقه الشرعي.'
+                          : lang === 'ur' || lang === 'br'
+                          ? 'قرضوں اور وصیت کی ادائیگی کے بعد تمام باقی ماندہ ترکہ سورۃ النساء کی آیات (11-12) کے مطابق شرعی ورثاء میں تقسیم کیا جائے۔'
+                          : 'All the residue and remainder of my estate after debts, funeral costs, and the aforesaid voluntary bequest shall be distributed strictly in accordance with the Quranic laws of Mirath (Surah An-Nisa 4:11-12) under the guidance of recognized Islamic scholars. No heir shall take more or less than their ordained Quranic share.'}
                       </p>
                     </div>
 
                     {/* Article 5: Appointment of Executor */}
                     <div style={{ marginBottom: '1.5rem', fontSize: '0.88rem' }}>
                       <h4 style={{ margin: '0 0 4px', fontSize: '0.98rem', fontWeight: 800, color: '#064e3b' }}>
-                        Article 5: Executor &amp; Guardian
+                        {lang === 'ar' ? 'البند الخامس: تعيين الوصي الشرعي لتنفيذ الوصية' : lang === 'ur' || lang === 'br' ? 'شق نمبر 5: نگران و وصی کی نامزدگی' : 'Article 5: Executor & Guardian'}
                       </h4>
                       <p style={{ margin: 0 }}>
-                        I nominate and appoint <strong>{executor.fullName || '[Executor Name]'}</strong> ({executor.relationship || 'Relative'}, Phone: {executor.phone || 'N/A'}) as the primary Executor of this will. If unable or unwilling to serve, I appoint <strong>{executor.altExecutor || '[Alternate Executor]'}</strong>.
+                        {lang === 'ar' ? (
+                          <>عينتُ <strong>{executor.fullName || '[اسم الوصي]'}</strong> ({executor.relationship || 'القريب'}، هاتف: {executor.phone || 'غير مسجل'}) وصياً شرعياً لتنفيذ هذه الوصية ورعاية شؤونها. وإن تعذر، فالمفوض البديل هو <strong>{executor.altExecutor || '[الوصي البديل]'}</strong>.</>
+                        ) : lang === 'ur' || lang === 'br' ? (
+                          <>میں نے <strong>{executor.fullName || '[وصی کا نام]'}</strong> ({executor.relationship || 'رشتہ'}، فون: {executor.phone || 'N/A'}) کو اس وصیت کا نگراں و وصی مقرر کیا ہے۔ اگر وہ معذور ہوں تو متبادل وصی <strong>{executor.altExecutor || '[متبادل وصی]'}</strong> ہوں گے۔</>
+                        ) : (
+                          <>I nominate and appoint <strong>{executor.fullName || '[Executor Name]'}</strong> ({executor.relationship || 'Relative'}, Phone: {executor.phone || 'N/A'}) as the primary Executor of this will. If unable or unwilling to serve, I appoint <strong>{executor.altExecutor || '[Alternate Executor]'}</strong>.</>
+                        )}
                       </p>
                     </div>
 
@@ -700,35 +739,35 @@ export default function InheritanceView() {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
                         <div>
                           <div style={{ borderBottom: '1px solid #000', height: '40px', marginBottom: '4px' }}></div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 800 }}>Signature of Testator (الموصي)</div>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Name: {testator.fullName || '______________________'}</div>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Date: {testator.willDate}</div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 800 }}>{lang === 'ar' ? 'توقيع الموصي (الموصي)' : lang === 'ur' || lang === 'br' ? 'دستخط موصی (الموصي)' : 'Signature of Testator (الموصي)'}</div>
+                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{lang === 'ar' ? 'الاسم: ' : lang === 'ur' || lang === 'br' ? 'نام: ' : 'Name: '}{testator.fullName || '______________________'}</div>
+                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{lang === 'ar' ? 'التاريخ: ' : lang === 'ur' || lang === 'br' ? 'تاریخ: ' : 'Date: '}{testator.willDate}</div>
                         </div>
                         <div>
                           <div style={{ borderBottom: '1px solid #000', height: '40px', marginBottom: '4px' }}></div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 800 }}>Signature of Executor (الوصي)</div>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Name: {executor.fullName || '______________________'}</div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 800 }}>{lang === 'ar' ? 'توقيع الوصي المختار (الوصي)' : lang === 'ur' || lang === 'br' ? 'دستخط وصی (الوصي)' : 'Signature of Executor (الوصي)'}</div>
+                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{lang === 'ar' ? 'الاسم: ' : lang === 'ur' || lang === 'br' ? 'نام: ' : 'Name: '}{executor.fullName || '______________________'}</div>
                         </div>
                       </div>
 
                       {/* Witnesses Signatures */}
                       <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#064e3b', marginBottom: '0.5rem' }}>
-                        Attestation of Two Sane Adult Muslim Witnesses (الشاهدان العدلان):
+                        {lang === 'ar' ? 'شهادة وتوقيع الشاهدين العدلين (الشاهدان العدلان):' : lang === 'ur' || lang === 'br' ? 'دو عاقل بالغ مسلمان مرد گواہان کی تصدیق (الشاهدان العدلان):' : 'Attestation of Two Sane Adult Muslim Witnesses (الشاهدان العدلان):'}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                         <div style={{ padding: '8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.8rem' }}>
-                          <div style={{ fontWeight: 800 }}>Witness 1:</div>
-                          <div>Name: {witnesses.witness1Name || '______________________'}</div>
-                          <div>CNIC: {witnesses.witness1Id || '______________________'}</div>
+                          <div style={{ fontWeight: 800 }}>{lang === 'ar' ? 'الشاهد الأول:' : lang === 'ur' || lang === 'br' ? 'پہلا گواہ:' : 'Witness 1:'}</div>
+                          <div>{lang === 'ar' ? 'الاسم: ' : lang === 'ur' || lang === 'br' ? 'نام: ' : 'Name: '}{witnesses.witness1Name || '______________________'}</div>
+                          <div>{lang === 'ar' ? 'رقم الهوية: ' : lang === 'ur' || lang === 'br' ? 'شناختی کارڈ: ' : 'CNIC: '}{witnesses.witness1Id || '______________________'}</div>
                           <div style={{ borderBottom: '1px dashed #64748b', height: '30px', marginTop: '4px' }}></div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>Signature &amp; Date</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>{lang === 'ar' ? 'التوقيع والتاريخ' : lang === 'ur' || lang === 'br' ? 'دستخط اور تاریخ' : 'Signature & Date'}</div>
                         </div>
                         <div style={{ padding: '8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.8rem' }}>
-                          <div style={{ fontWeight: 800 }}>Witness 2:</div>
-                          <div>Name: {witnesses.witness2Name || '______________________'}</div>
-                          <div>CNIC: {witnesses.witness2Id || '______________________'}</div>
+                          <div style={{ fontWeight: 800 }}>{lang === 'ar' ? 'الشاهد الثاني:' : lang === 'ur' || lang === 'br' ? 'دوسرا گواہ:' : 'Witness 2:'}</div>
+                          <div>{lang === 'ar' ? 'الاسم: ' : lang === 'ur' || lang === 'br' ? 'نام: ' : 'Name: '}{witnesses.witness2Name || '______________________'}</div>
+                          <div>{lang === 'ar' ? 'رقم الهوية: ' : lang === 'ur' || lang === 'br' ? 'شناختی کارڈ: ' : 'CNIC: '}{witnesses.witness2Id || '______________________'}</div>
                           <div style={{ borderBottom: '1px dashed #64748b', height: '30px', marginTop: '4px' }}></div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>Signature &amp; Date</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>{lang === 'ar' ? 'التوقيع والتاريخ' : lang === 'ur' || lang === 'br' ? 'دستخط اور تاریخ' : 'Signature & Date'}</div>
                         </div>
                       </div>
                     </div>
