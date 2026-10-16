@@ -35,10 +35,19 @@ cd $PROJECT_DIR/frontend
 npm install --quiet || true
 npm run build
 
-# 4. Restart Services
-echo "🔄 [4/5] Restarting Gunicorn & Nginx Services..."
-sudo systemctl restart gunicorn_quran
-sudo systemctl reload nginx
+# 4. Sync Nginx Web Server Configuration
+if [ -f "$PROJECT_DIR/nginx.conf" ]; then
+    echo "🌐 [4/5] Applying updated Nginx configuration..."
+    sudo cp "$PROJECT_DIR/nginx.conf" /etc/nginx/sites-available/quran_portal
+    sudo ln -sf /etc/nginx/sites-available/quran_portal /etc/nginx/sites-enabled/quran_portal
+    sudo rm -f /etc/nginx/sites-enabled/default
+fi
+
+# 5. Restart & Reload Services
+echo "🔄 [5/5] Restarting Gunicorn & Reloading Nginx..."
+sudo systemctl daemon-reload || true
+sudo systemctl restart gunicorn_quran || sudo systemctl restart gunicorn || true
+sudo nginx -t && sudo systemctl reload nginx
 
 # 5. Done
 echo ""
