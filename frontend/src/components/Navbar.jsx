@@ -32,6 +32,12 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const extraMenuItems = [
     {
+      id: 'topics',
+      label: t('topics', 'Topics'),
+      icon: 'fas fa-layer-group',
+      action: () => { navigateToTab('topics'); setShowExtrasMenu(false); setMobileActive(false); }
+    },
+    {
       id: 'spotlightSearch',
       label: '⚡ ' + (lang === 'ar' ? 'البحث الشامل الفوري (Ctrl+K)' : (lang === 'ur' || lang === 'br') ? 'اسپاٹ لائٹ گلوبل سرچ (Ctrl+K)' : 'Spotlight Search (Ctrl+K)'),
       icon: 'fas fa-search',
@@ -121,7 +127,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
-    { id: 'topics', label: t('topics', 'Topics'), icon: 'fas fa-layer-group' },
     { id: 'asanNimaz', label: t('asanNimaz', 'آسان نماز'), icon: 'fas fa-mosque' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
