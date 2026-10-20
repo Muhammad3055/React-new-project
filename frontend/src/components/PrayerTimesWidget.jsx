@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
+import { cleanPrayerTime, countdown, dateKey, loadPrayerSchedule, nextPrayerEvent, validCoordinates } from '../utils/prayerTimes';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
@@ -14,11 +14,31 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   const [monthlyTimings, setMonthlyTimings] = useState([]);
   
   // User Location State
-  const [locationName, setLocationName] = useState(localStorage.getItem('user_location_name') || 'Detecting location...');
+  const [locationName, setLocationName] = useState('Detecting location…');
   const [locationType, setLocationType] = useState('ip'); // 'gps' | 'ip' | 'custom'
   const [customCity, setCustomCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
-  const [countryCode, setCountryCode] = useState(localStorage.getItem('user_country_code') || '');
+  const [customCountry, setCustomCountry] = useState('');
+  const [error, setError] = useState('');
+  const [schedule, setSchedule] = useState(null);
+  const [scheduleTimezone, setScheduleTimezone] = useState(null);
+  const [now, setNow] = useState(Date.now());
+  const [refresh, setRefresh] = useState(0);
+  const detectionRef = useRef(0);
+  const callbackRef = useRef(onLocationOrDateUpdate);
+  callbackRef.current = onLocationOrDateUpdate;
+  const [location, setLocation] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('maktaba_prayer_location'));
+      return saved?.type === 'custom' && saved.city && saved.country ? saved : null;
+    } catch { return null; }
+  });
+  const [calculation, setCalculation] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('maktaba_prayer_calculation'));
+      return { method: saved?.method || 'auto', school: saved?.school || 'auto' };
+    } catch { return { method: 'auto', school: 'auto' }; }
+  });
 
   const [countdownText, setCountdownText] = useState('');
   const [sehriCountdown, setSehriCountdown] = useState('');
@@ -29,14 +49,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   const [showAdhanSettings, setShowAdhanSettings] = useState(false);
   const [isAdhanPlaying, setIsAdhanPlaying] = useState(false);
   const [activeAdhanAlert, setActiveAdhanAlert] = useState(null);
-  const lastTriggeredPrayerRef = useRef(() => {
-    try {
-      return localStorage.getItem('maktaba_last_triggered_adhan') || '';
-    } catch (e) {
-      return '';
-    }
-  });
-
+  const lastTriggeredPrayerRef = useRef('');
   const [adhanSettings, setAdhanSettings] = useState(() => {
     try {
       const saved = localStorage.getItem('maktaba_adhan_settings');
@@ -65,7 +78,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
       localStorage.setItem('maktaba_adhan_settings', JSON.stringify(adhanSettings));
     } catch (e) {}
     if (adhanAudioRef.current) {
-      adhanAudioRef.current.volume = (adhanSettings.volume || 85) / 100;
+      adhanAudioRef.current.volume = (adhanSettings.volume ?? 85) / 100;
     }
   }, [adhanSettings]);
 
@@ -92,7 +105,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
       adhanAudioRef.current = new Audio('/audio/adhan.mp3');
     }
     const audio = adhanAudioRef.current;
-    audio.volume = (adhanSettings.volume || 85) / 100;
+    audio.volume = (adhanSettings.volume ?? 85) / 100;
     audio.currentTime = 0;
     audio.play().then(() => {
       setIsAdhanPlaying(true);
@@ -125,377 +138,167 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     }));
   };
 
-  // Ticking digital clock & live countdown timer
   useEffect(() => {
-    const updateClock = () => {
-      const now = new Date();
-      setLiveTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-
-      if (timings) {
-        // Calculate countdown to Next Prayer
-        if (nextPrayer && nextPrayer.time) {
-          const [ph, pm] = nextPrayer.time.split(':').map(Number);
-          const pDate = new Date();
-          pDate.setHours(ph, pm, 0, 0);
-          if (pDate < now) pDate.setDate(pDate.getDate() + 1);
-          const diffMs = pDate - now;
-          const hrs = Math.floor(diffMs / 3600000);
-          const mins = Math.floor((diffMs % 3600000) / 60000);
-          const secs = Math.floor((diffMs % 60000) / 1000);
-          setCountdownText(`${hrs > 0 ? hrs + 'h ' : ''}${mins}m ${secs}s`);
-        }
-
-        // Calculate Sehri (Fajr time) Countdown
-        if (timings.Fajr) {
-          const [fh, fm] = timings.Fajr.split(':').map(Number);
-          const fDate = new Date();
-          fDate.setHours(fh, fm, 0, 0);
-          if (fDate < now) fDate.setDate(fDate.getDate() + 1);
-          const diffFajr = fDate - now;
-          const fHrs = Math.floor(diffFajr / 3600000);
-          const fMins = Math.floor((diffFajr % 3600000) / 60000);
-          const fSecs = Math.floor((diffFajr % 60000) / 1000);
-          setSehriCountdown(`${fHrs > 0 ? fHrs + 'h ' : ''}${fMins}m ${fSecs}s`);
-        }
-
-        // Calculate Iftar (Maghrib time) Countdown
-        if (timings.Maghrib) {
-          const [mh, mm] = timings.Maghrib.split(':').map(Number);
-          const mDate = new Date();
-          mDate.setHours(mh, mm, 0, 0);
-          if (mDate < now) mDate.setDate(mDate.getDate() + 1);
-          const diffMaghrib = mDate - now;
-          const mHrs = Math.floor(diffMaghrib / 3600000);
-          const mMins = Math.floor((diffMaghrib % 3600000) / 60000);
-          const mSecs = Math.floor((diffMaghrib % 60000) / 1000);
-          setIftarCountdown(`${mHrs > 0 ? mHrs + 'h ' : ''}${mMins}m ${mSecs}s`);
-        }
-
-        // Real-Time Adhan & Notification Alarm Trigger
-        const curHours = String(now.getHours()).padStart(2, '0');
-        const curMins = String(now.getMinutes()).padStart(2, '0');
-        const curTimeStr = `${curHours}:${curMins}`;
-        const todayDateStr = now.toISOString().split('T')[0];
-
-        const prayersToCheck = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-        for (const pName of prayersToCheck) {
-          const pTime = timings[pName]?.split(' ')[0];
-          if (pTime === curTimeStr) {
-            const triggerKey = `${todayDateStr}_${pName}`;
-            let lastTriggered = '';
-            try {
-              lastTriggered = localStorage.getItem('maktaba_last_triggered_adhan') || '';
-            } catch (e) {}
-
-            if (lastTriggered !== triggerKey) {
-              try {
-                localStorage.setItem('maktaba_last_triggered_adhan', triggerKey);
-              } catch (e) {}
-
-              const isPrayerEnabled = adhanSettings?.prayers?.[pName] !== false;
-              if (isPrayerEnabled) {
-                setActiveAdhanAlert({ prayer: pName, time: pTime });
-                if (adhanSettings?.soundEnabled) {
-                  playAdhanAudio(pName);
-                }
-                if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && adhanSettings?.notificationsEnabled) {
-                  try {
-                    new Notification(`🕌 Time for ${pName} Salah!`, {
-                      body: `Allahu Akbar! It is now time for ${pName} prayer in ${locationName}. Hayya 'ala-s-Salah.`,
-                      icon: '/favicon-96x96.png'
-                    });
-                  } catch (e) {}
-                }
-              }
-            }
-          }
-        }
-      }
-    };
-    updateClock();
-    const interval = setInterval(updateClock, 1000);
-    return () => clearInterval(interval);
-  }, [timings, nextPrayer, adhanSettings, locationName]);
-
-  // Location & Prayer Times Auto-Detection
-  useEffect(() => {
-    detectLocationAndFetch();
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => { clearInterval(timer); adhanAudioRef.current?.pause(); };
   }, []);
 
-  const detectLocationAndFetch = () => {
+  const detectLocationAndFetch = async () => {
+    const id = ++detectionRef.current;
     setLoading(true);
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-
-    // Try reading cached location first
-    const cachedLat = localStorage.getItem('user_lat');
-    const cachedLng = localStorage.getItem('user_lng');
-    const cachedCode = localStorage.getItem('user_country_code');
-    const cachedLabel = localStorage.getItem('user_location_name');
-
-    if (cachedLat && cachedLng) {
-      const lat = parseFloat(cachedLat);
-      const lng = parseFloat(cachedLng);
-      fetchTimingsByCoords(lat, lng, month, year, cachedLabel || 'Cached Location', 'gps', cachedCode || '');
-      // Still fetch in background/refresh GPS silently
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const newLat = pos.coords.latitude;
-            const newLng = pos.coords.longitude;
-            if (Math.abs(newLat - lat) > 0.01 || Math.abs(newLng - lng) > 0.01) {
-              reverseGeocodeAndFetch(newLat, newLng, month, year);
-            }
-          },
-          null,
-          { timeout: 8000 }
-        );
+    setError('');
+    setSchedule(null);
+    setTimings(null);
+    setMonthlyTimings([]);
+    setNextPrayer({ name: '', time: '' });
+    setCountdownText('');
+    setSehriCountdown('');
+    setIftarCountdown('');
+    stopAdhanAudio();
+    setLocation(null);
+    const requestJson = async (url) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error('Location unavailable');
+        return await response.json();
+      } finally { clearTimeout(timer); }
+    };
+    try {
+      let found;
+      try {
+        const position = await new Promise((resolve, reject) => {
+          if (!navigator.geolocation) return reject(new Error('GPS unavailable'));
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true, timeout: 12000, maximumAge: 60000,
+          });
+        });
+        if (id !== detectionRef.current) return;
+        const { latitude: lat, longitude: lng } = position.coords;
+        found = { type: 'gps', lat, lng, label: `GPS (${lat.toFixed(3)}, ${lng.toFixed(3)})`, countryCode: '' };
+        try {
+          const geo = await requestJson(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+          const address = geo.address || {};
+          found.countryCode = (address.country_code || '').toUpperCase();
+          found.label = [address.city || address.town || address.village || address.state, address.country].filter(Boolean).join(', ') || found.label;
+        } catch { /* Coordinates remain usable if the place-name lookup fails. */ }
+      } catch {
+        const ip = await requestJson('https://ipapi.co/json/');
+        if (!validCoordinates(ip.latitude, ip.longitude)) throw new Error('Location unavailable');
+        found = { type: 'ip', lat: Number(ip.latitude), lng: Number(ip.longitude),
+          countryCode: ip.country_code || '', timezone: ip.timezone,
+          label: [ip.city, ip.region, ip.country_name].filter(Boolean).join(', ') };
       }
-      return;
-    }
-
-    // 1. Try Browser GPS Geolocation
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          reverseGeocodeAndFetch(lat, lng, month, year);
-        },
-        () => {
-          // 2. Fallback to IP-based Auto Detection
-          fetchLocationByIP(month, year);
-        },
-        { timeout: 8000 }
-      );
-    } else {
-      fetchLocationByIP(month, year);
+      if (id !== detectionRef.current) return;
+      setLocation(found);
+    } catch {
+      if (id !== detectionRef.current) return;
+      setLoading(false);
+      setLocationName('Location unavailable');
+      setError('Allow location access, or enter your city and country to see prayer times.');
+      setShowCityInput(true);
     }
   };
 
-  const reverseGeocodeAndFetch = (lat, lng, month, year) => {
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-      .then(res => res.json())
-      .then(geoJson => {
-        const city = geoJson.address?.city || geoJson.address?.town || geoJson.address?.state || geoJson.address?.country || 'GPS Location';
-        const code = geoJson.address?.country_code?.toUpperCase() || '';
-        if (code) {
-          setCountryCode(code);
-          localStorage.setItem('user_country_code', code);
-        }
-        localStorage.setItem('user_lat', lat);
-        localStorage.setItem('user_lng', lng);
-        localStorage.setItem('user_location_name', city);
-        fetchTimingsByCoords(lat, lng, month, year, city, 'gps', code);
-      })
-      .catch(() => {
-        localStorage.setItem('user_lat', lat);
-        localStorage.setItem('user_lng', lng);
-        localStorage.setItem('user_location_name', 'GPS Location');
-        fetchTimingsByCoords(lat, lng, month, year, 'GPS Location', 'gps', countryCode);
-      });
-  };
+  useEffect(() => {
+    if (!location) detectLocationAndFetch();
+    return () => { detectionRef.current += 1; };
+  }, []);
 
-  const fetchLocationByIP = (month, year) => {
-    fetch('https://ipapi.co/json/')
-      .then(res => res.json())
-      .then(ipData => {
-        if (ipData && ipData.latitude && ipData.longitude) {
-          const cityCountry = `${ipData.city || 'Local City'}, ${ipData.country_name || ''}`;
-          const code = ipData.country_code || '';
-          if (code) {
-            setCountryCode(code);
-            localStorage.setItem('user_country_code', code);
-          }
-          localStorage.setItem('user_lat', ipData.latitude);
-          localStorage.setItem('user_lng', ipData.longitude);
-          localStorage.setItem('user_location_name', cityCountry);
-          fetchTimingsByCoords(ipData.latitude, ipData.longitude, month, year, cityCountry, 'ip', code);
-        } else {
-          fetchTimingsByCity('Karachi', 'Pakistan', month, year);
-        }
-      })
-      .catch(() => {
-        // Backup IP service
-        fetch('https://ip-api.com/json/')
-          .then(res => res.json())
-          .then(ipData => {
-            if (ipData && ipData.lat && ipData.lon) {
-              const cityCountry = `${ipData.city || 'Local City'}, ${ipData.country || ''}`;
-              const code = ipData.countryCode || '';
-              if (code) {
-                setCountryCode(code);
-                localStorage.setItem('user_country_code', code);
-              }
-              localStorage.setItem('user_lat', ipData.lat);
-              localStorage.setItem('user_lng', ipData.lon);
-              localStorage.setItem('user_location_name', cityCountry);
-              fetchTimingsByCoords(ipData.lat, ipData.lon, month, year, cityCountry, 'ip', code);
-            } else {
-              fetchTimingsByCity('Karachi', 'Pakistan', month, year);
-            }
-          })
-          .catch(() => fetchTimingsByCity('Karachi', 'Pakistan', month, year));
-      });
-  };
+  const localDay = dateKey(new Date(now), scheduleTimezone || location?.timezone || 'UTC');
+  useEffect(() => {
+    if (!location) return;
+    const controller = new AbortController();
+    let active = true;
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    setLoading(true);
+    setError('');
+    setTimings(null);
+    setMonthlyTimings([]);
+    setCountdownText('');
+    setSehriCountdown('');
+    setIftarCountdown('');
+    stopAdhanAudio();
+    setNextPrayer({ name: '', time: '' });
+    setLocationName(location.label);
+    setLocationType(location.type);
+    loadPrayerSchedule(location, calculation, controller.signal).then(result => {
+      if (!active) return;
+      const { today, days } = result;
+      const times = Object.fromEntries(Object.entries(today.timings).map(([name, value]) => [name, cleanPrayerTime(value)]));
+      setSchedule(result);
+      setScheduleTimezone(result.timezone);
+      setTimings(times);
+      setMonthlyTimings(days);
+      const h = today.date.hijri;
+      const g = today.date.gregorian;
+      setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
+      setGregorianDate(`${g.weekday.en}, ${g.day} ${g.month.en} ${g.year}`);
+      try {
+        localStorage.setItem('maktaba_prayer_location', JSON.stringify(location));
+        localStorage.setItem('maktaba_prayer_calculation', JSON.stringify(calculation));
+        localStorage.setItem('user_location_name', location.label);
+        localStorage.setItem('user_lat', today.meta.latitude);
+        localStorage.setItem('user_lng', today.meta.longitude);
+        localStorage.setItem('user_country_code', location.countryCode || '');
+        localStorage.setItem('user_prayer_timings', JSON.stringify(times));
+      } catch { /* Prayer times also work when browser storage is disabled. */ }
+      callbackRef.current?.({ hijri: h, lat: today.meta.latitude, lng: today.meta.longitude,
+        countryCode: location.countryCode || '', city: location.label, timings: times });
+    }).catch(err => {
+      if (!active) return;
+      setSchedule(null);
+      setMonthlyTimings([]);
+      setError(err.name === 'AbortError' ? 'Prayer service timed out. Please retry.' : err.message);
+    }).finally(() => { clearTimeout(timeout); if (active) setLoading(false); });
+    return () => { active = false; clearTimeout(timeout); controller.abort(); };
+  }, [location, calculation, refresh, localDay]);
 
-  const fetchTimingsByCoords = (lat, lng, month, year, label = 'Auto-Detected', type = 'gps', code = '') => {
-    setLocationName(label);
-    setLocationType(type);
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      setNow(Date.now());
+      if (location?.type !== 'custom') detectLocationAndFetch();
+      else setRefresh(value => value + 1);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [location]);
 
-    const activeCode = code || countryCode;
-    const { method, hijriAdjustment, school = 0, countryCode: detectedCode } = getPrayerMethodAndAdjustment(activeCode);
-    
-    if (detectedCode && detectedCode !== countryCode) {
-      setCountryCode(detectedCode);
-      localStorage.setItem('user_country_code', detectedCode);
+  useEffect(() => {
+    if (!schedule || loading || !timings) return;
+    const current = new Date(now);
+    setLiveTime(current.toLocaleTimeString([], { timeZone: schedule.timezone, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    const next = nextPrayerEvent(schedule.events, now);
+    setNextPrayer(next || { name: '', time: '' });
+    setCountdownText(countdown(next?.at, now));
+    setSehriCountdown(countdown(nextPrayerEvent(schedule.events, now, 'Fajr')?.at, now));
+    setIftarCountdown(countdown(nextPrayerEvent(schedule.events, now, 'Maghrib')?.at, now));
+    const event = schedule.events.find(item => item.at <= now && now - item.at < 60000);
+    if (!event || adhanSettings?.prayers?.[event.name] === false) return;
+    const key = `${schedule.timezone}_${event.date}_${event.name}_${event.time}`;
+    let previous = lastTriggeredPrayerRef.current;
+    try { previous = localStorage.getItem('maktaba_last_triggered_adhan') || previous; } catch {}
+    if (previous === key) return;
+    lastTriggeredPrayerRef.current = key;
+    try { localStorage.setItem('maktaba_last_triggered_adhan', key); } catch {}
+    setActiveAdhanAlert({ prayer: event.name, time: event.time });
+    if (adhanSettings.soundEnabled) playAdhanAudio(event.name);
+    if ('Notification' in window && Notification.permission === 'granted' && adhanSettings.notificationsEnabled) {
+      try { new Notification(`Time for ${event.name} Salah`, { body: `${event.time} — ${locationName}`, icon: '/favicon-96x96.png' }); } catch {}
     }
-
-    // Daily Timings
-    fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}&school=${school}&hijriAdjustment=${hijriAdjustment}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.data) {
-          setTimings(data.data.timings);
-          localStorage.setItem('user_prayer_timings', JSON.stringify(data.data.timings));
-          const h = data.data.date.hijri;
-          const g = data.data.date.gregorian;
-          setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
-          setGregorianDate(`${g.weekday.en}, ${g.day} ${g.month.en} ${g.year}`);
-          calculateNextPrayer(data.data.timings);
-
-          if (onLocationOrDateUpdate) {
-            onLocationOrDateUpdate({
-              hijri: h,
-              lat: lat,
-              lng: lng,
-              countryCode: detectedCode || activeCode,
-              city: label,
-              timings: data.data.timings
-            });
-          }
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-
-    // Monthly Calendar
-    fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=${method}&school=${school}&hijriAdjustment=${hijriAdjustment}&month=${month}&year=${year}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.data) setMonthlyTimings(data.data);
-      })
-      .catch(() => {});
-  };
-
-  const fetchTimingsByCity = (city, country, month, year, forceCode = '') => {
-    setLocationName(`${city}${country ? ', ' + country : ''}`);
-    setLocationType('custom');
-
-    const activeCode = forceCode || countryCode;
-    const { method, hijriAdjustment, school = 0 } = getPrayerMethodAndAdjustment(activeCode);
-
-    fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country || '')}&method=${method}&school=${school}&hijriAdjustment=${hijriAdjustment}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.data) {
-          const tz = data.data.meta.timezone || '';
-          let detectedCode = activeCode;
-          if (tz.includes('Karachi')) detectedCode = 'PK';
-          else if (tz.includes('Kolkata') || tz.includes('Calcutta')) detectedCode = 'IN';
-          else if (tz.includes('Dhaka')) detectedCode = 'BD';
-          else if (tz.includes('Casablanca')) detectedCode = 'MA';
-          else if (tz.includes('London')) detectedCode = 'GB';
-          else if (tz.startsWith('America/')) detectedCode = 'US';
-          else if (tz.includes('Cairo')) detectedCode = 'EG';
-
-          if (detectedCode !== activeCode && !forceCode) {
-            setCountryCode(detectedCode);
-            localStorage.setItem('user_country_code', detectedCode);
-            fetchTimingsByCity(city, country, month, year, detectedCode);
-            return;
-          }
-
-          setTimings(data.data.timings);
-          localStorage.setItem('user_prayer_timings', JSON.stringify(data.data.timings));
-          const h = data.data.date.hijri;
-          const g = data.data.date.gregorian;
-          setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
-          setGregorianDate(`${g.weekday.en}, ${g.day} ${g.month.en} ${g.year}`);
-          calculateNextPrayer(data.data.timings);
-
-          const lat = data.data.meta.latitude;
-          const lng = data.data.meta.longitude;
-          if (lat && lng) {
-            localStorage.setItem('user_lat', lat);
-            localStorage.setItem('user_lng', lng);
-            localStorage.setItem('user_location_name', `${city}${country ? ', ' + country : ''}`);
-          }
-
-          if (onLocationOrDateUpdate) {
-            onLocationOrDateUpdate({
-              hijri: h,
-              lat: lat || null,
-              lng: lng || null,
-              countryCode: detectedCode,
-              city: city,
-              timings: data.data.timings
-            });
-          }
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-
-    fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country || '')}&method=${method}&hijriAdjustment=${hijriAdjustment}&month=${month}&year=${year}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.data) setMonthlyTimings(data.data);
-      })
-      .catch(() => {});
-  };
+  }, [now, schedule, timings, loading, adhanSettings, locationName]);
 
   const handleCustomCitySubmit = (e) => {
     e.preventDefault();
-    if (!customCity.trim()) return;
-    const now = new Date();
-    fetchTimingsByCity(customCity.trim(), '', now.getMonth() + 1, now.getFullYear());
+    if (!customCity.trim() || !customCountry.trim()) return;
+    detectionRef.current += 1;
+    setLocation({ type: 'custom', city: customCity.trim(), country: customCountry.trim(),
+      countryCode: /^[a-z]{2}$/i.test(customCountry.trim()) ? customCountry.trim().toUpperCase() : '',
+      label: `${customCity.trim()}, ${customCountry.trim()}` });
     setShowCityInput(false);
   };
-
-  const calculateNextPrayer = (times) => {
-    if (!times) return;
-    const now = new Date();
-    const currentMins = now.getHours() * 60 + now.getMinutes();
-
-    const prayerOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-    let found = false;
-
-    for (let name of prayerOrder) {
-      if (!times[name]) continue;
-      const [h, m] = times[name].split(':').map(Number);
-      const prayerMins = h * 60 + m;
-      if (prayerMins > currentMins) {
-        setNextPrayer({ name, time: times[name] });
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      setNextPrayer({ name: 'Fajr (Tomorrow)', time: times['Fajr'] || '04:30' });
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="prayer-widget-card" style={{ textAlign: 'center', padding: '1.5rem', opacity: 0.8 }}>
-        <i className="fas fa-spinner fa-spin" style={{ color: 'var(--accent-gold)', fontSize: '1.5rem' }}></i>
-        <p style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>Auto-Detecting your Location & Nimaz Times...</p>
-      </div>
-    );
-  }
 
   const mainPrayers = [
     { key: 'Fajr', name: t('fajr', 'Fajr'), time: timings?.Fajr },
@@ -510,8 +313,8 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     <div className="prayer-widget-card">
       <div className="prayer-widget-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <span className="hijri-badge"><i className="fas fa-calendar-alt"></i> {hijriDate || '15 Safar 1448 AH'}</span>
-          <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{gregorianDate}</span>
+          <span className="hijri-badge"><i className="fas fa-calendar-alt"></i> {timings ? hijriDate : '—'}</span>
+          <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{timings ? gregorianDate : ''}</span>
           
           {/* Location Badge */}
           <span 
@@ -538,7 +341,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
 
           {/* Live Ticking Clock */}
           <span style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(245,158,11,0.4)', color: 'var(--accent-gold)', padding: '2px 10px', borderRadius: '14px', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.5px' }}>
-            <i className="fas fa-clock" style={{ marginRight: '4px' }}></i> {liveTime}
+            <i className="fas fa-clock" style={{ marginRight: '4px' }}></i> {timings ? liveTime : '—'}
           </span>
         </div>
 
@@ -610,16 +413,42 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
         </div>
       </div>
 
+      <div style={{ marginTop: '12px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <label>Calculation method <select aria-label="Prayer calculation method" value={calculation.method} onChange={e => setCalculation(prev => ({ ...prev, method: e.target.value }))}>
+          <option value="auto">Automatic regional method</option>
+          <option value="1">Karachi</option><option value="2">ISNA</option><option value="3">Muslim World League</option>
+          <option value="4">Umm Al-Qura, Makkah</option><option value="5">Egyptian Authority</option>
+          <option value="8">Gulf Region</option><option value="9">Kuwait</option><option value="10">Qatar</option>
+          <option value="11">Singapore</option><option value="12">France</option><option value="13">Turkey</option>
+          <option value="14">Russia</option><option value="15">Moonsighting Committee</option><option value="16">Dubai</option>
+          <option value="17">Malaysia</option><option value="20">Indonesia</option><option value="21">Morocco</option>
+        </select></label>
+        <label>Asr calculation <select aria-label="Asr calculation" value={calculation.school} onChange={e => setCalculation(prev => ({ ...prev, school: e.target.value }))}>
+          <option value="auto">Regional default</option><option value="0">Standard (Shafi, Maliki, Hanbali)</option><option value="1">Hanafi</option>
+        </select></label>
+        <button type="button" onClick={() => detectLocationAndFetch()}>Use my location</button>
+        <button type="button" onClick={() => setShowCityInput(value => !value)}>Choose city</button>
+      </div>
+      <p style={{ marginTop: '8px', fontSize: '.8rem' }}>
+        {schedule && !loading && `${schedule.timezone} · ${schedule.today.meta.method?.name || 'Regional calculation'} · ${schedule.school === '1' ? 'Hanafi Asr' : 'Standard Asr'}`}
+        {locationType === 'ip' && ' · Approximate location from your network; use GPS or choose your city for better accuracy.'}
+      </p>
+      <p style={{ fontSize: '.78rem', opacity: .85 }}>Calculated prayer start times. Your mosque’s jamaat times may differ. Adhan alerts require this page to remain open.</p>
+      {loading && <p role="status">Loading your location and prayer times…</p>}
+      {error && <p role="alert">{error} <button type="button" onClick={() => location ? setRefresh(v => v + 1) : detectLocationAndFetch()}>Retry</button></p>}
       {/* Change City Input Bar */}
-      {showCityInput && (
-        <form onSubmit={handleCustomCitySubmit} style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.4)', padding: '0.5rem', borderRadius: '12px', border: '1px solid var(--accent-gold)' }}>
+      {(showCityInput || error) && (
+        <form onSubmit={handleCustomCitySubmit} style={{ marginTop: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', background: 'rgba(0,0,0,0.4)', padding: '0.5rem', borderRadius: '12px', border: '1px solid var(--accent-gold)' }}>
           <input
             type="text"
+            required
+            aria-label="City"
             value={customCity}
             onChange={(e) => setCustomCity(e.target.value)}
             placeholder={t('typeCityPlaceholder', 'Type city name (e.g., Karachi, London, Makkah)...')}
             style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff', outline: 'none', fontSize: '0.85rem', padding: '0 0.5rem' }}
           />
+          <input required aria-label="Country" value={customCountry} onChange={e => setCustomCountry(e.target.value)} placeholder="Country (e.g. Pakistan, United Kingdom)" style={{ flex: 1, minWidth: '160px', padding: '8px', borderRadius: '8px' }} />
           <button type="submit" style={{ background: 'var(--accent-gold)', color: '#000', border: 'none', padding: '0.3rem 0.85rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>
             {t('updateLocation', 'Update Location')}
           </button>
@@ -864,7 +693,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
         /* Full Month Daily Nimaz Timetable Calendar */
         <div style={{ marginTop: '0.75rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', color: 'var(--accent-gold)', fontSize: '0.85rem', fontWeight: 700 }}>
-            <span><i className="fas fa-calendar-alt"></i> {t('fullMonthSchedule', 'Full Month Schedule')} ({new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}) - {locationName}</span>
+            <span><i className="fas fa-calendar-alt"></i> {t('fullMonthSchedule', 'Full Month Schedule')} ({new Date(now).toLocaleString('default', { timeZone: schedule?.timezone || 'UTC', month: 'long', year: 'numeric' })}) - {locationName}</span>
             <span style={{ fontSize: '0.75rem', color: '#cbd5e1', fontWeight: 400 }}>{t('showingAllDays', 'Showing all days of the month')}</span>
           </div>
           <div style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -882,9 +711,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
               </thead>
               <tbody>
                 {monthlyTimings.map((day, idx) => {
-                  const todayDay = new Date().getDate();
-                  const dayNum = parseInt(day.date?.gregorian?.day, 10);
-                  const isToday = dayNum === todayDay;
+                  const isToday = day.date?.gregorian?.date === localDay;
 
                   return (
                     <tr
