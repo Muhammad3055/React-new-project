@@ -62,7 +62,13 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
     };
 
     const contentType = item?.contentType || item?.file_type || 'book';
-    await editContentItem(item.id, updatedFields, contentType);
+    try {
+      await editContentItem(item.id, updatedFields, contentType);
+    } catch (error) {
+      setSaving(false);
+      alert('Upload failed: ' + error.message);
+      return;
+    }
 
     setSaving(false);
     if (onSuccess) onSuccess();

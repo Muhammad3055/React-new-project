@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
-import { uploadFileInChunks } from '../utils/chunkUploader';
+import { postMediaForm } from '../utils/chunkUploader';
 import { getAdminItems, addAdminItem, deleteContentItem } from '../utils/adminContentStore';
 import AdminEditModal from '../components/AdminEditModal';
 import { ALL_114_SURAHS } from '../data/quran_data';
@@ -55,6 +55,9 @@ export default function UploadView({ user }) {
   // Book Form State
   const [bookData, setBookData] = useState({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'ur', description: '' });
   const [bookFile, setBookFile] = useState(null);
+  const [bookUploading, setBookUploading] = useState(false);
+  const [bookProgress, setBookProgress] = useState(0);
+  const [bookStats, setBookStats] = useState('');
 
   // Hadith Form State (Direct Text)
   const [hadithData, setHadithData] = useState({ book_name: 'Sahih Bukhari', hadith_number: 1, chapter: '', arabic_text: '', translation: '', narrated_by: '', grade: 'Sahih' });
@@ -104,94 +107,24 @@ export default function UploadView({ user }) {
     formData.append('language', taqreerData.language);
     formData.append('duration', taqreerData.duration);
     formData.append('description', taqreerData.description);
-    if (taqreerFile && taqreerFile.size > 50 * 1024 * 1024) {
-      setTaqreerUploading(true);
-      setTaqreerProgress(0);
-      try {
-        const assembled = await uploadFileInChunks(taqreerFile, (pct, stats) => {
-          setTaqreerProgress(pct);
-          setTaqreerStats(stats);
-        });
-        formData.append('assembled_filename', assembled);
-      } catch (err) {
-        setTaqreerUploading(false);
-        alert('Upload failed: ' + err.message);
-        return;
-      }
-    } else if (taqreerFile) {
-      formData.append('audio_file', taqreerFile);
-    } else {
-      const cleanUrl = (taqreerData.audio_url && !taqreerData.audio_url.startsWith('blob:')) ? taqreerData.audio_url : '';
-      formData.append('audio_url', cleanUrl);
-    }
-
+    if (taqreerFile) formData.append('audio_file', taqreerFile);
+    else formData.append('audio_url', taqreerData.audio_url || '');
     setTaqreerUploading(true);
-    setTaqreerProgress(0);
-    setTaqreerStats('Starting upload...');
-
-    const xhr = new XMLHttpRequest();
-    const startTime = Date.now();
-    xhr.open('POST', getApiUrl('/api/taqreer/'));
-
-    if (xhr.upload) {
-      xhr.upload.onprogress = (evt) => {
-        if (evt.lengthComputable && evt.total > 0) {
-          const percent = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
-          setTaqreerProgress(percent);
-          const elapsed = (Date.now() - startTime) / 1000;
-          if (elapsed > 0.3) {
-            const speed = ((evt.loaded / 1048576) / elapsed).toFixed(1);
-            const loaded = (evt.loaded / 1048576).toFixed(1);
-            const total = (evt.total / 1048576).toFixed(1);
-            setTaqreerStats(`${loaded} MB / ${total} MB (${speed} MB/s)`);
-          }
-        }
-      };
-    }
-
-    xhr.onload = () => {
-      setTaqreerProgress(100);
-      setTaqreerStats('Done! Saved to database.');
-      setTaqreerUploading(false);
-      try {
-        const data = JSON.parse(xhr.responseText);
-        setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully!');
-      } catch (e) {
-        setSubmittedMessage('Taqreer MP3 added successfully!');
-      }
+    try {
+      const data = await postMediaForm('/api/taqreer/', formData, (pct, stats) => {
+        setTaqreerProgress(pct); setTaqreerStats(stats);
+      });
+      setSubmittedMessage(data.message || 'Lecture saved successfully.');
       setTaqreerData({ title: '', arabic_title: '', speaker: '', language: 'urdu', audio_url: '', duration: '', description: '' });
       setTaqreerFile(null);
       window.dispatchEvent(new CustomEvent('admin_content_updated'));
-      setTimeout(() => setSubmittedMessage(''), 4000);
-    };
-
-    xhr.onerror = (err) => {
-      console.error('Taqreer upload error:', err);
-      setTaqreerUploading(false);
-      addAdminItem({
-        title: taqreerData.title,
-        arabic_title: taqreerData.arabic_title,
-        speaker: taqreerData.speaker,
-        author: taqreerData.speaker,
-        destination: 'taqreer',
-        contentType: 'audio',
-        language: taqreerData.language,
-        duration: taqreerData.duration,
-        description: taqreerData.description,
-        fileUrl: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
-        audio_url: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
-        addedByAdmin: true
-      });
-      setSubmittedMessage('Taqreer MP3 saved locally!');
-      window.dispatchEvent(new CustomEvent('admin_content_updated'));
-      setTimeout(() => setSubmittedMessage(''), 4000);
-    };
-
-    xhr.send(formData);
+    } catch (error) { alert('Upload failed: ' + error.message); }
+    finally { setTaqreerUploading(false); }
   };
 
-  const handleBookSubmit = (e) => {
+  const handleBookSubmit = async (e) => {
     e.preventDefault();
+    if (bookUploading) return;
     const tempDocUrl = bookFile ? URL.createObjectURL(bookFile) : bookData.pdf_url;
 
     const newItem = {
@@ -218,36 +151,23 @@ export default function UploadView({ user }) {
     formData.append('description', bookData.description);
     if (bookFile) {
       formData.append('pdf_file', bookFile);
-      formData.append('file', bookFile);
     } else {
       formData.append('pdf_url', bookData.pdf_url);
     }
     if (bookData.cover_url) formData.append('cover_url', bookData.cover_url);
 
-    fetch(getApiUrl('/api/books/'), {
-      method: 'POST',
-      body: formData
-    })
-      .then(res => res.json())
-      .then((data) => {
-        if (data && data.document_url) {
-          newItem.fileUrl = data.document_url;
-          newItem.pdf_url = data.document_url;
-          if (data.id) newItem.id = data.id;
-        }
-        addAdminItem(newItem);
-        setSubmittedMessage('Book document uploaded successfully & saved to Django database!');
-        setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'ur', description: '' });
-        setBookFile(null);
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setTimeout(() => setSubmittedMessage(''), 4000);
-      })
-      .catch(() => {
-        addAdminItem(newItem);
-        setSubmittedMessage('Book saved!');
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setTimeout(() => setSubmittedMessage(''), 4000);
+    setBookUploading(true);
+    try {
+      const data = await postMediaForm('/api/books/', formData, (pct, stats) => {
+        setBookProgress(pct); setBookStats(stats);
       });
+      addAdminItem({ ...newItem, id: data.id, fileUrl: data.document_url, pdf_url: data.document_url });
+      setSubmittedMessage('Document saved successfully.');
+      setBookData({ title: '', author: '', file_type: 'pdf', pdf_url: '', cover_url: '', pages_count: 100, language: 'ur', description: '' });
+      setBookFile(null);
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+    } catch (error) { alert('Upload failed: ' + error.message); }
+    finally { setBookUploading(false); }
   };
 
   const handleHadithSubmit = (e) => {
@@ -343,79 +263,20 @@ export default function UploadView({ user }) {
     formData.append('arabic_title', audioData.surah_name_arabic);
     formData.append('reciter', audioData.reciter);
     formData.append('language', audioData.language);
-    if (audioFile && audioFile.size > 50 * 1024 * 1024) {
-      setAudioUploading(true);
-      setAudioProgress(0);
-      try {
-        const assembled = await uploadFileInChunks(audioFile, (pct, stats) => {
-          setAudioProgress(pct);
-          setAudioStats(stats);
-        });
-        formData.append('assembled_filename', assembled);
-      } catch (err) {
-        setAudioUploading(false);
-        alert('Upload failed: ' + err.message);
-        return;
-      }
-    } else if (audioFile) {
-      formData.append('audio_file', audioFile);
-    } else {
-      const cleanUrl = (audioData.audio_url && !audioData.audio_url.startsWith('blob:')) ? audioData.audio_url : '';
-      formData.append('audio_url', cleanUrl);
-    }
-
-    if (audioData.duration) {
-      formData.append('duration', audioData.duration);
-    }
-
+    if (audioFile) formData.append('audio_file', audioFile);
+    else formData.append('audio_url', audioData.audio_url || '');
+    if (audioData.duration) formData.append('duration', audioData.duration);
     setAudioUploading(true);
-    setAudioProgress(0);
-    setAudioStats('Starting upload...');
-
-    const xhr = new XMLHttpRequest();
-    const startTime = Date.now();
-    xhr.open('POST', getApiUrl('/api/quran/'));
-
-    if (xhr.upload) {
-      xhr.upload.onprogress = (evt) => {
-        if (evt.lengthComputable && evt.total > 0) {
-          const percent = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
-          setAudioProgress(percent);
-          const elapsed = (Date.now() - startTime) / 1000;
-          if (elapsed > 0.3) {
-            const speed = ((evt.loaded / 1048576) / elapsed).toFixed(1);
-            const loaded = (evt.loaded / 1048576).toFixed(1);
-            const total = (evt.total / 1048576).toFixed(1);
-            setAudioStats(`${loaded} MB / ${total} MB (${speed} MB/s)`);
-          }
-        }
-      };
-    }
-
-    xhr.onload = () => {
-      setAudioProgress(100);
-      setAudioStats('Done! Saved to database.');
-      setAudioUploading(false);
-      try {
-        const data = JSON.parse(xhr.responseText);
-        setSubmittedMessage(data.message || 'Quran Audio recitation uploaded successfully!');
-      } catch (e) {
-        setSubmittedMessage('Quran Audio recitation uploaded successfully!');
-      }
+    try {
+      const data = await postMediaForm('/api/quran/', formData, (pct, stats) => {
+        setAudioProgress(pct); setAudioStats(stats);
+      });
+      setSubmittedMessage(data.message || 'Quran audio saved successfully.');
       setAudioData({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '', duration: '' });
       setAudioFile(null);
       window.dispatchEvent(new CustomEvent('admin_content_updated'));
-      setTimeout(() => setSubmittedMessage(''), 4000);
-    };
-
-    xhr.onerror = (err) => {
-      console.error('Quran audio upload error:', err);
-      setAudioUploading(false);
-      setSubmittedMessage('Audio saved locally!');
-      setTimeout(() => setSubmittedMessage(''), 4000);
-    };
-
-    xhr.send(formData);
+    } catch (error) { alert('Upload failed: ' + error.message); }
+    finally { setAudioUploading(false); }
   };
 
   return (
@@ -689,8 +550,8 @@ export default function UploadView({ user }) {
               </div>
             </div>
 
-            <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-upload"></i> Save & Upload Document
+            <button type="submit" disabled={bookUploading} className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
+              <i className="fas fa-upload"></i> {bookUploading ? `${bookProgress}% — ${bookStats}` : "Save & Upload Document"}
             </button>
           </form>
         )}

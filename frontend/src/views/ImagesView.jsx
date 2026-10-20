@@ -1,10 +1,11 @@
+import { postMediaForm } from '../utils/chunkUploader';
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { deleteContentItem } from '../utils/adminContentStore';
 import { createPortal } from 'react-dom';
 import Pagination from '../components/Pagination';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
 const CATEGORIES = [
   { id: 'mix', name: 'Mix' },
@@ -61,21 +62,15 @@ export default function ImagesView({ user }) {
     formData.append('image_file', uploadData.file);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/images/`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (response.ok) {
-        setShowUploadModal(false);
-        setUploadData({ title: '', category: 'mix', description: '', file: null });
-        fetchImages(); // Refresh
-        alert("Image uploaded successfully!");
-      } else {
-        alert("Upload failed.");
-      }
+      await postMediaForm('/api/images/', formData);
+      setShowUploadModal(false);
+      setUploadData({ title: '', category: 'mix', description: '', file: null });
+      fetchImages();
+      alert('Image uploaded successfully!');
+
     } catch (error) {
       console.error(error);
-      alert("Upload failed.");
+      alert('Upload failed: ' + error.message);
     }
   };
 

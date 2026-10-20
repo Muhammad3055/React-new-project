@@ -1,0 +1,8 @@
+{% extends "admin/change_form.html" %}
+{% block form_top %}
+  {{ block.super }}
+  <p>Large files upload in parts. Keep this page open until saving finishes. If interrupted, select the same file and retry to resume.</p>
+  {% for name, token in chunked_upload_tokens %}
+    <input type="hidden" name="{{ name }}" value="{{ token }}">
+  {% endfor %}
+{% endblock %}

@@ -1,3 +1,4 @@
+import { postMediaForm } from './chunkUploader';
 import { getApiUrl, clearApiCache } from './apiCache';
 
 // Listen for global admin updates and purge API cache so all users (logged-in or not) see fresh data instantly
@@ -155,8 +156,6 @@ export function updateAdminItem(updatedItem) {
 
 export async function editContentItem(itemId, updatedData = {}, contentType = 'book') {
   const itemToSave = { id: itemId, contentType, ...updatedData };
-  updateAdminItem(itemToSave);
-
   try {
     const formData = new FormData();
     formData.append('id', itemId);
@@ -165,17 +164,18 @@ export async function editContentItem(itemId, updatedData = {}, contentType = 'b
     Object.keys(updatedData).forEach(key => {
       if (key === 'selectedFile' && updatedData[key]) {
         formData.append('file', updatedData[key]);
+      } else if (key === 'selectedCoverFile' && updatedData[key]) {
+        formData.append('cover_image', updatedData[key]);
       } else if (updatedData[key] !== undefined && updatedData[key] !== null) {
         formData.append(key, updatedData[key]);
       }
     });
 
-    await fetch(getApiUrl('/api/admin/content/edit/'), {
-      method: 'POST',
-      body: formData
-    });
-  } catch (e) {
-    console.error('Error syncing edit with backend API:', e);
+    await postMediaForm('/api/admin/content/edit/', formData);
+    updateAdminItem(itemToSave);
+  } catch (error) {
+    console.error('Error syncing edit with backend API:', error);
+    throw error;
   }
 
   clearApiCache();

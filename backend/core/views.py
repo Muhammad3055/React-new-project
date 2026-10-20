@@ -18,6 +18,8 @@ from .models import (
     Bookmark, ContentReport, ContactMessage, UserProfilePreferences,
     DailyPrayerTracker, AyahReflectionNote, ZakatHistory, ImageMedia
 )
+from .uploads import chunked_files, upload_chunk
+
 from .forms import QuranAudioForm, VideoMediaForm, BookMediaForm, TafseerForm, HadithForm
 
 QARIS_LIST = [
@@ -172,70 +174,11 @@ def get_surah_names(surah_num):
 # --- REST API Endpoints for React SPA ---
 
 
-@csrf_exempt
-def api_upload_chunk(request):
-    """
-    Receives 25MB file slices to effortlessly bypass Cloudflare's 100MB free upload limit.
-    Assembles them on the server when all parts are received.
-    """
-    if request.method != 'POST':
-        return JsonResponse({'error': 'POST required'}, status=405)
-
-    upload_id = request.POST.get('upload_id')
-    chunk_index = int(request.POST.get('chunk_index', 0))
-    total_chunks = int(request.POST.get('total_chunks', 1))
-    filename = request.POST.get('filename', 'upload.tmp')
-    chunk_file = request.FILES.get('chunk')
-
-    if not upload_id or not chunk_file:
-        return JsonResponse({'error': 'Missing upload_id or chunk'}, status=400)
-
-    # Store chunks safely under MEDIA_ROOT/chunks/<upload_id>/
-    chunk_dir = os.path.join(settings.MEDIA_ROOT, 'chunks', upload_id)
-    os.makedirs(chunk_dir, exist_ok=True)
-
-    chunk_part_path = os.path.join(chunk_dir, f"part_{chunk_index:05d}")
-    with open(chunk_part_path, 'wb') as f:
-        for c in chunk_file.chunks():
-            f.write(c)
-
-    # When the final chunk arrives, stitch all parts together
-    if chunk_index == total_chunks - 1:
-        parts = [os.path.join(chunk_dir, f"part_{i:05d}") for i in range(total_chunks)]
-        if all(os.path.exists(p) for p in parts):
-            assembled_dir = os.path.join(settings.MEDIA_ROOT, 'chunks', 'assembled')
-            os.makedirs(assembled_dir, exist_ok=True)
-            clean_filename = os.path.basename(filename)
-            assembled_filename = f"{upload_id}_{clean_filename}"
-            assembled_path = os.path.join(assembled_dir, assembled_filename)
-
-            with open(assembled_path, 'wb') as outfile:
-                for p in parts:
-                    with open(p, 'rb') as infile:
-                        while True:
-                            buf = infile.read(4 * 1024 * 1024)
-                            if not buf:
-                                break
-                            outfile.write(buf)
-                    try:
-                        os.remove(p)
-                    except Exception:
-                        pass
-            try:
-                os.rmdir(chunk_dir)
-            except Exception:
-                pass
-
-            return JsonResponse({
-                'status': 'complete',
-                'assembled_filename': assembled_filename,
-                'message': 'All parts uploaded and assembled successfully!'
-            })
-
-    return JsonResponse({'status': 'chunk_saved', 'chunk_index': chunk_index, 'total_chunks': total_chunks})
+api_upload_chunk = upload_chunk
 
 
 @csrf_exempt
+@chunked_files({'assembled_filename': 'audio_file'})
 def api_quran_list(request):
     if request.method == 'POST':
         try:
@@ -279,18 +222,6 @@ def api_quran_list(request):
                 duration=body.get('duration') or '00:00',
                 audio_file=audio_file
             )
-            assembled_file_name = body.get('assembled_filename')
-            if assembled_file_name:
-                assembled_path = os.path.join(settings.MEDIA_ROOT, 'chunks', 'assembled', os.path.basename(assembled_file_name))
-                if os.path.exists(assembled_path):
-                    from django.core.files import File
-                    real_filename = assembled_file_name.split('_', 2)[-1] if '_' in assembled_file_name else assembled_file_name
-                    with open(assembled_path, 'rb') as af:
-                        qa.audio_file.save(real_filename, File(af), save=True)
-                    try:
-                        os.remove(assembled_path)
-                    except Exception:
-                        pass
             return JsonResponse({'status': 'success', 'id': qa.id, 'audio_url': qa.get_playable_url(), 'surah_name_arabic': qa.surah_name_arabic, 'surah_name_english': qa.surah_name_english, 'message': 'Quran Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -422,7 +353,27 @@ def api_quran_list(request):
     return res
 
 
+@csrf_exempt
+@chunked_files({'assembled_filename': 'video_file'})
 def api_videos_list(request):
+    if request.method == 'POST':
+        if not request.user.is_authenticated or not request.user.is_staff:
+            return JsonResponse({'error': 'Staff login required.'}, status=403)
+        try:
+            body = request.POST
+            video = VideoMedia.objects.create(
+                title=body.get('title') or 'Untitled Video',
+                speaker=body.get('speaker') or 'Islamic Scholar',
+                description=body.get('description', ''),
+                video_url=body.get('video_url', ''),
+                video_file=request.FILES.get('video_file') or request.FILES.get('file'),
+                thumbnail=request.FILES.get('thumbnail') or request.FILES.get('cover_image'),
+            )
+            return JsonResponse({'status': 'success', 'id': video.id,
+                                 'video_url': video.video_file.url if video.video_file else video.video_url})
+        except Exception as exc:
+            return JsonResponse({'error': str(exc)}, status=400)
+
     query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '').strip()
     page_number = request.GET.get('page', 1)
@@ -464,6 +415,7 @@ def api_videos_list(request):
 
 
 @csrf_exempt
+@chunked_files({'assembled_filename': 'audio_file'})
 def api_taqreer_list(request):
     if request.method == 'POST':
         try:
@@ -500,18 +452,6 @@ def api_taqreer_list(request):
                 description=body.get('description') or '',
                 audio_file=audio_file
             )
-            assembled_file_name = body.get('assembled_filename')
-            if assembled_file_name:
-                assembled_path = os.path.join(settings.MEDIA_ROOT, 'chunks', 'assembled', os.path.basename(assembled_file_name))
-                if os.path.exists(assembled_path):
-                    from django.core.files import File
-                    real_filename = assembled_file_name.split('_', 2)[-1] if '_' in assembled_file_name else assembled_file_name
-                    with open(assembled_path, 'rb') as af:
-                        tq.audio_file.save(real_filename, File(af), save=True)
-                    try:
-                        os.remove(assembled_path)
-                    except Exception:
-                        pass
             return JsonResponse({'status': 'success', 'id': tq.id, 'audio_url': tq.get_playable_url(), 'arabic_title': tq.arabic_title, 'title': tq.title, 'message': 'Taqreer Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -575,6 +515,7 @@ def api_taqreer_list(request):
 
 
 @csrf_exempt
+@chunked_files({'assembled_filename': 'pdf_file'})
 def api_books_list(request):
     if request.method == 'POST':
         try:
@@ -2134,6 +2075,7 @@ def api_admin_delete_content(request):
 
 
 @csrf_exempt
+@chunked_files({'assembled_filename': 'file'})
 def api_admin_edit_content(request):
     if request.method in ['POST', 'PUT']:
         try:
@@ -2143,7 +2085,20 @@ def api_admin_edit_content(request):
             content_type = body.get('content_type', 'book').lower()
             item_id = body.get('id') or body.get('item_id')
 
-            file_obj = request.FILES.get('file') or request.FILES.get('pdf_file') or request.FILES.get('audio_file')
+            file_obj = request.FILES.get('file') or request.FILES.get('pdf_file') or request.FILES.get('audio_file') or request.FILES.get('video_file') or request.FILES.get('image_file')
+
+            if content_type == 'video':
+                video = VideoMedia.objects.filter(id=item_id).first()
+                if video is None:
+                    return JsonResponse({'error': 'Video not found.'}, status=404)
+                for key in ('title', 'speaker', 'description', 'video_url'):
+                    if key in body:
+                        setattr(video, key, body.get(key))
+                if file_obj:
+                    video.video_file = file_obj
+                video.save()
+                return JsonResponse({'status': 'success', 'id': video.id,
+                                     'video_url': video.video_file.url if video.video_file else video.video_url})
 
             if content_type in ['book', 'document', 'books', 'image', 'photo']:
                 bk = BookMedia.objects.filter(id=item_id).first()
@@ -2173,6 +2128,7 @@ def api_admin_edit_content(request):
                             bk.category = cat_obj
 
                     if file_obj: bk.pdf_file = file_obj
+                    if request.FILES.get('cover_image'): bk.cover_image = request.FILES['cover_image']
                     bk.save()
                     return JsonResponse({'status': 'success', 'message': 'Book updated successfully!', 'document_url': bk.get_document_url()})
 
@@ -2245,12 +2201,13 @@ def api_admin_edit_content(request):
                     qa.save()
                     return JsonResponse({'status': 'success', 'message': 'Quran Audio updated successfully!', 'audio_url': qa.get_playable_url()})
 
-            return JsonResponse({'status': 'success', 'message': 'Item updated successfully!'})
+            return JsonResponse({'error': 'Content was not found or its type is unsupported.'}, status=404)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
 @csrf_exempt
+@chunked_files({'assembled_filename': 'image_file'})
 def api_images_list(request):
     if request.method == 'POST':
         try:

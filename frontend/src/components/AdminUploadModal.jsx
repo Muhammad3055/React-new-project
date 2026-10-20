@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
 import { ALL_114_SURAHS } from '../data/quran_data';
-import { uploadFileInChunks } from '../utils/chunkUploader';
+import { postMediaForm } from '../utils/chunkUploader';
 
 export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu' }) {
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
@@ -218,35 +218,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       if (cleanFileUrl) formData.append('pdf_url', cleanFileUrl);
       if (linkUrl || cleanFileUrl) formData.append('link_url', linkUrl || cleanFileUrl);
     }
+    if (contentType === 'video' && cleanFileUrl) formData.append('video_url', cleanFileUrl);
     if (finalCoverUrl && !finalCoverUrl.startsWith('blob:')) {
       formData.append('cover_url', finalCoverUrl);
     }
 
-    // For files > 50MB, upload in 25MB slices to bypass Cloudflare 100MB limit
-    let assembledFilename = null;
-    if (selectedFile && selectedFile.size > 50 * 1024 * 1024) {
-      try {
-        assembledFilename = await uploadFileInChunks(selectedFile, (pct, stats) => {
-          setUploadProgress(pct);
-          setUploadStats(stats);
-        });
-      } catch (err) {
-        console.error('Chunk upload error:', err);
-        alert('Upload error: ' + (err.message || 'Failed to upload file chunks'));
-        setUploading(false);
-        return;
-      }
-    }
-
-    if (assembledFilename) {
-      formData.append('assembled_filename', assembledFilename);
-    } else if (selectedFile) {
-      if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
-        formData.append('audio_file', selectedFile);
-      } else {
-        formData.append('pdf_file', selectedFile);
-        formData.append('file', selectedFile);
-      }
+    if (selectedFile) {
+      const field = ['audio', 'taqreer', 'quran'].includes(contentType) ? 'audio_file' : contentType === 'video' ? 'video_file' : 'pdf_file';
+      formData.append(field, selectedFile);
     }
     if (selectedCoverFile) {
       formData.append('cover_image', selectedCoverFile);
@@ -255,12 +234,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     // Determine Backend API endpoint based on content type
     let apiEndpoint = '/api/books/';
     let jsonBody = null;
-    let method = editItem ? 'PUT' : 'POST';
+    let method = 'POST';
 
     if (editItem) {
         apiEndpoint = '/api/admin/content/edit/';
     } else if (contentType === 'audio' || contentType === 'taqreer') {
       apiEndpoint = '/api/taqreer/';
+    } else if (contentType === 'video') {
+      apiEndpoint = '/api/videos/';
     } else if (contentType === 'quran') {
       apiEndpoint = '/api/quran/';
     } else if (contentType === 'hadith') {
@@ -289,12 +270,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
     const handleUploadSuccess = (data) => {
       if (data && (data.audio_url || data.document_url || data.id || data.status === 'success')) {
-        const realUrl = data.audio_url || data.document_url || '';
+        const realUrl = data.audio_url || data.document_url || data.video_url || '';
         if (data.id) newItem.id = data.id;
         if (realUrl) {
           newItem.fileUrl = realUrl;
           if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
             newItem.audio_url = realUrl;
+          } else if (contentType === 'video') {
+            newItem.video_url = realUrl;
           } else if (contentType === 'book') {
             newItem.pdf_url = realUrl;
           }
@@ -333,62 +316,27 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       }, 1200);
     };
 
-    const handleUploadFailure = (err) => {
-      console.error('Upload error:', err);
-      addAdminItem(newItem);
-      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+    const handleUploadFailure = (error) => {
+      console.error('Upload error:', error);
       setUploading(false);
-      setSubmitted(true);
-      setTimeout(() => {
-        if (onSuccess) onSuccess();
-        if (onClose) onClose();
-      }, 1200);
+      setUploadStats(error.message);
+      alert('Upload failed: ' + error.message);
     };
 
     if (jsonBody) {
       fetch(getApiUrl(apiEndpoint), {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: jsonBody
-      })
-        .then(res => res.json())
-        .then(handleUploadSuccess)
-        .catch(handleUploadFailure);
+        method, credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: jsonBody
+      }).then(async response => {
+        const data = await response.json();
+        if (!response.ok || data.error) throw new Error(data.error || 'Could not save content.');
+        return data;
+      }).then(handleUploadSuccess).catch(handleUploadFailure);
     } else {
-      const xhr = new XMLHttpRequest();
-      const startTime = Date.now();
-      xhr.open(method, getApiUrl(apiEndpoint));
-
-      if (xhr.upload) {
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable && e.total > 0) {
-            const percent = Math.min(99, Math.round((e.loaded / e.total) * 100));
-            setUploadProgress(percent);
-            const elapsed = (Date.now() - startTime) / 1000;
-            if (elapsed > 0.3) {
-              const speedMB = ((e.loaded / 1048576) / elapsed).toFixed(1);
-              const loadedMB = (e.loaded / 1048576).toFixed(1);
-              const totalMB = (e.total / 1048576).toFixed(1);
-              setUploadStats(`${loadedMB} MB / ${totalMB} MB (${speedMB} MB/s)`);
-            }
-          }
-        };
-      }
-
-      xhr.onload = () => {
-        setUploadProgress(100);
-        setUploadStats('Upload complete! Saving to database...');
-        try {
-          const data = JSON.parse(xhr.responseText);
-          handleUploadSuccess(data);
-        } catch (e) {
-          handleUploadSuccess({});
-        }
-      };
-
-      xhr.onerror = handleUploadFailure;
-      xhr.send(formData);
+      postMediaForm(apiEndpoint, formData, (percent, stats) => {
+        setUploadProgress(percent); setUploadStats(stats);
+      }).then(handleUploadSuccess).catch(handleUploadFailure);
     }
+
   };
 
   return (
@@ -456,12 +404,23 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
               </div>
             </div>
 
+            {contentType === 'video' && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label>Video file (MP4, WebM or another video format)</label>
+                <input type="file" accept="video/*" onChange={e => setSelectedFile(e.target.files[0])} />
+                <label>Or video URL</label>
+                <input type="url" value={fileUrl} onChange={e => setFileUrl(e.target.value)} />
+              </div>
+            )}
             {/* 2. Content Type Selector Grid */}
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
                 2. Select Content Type to Add
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(85px, 1fr))', gap: '0.4rem' }}>
+                <button type="button" onClick={() => setContentType('video')} className="btn-play" style={{ padding: '0.65rem', border: contentType === 'video' ? '2px solid var(--accent-gold)' : undefined }}>
+                  <i className="fas fa-video"></i> Video
+                </button>
                 <button
                   type="button"
                   onClick={() => setContentType('audio')}
@@ -661,7 +620,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Up to 2GB per MP3)</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Large files supported; keep this page open)</label>
                   <input
                     type="file"
                     accept=".mp3,.wav,.m4a,.aac,.ogg,.opus,.flac"

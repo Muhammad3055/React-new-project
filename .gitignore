@@ -18,6 +18,7 @@ venv/
 backend/venv/
 staticfiles/
 backend/staticfiles/
+backend/upload_tmp/
 
 # Node / React / Build outputs
 node_modules/

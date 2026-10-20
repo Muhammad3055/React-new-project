@@ -107,8 +107,8 @@ server {
     listen 80;
     server_name _;
 
-    # Allow up to 2.5GB file uploads (for 2GB MP3, Video, and PDF files)
-    client_max_body_size 2500M;
+    # Allow up to 6GB file uploads (for 2GB MP3, Video, and PDF files)
+    client_max_body_size 6G;
     client_body_timeout 1800s;
     client_header_timeout 1800s;
     proxy_read_timeout 1800s;

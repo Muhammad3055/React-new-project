@@ -1,11 +1,27 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from .uploads import chunked_files
+
 from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker,
     UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory,
     ImageMedia
 )
+
+class LargeUploadAdmin(admin.ModelAdmin):
+    change_form_template = 'admin/large_upload_change_form.html'
+
+    class Media:
+        js = ('js/admin-uploads.js',)
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        return chunked_files()(super().changeform_view)(request, object_id, form_url, extra_context)
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        context['chunked_upload_tokens'] = getattr(request, '_chunked_tokens', [])
+        return super().render_change_form(request, context, *args, **kwargs)
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -14,7 +30,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(QuranAudio)
-class QuranAudioAdmin(admin.ModelAdmin):
+class QuranAudioAdmin(LargeUploadAdmin):
     list_display = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'destination_folder', 'reciter', 'tarjuma_qari', 'language', 'category', 'duration', 'created_at')
     list_display_links = ('surah_name_english',)
     list_editable = ('surah_number', 'destination_folder', 'language')
@@ -24,7 +40,7 @@ class QuranAudioAdmin(admin.ModelAdmin):
 
 
 @admin.register(TaqreerAudio)
-class TaqreerAudioAdmin(admin.ModelAdmin):
+class TaqreerAudioAdmin(LargeUploadAdmin):
     list_display = ('title', 'arabic_title', 'speaker', 'tarjuma_qari', 'language', 'destination_folder', 'category', 'duration', 'created_at')
     list_editable = ('destination_folder', 'language')
     list_filter = ('destination_folder', 'language', 'category', 'speaker')
@@ -32,7 +48,7 @@ class TaqreerAudioAdmin(admin.ModelAdmin):
 
 
 @admin.register(VideoMedia)
-class VideoMediaAdmin(admin.ModelAdmin):
+class VideoMediaAdmin(LargeUploadAdmin):
     list_display = ('title', 'speaker', 'category', 'preview_media_link', 'created_at')
     list_filter = ('category', 'speaker')
     search_fields = ('title', 'speaker', 'description')
@@ -45,7 +61,7 @@ class VideoMediaAdmin(admin.ModelAdmin):
     preview_media_link.short_description = "Media Link"
 
 @admin.register(ImageMedia)
-class ImageMediaAdmin(admin.ModelAdmin):
+class ImageMediaAdmin(LargeUploadAdmin):
     list_display = ('title', 'category', 'open_image_link', 'created_at')
     list_filter = ('category',)
     search_fields = ('title', 'description')
@@ -59,7 +75,7 @@ class ImageMediaAdmin(admin.ModelAdmin):
 
 
 @admin.register(BookMedia)
-class BookMediaAdmin(admin.ModelAdmin):
+class BookMediaAdmin(LargeUploadAdmin):
     list_display = ('title', 'file_type', 'author', 'category', 'pages_count', 'language', 'open_document_link', 'created_at')
     list_filter = ('file_type', 'category', 'language')
     search_fields = ('title', 'author', 'description')

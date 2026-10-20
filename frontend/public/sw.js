@@ -42,6 +42,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   if (event.request.method !== 'GET') return;
+  // Upload state and CSRF tokens must always come from the current session.
+  if (url.pathname.startsWith('/api/upload/')) return;
 
   // Static Assets (JS, CSS, Fonts, Images) -> Stale-While-Revalidate for 0ms load speed
   if (

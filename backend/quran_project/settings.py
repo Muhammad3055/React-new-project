@@ -256,9 +256,15 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Enable 2.5GB (2500MB) File Upload Limits in Django for up to 2GB MP3, Video, and Document files
-DATA_UPLOAD_MAX_MEMORY_SIZE = 2684354560  # 2.5 GB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 2684354560  # 2.5 GB
+# Total file size is independent of request size: browsers send small chunks.
+# These limits can be raised through the server environment as storage grows.
+MAX_MEDIA_UPLOAD_SIZE = env.int('MAX_MEDIA_UPLOAD_SIZE', default=10 * 1024 ** 3)
+CHUNK_UPLOAD_SIZE = 8 * 1024 ** 2
+CHUNK_UPLOAD_ROOT = Path(env('CHUNK_UPLOAD_ROOT', default=str(BASE_DIR / 'upload_tmp')))
+CHUNK_UPLOAD_TTL = 7 * 24 * 60 * 60
+CHUNK_UPLOAD_DISK_RESERVE = 256 * 1024 ** 2
+DATA_UPLOAD_MAX_MEMORY_SIZE = 16 * 1024 ** 2
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 ** 2
 
 # Stream large files directly to temporary disk storage to prevent RAM exhaustion on VPS
 FILE_UPLOAD_HANDLERS = [
