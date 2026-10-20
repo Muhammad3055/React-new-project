@@ -35,6 +35,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
       id: 'topics',
       label: t('topics', 'Topics'),
       icon: 'fas fa-layer-group',
+      description: lang === 'ar' ? 'تصفح المكتبة حسب الموضوع' : (lang === 'ur' || lang === 'br') ? 'موضوع کے لحاظ سے لائبریری دیکھیں' : 'Explore the library by subject',
       action: () => { navigateToTab('topics'); setShowExtrasMenu(false); setMobileActive(false); }
     },
     {
@@ -402,6 +403,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
               className={`mobile-toggle-btn ${mobileActive ? 'is-open' : ''}`}
               onClick={() => setMobileActive(!mobileActive)}
               aria-label="Toggle navigation"
+              aria-expanded={mobileActive}
+              aria-controls="site-menu"
             >
               <span className="hamburger-line"></span>
               <span className="hamburger-line"></span>
@@ -427,18 +430,24 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
       )}
 
-      {/* ===== FULL-SCREEN MOBILE MENU OVERLAY ===== */}
-      <div className={`mobile-menu-overlay ${mobileActive ? 'mobile-menu-open' : ''}`}>
-        <button
-          className="mobile-menu-close"
-          onClick={() => setMobileActive(false)}
-          aria-label="Close menu"
-        >
-          <i className="fas fa-times"></i>
-        </button>
-
-        <div className="mobile-menu-brand" onClick={() => { navigateToTab('home'); setMobileActive(false); }}>
-          <span style={{ color: 'var(--text-main)', fontWeight: 800 }}>Maktaba <span style={{ color: 'var(--accent-gold)' }}>Tul Muslim</span></span>
+      {/* Right-side navigation drawer */}
+      {mobileActive && <div className="site-menu-backdrop" onClick={() => setMobileActive(false)} aria-hidden="true" />}
+      <div id="site-menu" className={`mobile-menu-overlay site-menu ${mobileActive ? 'mobile-menu-open' : ''}`}>
+        <div className="site-menu-header">
+          <a className="site-menu-heading" href="/" onClick={(e) => { e.preventDefault(); navigateToTab('home'); setMobileActive(false); }}>
+            <span className="site-menu-emblem"><i className="fas fa-book-open" aria-hidden="true"></i></span>
+            <div>
+              <span className="site-menu-brand">Maktaba Tul Muslim</span>
+              <h2>{t('exploreMore')}</h2>
+            </div>
+          </a>
+          <button
+            className="mobile-menu-close"
+            onClick={() => setMobileActive(false)}
+            aria-label="Close menu"
+          >
+            <i className="fas fa-times" aria-hidden="true"></i>
+          </button>
         </div>
 
         {/* Search inside Sidebar */}
@@ -509,7 +518,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
 
         {/* Global Language & Theme Selectors inside Mobile Drawer */}
-        <div style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+        <div className="site-menu-preferences" style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           <div style={{ padding: '0.65rem 1rem', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <i className="fas fa-globe"></i> {t('language')}:
@@ -574,6 +583,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
         {/* Dedicated Asan Nimaz Spotlight Card in Sidebar Menu */}
         <div
+          className="site-menu-prayer"
           onClick={() => { navigateToTab('asanNimaz'); setMobileActive(false); }}
           style={{
             margin: '0.4rem 0 1rem 0',
@@ -649,34 +659,20 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
         {/* Explore Features Grid */}
         <div className="mobile-section-title">{t('exploreMore')}</div>
-        <nav className="mobile-nav-grid extra-nav-grid">
+        <nav className="mobile-nav-grid extra-nav-grid" aria-label={t('exploreMore')}>
           {extraMenuItems.map((item) => (
             <button
               key={item.label}
-              className={`mobile-nav-item mobile-nav-extra ${item.highlight ? 'featured-nav-card' : ''}`}
+              className={`mobile-nav-item mobile-nav-extra ${item.id === 'topics' ? 'site-menu-topic' : ''} ${activeTab === item.id ? 'mobile-nav-active' : ''}`}
+              aria-current={activeTab === item.id ? 'page' : undefined}
               onClick={() => { item.action(); setMobileActive(false); }}
-              style={item.highlight ? {
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.28) 100%)',
-                border: '1.5px solid #10b981',
-                boxShadow: '0 2px 10px rgba(16, 185, 129, 0.25)',
-                position: 'relative'
-              } : undefined}
             >
-              <i className={item.icon} style={item.highlight ? { color: '#10b981' } : undefined}></i>
-              <span style={item.highlight ? { fontWeight: 800, color: 'var(--text-main)' } : undefined}>{item.label}</span>
-              {item.highlight && (
-                <span style={{
-                  position: 'absolute',
-                  top: '3px',
-                  right: '5px',
-                  fontSize: '0.58rem',
-                  fontWeight: 900,
-                  background: '#10b981',
-                  color: '#ffffff',
-                  padding: '1px 5px',
-                  borderRadius: '6px'
-                }}>جدید</span>
-              )}
+              <span className="site-menu-icon"><i className={item.icon} aria-hidden="true"></i></span>
+              <span className="site-menu-label">
+                {item.label}
+                {item.description && <small>{item.description}</small>}
+              </span>
+              {item.id === 'topics' && <i className="fas fa-arrow-right site-menu-arrow" aria-hidden="true"></i>}
             </button>
           ))}
 
