@@ -2130,7 +2130,7 @@ def api_admin_edit_content(request):
                     if file_obj: bk.pdf_file = file_obj
                     if request.FILES.get('cover_image'): bk.cover_image = request.FILES['cover_image']
                     bk.save()
-                    return JsonResponse({'status': 'success', 'message': 'Book updated successfully!', 'document_url': bk.get_document_url()})
+                    return JsonResponse({'status': 'success', 'id': bk.id, 'message': 'Book updated successfully!', 'document_url': bk.get_document_url()})
 
             elif content_type in ['audio', 'taqreer', 'mp3']:
                 tq = TaqreerAudio.objects.filter(id=item_id).first()
@@ -2162,7 +2162,7 @@ def api_admin_edit_content(request):
 
                     if file_obj: tq.audio_file = file_obj
                     tq.save()
-                    return JsonResponse({'status': 'success', 'message': 'Audio updated successfully!', 'audio_url': tq.get_playable_url()})
+                    return JsonResponse({'status': 'success', 'id': tq.id, 'message': 'Audio updated successfully!', 'audio_url': tq.get_playable_url()})
 
             elif content_type in ['quran', 'tarjuma', 'tilawat']:
                 qa = QuranAudio.objects.filter(id=item_id).first()
@@ -2199,7 +2199,7 @@ def api_admin_edit_content(request):
                             qa.category = cat_obj
 
                     qa.save()
-                    return JsonResponse({'status': 'success', 'message': 'Quran Audio updated successfully!', 'audio_url': qa.get_playable_url()})
+                    return JsonResponse({'status': 'success', 'id': qa.id, 'message': 'Quran Audio updated successfully!', 'audio_url': qa.get_playable_url()})
 
             return JsonResponse({'error': 'Content was not found or its type is unsupported.'}, status=404)
         except Exception as e:

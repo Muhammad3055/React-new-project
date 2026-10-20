@@ -263,17 +263,18 @@ class BookMedia(models.Model):
         if self.pdf_file and (not self.pages_count or self.pages_count == 1):
             filename = self.pdf_file.name.lower()
             try:
-                self.pdf_file.seek(0)
-                file_bytes = self.pdf_file.read()
-                self.pdf_file.seek(0)
-
                 if filename.endswith('.pdf'):
-                    # PDF Page Counter
-                    import re
-                    pages = len(re.findall(rb"/Type\s*/Page[^s]", file_bytes))
-                    if pages > 0:
-                        self.pages_count = pages
-                        self.file_type = 'book' if pages >= 100 else 'pdf'
+                    # Counting pages in a multi-GB document must not read it
+                    # all into memory during the final publish request.
+                    if self.pdf_file.size <= 16 * 1024 * 1024:
+                        import re
+                        self.pdf_file.seek(0)
+                        file_bytes = self.pdf_file.read()
+                        self.pdf_file.seek(0)
+                        pages = len(re.findall(rb"/Type\s*/Page[^s]", file_bytes))
+                        if pages > 0:
+                            self.pages_count = pages
+                            self.file_type = 'book' if pages >= 100 else 'pdf'
 
                 elif filename.endswith('.docx') or filename.endswith('.doc'):
                     # Word Document Page Counter

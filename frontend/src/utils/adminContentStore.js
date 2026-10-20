@@ -155,7 +155,6 @@ export function updateAdminItem(updatedItem) {
 }
 
 export async function editContentItem(itemId, updatedData = {}, contentType = 'book') {
-  const itemToSave = { id: itemId, contentType, ...updatedData };
   try {
     const formData = new FormData();
     formData.append('id', itemId);
@@ -171,8 +170,12 @@ export async function editContentItem(itemId, updatedData = {}, contentType = 'b
       }
     });
 
-    await postMediaForm('/api/admin/content/edit/', formData);
-    updateAdminItem(itemToSave);
+    const result = await postMediaForm('/api/admin/content/edit/', formData);
+    if (String(result.id) !== String(itemId)) {
+      throw new Error('Server updated a different record. Refresh the content list.');
+    }
+    // The API record is authoritative; a second browser copy can show as a duplicate.
+    removeAdminItem(itemId);
   } catch (error) {
     console.error('Error syncing edit with backend API:', error);
     throw error;

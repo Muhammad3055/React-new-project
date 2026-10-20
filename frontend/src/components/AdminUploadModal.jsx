@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
+import { getAdminCustomFolders, saveCustomFolder, removeAdminItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
 import { ALL_114_SURAHS } from '../data/quran_data';
 import { postMediaForm } from '../utils/chunkUploader';
@@ -8,7 +8,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(editItem?.category_id || '');
-  const [contentType, setContentType] = useState(editItem ? (editItem.contentType || editItem.content_type || 'book') : defaultContentType); // 'book' | 'audio' | 'quran' | 'hadith' | 'tafseer' | 'post' | 'button'
+  const [contentType, setContentType] = useState(editItem ? (editItem.contentType || editItem.content_type || defaultContentType) : defaultContentType); // 'book' | 'audio' | 'quran' | 'hadith' | 'tafseer' | 'post' | 'button'
   const [destination, setDestination] = useState(editItem?.destination || 'books'); // folder id
   const [newFolderName, setNewFolderName] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -32,7 +32,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [coverUrl, setCoverUrl] = useState(editItem?.cover_url || '');
   const [duration, setDuration] = useState(editItem?.duration || '15:00');
   const [pagesCount, setPagesCount] = useState(editItem?.pages_count || 100);
-  const [docFormat, setDocFormat] = useState('pdf'); // 'pdf' | 'book' | 'doc' | 'ppt' | 'image'
+  const [docFormat, setDocFormat] = useState(editItem?.file_type || 'pdf'); // 'pdf' | 'book' | 'doc' | 'ppt' | 'image'
   const [buttonLabel, setButtonLabel] = useState('Read / Open Link');
   const [buttonIcon, setButtonIcon] = useState('fas fa-external-link-alt');
   const [linkUrl, setLinkUrl] = useState('');
@@ -124,68 +124,13 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
     const activeFileType = contentType === 'book' ? docFormat : contentType;
 
-    let finalFileUrl = fileUrl || linkUrl;
-    let finalCoverUrl = coverUrl;
-
-    if (selectedFile) {
-      finalFileUrl = URL.createObjectURL(selectedFile);
-    }
-    if (selectedCoverFile) {
-      finalCoverUrl = URL.createObjectURL(selectedCoverFile);
-    }
+    const finalFileUrl = selectedFile ? '' : (fileUrl || linkUrl);
+    const finalCoverUrl = selectedCoverFile ? '' : coverUrl;
 
     const itemTitle = title || (contentType === 'hadith' ? `${hadithBookName} #${hadithNumber}` : contentType === 'tafseer' ? `${tafseerSurahName} (${tafseerSurahNumber}:${tafseerAyahNumber})` : 'Untitled');
     
     // Set finalSpeaker directly
     const finalSpeaker = authorSpeaker;
-
-    const newItem = {
-      title: itemTitle,
-      arabic_title: arabicTitle,
-      surah_name_arabic: arabicTitle,
-      author: finalSpeaker,
-      speaker: finalSpeaker,
-      reciter: finalSpeaker,
-      tarjuma_qari: tarjumaQari,
-      surah_number: Number(surahNumber) || 1,
-      surah_name_english: itemTitle,
-      pages_count: Number(pagesCount) || 1,
-      file_type: activeFileType,
-      destination,
-      contentType,
-      language,
-      description,
-      category_id: selectedCategory,
-      fileUrl: finalFileUrl,
-      pdf_url: contentType === 'book' ? finalFileUrl : undefined,
-      audio_url: (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') ? finalFileUrl : undefined,
-      link_url: linkUrl || finalFileUrl,
-      cover_url: finalCoverUrl,
-      duration,
-      buttonLabel,
-      buttonIcon,
-      // Hadith specific fields
-      hadithBookName,
-      hadithNumber,
-      hadithChapter,
-      hadithArabicText,
-      hadithTranslation,
-      hadithNarratedBy,
-      hadithGrade,
-      // Tafseer specific fields
-      tafseerSurahNumber,
-      tafseerSurahName,
-      tafseerAyahNumber,
-      tafseerArabicText,
-      tafseerTranslation,
-      tafseerText,
-      tafseerScholarName,
-      // Article / Text content
-      postContent,
-      text_content: postContent || hadithTranslation || tafseerText || description,
-      addedByAdmin: true,
-      created_at: new Date().toISOString()
-    };
 
     const formData = new FormData();
     if (editItem) {
@@ -210,7 +155,6 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('duration', duration);
     formData.append('text_content', postContent || hadithTranslation || tafseerText || description);
 
-    // Only append real URLs, NEVER append blob: URLs to backend!
     const cleanFileUrl = (finalFileUrl && !finalFileUrl.startsWith('blob:')) ? finalFileUrl : '';
     if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
       if (cleanFileUrl) formData.append('audio_url', cleanFileUrl);
@@ -269,43 +213,12 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     }
 
     const handleUploadSuccess = (data) => {
-      if (data && (data.audio_url || data.document_url || data.id || data.status === 'success')) {
-        const realUrl = data.audio_url || data.document_url || data.video_url || '';
-        if (data.id) newItem.id = data.id;
-        if (realUrl) {
-          newItem.fileUrl = realUrl;
-          if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
-            newItem.audio_url = realUrl;
-          } else if (contentType === 'video') {
-            newItem.video_url = realUrl;
-          } else if (contentType === 'book') {
-            newItem.pdf_url = realUrl;
-          }
-        }
-        if (data.surah_name_arabic) {
-          newItem.surah_name_arabic = data.surah_name_arabic;
-          newItem.arabic_title = data.surah_name_arabic;
-        }
-        if (data.arabic_title) {
-          newItem.arabic_title = data.arabic_title;
-          newItem.surah_name_arabic = data.arabic_title;
-        }
-        if (data.surah_name_english) {
-          newItem.surah_name_english = data.surah_name_english;
-          newItem.title = data.surah_name_english;
-        }
-
-        const existingAdminItems = getAdminItems();
-        const cleaned = existingAdminItems.filter(item => {
-          if (!item) return false;
-          if (String(item.id) === String(newItem.id)) return false;
-          if (contentType === 'quran' && item.contentType === 'quran' && item.destination === newItem.destination && Number(item.surah_number) === Number(newItem.surah_number)) return false;
-          if (item.title && newItem.title && item.title.trim().toLowerCase() === newItem.title.trim().toLowerCase()) return false;
-          return true;
-        });
-        localStorage.setItem('quran_portal_admin_items', JSON.stringify([newItem, ...cleaned]));
+      if (data?.status === 'success') {
+        // Django is the source of truth. Remove any old browser copy of this
+        // record; storing it again locally makes the public list show duplicates.
+        if (data.id || editItem?.id) removeAdminItem(data.id || editItem.id);
       } else {
-        addAdminItem(newItem);
+        throw new Error('Server did not confirm that the content was saved.');
       }
       window.dispatchEvent(new CustomEvent('admin_content_updated'));
       setUploading(false);
@@ -360,8 +273,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
         {submitted ? (
           <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
             <i className="fas fa-check-circle fa-4x" style={{ color: '#10b981', marginBottom: '1rem' }}></i>
-            <h3 style={{ fontSize: '1.5rem', color: '#fff', fontWeight: 800 }}>Content Published Successfully!</h3>
-            <p style={{ color: 'rgba(255,255,255,0.8)' }}>Added to <strong>{destination}</strong> library for all users.</p>
+            <h3 style={{ fontSize: '1.5rem', color: '#fff', fontWeight: 800 }}>{editItem ? 'Content Updated Successfully!' : 'Content Published Successfully!'}</h3>
+            <p style={{ color: 'rgba(255,255,255,0.8)' }}>{editItem ? 'Updated' : 'Added'} in <strong>{destination}</strong> library for all users.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -1041,7 +954,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 style={{ padding: '0.75rem 1.75rem', background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
                 {uploading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-cloud-upload-alt"></i>}
-                <span>{uploading ? 'Publishing...' : 'Publish Content'}</span>
+                <span>{uploading ? (editItem ? 'Updating...' : 'Publishing...') : (editItem ? 'Update Content' : 'Publish Content')}</span>
               </button>
             </div>
 

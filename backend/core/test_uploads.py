@@ -154,9 +154,31 @@ class UploadTests(TestCase):
             'id': record.pk, 'title': 'After', 'content_type': 'audio', 'file_upload': token,
         })
         self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.json()['id'], record.pk)
         record.refresh_from_db()
         self.assertEqual(record.title, 'After')
         self.assertEqual(Path(record.audio_file.path).read_bytes(), b'abcdefghijk')
+        self.assertEqual(TaqreerAudio.objects.count(), 1)
+
+    def test_edit_updates_existing_media_without_creating_duplicates(self):
+        cases = [
+            (BookMedia, {'title': 'Before'}, 'book', 'pdf_file', 'book.pdf'),
+            (QuranAudio, {'surah_number': 1, 'surah_name_english': 'Before', 'surah_name_arabic': 'الفاتحة'}, 'quran', 'audio_file', 'quran.mp3'),
+            (VideoMedia, {'title': 'Before'}, 'video', 'video_file', 'video.mp4'),
+        ]
+        for model, fields, content_type, file_field, filename in cases:
+            with self.subTest(content_type=content_type):
+                record = model.objects.create(**fields)
+                token = self.complete(filename)
+                response = self.client.post('/api/admin/content/edit/', {
+                    'id': record.pk, 'content_type': content_type,
+                    'title': 'After', f'{file_field}_upload': token,
+                })
+                self.assertEqual(response.status_code, 200, response.content)
+                self.assertEqual(response.json()['id'], record.pk)
+                self.assertEqual(model.objects.count(), 1)
+                record.refresh_from_db()
+                self.assertEqual(Path(getattr(record, file_field).path).read_bytes(), b'abcdefghijk')
 
     def test_django_admin_add_and_validation_retry(self):
         token = self.complete()

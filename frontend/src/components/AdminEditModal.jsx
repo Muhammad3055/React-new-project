@@ -33,16 +33,6 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
 
     setSaving(true);
 
-    let finalFileUrl = fileUrl;
-    if (selectedFile) {
-      finalFileUrl = URL.createObjectURL(selectedFile);
-    }
-
-    let finalCoverUrl = coverUrl;
-    if (selectedCoverFile) {
-      finalCoverUrl = URL.createObjectURL(selectedCoverFile);
-    }
-
     const updatedFields = {
       title,
       author: authorSpeaker,
@@ -53,15 +43,13 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
       category_id: selectedCategory,
       category: selectedCategory,
       description,
-      pdf_url: finalFileUrl,
-      fileUrl: finalFileUrl,
-      document_url: finalFileUrl,
-      cover_url: finalCoverUrl,
+      ...(!selectedFile ? { pdf_url: fileUrl } : {}),
+      ...(!selectedCoverFile ? { cover_url: coverUrl } : {}),
       selectedFile,
       selectedCoverFile
     };
 
-    const contentType = item?.contentType || item?.file_type || 'book';
+    const contentType = 'book';
     try {
       await editContentItem(item.id, updatedFields, contentType);
     } catch (error) {
