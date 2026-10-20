@@ -25,7 +25,8 @@ export default function ImagesView({ user }) {
   
   const [previewImage, setPreviewImage] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadData, setUploadData] = useState({ title: '', category: 'mix', description: '', file: null });
+  const [editingImage, setEditingImage] = useState(null);
+  const [uploadData, setUploadData] = useState({ title: '', category: 'mix', description: '', image_url: '', file: null });
 
   const { t } = useLanguage();
 
@@ -53,20 +54,29 @@ export default function ImagesView({ user }) {
 
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
-    if (!uploadData.title || !uploadData.file) return alert("Title and image file are required.");
+    if (!uploadData.title || (!editingImage && !uploadData.file && !uploadData.image_url)) return alert("Title and image file or URL are required.");
 
     const formData = new FormData();
     formData.append('title', uploadData.title);
     formData.append('category', uploadData.category);
     formData.append('description', uploadData.description);
-    formData.append('image_file', uploadData.file);
+    if (editingImage) {
+      formData.append('id', editingImage.id);
+      formData.append('content_type', 'image');
+    }
+    if (uploadData.file) formData.append('image_file', uploadData.file);
+    else if (uploadData.image_url) {
+      formData.append('image_url', uploadData.image_url);
+      if (editingImage && uploadData.image_url !== editingImage.image_url) formData.append('replace_with_url', '1');
+    }
 
     try {
-      await postMediaForm('/api/images/', formData);
+      await postMediaForm(editingImage ? '/api/admin/content/edit/' : '/api/images/', formData);
       setShowUploadModal(false);
-      setUploadData({ title: '', category: 'mix', description: '', file: null });
+      setEditingImage(null);
+      setUploadData({ title: '', category: 'mix', description: '', image_url: '', file: null });
       fetchImages();
-      alert('Image uploaded successfully!');
+      alert(editingImage ? 'Image updated successfully!' : 'Image uploaded successfully!');
 
     } catch (error) {
       console.error(error);
@@ -89,7 +99,7 @@ export default function ImagesView({ user }) {
           {t('imagesGalleryTitle', 'Islamic Images Gallery')}
         </h1>
         {isAdmin && (
-          <button onClick={() => setShowUploadModal(true)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#059669', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '50px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={() => { setEditingImage(null); setUploadData({ title: '', category: 'mix', description: '', image_url: '', file: null }); setShowUploadModal(true); }} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#059669', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '50px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
             <i className="fas fa-cloud-upload-alt"></i> {t('uploadImage', 'Upload Image')}
           </button>
         )}
@@ -154,9 +164,18 @@ export default function ImagesView({ user }) {
                     <i className="fas fa-download"></i>
                   </a>
                   {isAdmin && (
-                    <button onClick={() => handleDelete(img.id, img.title)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fee2e2', border: '1px solid #fca5a5', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Delete Image">
-                      <i className="fas fa-trash"></i>
-                    </button>
+                    <>
+                      <button onClick={() => {
+                        setEditingImage(img);
+                        setUploadData({ title: img.title, category: img.category, description: img.description || '', image_url: /^https?:\/\//i.test(img.image_url) ? img.image_url : '', file: null });
+                        setShowUploadModal(true);
+                      }} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fef3c7', border: '1px solid #f59e0b', color: '#92400e', cursor: 'pointer' }} title="Edit Image">
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button onClick={() => handleDelete(img.id, img.title)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fee2e2', border: '1px solid #fca5a5', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Delete Image">
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -187,7 +206,7 @@ export default function ImagesView({ user }) {
       {showUploadModal && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 99999, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div style={{ background: '#fff', borderRadius: '16px', padding: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
-            <h2 style={{ margin: '0 0 1.5rem 0', color: '#0f172a' }}>Upload New Image</h2>
+            <h2 style={{ margin: '0 0 1.5rem 0', color: '#0f172a' }}>{editingImage ? 'Update Image' : 'Upload New Image'}</h2>
             <form onSubmit={handleUploadSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Image Title *</label>
@@ -200,16 +219,19 @@ export default function ImagesView({ user }) {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Image File *</label>
-                <input type="file" accept="image/*" required onChange={e => setUploadData({...uploadData, file: e.target.files[0]})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px dashed #cbd5e1', background: '#f8fafc' }} />
+                {editingImage && <p style={{ color: '#334155' }}>Current image: <a href={editingImage.image_url} target="_blank" rel="noreferrer">Open saved image</a>. Choose a file only to replace it.</p>}
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Image File {editingImage ? '(optional)' : ''}</label>
+                <input type="file" accept="image/*" onChange={e => setUploadData({...uploadData, file: e.target.files[0]})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px dashed #cbd5e1', background: '#f8fafc' }} />
+                <label style={{ display: 'block', marginTop: '0.5rem', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Or external image URL</label>
+                <input type="url" value={uploadData.image_url} onChange={e => setUploadData({...uploadData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>Description (Optional)</label>
                 <textarea rows="3" value={uploadData.description} onChange={e => setUploadData({...uploadData, description: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', resize: 'vertical' }}></textarea>
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowUploadModal(false)} style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', background: '#f1f5f9', color: '#475569', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', background: '#059669', color: '#ffffff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Upload</button>
+                <button type="button" onClick={() => { setShowUploadModal(false); setEditingImage(null); }} style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', background: '#f1f5f9', color: '#475569', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', background: '#059669', color: '#ffffff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>{editingImage ? 'Update' : 'Upload'}</button>
               </div>
             </form>
           </div>

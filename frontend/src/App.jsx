@@ -532,7 +532,7 @@ function MainAppContent() {
           )}
 
           {activeTab === 'videos' && (
-            <VideosView />
+            <VideosView user={user} />
           )}
 
 

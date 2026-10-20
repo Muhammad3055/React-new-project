@@ -813,7 +813,7 @@ export default function UploadView({ user }) {
                       <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{tq.speaker || '-'}</td>
                       <td style={{ padding: '0.75rem 1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <button
-                          onClick={() => setEditingItem({ id: tq.id, title: tq.title, speaker: tq.speaker, contentType: 'audio' })}
+                          onClick={() => setEditingItem({ ...tq, contentType: 'audio' })}
                           style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                         >
                           <i className="fas fa-edit"></i> Edit

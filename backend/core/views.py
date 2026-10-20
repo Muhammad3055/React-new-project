@@ -2096,11 +2096,31 @@ def api_admin_edit_content(request):
                         setattr(video, key, body.get(key))
                 if file_obj:
                     video.video_file = file_obj
+                elif body.get('replace_with_url') == '1' and body.get('video_url'):
+                    video.video_file = None
+                thumbnail = request.FILES.get('thumbnail') or request.FILES.get('cover_image')
+                if thumbnail:
+                    video.thumbnail = thumbnail
                 video.save()
                 return JsonResponse({'status': 'success', 'id': video.id,
                                      'video_url': video.video_file.url if video.video_file else video.video_url})
 
-            if content_type in ['book', 'document', 'books', 'image', 'photo']:
+            if content_type in ['image', 'photo']:
+                img = ImageMedia.objects.filter(id=item_id).first()
+                if img is None:
+                    return JsonResponse({'error': 'Image not found.'}, status=404)
+                for key in ('title', 'category', 'description', 'image_url'):
+                    if key in body:
+                        setattr(img, key, body.get(key))
+                if file_obj:
+                    img.image_file = file_obj
+                elif body.get('replace_with_url') == '1' and body.get('image_url'):
+                    img.image_file = None
+                img.save()
+                return JsonResponse({'status': 'success', 'id': img.id,
+                                     'image_url': img.get_image_url()})
+
+            if content_type in ['book', 'document', 'books']:
                 bk = BookMedia.objects.filter(id=item_id).first()
                 if bk:
                     if 'title' in body: bk.title = body.get('title')
@@ -2128,6 +2148,7 @@ def api_admin_edit_content(request):
                             bk.category = cat_obj
 
                     if file_obj: bk.pdf_file = file_obj
+                    elif body.get('replace_with_url') == '1' and body.get('pdf_url'): bk.pdf_file = None
                     if request.FILES.get('cover_image'): bk.cover_image = request.FILES['cover_image']
                     bk.save()
                     return JsonResponse({'status': 'success', 'id': bk.id, 'message': 'Book updated successfully!', 'document_url': bk.get_document_url()})
@@ -2161,6 +2182,7 @@ def api_admin_edit_content(request):
                             tq.category = cat_obj
 
                     if file_obj: tq.audio_file = file_obj
+                    elif body.get('replace_with_url') == '1' and body.get('audio_url'): tq.audio_file = None
                     tq.save()
                     return JsonResponse({'status': 'success', 'id': tq.id, 'message': 'Audio updated successfully!', 'audio_url': tq.get_playable_url()})
 
@@ -2186,6 +2208,7 @@ def api_admin_edit_content(request):
                     if 'duration' in body: qa.duration = body.get('duration')
                     if 'audio_url' in body: qa.audio_url = body.get('audio_url')
                     if file_obj: qa.audio_file = file_obj
+                    elif body.get('replace_with_url') == '1' and body.get('audio_url'): qa.audio_file = None
                     
                     cat_id = body.get('category_id') or body.get('category')
                     if cat_id is not None:

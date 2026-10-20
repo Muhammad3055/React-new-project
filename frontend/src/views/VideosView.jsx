@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Film } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { getApiUrl } from '../utils/apiCache';
+import AdminUploadModal from '../components/AdminUploadModal';
 
-export default function VideosView() {
+export default function VideosView({ user }) {
   const { t } = useLanguage();
+  const [videos, setVideos] = useState([]);
+  const [editingVideo, setEditingVideo] = useState(null);
+  const isAdmin = user?.is_staff || user?.is_superuser;
+
+  const loadVideos = () => {
+    if (!isAdmin) return;
+    fetch(getApiUrl('/api/videos/'))
+      .then(response => response.json())
+      .then(data => setVideos(data.results || []))
+      .catch(error => console.error('Could not load videos for editing:', error));
+  };
+
+  useEffect(() => { loadVideos(); }, [isAdmin]);
   return (
     <div className="container" style={{ padding: '3.5rem 1rem', textAlign: 'center' }}>
       <div className="section-header" style={{ marginBottom: '2rem' }}>
@@ -41,6 +56,18 @@ export default function VideosView() {
           {t('videosComingSoonDesc', 'We are preparing high-quality Islamic video lectures, Seerah series, and Quranic reflections. Stay tuned — video bayanat will be uploaded soon!')}
         </p>
       </div>
+      {isAdmin && (
+        <div style={{ maxWidth: '750px', margin: '2rem auto', textAlign: 'left' }}>
+          <h2>Manage uploaded videos</h2>
+          {videos.map(video => (
+            <div key={video.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'center', padding: '0.75rem', marginBottom: '0.5rem', background: '#fff', borderRadius: '8px' }}>
+              <span>{video.title}</span>
+              <button type="button" onClick={() => setEditingVideo(video)}>Edit video</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {editingVideo && <AdminUploadModal editItem={{ ...editingVideo, contentType: 'video' }} defaultContentType="video" onClose={() => setEditingVideo(null)} onSuccess={loadVideos} />}
     </div>
   );
 }

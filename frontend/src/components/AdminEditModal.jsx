@@ -3,6 +3,8 @@ import { editContentItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
 
 export default function AdminEditModal({ item, onClose, onSuccess }) {
+  const existingFileUrl = item?.audio_url || item?.document_url || item?.pdf_url || item?.video_url || item?.image_url || item?.fileUrl || '';
+  const contentType = ['audio', 'taqreer', 'quran', 'video', 'image'].includes(item?.contentType) ? item.contentType : 'book';
   const [title, setTitle] = useState(item?.title || '');
   const [authorSpeaker, setAuthorSpeaker] = useState(item?.author || item?.speaker || '');
   const [pagesCount, setPagesCount] = useState(item?.pages_count || 1);
@@ -11,8 +13,8 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(item?.category_id || item?.category || '');
   const [description, setDescription] = useState(item?.description || '');
-  const [fileUrl, setFileUrl] = useState(item?.pdf_url || item?.fileUrl || item?.document_url || '');
-  const [coverUrl, setCoverUrl] = useState(item?.cover_url || item?.thumbnail_url || '');
+  const [fileUrl, setFileUrl] = useState(/^https?:\/\//i.test(existingFileUrl) ? existingFileUrl : '');
+  const [coverUrl, setCoverUrl] = useState(/^https?:\/\//i.test(item?.cover_url || item?.thumbnail_url || '') ? (item.cover_url || item.thumbnail_url) : '');
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -43,13 +45,13 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
       category_id: selectedCategory,
       category: selectedCategory,
       description,
-      ...(!selectedFile ? { pdf_url: fileUrl } : {}),
+      ...(!selectedFile && fileUrl ? { [contentType === 'book' ? 'pdf_url' : contentType === 'video' ? 'video_url' : 'audio_url']: fileUrl } : {}),
+      ...(!selectedFile && fileUrl && fileUrl !== existingFileUrl ? { replace_with_url: '1' } : {}),
       ...(!selectedCoverFile ? { cover_url: coverUrl } : {}),
       selectedFile,
       selectedCoverFile
     };
 
-    const contentType = 'book';
     try {
       await editContentItem(item.id, updatedFields, contentType);
     } catch (error) {
@@ -204,6 +206,7 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
             <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
               Document / Media File Source
             </label>
+            {existingFileUrl && <p style={{ fontSize: '0.82rem' }}>Current file: <a href={getApiUrl(existingFileUrl)} target="_blank" rel="noreferrer">Open saved file</a>. Leave the file picker empty to keep it.</p>}
 
             <div style={{ marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>📁 Reupload File from Device:</span>
@@ -215,12 +218,12 @@ export default function AdminEditModal({ item, onClose, onSuccess }) {
             </div>
 
             <div>
-              <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>🌐 Direct Document Web Link / URL:</span>
+              <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '0.25rem' }}>🌐 External File URL (optional):</span>
               <input
                 type="url"
                 value={fileUrl}
                 onChange={(e) => setFileUrl(e.target.value)}
-                placeholder="https://pub-xxxx.r2.dev/book.pdf or /media/..."
+                placeholder="https://example.com/file"
                 style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
               />
             </div>

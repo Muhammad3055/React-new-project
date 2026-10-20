@@ -14,7 +14,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import path
 
 from . import views
-from .models import BookMedia, QuranAudio, TaqreerAudio, VideoMedia
+from .models import BookMedia, ImageMedia, QuranAudio, TaqreerAudio, VideoMedia
 
 urlpatterns = [
     path('api/upload/chunk/', views.api_upload_chunk),
@@ -159,12 +159,30 @@ class UploadTests(TestCase):
         self.assertEqual(record.title, 'After')
         self.assertEqual(Path(record.audio_file.path).read_bytes(), b'abcdefghijk')
         self.assertEqual(TaqreerAudio.objects.count(), 1)
+        metadata = self.client.post('/api/admin/content/edit/', {
+            'id': record.pk, 'title': 'Metadata only', 'content_type': 'audio',
+        })
+        self.assertEqual(metadata.status_code, 200, metadata.content)
+        record.refresh_from_db()
+        self.assertEqual(record.title, 'Metadata only')
+        self.assertEqual(Path(record.audio_file.path).read_bytes(), b'abcdefghijk')
+        self.assertEqual(TaqreerAudio.objects.count(), 1)
+        changed = self.client.post('/api/admin/content/edit/', {
+            'id': record.pk, 'content_type': 'audio',
+            'audio_url': 'https://example.com/lecture.mp3', 'replace_with_url': '1',
+        })
+        self.assertEqual(changed.status_code, 200, changed.content)
+        record.refresh_from_db()
+        self.assertFalse(record.audio_file)
+        self.assertEqual(record.audio_url, 'https://example.com/lecture.mp3')
+        self.assertEqual(TaqreerAudio.objects.count(), 1)
 
     def test_edit_updates_existing_media_without_creating_duplicates(self):
         cases = [
             (BookMedia, {'title': 'Before'}, 'book', 'pdf_file', 'book.pdf'),
             (QuranAudio, {'surah_number': 1, 'surah_name_english': 'Before', 'surah_name_arabic': 'الفاتحة'}, 'quran', 'audio_file', 'quran.mp3'),
             (VideoMedia, {'title': 'Before'}, 'video', 'video_file', 'video.mp4'),
+            (ImageMedia, {'title': 'Before'}, 'image', 'image_file', 'image.png'),
         ]
         for model, fields, content_type, file_field, filename in cases:
             with self.subTest(content_type=content_type):
@@ -179,6 +197,18 @@ class UploadTests(TestCase):
                 self.assertEqual(model.objects.count(), 1)
                 record.refresh_from_db()
                 self.assertEqual(Path(getattr(record, file_field).path).read_bytes(), b'abcdefghijk')
+                url_field = {'book': 'pdf_url', 'quran': 'audio_url',
+                             'video': 'video_url', 'image': 'image_url'}[content_type]
+                url = f'https://example.com/{filename}'
+                changed = self.client.post('/api/admin/content/edit/', {
+                    'id': record.pk, 'content_type': content_type,
+                    url_field: url, 'replace_with_url': '1',
+                })
+                self.assertEqual(changed.status_code, 200, changed.content)
+                record.refresh_from_db()
+                self.assertFalse(getattr(record, file_field))
+                self.assertEqual(getattr(record, url_field), url)
+                self.assertEqual(model.objects.count(), 1)
 
     def test_django_admin_add_and_validation_retry(self):
         token = self.complete()

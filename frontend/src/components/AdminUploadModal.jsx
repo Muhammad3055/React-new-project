@@ -5,6 +5,7 @@ import { ALL_114_SURAHS } from '../data/quran_data';
 import { postMediaForm } from '../utils/chunkUploader';
 
 export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu' }) {
+  const existingFileUrl = editItem?.audio_url || editItem?.document_url || editItem?.pdf_url || editItem?.video_url || editItem?.image_url || editItem?.fileUrl || '';
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(editItem?.category_id || '');
@@ -28,8 +29,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
   const [surahNumber, setSurahNumber] = useState(editItem?.surah_number || 1);
   const [description, setDescription] = useState(editItem?.description || '');
-  const [fileUrl, setFileUrl] = useState(editItem?.audio_url || editItem?.pdf_url || editItem?.fileUrl || '');
-  const [coverUrl, setCoverUrl] = useState(editItem?.cover_url || '');
+  const [fileUrl, setFileUrl] = useState(/^https?:\/\//i.test(existingFileUrl) ? existingFileUrl : '');
+  const [coverUrl, setCoverUrl] = useState(/^https?:\/\//i.test(editItem?.cover_url || '') ? editItem.cover_url : '');
   const [duration, setDuration] = useState(editItem?.duration || '15:00');
   const [pagesCount, setPagesCount] = useState(editItem?.pages_count || 100);
   const [docFormat, setDocFormat] = useState(editItem?.file_type || 'pdf'); // 'pdf' | 'book' | 'doc' | 'ppt' | 'image'
@@ -156,6 +157,9 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     formData.append('text_content', postContent || hadithTranslation || tafseerText || description);
 
     const cleanFileUrl = (finalFileUrl && !finalFileUrl.startsWith('blob:')) ? finalFileUrl : '';
+    if (editItem && !selectedFile && cleanFileUrl && cleanFileUrl !== existingFileUrl) {
+      formData.append('replace_with_url', '1');
+    }
     if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
       if (cleanFileUrl) formData.append('audio_url', cleanFileUrl);
     } else {
@@ -319,6 +323,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
             {contentType === 'video' && (
               <div style={{ marginBottom: '1rem' }}>
+                {editItem && existingFileUrl && <p>Current video: <a href={getApiUrl(existingFileUrl)} target="_blank" rel="noreferrer">Open saved video</a>. Choose a file only to replace it.</p>}
                 <label>Video file (MP4, WebM or another video format)</label>
                 <input type="file" accept="video/*" onChange={e => setSelectedFile(e.target.files[0])} />
                 <label>Or video URL</label>
@@ -533,6 +538,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
+                  {editItem && existingFileUrl && <p style={{ fontSize: '0.82rem' }}>Current audio: <a href={getApiUrl(existingFileUrl)} target="_blank" rel="noreferrer">Open saved audio</a>. Leave the file picker empty to keep it.</p>}
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose Audio File from Device (MP3, M4A, WAV - Large files supported; keep this page open)</label>
                   <input
                     type="file"
@@ -825,7 +831,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 </div>
 
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose File (PDF / Word .docx / PPT / Image - Up to 2GB per File)</label>
+                  {editItem && existingFileUrl && <p style={{ fontSize: '0.82rem' }}>Current document: <a href={getApiUrl(existingFileUrl)} target="_blank" rel="noreferrer">Open saved document</a>. Leave the file picker empty to keep it.</p>}
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>📁 Choose File (PDF / Word .docx / PPT / Image - large files supported)</label>
                   <input
                     type="file"
                     accept=".pdf,.doc,.docx,.epub,.ppt,.pptx,.png,.jpg,.jpeg"

@@ -65,17 +65,22 @@ function sendChunk(url, body, csrf, onProgress) {
   });
 }
 
-export async function uploadFileInChunks(file, onProgress, resolveUrl = url => url, field = 'file') {
-  const endpoint = resolveUrl('/api/upload/chunk/');
+async function storageKey(file, field) {
   const sample = new Blob([file.slice(0, 65536), file.slice(Math.max(0, file.size - 65536))]);
-  const fingerprint = `${field}:${file.name}:${file.size}:${file.lastModified}:${await checksum(sample)}`;
-  const key = `maktab-upload:${fingerprint}`;
+  return `maktab-upload:${field}:${file.name}:${file.size}:${file.lastModified}:${await checksum(sample)}`;
+}
+
+export async function uploadFileInChunks(file, onProgress, resolveUrl = url => url, field = 'file', replacing = false) {
+  const endpoint = resolveUrl('/api/upload/chunk/');
+  const key = await storageKey(file, field);
+  const fingerprint = key.slice('maktab-upload:'.length);
   let uploadId = storage.get(key);
   let config;
   if (uploadId) {
     try { config = await getConfig(`${endpoint}?upload_id=${encodeURIComponent(uploadId)}`); }
     catch (error) {
-      if (error.status !== 400 || /already been saved|another administrator/.test(error.message)) throw error;
+      if (error.status !== 400 || /another administrator/.test(error.message) ||
+          (!replacing && /already been saved/.test(error.message))) throw error;
       storage.remove(key); uploadId = null;
     }
   }
@@ -124,20 +129,21 @@ export async function uploadFileInChunks(file, onProgress, resolveUrl = url => u
   return uploadId;
 }
 
-export async function prepareFormUploads(formData, onProgress, resolveUrl = url => url) {
+export async function prepareFormUploads(formData, onProgress, resolveUrl = url => url, replacing = false) {
   const prepared = new FormData();
   for (const [name, value] of formData.entries()) {
     if (value instanceof File && value.size > CHUNK_SIZE) {
       const primary = formData.get('pdf_file') || formData.get('audio_file');
       if (name === 'file' && primary instanceof File && primary.name === value.name && primary.size === value.size) continue;
-      prepared.append(`${name}_upload`, await uploadFileInChunks(value, onProgress, resolveUrl, name));
+      prepared.append(`${name}_upload`, await uploadFileInChunks(value, onProgress, resolveUrl, name, replacing));
     } else prepared.append(name, value);
   }
   return prepared;
 }
 
 export async function postMediaForm(url, formData, onProgress, resolveUrl = url => url) {
-  const prepared = await prepareFormUploads(formData, onProgress, resolveUrl);
+  const replacing = url.includes('/api/admin/content/edit/') && Boolean(formData.get('id'));
+  const prepared = await prepareFormUploads(formData, onProgress, resolveUrl, replacing);
   onProgress?.(99, 'Saving content…');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120000);
@@ -146,6 +152,14 @@ export async function postMediaForm(url, formData, onProgress, resolveUrl = url 
       method: 'POST', body: prepared, credentials: 'include', signal: controller.signal,
     }));
     if (data.status !== 'success') throw new Error('Server did not confirm that the content was saved.');
+    try {
+      for (const [name, value] of formData.entries()) {
+        if (value instanceof File && value.size > CHUNK_SIZE) {
+          const key = await storageKey(value, name);
+          if (storage.get(key) === prepared.get(`${name}_upload`)) storage.remove(key);
+        }
+      }
+    } catch { /* Browser storage is optional; content was already saved. */ }
     onProgress?.(100, 'Saved successfully.');
     return data;
   } catch (error) {
