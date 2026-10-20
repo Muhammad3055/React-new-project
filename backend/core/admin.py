@@ -6,7 +6,7 @@ from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker,
     UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory,
-    ImageMedia
+    ImageMedia, Topic
 )
 
 class LargeUploadAdmin(admin.ModelAdmin):
@@ -27,6 +27,15 @@ class LargeUploadAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'is_published', 'sort_order')
+    list_editable = ('is_published', 'sort_order')
+    search_fields = ('title', 'description')
+    prepopulated_fields = {'slug': ('title',)}
+    filter_horizontal = ('quran_audios', 'lectures', 'books', 'videos')
 
 
 @admin.register(QuranAudio)

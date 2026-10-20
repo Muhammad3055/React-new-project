@@ -1,8 +1,10 @@
 import json
 import random
+import re
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
+from django.db import transaction
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
@@ -12,11 +14,14 @@ from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.core.cache import cache
 from django.conf import settings
+from django.middleware.csrf import get_token
+from django.utils.text import slugify
+from django.views.decorators.http import require_GET, require_http_methods
 
 from .models import (
     Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, UserProfilePreferences,
-    DailyPrayerTracker, AyahReflectionNote, ZakatHistory, ImageMedia
+    DailyPrayerTracker, AyahReflectionNote, ZakatHistory, ImageMedia, Topic
 )
 from .uploads import chunked_files, upload_chunk
 
@@ -175,6 +180,163 @@ def get_surah_names(surah_num):
 
 
 api_upload_chunk = upload_chunk
+
+
+TOPIC_MEDIA = {
+    'quran_audios': QuranAudio,
+    'lectures': TaqreerAudio,
+    'books': BookMedia,
+    'videos': VideoMedia,
+}
+
+
+def _topic_summary(topic):
+    return {
+        'id': topic.id,
+        'title': topic.title,
+        'slug': topic.slug,
+        'description': topic.description,
+        'is_published': topic.is_published,
+        'counts': {key: getattr(topic, key).count() for key in TOPIC_MEDIA},
+    }
+
+
+def _topic_item(kind, item):
+    if kind == 'quran_audios':
+        return {
+            'id': item.id, 'title': f'{item.surah_number}. {item.surah_name_english}',
+            'subtitle': f'{item.reciter} · {item.get_language_display()}',
+            'url': item.get_playable_url(), 'duration': item.duration,
+        }
+    if kind == 'lectures':
+        return {
+            'id': item.id, 'title': item.title,
+            'subtitle': f'{item.speaker} · {item.get_language_display()}',
+            'url': item.get_playable_url(), 'duration': item.duration,
+        }
+    if kind == 'books':
+        return {
+            'id': item.id, 'title': item.title,
+            'subtitle': f'{item.author} · {item.get_language_display()}',
+            'url': item.get_document_url(),
+            'cover_url': item.cover_image.url if item.cover_image else item.cover_url,
+            'file_type': item.file_type,
+        }
+    return {
+        'id': item.id, 'title': item.title, 'subtitle': item.speaker,
+        'url': item.video_file.url if item.video_file else item.video_url,
+        'cover_url': item.thumbnail.url if item.thumbnail else item.thumbnail_url,
+    }
+
+
+@require_GET
+def api_topics_list(request):
+    topics = Topic.objects.filter(is_published=True).order_by('sort_order', 'title')
+    return JsonResponse({'results': [_topic_summary(topic) for topic in topics]})
+
+
+@require_GET
+def api_topic_detail(request, slug):
+    topics = Topic.objects.all() if request.user.is_authenticated and request.user.is_staff else Topic.objects.filter(is_published=True)
+    topic = topics.filter(slug=slug).prefetch_related(*TOPIC_MEDIA).first()
+    if topic is None:
+        return JsonResponse({'error': 'Topic not found.'}, status=404)
+    result = _topic_summary(topic)
+    result['sections'] = {
+        kind: [_topic_item(kind, item) for item in getattr(topic, kind).all()]
+        for kind in TOPIC_MEDIA
+    }
+    return JsonResponse(result)
+
+
+@require_http_methods(['GET', 'POST'])
+def api_admin_topics(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Staff login required.'}, status=403)
+
+    if request.method == 'GET':
+        topics = Topic.objects.all().order_by('sort_order', 'title')
+        return JsonResponse({
+            'results': [_topic_summary(topic) for topic in topics],
+            'csrf_token': get_token(request),
+        })
+
+    try:
+        body = json.loads(request.body)
+    except (ValueError, UnicodeDecodeError):
+        return JsonResponse({'error': 'Invalid JSON.'}, status=400)
+    if not isinstance(body, dict):
+        return JsonResponse({'error': 'Invalid topic data.'}, status=400)
+
+    title = body.get('title', '')
+    description = body.get('description', '')
+    if not isinstance(title, str) or not title.strip() or len(title.strip()) > 120:
+        return JsonResponse({'error': 'Enter a title of 1–120 characters.'}, status=400)
+    if not isinstance(description, str) or len(description) > 2000:
+        return JsonResponse({'error': 'Description must be under 2,000 characters.'}, status=400)
+    if not isinstance(body.get('is_published'), bool):
+        return JsonResponse({'error': 'Choose whether this topic is published.'}, status=400)
+
+    topic_id = body.get('id')
+    if topic_id is not None and (not isinstance(topic_id, int) or isinstance(topic_id, bool) or topic_id < 1):
+        return JsonResponse({'error': 'Invalid topic ID.'}, status=400)
+
+    selections = {}
+    for kind, model in TOPIC_MEDIA.items():
+        ids = body.get(kind, [])
+        if not isinstance(ids, list) or len(ids) > 100 or any(
+            not isinstance(pk, int) or isinstance(pk, bool) or pk < 1 for pk in ids
+        ):
+            return JsonResponse({'error': f'Invalid {kind} selection (maximum 100).'}, status=400)
+        ids = list(dict.fromkeys(ids))
+        items = list(model.objects.filter(pk__in=ids))
+        if len(items) != len(ids):
+            return JsonResponse({'error': f'One or more selected {kind} no longer exist.'}, status=400)
+        selections[kind] = items
+
+    with transaction.atomic():
+        if topic_id is None:
+            raw_slug = body.get('slug', '')
+            if not isinstance(raw_slug, str):
+                return JsonResponse({'error': 'Invalid topic URL slug.'}, status=400)
+            slug = raw_slug.strip().lower() or slugify(title.strip())
+            if len(slug) > 120 or not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', slug):
+                return JsonResponse({'error': 'Enter a URL slug using lowercase letters, numbers, and hyphens.'}, status=400)
+            if Topic.objects.filter(slug=slug).exists():
+                return JsonResponse({'error': 'A topic with this title already exists.'}, status=409)
+            topic = Topic.objects.create(slug=slug, title=title.strip(), description=description.strip(), is_published=body['is_published'])
+        else:
+            topic = Topic.objects.filter(pk=topic_id).first()
+            if topic is None:
+                return JsonResponse({'error': 'Topic not found.'}, status=404)
+            topic.title = title.strip()
+            topic.description = description.strip()
+            topic.is_published = body['is_published']
+            topic.save(update_fields=['title', 'description', 'is_published'])
+        for kind, items in selections.items():
+            getattr(topic, kind).set(items)
+
+    return JsonResponse({'status': 'success', 'topic': _topic_summary(topic)})
+
+
+@require_GET
+def api_admin_topic_options(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Staff login required.'}, status=403)
+    kind = request.GET.get('kind', '')
+    if kind not in TOPIC_MEDIA:
+        return JsonResponse({'error': 'Invalid media type.'}, status=400)
+    query = request.GET.get('q', '').strip()[:100]
+    items = TOPIC_MEDIA[kind].objects.all()
+    if query:
+        if kind == 'quran_audios':
+            items = items.filter(Q(surah_name_english__icontains=query) | Q(surah_name_arabic__icontains=query) | Q(reciter__icontains=query))
+        elif kind == 'books':
+            items = items.filter(Q(title__icontains=query) | Q(author__icontains=query))
+        else:
+            items = items.filter(Q(title__icontains=query) | Q(speaker__icontains=query))
+    items = items.order_by('-id')[:25]
+    return JsonResponse({'results': [_topic_item(kind, item) for item in items]})
 
 
 @csrf_exempt

@@ -14,6 +14,25 @@ class Category(models.Model):
         return self.name
 
 
+class Topic(models.Model):
+    """A curated page linking existing media without copying its files or records."""
+    title = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=120, unique=True)
+    description = models.TextField(blank=True)
+    is_published = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField(default=0)
+    quran_audios = models.ManyToManyField('QuranAudio', blank=True, related_name='topics')
+    lectures = models.ManyToManyField('TaqreerAudio', blank=True, related_name='topics')
+    books = models.ManyToManyField('BookMedia', blank=True, related_name='topics')
+    videos = models.ManyToManyField('VideoMedia', blank=True, related_name='topics')
+
+    class Meta:
+        ordering = ['sort_order', 'title']
+
+    def __str__(self):
+        return self.title
+
+
 class QuranAudio(models.Model):
     REVELATION_CHOICES = [
         ('Makki', 'Makki'),

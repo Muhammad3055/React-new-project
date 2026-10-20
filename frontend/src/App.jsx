@@ -30,6 +30,7 @@ const HadithView = lazy(() => import('./views/HadithView'));
 const QiblaView = lazy(() => import('./views/QiblaView'));
 const BookmarksView = lazy(() => import('./views/BookmarksView'));
 const UploadView = lazy(() => import('./views/UploadView'));
+const TopicsView = lazy(() => import('./views/TopicsView'));
 const ContactView = lazy(() => import('./views/ContactView'));
 const AboutView = lazy(() => import('./views/AboutView'));
 const FazailView = lazy(() => import('./views/FazailView'));
@@ -77,6 +78,7 @@ export default function App() {
 function MainAppContent() {
   const tabPathMap = {
     home: '/',
+    topics: '/topics',
     read: '/read',
     quran: '/quran',
     qaris: '/qaris',
@@ -477,6 +479,10 @@ function MainAppContent() {
               user={user}
               openAuthModal={openAuthModal}
             />
+          )}
+
+          {activeTab === 'topics' && (
+            <TopicsView user={user} playTrack={playTrack} />
           )}
 
           {activeTab === 'read' && (

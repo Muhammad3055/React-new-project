@@ -40,6 +40,7 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
           <div className="footer-col">
             <h4 className="footer-title">{t('uniqueBestPages', 'Featured Islamic Pages')}</h4>
             <ul className="footer-links">
+              <li><a href="/topics" onClick={(e) => { e.preventDefault(); navigateToTab('topics'); }}><i className="fas fa-layer-group"></i> {t('topics', 'Explore Topics')}</a></li>
               <li><a href="/azkar" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('azkar'); }}><i className="fas fa-praying-hands"></i> {t('dailyRemindersAzkar', 'Daily Reminders & Azkar')}</a></li>
               <li><a href="/live" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('live'); }}><i className="fas fa-broadcast-tower"></i> {t('liveMakkahMadinah', 'Makkah & Madinah Live')}</a></li>
               <li><a href="/worldClock" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); navigateToTab('worldClock'); }}><i className="fas fa-globe"></i> {t('worldClockTodo', 'World Clock & Todo')}</a></li>

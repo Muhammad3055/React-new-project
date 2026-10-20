@@ -121,6 +121,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
+    { id: 'topics', label: t('topics', 'Topics'), icon: 'fas fa-layer-group' },
     { id: 'asanNimaz', label: t('asanNimaz', 'آسان نماز'), icon: 'fas fa-mosque' },
     { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
     { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
