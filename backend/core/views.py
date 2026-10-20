@@ -212,11 +212,9 @@ def api_quran_list(request):
                 destination_folder=dest,
                 category_id=category_id,
                 audio_url=raw_audio_url,
-                duration=body.get('duration') or '00:00'
+                duration=body.get('duration') or '00:00',
+                audio_file=audio_file
             )
-            if audio_file:
-                qa.audio_file = audio_file
-                qa.save()
             return JsonResponse({'status': 'success', 'id': qa.id, 'audio_url': qa.get_playable_url(), 'surah_name_arabic': qa.surah_name_arabic, 'surah_name_english': qa.surah_name_english, 'message': 'Quran Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -423,11 +421,9 @@ def api_taqreer_list(request):
                 category_id=category_id,
                 audio_url=raw_audio_url,
                 duration=body.get('duration') or '00:00',
-                description=body.get('description') or ''
+                description=body.get('description') or '',
+                audio_file=audio_file
             )
-            if audio_file:
-                tq.audio_file = audio_file
-                tq.save()
             return JsonResponse({'status': 'success', 'id': tq.id, 'audio_url': tq.get_playable_url(), 'arabic_title': tq.arabic_title, 'title': tq.title, 'message': 'Taqreer Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)

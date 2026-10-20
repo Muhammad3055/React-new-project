@@ -67,6 +67,31 @@ export default function UploadView({ user }) {
   // Audio Recitation Form State
   const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
   const [audioFile, setAudioFile] = useState(null);
+  const [taqreerUploading, setTaqreerUploading] = useState(false);
+  const [taqreerProgress, setTaqreerProgress] = useState(0);
+  const [taqreerStats, setTaqreerStats] = useState('');
+  const [audioUploading, setAudioUploading] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [audioStats, setAudioStats] = useState('');
+
+  const autoDetectAudioDuration = (file, onFound) => {
+    if (!file) return;
+    try {
+      const audio = new Audio(URL.createObjectURL(file));
+      audio.addEventListener('loadedmetadata', () => {
+        const totalSecs = Math.floor(audio.duration);
+        if (totalSecs > 0 && isFinite(totalSecs)) {
+          const hrs = Math.floor(totalSecs / 3600);
+          const mins = Math.floor((totalSecs % 3600) / 60);
+          const secs = totalSecs % 60;
+          const formatted = hrs > 0
+            ? `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+            : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+          onFound(formatted);
+        }
+      });
+    } catch (e) {}
+  };
 
   const handleTaqreerSubmit = (e) => {
     e.preventDefault();
@@ -85,39 +110,69 @@ export default function UploadView({ user }) {
       formData.append('audio_url', cleanUrl);
     }
 
-    fetch(getApiUrl('/api/taqreer/'), {
-      method: 'POST',
-      body: formData
-    })
-      .then(res => res.json())
-      .then((data) => {
+    setTaqreerUploading(true);
+    setTaqreerProgress(0);
+    setTaqreerStats('Starting upload...');
+
+    const xhr = new XMLHttpRequest();
+    const startTime = Date.now();
+    xhr.open('POST', getApiUrl('/api/taqreer/'));
+
+    if (xhr.upload) {
+      xhr.upload.onprogress = (evt) => {
+        if (evt.lengthComputable && evt.total > 0) {
+          const percent = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
+          setTaqreerProgress(percent);
+          const elapsed = (Date.now() - startTime) / 1000;
+          if (elapsed > 0.3) {
+            const speed = ((evt.loaded / 1048576) / elapsed).toFixed(1);
+            const loaded = (evt.loaded / 1048576).toFixed(1);
+            const total = (evt.total / 1048576).toFixed(1);
+            setTaqreerStats(`${loaded} MB / ${total} MB (${speed} MB/s)`);
+          }
+        }
+      };
+    }
+
+    xhr.onload = () => {
+      setTaqreerProgress(100);
+      setTaqreerStats('Done! Saved to database.');
+      setTaqreerUploading(false);
+      try {
+        const data = JSON.parse(xhr.responseText);
         setSubmittedMessage(data.message || 'Taqreer MP3 voice note added successfully!');
-        setTaqreerData({ title: '', arabic_title: '', speaker: '', language: 'urdu', audio_url: '', duration: '15:00', description: '' });
-        setTaqreerFile(null);
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setTimeout(() => setSubmittedMessage(''), 4000);
-      })
-      .catch((err) => {
-        console.error('Taqreer upload error:', err);
-        // Fallback: save to local store only if backend call fails
-        addAdminItem({
-          title: taqreerData.title,
-          arabic_title: taqreerData.arabic_title,
-          speaker: taqreerData.speaker,
-          author: taqreerData.speaker,
-          destination: 'taqreer',
-          contentType: 'audio',
-          language: taqreerData.language,
-          duration: taqreerData.duration,
-          description: taqreerData.description,
-          fileUrl: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
-          audio_url: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
-          addedByAdmin: true
-        });
-        setSubmittedMessage('Taqreer MP3 saved locally!');
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setTimeout(() => setSubmittedMessage(''), 4000);
+      } catch (e) {
+        setSubmittedMessage('Taqreer MP3 added successfully!');
+      }
+      setTaqreerData({ title: '', arabic_title: '', speaker: '', language: 'urdu', audio_url: '', duration: '', description: '' });
+      setTaqreerFile(null);
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      setTimeout(() => setSubmittedMessage(''), 4000);
+    };
+
+    xhr.onerror = (err) => {
+      console.error('Taqreer upload error:', err);
+      setTaqreerUploading(false);
+      addAdminItem({
+        title: taqreerData.title,
+        arabic_title: taqreerData.arabic_title,
+        speaker: taqreerData.speaker,
+        author: taqreerData.speaker,
+        destination: 'taqreer',
+        contentType: 'audio',
+        language: taqreerData.language,
+        duration: taqreerData.duration,
+        description: taqreerData.description,
+        fileUrl: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
+        audio_url: taqreerFile ? URL.createObjectURL(taqreerFile) : taqreerData.audio_url,
+        addedByAdmin: true
       });
+      setSubmittedMessage('Taqreer MP3 saved locally!');
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      setTimeout(() => setSubmittedMessage(''), 4000);
+    };
+
+    xhr.send(formData);
   };
 
   const handleBookSubmit = (e) => {
@@ -280,23 +335,58 @@ export default function UploadView({ user }) {
       formData.append('audio_url', cleanUrl);
     }
 
-    fetch(getApiUrl('/api/quran/'), {
-      method: 'POST',
-      body: formData
-    })
-      .then(res => res.json())
-      .then((data) => {
+    if (audioData.duration) {
+      formData.append('duration', audioData.duration);
+    }
+
+    setAudioUploading(true);
+    setAudioProgress(0);
+    setAudioStats('Starting upload...');
+
+    const xhr = new XMLHttpRequest();
+    const startTime = Date.now();
+    xhr.open('POST', getApiUrl('/api/quran/'));
+
+    if (xhr.upload) {
+      xhr.upload.onprogress = (evt) => {
+        if (evt.lengthComputable && evt.total > 0) {
+          const percent = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
+          setAudioProgress(percent);
+          const elapsed = (Date.now() - startTime) / 1000;
+          if (elapsed > 0.3) {
+            const speed = ((evt.loaded / 1048576) / elapsed).toFixed(1);
+            const loaded = (evt.loaded / 1048576).toFixed(1);
+            const total = (evt.total / 1048576).toFixed(1);
+            setAudioStats(`${loaded} MB / ${total} MB (${speed} MB/s)`);
+          }
+        }
+      };
+    }
+
+    xhr.onload = () => {
+      setAudioProgress(100);
+      setAudioStats('Done! Saved to database.');
+      setAudioUploading(false);
+      try {
+        const data = JSON.parse(xhr.responseText);
         setSubmittedMessage(data.message || 'Quran Audio recitation uploaded successfully!');
-        setAudioData({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
-        setAudioFile(null);
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setTimeout(() => setSubmittedMessage(''), 4000);
-      })
-      .catch((err) => {
-        console.error('Quran audio upload error:', err);
-        setSubmittedMessage('Audio saved!');
-        setTimeout(() => setSubmittedMessage(''), 4000);
-      });
+      } catch (e) {
+        setSubmittedMessage('Quran Audio recitation uploaded successfully!');
+      }
+      setAudioData({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '', duration: '' });
+      setAudioFile(null);
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      setTimeout(() => setSubmittedMessage(''), 4000);
+    };
+
+    xhr.onerror = (err) => {
+      console.error('Quran audio upload error:', err);
+      setAudioUploading(false);
+      setSubmittedMessage('Audio saved locally!');
+      setTimeout(() => setSubmittedMessage(''), 4000);
+    };
+
+    xhr.send(formData);
   };
 
   return (
@@ -463,7 +553,11 @@ export default function UploadView({ user }) {
                   type="file"
                   className="form-input"
                   accept="audio/*,.mp3,.m4a"
-                  onChange={e => setTaqreerFile(e.target.files[0])}
+                  onChange={e => {
+                    const f = e.target.files[0];
+                    setTaqreerFile(f);
+                    autoDetectAudioDuration(f, (d) => setTaqreerData(prev => ({ ...prev, duration: d })));
+                  }}
                   style={{ padding: '0.4rem' }}
                 />
               </div>
@@ -482,8 +576,20 @@ export default function UploadView({ user }) {
               <textarea className="form-textarea" rows="3" value={taqreerData.description} onChange={e => setTaqreerData({ ...taqreerData, description: e.target.value })} placeholder="Brief summary of the lecture..."></textarea>
             </div>
 
-            <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-upload"></i> Save & Upload Lecture MP3
+            {taqreerUploading && (
+              <div style={{ marginBottom: '1rem', background: 'rgba(0,0,0,0.3)', padding: '0.85rem', borderRadius: '10px', border: '1px solid var(--accent-gold)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.88rem', marginBottom: '0.4rem' }}>
+                  <span><i className="fas fa-bolt fa-spin"></i> Uploading MP3 to Server...</span>
+                  <span>{taqreerProgress}%</span>
+                </div>
+                <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ width: `${taqreerProgress}%`, height: '100%', background: 'linear-gradient(90deg, #10b981, #f59e0b)', transition: 'width 0.25s' }}></div>
+                </div>
+                {taqreerStats && <div style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: '0.35rem', textAlign: 'right' }}>{taqreerStats}</div>}
+              </div>
+            )}
+            <button type="submit" disabled={taqreerUploading} className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
+              <i className={taqreerUploading ? "fas fa-spinner fa-spin" : "fas fa-upload"}></i> {taqreerUploading ? 'Uploading...' : 'Save & Upload Lecture MP3'}
             </button>
           </form>
         )}
@@ -743,7 +849,11 @@ export default function UploadView({ user }) {
                   type="file"
                   className="form-input"
                   accept="audio/*,.mp3"
-                  onChange={e => setAudioFile(e.target.files[0])}
+                  onChange={e => {
+                    const f = e.target.files[0];
+                    setAudioFile(f);
+                    autoDetectAudioDuration(f, (d) => setAudioData(prev => ({ ...prev, duration: d })));
+                  }}
                   style={{ padding: '0.4rem' }}
                 />
               </div>
@@ -753,8 +863,20 @@ export default function UploadView({ user }) {
               </div>
             </div>
 
-            <button type="submit" className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
-              <i className="fas fa-upload"></i> Save & Upload Quran Audio
+            {audioUploading && (
+              <div style={{ marginBottom: '1rem', background: 'rgba(0,0,0,0.3)', padding: '0.85rem', borderRadius: '10px', border: '1px solid var(--accent-gold)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.88rem', marginBottom: '0.4rem' }}>
+                  <span><i className="fas fa-bolt fa-spin"></i> Uploading Recitation to Server...</span>
+                  <span>{audioProgress}%</span>
+                </div>
+                <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ width: `${audioProgress}%`, height: '100%', background: 'linear-gradient(90deg, #10b981, #f59e0b)', transition: 'width 0.25s' }}></div>
+                </div>
+                {audioStats && <div style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: '0.35rem', textAlign: 'right' }}>{audioStats}</div>}
+              </div>
+            )}
+            <button type="submit" disabled={audioUploading} className="btn-submit" style={{ width: 'auto', alignSelf: 'flex-start', padding: '0.75rem 2rem' }}>
+              <i className={audioUploading ? "fas fa-spinner fa-spin" : "fas fa-upload"}></i> {audioUploading ? 'Uploading...' : 'Save & Upload Quran Audio'}
             </button>
           </form>
         )}

@@ -12,6 +12,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [newFolderName, setNewFolderName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStats, setUploadStats] = useState('');
 
   const defaultSurah = ALL_114_SURAHS[0] || { name: 'Al-Fatihah', englishName: 'The Opening', arabic: 'الفاتحة' };
   const initialTitle = editItem?.title || editItem?.surah_name_english || (defaultContentType === 'quran' ? `Surah ${defaultSurah.name} (${defaultSurah.englishName})` : '');
@@ -116,6 +118,8 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     }
 
     setUploading(true);
+    setUploadProgress(0);
+    setUploadStats('Starting high-speed upload...');
 
     const activeFileType = contentType === 'book' ? docFormat : contentType;
 
@@ -265,76 +269,108 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       });
     }
 
-    const fetchOptions = jsonBody ? {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: jsonBody
-    } : {
-      method: method,
-      body: formData
-      // No Content-Type header — browser sets multipart/form-data with boundary automatically
+    const handleUploadSuccess = (data) => {
+      if (data && (data.audio_url || data.document_url || data.id || data.status === 'success')) {
+        const realUrl = data.audio_url || data.document_url || '';
+        if (data.id) newItem.id = data.id;
+        if (realUrl) {
+          newItem.fileUrl = realUrl;
+          if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
+            newItem.audio_url = realUrl;
+          } else if (contentType === 'book') {
+            newItem.pdf_url = realUrl;
+          }
+        }
+        if (data.surah_name_arabic) {
+          newItem.surah_name_arabic = data.surah_name_arabic;
+          newItem.arabic_title = data.surah_name_arabic;
+        }
+        if (data.arabic_title) {
+          newItem.arabic_title = data.arabic_title;
+          newItem.surah_name_arabic = data.arabic_title;
+        }
+        if (data.surah_name_english) {
+          newItem.surah_name_english = data.surah_name_english;
+          newItem.title = data.surah_name_english;
+        }
+
+        const existingAdminItems = getAdminItems();
+        const cleaned = existingAdminItems.filter(item => {
+          if (!item) return false;
+          if (String(item.id) === String(newItem.id)) return false;
+          if (contentType === 'quran' && item.contentType === 'quran' && item.destination === newItem.destination && Number(item.surah_number) === Number(newItem.surah_number)) return false;
+          if (item.title && newItem.title && item.title.trim().toLowerCase() === newItem.title.trim().toLowerCase()) return false;
+          return true;
+        });
+        localStorage.setItem('quran_portal_admin_items', JSON.stringify([newItem, ...cleaned]));
+      } else {
+        addAdminItem(newItem);
+      }
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      setUploading(false);
+      setSubmitted(true);
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+        if (onClose) onClose();
+      }, 1200);
     };
 
-    fetch(getApiUrl(apiEndpoint), fetchOptions)
-      .then(res => res.json())
-      .then((data) => {
-        if (data && (data.audio_url || data.document_url || data.id || data.status === 'success')) {
-          const realUrl = data.audio_url || data.document_url || '';
-          if (data.id) newItem.id = data.id;
-          if (realUrl) {
-            newItem.fileUrl = realUrl;
-            if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
-              newItem.audio_url = realUrl;
-            } else if (contentType === 'book') {
-              newItem.pdf_url = realUrl;
+    const handleUploadFailure = (err) => {
+      console.error('Upload error:', err);
+      addAdminItem(newItem);
+      window.dispatchEvent(new CustomEvent('admin_content_updated'));
+      setUploading(false);
+      setSubmitted(true);
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+        if (onClose) onClose();
+      }, 1200);
+    };
+
+    if (jsonBody) {
+      fetch(getApiUrl(apiEndpoint), {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonBody
+      })
+        .then(res => res.json())
+        .then(handleUploadSuccess)
+        .catch(handleUploadFailure);
+    } else {
+      const xhr = new XMLHttpRequest();
+      const startTime = Date.now();
+      xhr.open(method, getApiUrl(apiEndpoint));
+
+      if (xhr.upload) {
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && e.total > 0) {
+            const percent = Math.min(99, Math.round((e.loaded / e.total) * 100));
+            setUploadProgress(percent);
+            const elapsed = (Date.now() - startTime) / 1000;
+            if (elapsed > 0.3) {
+              const speedMB = ((e.loaded / 1048576) / elapsed).toFixed(1);
+              const loadedMB = (e.loaded / 1048576).toFixed(1);
+              const totalMB = (e.total / 1048576).toFixed(1);
+              setUploadStats(`${loadedMB} MB / ${totalMB} MB (${speedMB} MB/s)`);
             }
           }
-          if (data.surah_name_arabic) {
-            newItem.surah_name_arabic = data.surah_name_arabic;
-            newItem.arabic_title = data.surah_name_arabic;
-          }
-          if (data.arabic_title) {
-            newItem.arabic_title = data.arabic_title;
-            newItem.surah_name_arabic = data.arabic_title;
-          }
-          if (data.surah_name_english) {
-            newItem.surah_name_english = data.surah_name_english;
-            newItem.title = data.surah_name_english;
-          }
+        };
+      }
 
-          // Clean up any stale local admin duplicate with matching title, surah_number or ID
-          const existingAdminItems = getAdminItems();
-          const cleaned = existingAdminItems.filter(item => {
-            if (!item) return false;
-            if (String(item.id) === String(newItem.id)) return false;
-            if (contentType === 'quran' && item.contentType === 'quran' && item.destination === newItem.destination && Number(item.surah_number) === Number(newItem.surah_number)) return false;
-            if (item.title && newItem.title && item.title.trim().toLowerCase() === newItem.title.trim().toLowerCase()) return false;
-            return true;
-          });
-          localStorage.setItem('quran_portal_admin_items', JSON.stringify([newItem, ...cleaned]));
-        } else {
-          addAdminItem(newItem);
+      xhr.onload = () => {
+        setUploadProgress(100);
+        setUploadStats('Upload complete! Saving to database...');
+        try {
+          const data = JSON.parse(xhr.responseText);
+          handleUploadSuccess(data);
+        } catch (e) {
+          handleUploadSuccess({});
         }
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setUploading(false);
-        setSubmitted(true);
-        setTimeout(() => {
-          if (onSuccess) onSuccess();
-          if (onClose) onClose();
-        }, 1200);
-      })
-      .catch((err) => {
-        console.error('Upload error:', err);
-        // Fallback: Still add to local store so admin can see it
-        addAdminItem(newItem);
-        window.dispatchEvent(new CustomEvent('admin_content_updated'));
-        setUploading(false);
-        setSubmitted(true);
-        setTimeout(() => {
-          if (onSuccess) onSuccess();
-          if (onClose) onClose();
-        }, 1200);
-      });
+      };
+
+      xhr.onerror = handleUploadFailure;
+      xhr.send(formData);
+    }
   };
 
   return (
@@ -994,6 +1030,24 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 style={{ width: '100%', padding: '0.65rem 0.85rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', color: '#fff', outline: 'none' }}
               ></textarea>
             </div>
+
+            {/* Live Upload Progress Indicator */}
+            {uploading && (
+              <div style={{ marginBottom: '1.25rem', background: 'rgba(0,0,0,0.4)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1.5px solid var(--accent-gold)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem', color: 'var(--accent-gold)', fontWeight: 800, marginBottom: '0.45rem' }}>
+                  <span><i className="fas fa-bolt fa-spin"></i> {uploadProgress < 100 ? 'High-Speed Uploading to Server...' : 'Processing & Finalizing Media...'}</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div style={{ width: '100%', height: '10px', background: 'rgba(255,255,255,0.12)', borderRadius: '6px', overflow: 'hidden' }}>
+                  <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'linear-gradient(90deg, #10b981 0%, #f59e0b 100%)', transition: 'width 0.25s ease' }}></div>
+                </div>
+                {uploadStats && (
+                  <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.4rem', textAlign: 'right', fontWeight: 600 }}>
+                    {uploadStats}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
