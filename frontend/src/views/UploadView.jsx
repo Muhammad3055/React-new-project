@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
+import { uploadFileInChunks } from '../utils/chunkUploader';
 import { getAdminItems, addAdminItem, deleteContentItem } from '../utils/adminContentStore';
 import AdminEditModal from '../components/AdminEditModal';
 import { ALL_114_SURAHS } from '../data/quran_data';
@@ -93,7 +94,7 @@ export default function UploadView({ user }) {
     } catch (e) {}
   };
 
-  const handleTaqreerSubmit = (e) => {
+  const handleTaqreerSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -103,7 +104,21 @@ export default function UploadView({ user }) {
     formData.append('language', taqreerData.language);
     formData.append('duration', taqreerData.duration);
     formData.append('description', taqreerData.description);
-    if (taqreerFile) {
+    if (taqreerFile && taqreerFile.size > 50 * 1024 * 1024) {
+      setTaqreerUploading(true);
+      setTaqreerProgress(0);
+      try {
+        const assembled = await uploadFileInChunks(taqreerFile, (pct, stats) => {
+          setTaqreerProgress(pct);
+          setTaqreerStats(stats);
+        });
+        formData.append('assembled_filename', assembled);
+      } catch (err) {
+        setTaqreerUploading(false);
+        alert('Upload failed: ' + err.message);
+        return;
+      }
+    } else if (taqreerFile) {
       formData.append('audio_file', taqreerFile);
     } else {
       const cleanUrl = (taqreerData.audio_url && !taqreerData.audio_url.startsWith('blob:')) ? taqreerData.audio_url : '';
@@ -319,7 +334,7 @@ export default function UploadView({ user }) {
     setTimeout(() => setSubmittedMessage(''), 4000);
   };
 
-  const handleAudioSubmit = (e) => {
+  const handleAudioSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('surah_number', audioData.surah_number);
@@ -328,7 +343,21 @@ export default function UploadView({ user }) {
     formData.append('arabic_title', audioData.surah_name_arabic);
     formData.append('reciter', audioData.reciter);
     formData.append('language', audioData.language);
-    if (audioFile) {
+    if (audioFile && audioFile.size > 50 * 1024 * 1024) {
+      setAudioUploading(true);
+      setAudioProgress(0);
+      try {
+        const assembled = await uploadFileInChunks(audioFile, (pct, stats) => {
+          setAudioProgress(pct);
+          setAudioStats(stats);
+        });
+        formData.append('assembled_filename', assembled);
+      } catch (err) {
+        setAudioUploading(false);
+        alert('Upload failed: ' + err.message);
+        return;
+      }
+    } else if (audioFile) {
       formData.append('audio_file', audioFile);
     } else {
       const cleanUrl = (audioData.audio_url && !audioData.audio_url.startsWith('blob:')) ? audioData.audio_url : '';

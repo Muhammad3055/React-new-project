@@ -3,6 +3,7 @@ from . import views, ai_views
 
 urlpatterns = [
     # REST API endpoints for React Frontend
+    path('api/upload/chunk/', views.api_upload_chunk, name='api_upload_chunk'),
     path('api/quran/', views.api_quran_list, name='api_quran_list'),
     path('api/taqreer/', views.api_taqreer_list, name='api_taqreer_list'),
     path('api/videos/', views.api_videos_list, name='api_videos_list'),

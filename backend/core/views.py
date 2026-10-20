@@ -171,6 +171,70 @@ def get_surah_names(surah_num):
 
 # --- REST API Endpoints for React SPA ---
 
+
+@csrf_exempt
+def api_upload_chunk(request):
+    """
+    Receives 25MB file slices to effortlessly bypass Cloudflare's 100MB free upload limit.
+    Assembles them on the server when all parts are received.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
+    upload_id = request.POST.get('upload_id')
+    chunk_index = int(request.POST.get('chunk_index', 0))
+    total_chunks = int(request.POST.get('total_chunks', 1))
+    filename = request.POST.get('filename', 'upload.tmp')
+    chunk_file = request.FILES.get('chunk')
+
+    if not upload_id or not chunk_file:
+        return JsonResponse({'error': 'Missing upload_id or chunk'}, status=400)
+
+    # Store chunks safely under MEDIA_ROOT/chunks/<upload_id>/
+    chunk_dir = os.path.join(settings.MEDIA_ROOT, 'chunks', upload_id)
+    os.makedirs(chunk_dir, exist_ok=True)
+
+    chunk_part_path = os.path.join(chunk_dir, f"part_{chunk_index:05d}")
+    with open(chunk_part_path, 'wb') as f:
+        for c in chunk_file.chunks():
+            f.write(c)
+
+    # When the final chunk arrives, stitch all parts together
+    if chunk_index == total_chunks - 1:
+        parts = [os.path.join(chunk_dir, f"part_{i:05d}") for i in range(total_chunks)]
+        if all(os.path.exists(p) for p in parts):
+            assembled_dir = os.path.join(settings.MEDIA_ROOT, 'chunks', 'assembled')
+            os.makedirs(assembled_dir, exist_ok=True)
+            clean_filename = os.path.basename(filename)
+            assembled_filename = f"{upload_id}_{clean_filename}"
+            assembled_path = os.path.join(assembled_dir, assembled_filename)
+
+            with open(assembled_path, 'wb') as outfile:
+                for p in parts:
+                    with open(p, 'rb') as infile:
+                        while True:
+                            buf = infile.read(4 * 1024 * 1024)
+                            if not buf:
+                                break
+                            outfile.write(buf)
+                    try:
+                        os.remove(p)
+                    except Exception:
+                        pass
+            try:
+                os.rmdir(chunk_dir)
+            except Exception:
+                pass
+
+            return JsonResponse({
+                'status': 'complete',
+                'assembled_filename': assembled_filename,
+                'message': 'All parts uploaded and assembled successfully!'
+            })
+
+    return JsonResponse({'status': 'chunk_saved', 'chunk_index': chunk_index, 'total_chunks': total_chunks})
+
+
 @csrf_exempt
 def api_quran_list(request):
     if request.method == 'POST':
@@ -215,6 +279,18 @@ def api_quran_list(request):
                 duration=body.get('duration') or '00:00',
                 audio_file=audio_file
             )
+            assembled_file_name = body.get('assembled_filename')
+            if assembled_file_name:
+                assembled_path = os.path.join(settings.MEDIA_ROOT, 'chunks', 'assembled', os.path.basename(assembled_file_name))
+                if os.path.exists(assembled_path):
+                    from django.core.files import File
+                    real_filename = assembled_file_name.split('_', 2)[-1] if '_' in assembled_file_name else assembled_file_name
+                    with open(assembled_path, 'rb') as af:
+                        qa.audio_file.save(real_filename, File(af), save=True)
+                    try:
+                        os.remove(assembled_path)
+                    except Exception:
+                        pass
             return JsonResponse({'status': 'success', 'id': qa.id, 'audio_url': qa.get_playable_url(), 'surah_name_arabic': qa.surah_name_arabic, 'surah_name_english': qa.surah_name_english, 'message': 'Quran Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
@@ -424,6 +500,18 @@ def api_taqreer_list(request):
                 description=body.get('description') or '',
                 audio_file=audio_file
             )
+            assembled_file_name = body.get('assembled_filename')
+            if assembled_file_name:
+                assembled_path = os.path.join(settings.MEDIA_ROOT, 'chunks', 'assembled', os.path.basename(assembled_file_name))
+                if os.path.exists(assembled_path):
+                    from django.core.files import File
+                    real_filename = assembled_file_name.split('_', 2)[-1] if '_' in assembled_file_name else assembled_file_name
+                    with open(assembled_path, 'rb') as af:
+                        tq.audio_file.save(real_filename, File(af), save=True)
+                    try:
+                        os.remove(assembled_path)
+                    except Exception:
+                        pass
             return JsonResponse({'status': 'success', 'id': tq.id, 'audio_url': tq.get_playable_url(), 'arabic_title': tq.arabic_title, 'title': tq.title, 'message': 'Taqreer Audio uploaded successfully!'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)

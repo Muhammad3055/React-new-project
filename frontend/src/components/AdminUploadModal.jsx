@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAdminCustomFolders, saveCustomFolder, addAdminItem } from '../utils/adminContentStore';
 import { getApiUrl } from '../utils/apiCache';
 import { ALL_114_SURAHS } from '../data/quran_data';
+import { uploadFileInChunks } from '../utils/chunkUploader';
 
 export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu' }) {
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
@@ -110,7 +111,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
     alert(`New Custom Folder "${newFolderName}" Created Successfully!`);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() && contentType !== 'hadith' && contentType !== 'tafseer') {
       alert('Please enter a title');
@@ -221,8 +222,25 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       formData.append('cover_url', finalCoverUrl);
     }
 
-    // Append file with the correct field name per content type
-    if (selectedFile) {
+    // For files > 50MB, upload in 25MB slices to bypass Cloudflare 100MB limit
+    let assembledFilename = null;
+    if (selectedFile && selectedFile.size > 50 * 1024 * 1024) {
+      try {
+        assembledFilename = await uploadFileInChunks(selectedFile, (pct, stats) => {
+          setUploadProgress(pct);
+          setUploadStats(stats);
+        });
+      } catch (err) {
+        console.error('Chunk upload error:', err);
+        alert('Upload error: ' + (err.message || 'Failed to upload file chunks'));
+        setUploading(false);
+        return;
+      }
+    }
+
+    if (assembledFilename) {
+      formData.append('assembled_filename', assembledFilename);
+    } else if (selectedFile) {
       if (contentType === 'audio' || contentType === 'taqreer' || contentType === 'quran') {
         formData.append('audio_file', selectedFile);
       } else {
