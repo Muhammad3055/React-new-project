@@ -17,7 +17,8 @@ cd $PROJECT_DIR
 
 # 1. Pull latest code from GitHub
 echo "📥 [1/5] Pulling latest code from GitHub main..."
-git pull origin main
+git fetch origin main
+git reset --hard origin/main
 
 # 2. Update Python backend dependencies & migrations
 echo "🐍 [2/5] Running Backend Migrations & Static Collection..."
