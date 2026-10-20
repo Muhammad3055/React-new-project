@@ -483,6 +483,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 )}
                 <span style={{ color: '#000000' }}>{t('loggedInAs', 'Logged in as')} <strong>{user.full_name || user.username}</strong></span>
               </div>
+              <button className="mobile-auth-btn" onClick={() => { setShowProfileModal(true); setMobileActive(false); }}>
+                <i className="fas fa-user-cog"></i> Profile settings
+              </button>
               <button className="mobile-auth-btn mobile-logout-btn" onClick={() => { handleLogout(); setMobileActive(false); }}>
                 <i className="fas fa-sign-out-alt"></i> {t('logout', 'Log Out')}
               </button>
@@ -673,8 +676,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
           {user && (
             <button
-              className={`mobile-nav-item ${activeTab === 'bookmarks' ? 'mobile-nav-active' : ''}`}
-              onClick={() => { navigateToTab('bookmarks'); setMobileActive(false); }}
+              className={`mobile-nav-item ${activeTab === 'dashboard' ? 'mobile-nav-active' : ''}`}
+              onClick={() => { navigateToTab('dashboard'); setMobileActive(false); }}
             >
               <i className="fas fa-star"></i>
               <span>{t('dashboard')}</span>
@@ -702,6 +705,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           user={user}
           onClose={() => setShowProfileModal(false)}
           onUpdateUser={(updated) => setUser(updated)}
+          navigateToTab={navigateToTab}
         />
       )}
 
