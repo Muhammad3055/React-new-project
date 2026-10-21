@@ -4412,7 +4412,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .home-prayer-section .tasbeeh-reference > span { border: 0 !important; background: transparent !important; }
 .home-journey-grid, .home-explore-grid, .home-feature-grid, .home-books-grid, .home-tools-grid { gap: 1rem; }
 .home-explore-section, .home-books-section { padding: clamp(1.4rem, 3vw, 2.25rem) !important; border: 1px solid var(--home-line); border-radius: 20px; background: #f0f5ec; }
-.home-books-section { background: #f5f1e6; border-color: #e8e0cc; }
+.home-books-section { border-color: #e8e0cc; }
+.home-books-section, .home-explore-card.home-library-card { background: #f5f1e6 url('/library-background.png') center / cover no-repeat; }
 .home-journey-card, .home-explore-card, .home-tool-card, .home-feature-card, .home-book-card { border-color: var(--home-line); border-radius: 16px; box-shadow: 0 3px 13px rgba(18, 55, 43, .035); }
 .home-journey-card, .home-explore-card, .home-tool-card { min-height: 94px; gap: 1rem; padding: 1.2rem; font-size: 1rem; }
 .home-journey-card > i:first-child, .home-explore-card > i:first-child, .home-tool-card > i:first-child { display: grid; flex: 0 0 46px; place-items: center; width: 46px; height: 46px; border-radius: 13px; background: var(--home-sage); font-size: 1.25rem; }

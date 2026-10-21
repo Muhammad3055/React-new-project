@@ -541,7 +541,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           <div className="home-explore-grid">{[
             ['read', 'Quran', 'fas fa-book-open'], ['hadith', 'Hadith', 'fas fa-quote-left'], ['tafseer', 'Tafseer', 'fas fa-bookmark'],
             ['books', 'Books', 'fas fa-book'], ['quran', 'Audio', 'fas fa-headphones'], ['azkar', 'Azkar', 'fas fa-hands']
-          ].map(([tab, label, icon]) => <button key={tab} className="home-explore-card" onClick={() => handleNav(tab)}><i className={icon} aria-hidden="true" /><span>{label}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
+          ].map(([tab, label, icon]) => <button key={tab} className={`home-explore-card${['books', 'tafseer'].includes(tab) ? ' home-library-card' : ''}`} onClick={() => handleNav(tab)}><i className={icon} aria-hidden="true" /><span>{label}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
         </section>
 
         {(() => {
