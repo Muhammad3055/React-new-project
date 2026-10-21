@@ -2026,7 +2026,8 @@ body.has-audio-player footer {
   text-align: right;
 }
 
-.read-view-layout .arabic-text-render {
+.read-view-layout .arabic-text-render,
+.read-view-layout .mushaf-page-container {
   background: #e8eddf url('/quran-text-background.png') center / cover no-repeat;
   padding: clamp(1.25rem, 4vw, 2.5rem);
   border-radius: 14px;

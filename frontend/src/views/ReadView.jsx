@@ -814,7 +814,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
 
           {/* ===== CONTINUOUS MUSHAF PAGE VIEW (EXACTLY LIKE IMAGE 3) ===== */}
           {readMode === 'only_quran' && quranSubMode === 'page_view' ? (
-            <div className="card mushaf-page-container" style={{ background: readerBgColor, color: arabicTextColor, padding: '2.5rem 2rem', borderRadius: '16px', border: theme === 'dark' ? '1px solid rgba(245,158,11,0.4)' : '1px solid #cbd5e1', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', transition: 'all 0.3s ease' }}>
+            <div className="card mushaf-page-container" style={{ backgroundColor: readerBgColor, color: arabicTextColor, padding: '2.5rem 2rem', borderRadius: '16px', border: theme === 'dark' ? '1px solid rgba(245,158,11,0.4)' : '1px solid #cbd5e1', boxShadow: '0 12px 40px rgba(0,0,0,0.25)', transition: 'all 0.3s ease' }}>
               {/* Surah Header Title */}
               <div style={{ textAlign: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: theme === 'dark' ? '1px solid rgba(245,158,11,0.3)' : '1px solid #e2e8f0' }}>
                 <h2 className="arabic-font" style={{ fontSize: '2.2rem', fontWeight: 800, color: theme === 'dark' ? 'var(--accent-gold)' : 'var(--primary-dark)' }}>
