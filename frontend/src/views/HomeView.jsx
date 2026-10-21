@@ -143,6 +143,18 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
   };
 
+  // ─── Document Viewer Modal State ───────────────────────────────────────────
+  const [docViewer, setDocViewer] = useState(null); // { url, title, author }
+  const openDocViewer = (bk) => setDocViewer({ url: bk.document_url, title: bk.title, author: bk.author });
+  const closeDocViewer = () => setDocViewer(null);
+
+  // Close modal on Escape
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') closeDocViewer(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const [stats, setStats] = useState({ total_audios: 7, total_taqreers: 0, total_books: 3, total_hadiths: 3 });
   const [audios, setAudios] = useState(DEFAULT_AUDIOS);
   const [taqreers, setTaqreers] = useState([]);
@@ -794,6 +806,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                     </div>
                     <h4 className="interactive-tool-title">{tool.title}</h4>
                     <p className="interactive-tool-sub">{tool.sub}</p>
+                    {/* Clickable arrow hint */}
+                    <span className="interactive-tool-arrow" aria-hidden="true">→</span>
                   </div>
                 ))}
               </div>
@@ -1126,8 +1140,18 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           {getDailyRotatedSlice(books, 4).map((bk) => (
             <div key={bk.id} className="card" style={{ padding: '1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div className="media-cover-wrapper" style={{ width: '130px', height: '160px', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                <div
+                  className="media-cover-wrapper"
+                  style={{ width: '130px', height: '160px', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', cursor: 'pointer', position: 'relative' }}
+                  onClick={() => openDocViewer(bk)}
+                  title="Click to preview book"
+                >
                   <img src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"} alt={bk.title} className="media-cover-img" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {/* Hover overlay */}
+                  <div className="book-cover-preview-overlay">
+                    <i className="fas fa-eye" style={{ fontSize: '1.4rem', color: '#fff' }}></i>
+                    <span style={{ fontSize: '0.7rem', color: '#fff', fontWeight: 700, marginTop: '4px' }}>Preview</span>
+                  </div>
                 </div>
                 <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.2rem 0' }}>{bk.title}</h4>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0' }}>{t('byAuthor', 'By')} {bk.author}</p>
@@ -1136,30 +1160,36 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 </span>
               </div>
 
-              <div style={{ marginTop: '1.25rem', width: '100%' }}>
+              <div style={{ marginTop: '1.25rem', width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {/* View / Open button */}
+                <button
+                  onClick={() => openDocViewer(bk)}
+                  className="btn-play"
+                  style={{
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem',
+                    width: '100%', padding: '0.65rem 1rem', fontSize: '0.88rem', fontWeight: 800,
+                    background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
+                    color: '#ffffff', border: '2px solid #1c1917',
+                    borderRadius: '20px', boxShadow: '0 3px 10px rgba(0,0,0,0.18)', cursor: 'pointer'
+                  }}
+                >
+                  <i className="fas fa-eye"></i> View / Open
+                </button>
+                {/* Download / External link */}
                 <a
                   href={bk.document_url}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-play"
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    width: '100%',
-                    padding: '0.65rem 1rem',
-                    fontSize: '0.88rem',
-                    fontWeight: 800,
-                    background: '#ffffff',
-                    color: 'var(--accent-gold)',
-                    border: '2px solid var(--accent-gold)',
-                    borderRadius: '20px',
-                    boxShadow: '0 3px 10px rgba(180,83,9,0.15)',
-                    textDecoration: 'none'
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem',
+                    width: '100%', padding: '0.55rem 1rem', fontSize: '0.82rem', fontWeight: 700,
+                    background: '#ffffff', color: 'var(--accent-gold)',
+                    border: '2px solid var(--accent-gold)', borderRadius: '20px',
+                    boxShadow: '0 3px 10px rgba(180,83,9,0.12)', textDecoration: 'none'
                   }}
                 >
-                  <i className="fas fa-file-pdf"></i> {t('downloadPdf')}
+                  <i className="fas fa-external-link-alt"></i> {t('downloadPdf')}
                 </a>
               </div>
             </div>
@@ -1282,6 +1312,106 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           </a>
         </div>
       </section>
+
+      {/* ═══ DOCUMENT VIEWER MODAL ═══ */}
+      {docViewer && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.82)',
+            display: 'flex', flexDirection: 'column',
+            animation: 'authModalFadeIn 0.22s ease'
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) closeDocViewer(); }}
+        >
+          {/* Modal Header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '0.75rem 1.25rem',
+            background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
+            borderBottom: '2px solid var(--accent-gold)',
+            flexShrink: 0,
+            flexWrap: 'wrap', gap: '0.5rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+              <span style={{
+                width: '36px', height: '36px', borderRadius: '10px',
+                background: 'rgba(245,158,11,0.2)', border: '1.5px solid rgba(245,158,11,0.5)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--accent-gold)', fontSize: '1rem', flexShrink: 0
+              }}>
+                <i className="fas fa-book-open"></i>
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {docViewer.title}
+                </h4>
+                {docViewer.author && (
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>
+                    By {docViewer.author}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+              <a
+                href={docViewer.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                  padding: '0.45rem 1rem', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 800,
+                  background: 'rgba(245,158,11,0.15)', border: '1.5px solid rgba(245,158,11,0.5)',
+                  color: '#fcd34d', textDecoration: 'none', cursor: 'pointer'
+                }}
+              >
+                <i className="fas fa-external-link-alt"></i> Open in New Tab
+              </a>
+              <button
+                onClick={closeDocViewer}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                  padding: '0.45rem 1rem', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 800,
+                  background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.2)',
+                  color: '#ffffff', cursor: 'pointer'
+                }}
+              >
+                <i className="fas fa-times"></i> Close
+              </button>
+            </div>
+          </div>
+
+          {/* iframe Document Viewer */}
+          <div style={{ flex: 1, position: 'relative', background: '#1e1e1e' }}>
+            <iframe
+              src={docViewer.url}
+              title={docViewer.title}
+              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              allowFullScreen
+            />
+            {/* Fallback hint overlay (shown underneath iframe) */}
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', zIndex: -1,
+              color: '#64748b', gap: '1rem', padding: '2rem', textAlign: 'center'
+            }}>
+              <i className="fas fa-file-pdf" style={{ fontSize: '3rem', color: 'var(--accent-gold)' }}></i>
+              <p style={{ fontSize: '1rem', fontWeight: 700, color: '#cbd5e1' }}>Loading document…</p>
+              <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                If the document does not load, click <strong style={{ color: '#fcd34d' }}>"Open in New Tab"</strong> above.
+              </p>
+            </div>
+          </div>
+
+          {/* Keyboard hint */}
+          <div style={{
+            padding: '0.45rem 1rem', background: 'rgba(0,0,0,0.5)',
+            textAlign: 'center', fontSize: '0.72rem', color: '#64748b', flexShrink: 0
+          }}>
+            Press <kbd style={{ background: '#334155', color: '#e2e8f0', padding: '1px 5px', borderRadius: '4px', fontSize: '0.68rem' }}>Esc</kbd> or click outside to close
+          </div>
+        </div>
+      )}
     </div>
   );
 }

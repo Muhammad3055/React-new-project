@@ -4128,3 +4128,38 @@ img {
   color: #785338;
 }
 
+/* ── Arrow hint on tool cards ── */
+.interactive-tool-arrow {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--tool-accent, #b45309);
+  margin-top: 0.35rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+}
+.interactive-tool-card:hover .interactive-tool-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Book cover preview overlay ── */
+.book-cover-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  border-radius: 8px;
+  gap: 2px;
+}
+.media-cover-wrapper:hover .book-cover-preview-overlay {
+  opacity: 1;
+}
+
