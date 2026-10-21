@@ -1,4 +1,4 @@
-const CACHE_NAME = 'maktaba-pwa-v5';
+const CACHE_NAME = 'maktaba-pwa-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -44,6 +44,18 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   // Upload state and CSRF tokens must always come from the current session.
   if (url.pathname.startsWith('/api/upload/')) return;
+
+  // Always ask the network for the SPA document first. A cached index can point
+  // at bundles from a previous deployment and leave mobile browsers on stale UI.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(async () => {
+        const cachedIndex = await caches.match('/index.html');
+        return cachedIndex || Response.error();
+      })
+    );
+    return;
+  }
 
   // Static Assets (JS, CSS, Fonts, Images) -> Stale-While-Revalidate for 0ms load speed
   if (
