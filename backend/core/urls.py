@@ -1,7 +1,9 @@
 from django.urls import path
-from . import views, ai_views
+from . import views, ai_views, prayer_views
 
 urlpatterns = [
+    path('api/prayer/location/', prayer_views.api_prayer_location, name='api_prayer_location'),
+    path('api/prayer/proxy/<path:resource>', prayer_views.api_prayer_proxy, name='api_prayer_proxy'),
     # REST API endpoints for React Frontend
     path('api/upload/chunk/', views.api_upload_chunk, name='api_upload_chunk'),
     path('api/quran/', views.api_quran_list, name='api_quran_list'),

@@ -2209,6 +2209,21 @@ body.has-audio-player footer {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.prayer-location-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+.prayer-location-controls > span { color: #d1fae5; font-size: .82rem; font-weight: 700; margin-inline-end: auto; }
+.prayer-location-controls > span i { color: #34d399; margin-inline-end: 5px; }
+.prayer-location-controls button, .prayer-settings summary, .prayer-location-error button { border: 1px solid #52655a; background: #202d26; color: #f4f8f4; border-radius: 10px; padding: 8px 11px; font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer; }
+.prayer-location-controls button:hover, .prayer-settings summary:hover, .prayer-location-error button:hover { border-color: #34d399; background: #284837; }
+.prayer-location-controls button:focus-visible, .prayer-settings summary:focus-visible, .prayer-location-error button:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+.prayer-settings { position: relative; }
+.prayer-settings summary { list-style: none; }
+.prayer-settings summary::-webkit-details-marker { display: none; }
+.prayer-settings-fields { position: absolute; z-index: 5; top: calc(100% + 8px); right: 0; width: min(310px, calc(100vw - 36px)); padding: 14px; border: 1px solid #4b6653; border-radius: 13px; background: #17251c; box-shadow: 0 12px 28px #0008; display: grid; gap: 12px; }
+.prayer-settings-fields label { display: grid; gap: 5px; color: #e0eee3; font-size: .8rem; }
+.prayer-settings-fields select { width: 100%; min-width: 0; padding: 8px; border: 1px solid #597461; border-radius: 8px; background: #fff; color: #173422; font: inherit; }
+.prayer-location-error { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #fde68a; }
+@media (max-width: 480px) { .prayer-location-controls > span { flex-basis: 100%; } .prayer-settings-fields { right: auto; left: 0; } }
+
 .hijri-badge {
   background: rgba(245, 158, 11, 0.2);
   color: var(--accent-gold);

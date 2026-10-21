@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cleanPrayerTime, countdown, dateKey, loadPrayerSchedule, nextPrayerEvent, validCoordinates } from '../utils/prayerTimes';
+import { detectDeviceLocation, detectNetworkLocation } from '../utils/prayerLocation';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
@@ -25,12 +26,14 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   const [now, setNow] = useState(Date.now());
   const [refresh, setRefresh] = useState(0);
   const detectionRef = useRef(0);
+  const lastDetectionRef = useRef(0);
   const callbackRef = useRef(onLocationOrDateUpdate);
   callbackRef.current = onLocationOrDateUpdate;
   const [location, setLocation] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('maktaba_prayer_location'));
-      return saved?.type === 'custom' && saved.city && saved.country ? saved : null;
+      return saved?.type === 'custom' && saved.city && saved.country
+        ? saved : saved && validCoordinates(saved.lat, saved.lng) && saved.label ? saved : null;
     } catch { return null; }
   });
   const [calculation, setCalculation] = useState(() => {
@@ -143,66 +146,35 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     return () => { clearInterval(timer); adhanAudioRef.current?.pause(); };
   }, []);
 
-  const detectLocationAndFetch = async () => {
+  const detectLocationAndFetch = async (preciseOnly = false) => {
     const id = ++detectionRef.current;
-    setLoading(true);
+    lastDetectionRef.current = Date.now();
     setError('');
-    setSchedule(null);
-    setTimings(null);
-    setMonthlyTimings([]);
-    setNextPrayer({ name: '', time: '' });
-    setCountdownText('');
-    setSehriCountdown('');
-    setIftarCountdown('');
-    stopAdhanAudio();
-    setLocation(null);
-    const requestJson = async (url) => {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 10000);
-      try {
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) throw new Error('Location unavailable');
-        return await response.json();
-      } finally { clearTimeout(timer); }
+    let winner = 0;
+    const useFound = (found, priority) => {
+      if (id !== detectionRef.current || priority < winner) return;
+      winner = priority;
+      setLocation(previous => previous?.type === found.type && previous?.lat === found.lat && previous?.lng === found.lng && previous?.label === found.label ? previous : found);
+      setLocationName(found.label);
+      setShowCityInput(false);
     };
-    try {
-      let found;
-      try {
-        const position = await new Promise((resolve, reject) => {
-          if (!navigator.geolocation) return reject(new Error('GPS unavailable'));
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true, timeout: 12000, maximumAge: 60000,
-          });
-        });
-        if (id !== detectionRef.current) return;
-        const { latitude: lat, longitude: lng } = position.coords;
-        found = { type: 'gps', lat, lng, label: `GPS (${lat.toFixed(3)}, ${lng.toFixed(3)})`, countryCode: '' };
-        try {
-          const geo = await requestJson(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
-          const address = geo.address || {};
-          found.countryCode = (address.country_code || '').toUpperCase();
-          found.label = [address.city || address.town || address.village || address.state, address.country].filter(Boolean).join(', ') || found.label;
-        } catch { /* Coordinates remain usable if the place-name lookup fails. */ }
-      } catch {
-        const ip = await requestJson('https://ipapi.co/json/');
-        if (!validCoordinates(ip.latitude, ip.longitude)) throw new Error('Location unavailable');
-        found = { type: 'ip', lat: Number(ip.latitude), lng: Number(ip.longitude),
-          countryCode: ip.country_code || '', timezone: ip.timezone,
-          label: [ip.city, ip.region, ip.country_name].filter(Boolean).join(', ') };
-      }
-      if (id !== detectionRef.current) return;
-      setLocation(found);
-    } catch {
-      if (id !== detectionRef.current) return;
+    const tasks = [detectDeviceLocation().then(found => useFound(found, 2))];
+    if (!preciseOnly) tasks.push(detectNetworkLocation().then(found => useFound(found, 1)));
+    await Promise.allSettled(tasks);
+    if (id !== detectionRef.current || winner) return;
+    if (preciseOnly) {
+      setError(location ? 'Precise GPS is unavailable. Showing your current location estimate.' : 'Precise GPS is unavailable. Retry automatic location.');
+      return;
+    }
+    if (!location) {
       setLoading(false);
       setLocationName('Location unavailable');
-      setError('Allow location access, or enter your city and country to see prayer times.');
-      setShowCityInput(true);
+      setError('Automatic location is temporarily unavailable.');
     }
   };
 
   useEffect(() => {
-    if (!location) detectLocationAndFetch();
+    detectLocationAndFetch();
     return () => { detectionRef.current += 1; };
   }, []);
 
@@ -259,7 +231,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return;
       setNow(Date.now());
-      if (location?.type !== 'custom') detectLocationAndFetch();
+      if (location?.type !== 'custom' && Date.now() - lastDetectionRef.current > 10 * 60 * 1000) detectLocationAndFetch();
       else setRefresh(value => value + 1);
     };
     document.addEventListener('visibilitychange', onVisible);
@@ -413,21 +385,27 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
         </div>
       </div>
 
-      <div style={{ marginTop: '12px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <label>Calculation method <select aria-label="Prayer calculation method" value={calculation.method} onChange={e => setCalculation(prev => ({ ...prev, method: e.target.value }))}>
-          <option value="auto">Automatic regional method</option>
-          <option value="1">Karachi</option><option value="2">ISNA</option><option value="3">Muslim World League</option>
-          <option value="4">Umm Al-Qura, Makkah</option><option value="5">Egyptian Authority</option>
-          <option value="8">Gulf Region</option><option value="9">Kuwait</option><option value="10">Qatar</option>
-          <option value="11">Singapore</option><option value="12">France</option><option value="13">Turkey</option>
-          <option value="14">Russia</option><option value="15">Moonsighting Committee</option><option value="16">Dubai</option>
-          <option value="17">Malaysia</option><option value="20">Indonesia</option><option value="21">Morocco</option>
-        </select></label>
-        <label>Asr calculation <select aria-label="Asr calculation" value={calculation.school} onChange={e => setCalculation(prev => ({ ...prev, school: e.target.value }))}>
-          <option value="auto">Regional default</option><option value="0">Standard (Shafi, Maliki, Hanbali)</option><option value="1">Hanafi</option>
-        </select></label>
-        <button type="button" onClick={() => detectLocationAndFetch()}>Use my location</button>
-        <button type="button" onClick={() => setShowCityInput(value => !value)}>Choose city</button>
+      <div className="prayer-location-controls">
+        <span><i className="fas fa-location-arrow" aria-hidden="true"></i> {loading && !timings ? 'Finding your local prayer times…' : location ? `Times for ${location.label}` : 'Detecting your location automatically'}</span>
+        <button type="button" onClick={() => detectLocationAndFetch(true)}><i className="fas fa-crosshairs" aria-hidden="true"></i> Use precise GPS</button>
+        <details className="prayer-settings">
+          <summary><i className="fas fa-sliders-h" aria-hidden="true"></i> Prayer settings</summary>
+          <div className="prayer-settings-fields">
+            <label>Calculation method <select aria-label="Prayer calculation method" value={calculation.method} onChange={e => setCalculation(prev => ({ ...prev, method: e.target.value }))}>
+              <option value="auto">Automatic regional method</option>
+              <option value="1">Karachi</option><option value="2">ISNA</option><option value="3">Muslim World League</option>
+              <option value="4">Umm Al-Qura, Makkah</option><option value="5">Egyptian Authority</option>
+              <option value="8">Gulf Region</option><option value="9">Kuwait</option><option value="10">Qatar</option>
+              <option value="11">Singapore</option><option value="12">France</option><option value="13">Turkey</option>
+              <option value="14">Russia</option><option value="15">Moonsighting Committee</option><option value="16">Dubai</option>
+              <option value="17">Malaysia</option><option value="20">Indonesia</option><option value="21">Morocco</option>
+            </select></label>
+            <label>Asr calculation <select aria-label="Asr calculation" value={calculation.school} onChange={e => setCalculation(prev => ({ ...prev, school: e.target.value }))}>
+              <option value="auto">Regional default</option><option value="0">Standard (Shafi, Maliki, Hanbali)</option><option value="1">Hanafi</option>
+            </select></label>
+            <button type="button" onClick={() => setShowCityInput(value => !value)}>Choose a different city</button>
+          </div>
+        </details>
       </div>
       <p style={{ marginTop: '8px', fontSize: '.8rem' }}>
         {schedule && !loading && `${schedule.timezone} · ${schedule.today.meta.method?.name || 'Regional calculation'} · ${schedule.school === '1' ? 'Hanafi Asr' : 'Standard Asr'}`}
@@ -435,9 +413,9 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
       </p>
       <p style={{ fontSize: '.78rem', opacity: .85 }}>Calculated prayer start times. Your mosque’s jamaat times may differ. Adhan alerts require this page to remain open.</p>
       {loading && <p role="status">Loading your location and prayer times…</p>}
-      {error && <p role="alert">{error} <button type="button" onClick={() => location ? setRefresh(v => v + 1) : detectLocationAndFetch()}>Retry</button></p>}
+      {error && <p role="alert" className="prayer-location-error">{error} <button type="button" onClick={() => location ? setRefresh(v => v + 1) : detectLocationAndFetch()}>Retry</button> {!location && <button type="button" onClick={() => setShowCityInput(true)}>Choose city</button>}</p>}
       {/* Change City Input Bar */}
-      {(showCityInput || error) && (
+      {showCityInput && (
         <form onSubmit={handleCustomCitySubmit} style={{ marginTop: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', background: 'rgba(0,0,0,0.4)', padding: '0.5rem', borderRadius: '12px', border: '1px solid var(--accent-gold)' }}>
           <input
             type="text"

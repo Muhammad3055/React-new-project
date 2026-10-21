@@ -1,5 +1,6 @@
 import importlib
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.apps import apps
 from django.test import TestCase
@@ -64,3 +65,29 @@ class QuranAsbabAudioTests(TestCase):
             'language': 'brahui',
         })
         self.assertEqual(response.status_code, 403)
+
+
+class AutomaticPrayerLocationTests(TestCase):
+    @patch('core.prayer_views._read_json')
+    def test_visitor_ip_returns_city_country_timezone_and_coordinates(self, read_json):
+        read_json.return_value = {
+            'city': 'Karachi', 'country_name': 'Pakistan', 'country_code': 'PK',
+            'latitude': 24.86, 'longitude': 67.01, 'timezone': 'Asia/Karachi',
+        }
+        response = self.client.get('/api/prayer/location/', HTTP_X_REAL_IP='8.8.4.4')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['label'], 'Karachi, Pakistan')
+        self.assertEqual(response.json()['timezone'], 'Asia/Karachi')
+        self.assertEqual(response.json()['lat'], 24.86)
+
+    def test_prayer_proxy_rejects_unapproved_paths(self):
+        response = self.client.get('/api/prayer/proxy/../private')
+        self.assertEqual(response.status_code, 400)
+
+    @patch('core.prayer_views._read_json')
+    def test_prayer_proxy_returns_calendar_for_coordinates(self, read_json):
+        read_json.return_value = {'code': 200, 'data': [{'timings': {'Fajr': '05:00'}}]}
+        response = self.client.get('/api/prayer/proxy/calendar/2026/10?latitude=24.86&longitude=67.01&school=1')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['data'][0]['timings']['Fajr'], '05:00')
+        self.assertIn('calendar/2026/10', read_json.call_args.args[0])

@@ -59,11 +59,29 @@ export function validCoordinates(lat, lng) {
 }
 
 export async function fetchPrayerJson(url, signal) {
-  const response = await fetch(url, { signal });
-  if (!response.ok) throw new Error('Prayer service unavailable. Please retry.');
-  const json = await response.json();
-  if (json.code !== 200 || !json.data) throw new Error('No prayer times found for this location.');
-  return json.data;
+  const remote = new URL(url);
+  const local = `/api/prayer/proxy/${remote.pathname.replace(/^\/v1\//, '')}${remote.search}`;
+  let lastError;
+  for (const endpoint of [local, url]) {
+    const controller = new AbortController();
+    const abort = () => controller.abort();
+    signal?.addEventListener('abort', abort, { once: true });
+    const timer = setTimeout(abort, 8000);
+    try {
+      const response = await fetch(endpoint, { signal: controller.signal });
+      if (!response.ok) throw new Error('Prayer service unavailable. Please retry.');
+      const json = await response.json();
+      if (json.code !== 200 || !json.data) throw new Error('No prayer times found for this location.');
+      return json.data;
+    } catch (error) {
+      lastError = error;
+      if (signal?.aborted) break;
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', abort);
+    }
+  }
+  throw lastError || new Error('Prayer service unavailable. Please retry.');
 }
 
 export async function loadPrayerSchedule(location, preferences, signal, now = new Date()) {
@@ -100,10 +118,7 @@ export async function loadPrayerSchedule(location, preferences, signal, now = ne
   }
   if (today.date?.gregorian?.date !== localDate) throw new Error('Prayer service returned an outdated date. Please retry.');
   const { year, month, day } = zonedDateParts(now, timezone);
-  const monthParams = new URLSearchParams(params);
-  monthParams.set('year', year);
-  monthParams.set('month', month);
-  const days = await fetchPrayerJson(`https://api.aladhan.com/v1/calendar${suffix}?${monthParams}`, signal);
+  const days = await fetchPrayerJson(`https://api.aladhan.com/v1/calendar${suffix}/${year}/${month}?${params}`, signal);
   if (!Array.isArray(days)) throw new Error('Prayer calendar unavailable. Please retry.');
   let upcomingDays = days;
   if (day === new Date(Date.UTC(year, month, 0)).getUTCDate()) {

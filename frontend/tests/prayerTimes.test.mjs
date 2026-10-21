@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { dateKey, prayerInstant, prayerEvents, nextPrayerEvent, validCoordinates, loadPrayerSchedule } from '../src/utils/prayerTimes.js';
+import { dateKey, prayerInstant, prayerEvents, nextPrayerEvent, validCoordinates, loadPrayerSchedule, fetchPrayerJson } from '../src/utils/prayerTimes.js';
+import { normaliseNetworkLocation, detectNetworkLocation } from '../src/utils/prayerLocation.js';
 
 test('selected city determines date across midnight', () => {
   const now = new Date('2026-10-20T20:30:00Z');
@@ -33,5 +34,33 @@ test('manual city refetches using city date and regional Asr school', async () =
     assert.equal(result.school, '1');
     assert.match(urls[1], /21-10-2026/);
     assert.match(urls[1], /school=1/);
+  } finally { globalThis.fetch = original; }
+});
+
+test('automatic location accepts city, country, coordinates and timezone', async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async url => url === '/api/prayer/location/'
+    ? { ok: true, json: async () => ({city:'Lahore', country:'Pakistan', countryCode:'PK', lat:31.52, lng:74.35, timezone:'Asia/Karachi'}) }
+    : { ok: false, json: async () => ({}) };
+  try {
+    assert.equal((await detectNetworkLocation()).label, 'Lahore, Pakistan');
+    assert.equal(normaliseNetworkLocation({city:'Lahore', country:'Pakistan', latitude:null, longitude:74, timezone:'Asia/Karachi'}), null);
+  } finally { globalThis.fetch = original; }
+});
+
+test('prayer times fall back to AlAdhan when the same-origin proxy fails', async () => {
+  const original = globalThis.fetch;
+  const urls = [];
+  globalThis.fetch = async url => {
+    urls.push(url);
+    return url.startsWith('/api/')
+      ? {ok:false}
+      : {ok:true, json:async () => ({code:200, data:{timings:{Fajr:'05:00'}}})};
+  };
+  try {
+    const day = await fetchPrayerJson('https://api.aladhan.com/v1/timings/21-10-2026?latitude=24.86&longitude=67.01');
+    assert.equal(day.timings.Fajr, '05:00');
+    assert.match(urls[0], /^\/api\/prayer\/proxy\/timings\/21-10-2026/);
+    assert.match(urls[1], /^https:\/\/api\.aladhan\.com/);
   } finally { globalThis.fetch = original; }
 });
