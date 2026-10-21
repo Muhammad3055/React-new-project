@@ -527,7 +527,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           <DailyReminderBanner timings={locationInfo?.timings} timezone={locationInfo?.timezone} navigateToTab={navigateToTab} />
         </section>
 
-        {(lastRead || lastBook || savedContentCount > 0) && <section className="container home-section">
+        {(lastRead || lastBook || savedContentCount > 0) && <section className="container home-section home-journey-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">Pick up where you left off</span><h2>Continue your journey</h2></div></div>
           <div className="home-journey-grid">
             {lastRead && <button className="home-journey-card" onClick={() => handleNav('read')}><i className="fas fa-book-open" aria-hidden="true" /><span><strong>Continue Quran</strong><small>{lastRead.surahName || 'Saved reading'} · Ayah {lastRead.ayahNumber}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
@@ -536,7 +536,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           </div>
         </section>}
 
-        <section className="container home-section">
+        <section className="container home-section home-explore-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">Browse the collection</span><h2>Explore</h2></div></div>
           <div className="home-explore-grid">{[
             ['read', 'Quran', 'fas fa-book-open'], ['hadith', 'Hadith', 'fas fa-quote-left'], ['tafseer', 'Tafseer', 'fas fa-bookmark'],
@@ -561,17 +561,17 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           </section>;
         })()}
 
-        {featuredAudios.length > 0 && <section className="container home-section">
+        {featuredAudios.length > 0 && <section className="container home-section home-recitation-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">Listen and reflect</span><h2>Featured recitations</h2></div><button className="home-text-action" onClick={() => handleNav('quran')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
           <div className="home-feature-grid">{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-play" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playTrack?.(item.audio_url, item.surah_name_english || item.title, item.reciter)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
         </section>}
 
-        {featuredBooks.length > 0 && <section className="container home-section">
+        {featuredBooks.length > 0 && <section className="container home-section home-books-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">Selected from the library</span><h2>Featured books</h2></div><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
           <div className="home-books-grid">{featuredBooks.map((book, index) => <article className="home-book-card" key={book.id || index}>{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" />}<div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
         </section>}
 
-        <section className="container home-section">
+        <section className="container home-section home-tools-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">Useful every day</span><h2>Islamic tools</h2></div></div>
           <div className="home-tools-grid">{[
             ['qibla', 'Qibla', 'fas fa-compass'], ['tasbeeh', 'Tasbeeh', 'fas fa-fingerprint'], ['khatam', 'Khatam Tracker', 'fas fa-book-open'],
