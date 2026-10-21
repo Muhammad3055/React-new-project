@@ -4163,3 +4163,32 @@ img {
   opacity: 1;
 }
 
+/* ── Document Viewer Modal — guarantee true fullscreen ── */
+.doc-viewer-modal-root {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0d0d0d;
+}
+.doc-viewer-iframe-wrap {
+  flex: 1 1 0%;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+.doc-viewer-iframe-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+  display: block;
+}
+

@@ -1317,52 +1317,56 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       {docViewer && (
         <div
           style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'rgba(0,0,0,0.82)',
-            display: 'flex', flexDirection: 'column',
-            animation: 'authModalFadeIn 0.22s ease'
+            position: 'fixed',
+            top: 0, left: 0,
+            width: '100vw', height: '100vh',
+            zIndex: 99999,
+            background: '#0d0d0d',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
           }}
-          onClick={(e) => { if (e.target === e.currentTarget) closeDocViewer(); }}
         >
           {/* Modal Header */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '0.75rem 1.25rem',
+            padding: '0.6rem 1rem',
             background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
             borderBottom: '2px solid var(--accent-gold)',
             flexShrink: 0,
-            flexWrap: 'wrap', gap: '0.5rem'
+            flexWrap: 'wrap', gap: '0.5rem',
+            minHeight: '52px',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0, flex: 1 }}>
               <span style={{
-                width: '36px', height: '36px', borderRadius: '10px',
+                width: '34px', height: '34px', borderRadius: '9px',
                 background: 'rgba(245,158,11,0.2)', border: '1.5px solid rgba(245,158,11,0.5)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--accent-gold)', fontSize: '1rem', flexShrink: 0
+                color: 'var(--accent-gold)', fontSize: '0.9rem', flexShrink: 0
               }}>
                 <i className="fas fa-book-open"></i>
               </span>
               <div style={{ minWidth: 0 }}>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {docViewer.title}
                 </h4>
                 {docViewer.author && (
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>
+                  <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>
                     By {docViewer.author}
                   </p>
                 )}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: '0.45rem', flexShrink: 0 }}>
               <a
                 href={docViewer.url}
                 target="_blank"
                 rel="noreferrer"
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                  padding: '0.45rem 1rem', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 800,
+                  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                  padding: '0.4rem 0.85rem', borderRadius: '9px', fontSize: '0.78rem', fontWeight: 800,
                   background: 'rgba(245,158,11,0.15)', border: '1.5px solid rgba(245,158,11,0.5)',
-                  color: '#fcd34d', textDecoration: 'none', cursor: 'pointer'
+                  color: '#fcd34d', textDecoration: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
                 }}
               >
                 <i className="fas fa-external-link-alt"></i> Open in New Tab
@@ -1370,10 +1374,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               <button
                 onClick={closeDocViewer}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                  padding: '0.45rem 1rem', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 800,
-                  background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.2)',
-                  color: '#ffffff', cursor: 'pointer'
+                  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                  padding: '0.4rem 0.85rem', borderRadius: '9px', fontSize: '0.78rem', fontWeight: 800,
+                  background: 'rgba(239,68,68,0.15)', border: '1.5px solid rgba(239,68,68,0.4)',
+                  color: '#fca5a5', cursor: 'pointer', whiteSpace: 'nowrap'
                 }}
               >
                 <i className="fas fa-times"></i> Close
@@ -1381,34 +1385,42 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             </div>
           </div>
 
-          {/* iframe Document Viewer */}
-          <div style={{ flex: 1, position: 'relative', background: '#1e1e1e' }}>
+          {/* Full-size iframe */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#1a1a1a' }}>
             <iframe
+              key={docViewer.url}
               src={docViewer.url}
               title={docViewer.title}
-              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              style={{
+                position: 'absolute',
+                top: 0, left: 0,
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                display: 'block',
+              }}
               allowFullScreen
             />
-            {/* Fallback hint overlay (shown underneath iframe) */}
+            {/* Fallback hint — sits behind iframe via z-index */}
             <div style={{
               position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', zIndex: -1,
-              color: '#64748b', gap: '1rem', padding: '2rem', textAlign: 'center'
+              alignItems: 'center', justifyContent: 'center',
+              zIndex: -1, gap: '1rem', padding: '2rem', textAlign: 'center'
             }}>
-              <i className="fas fa-file-pdf" style={{ fontSize: '3rem', color: 'var(--accent-gold)' }}></i>
-              <p style={{ fontSize: '1rem', fontWeight: 700, color: '#cbd5e1' }}>Loading document…</p>
-              <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-                If the document does not load, click <strong style={{ color: '#fcd34d' }}>"Open in New Tab"</strong> above.
+              <i className="fas fa-file-pdf" style={{ fontSize: '3.5rem', color: '#f59e0b' }}></i>
+              <p style={{ fontSize: '1rem', fontWeight: 700, color: '#cbd5e1', margin: 0 }}>Loading document…</p>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+                If the document doesn't load, click <strong style={{ color: '#fcd34d' }}>"Open in New Tab"</strong> above.
               </p>
             </div>
           </div>
 
-          {/* Keyboard hint */}
+          {/* Bottom hint bar */}
           <div style={{
-            padding: '0.45rem 1rem', background: 'rgba(0,0,0,0.5)',
-            textAlign: 'center', fontSize: '0.72rem', color: '#64748b', flexShrink: 0
+            padding: '0.3rem 1rem', background: '#0a0a0a',
+            textAlign: 'center', fontSize: '0.68rem', color: '#475569', flexShrink: 0,
           }}>
-            Press <kbd style={{ background: '#334155', color: '#e2e8f0', padding: '1px 5px', borderRadius: '4px', fontSize: '0.68rem' }}>Esc</kbd> or click outside to close
+            Press&nbsp;<kbd style={{ background: '#1e293b', color: '#94a3b8', padding: '1px 5px', borderRadius: '3px', fontSize: '0.65rem' }}>Esc</kbd>&nbsp;to close
           </div>
         </div>
       )}

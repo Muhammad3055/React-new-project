@@ -357,7 +357,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                         {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')}
                       </div>
                     )}
-                    <span style={{ color: '#ffffff', fontWeight: 800 }}>{user.full_name || user.username}</span>
+                    <span style={{ color: '#000000', fontWeight: 800 }}>{user.full_name || user.username}</span>
                   </button>
 
                   <button
@@ -801,4 +801,3 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
     </>
   );
 }
-
