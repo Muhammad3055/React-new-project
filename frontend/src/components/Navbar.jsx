@@ -253,10 +253,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         <div className="nav-container">
           {/* LEFT: Logo only */}
           <div className="navbar-left-group" style={{ display: 'flex', flexShrink: 0 }}>
-            <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }} title="Home">
-              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
+            <button type="button" className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} aria-label={`Maktaba Tul Muslim — ${t('home')}`}>
+              <img src="/favicon.svg" alt="" />
               <span className="brand-text">Maktaba Tul Muslim</span>
-            </div>
+            </button>
           </div>
 
           {/* CENTER: Navigation Links */}
@@ -274,10 +274,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 </li>
               ))}
               <li className="tools-nav-item desktop-only" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setShowToolsMenu(false); }}>
-                <button type="button" className="nav-link tools-nav-trigger" aria-expanded={showToolsMenu} onClick={() => setShowToolsMenu(open => !open)}>
+                <button type="button" className="nav-link tools-nav-trigger" aria-expanded={showToolsMenu} aria-controls="desktop-tools-menu" onClick={() => setShowToolsMenu(open => !open)}>
                   {t('tools', 'Tools')} <i className="fas fa-chevron-down" aria-hidden="true" />
                 </button>
-                {showToolsMenu && <div className="tools-nav-menu">{toolMenuItems.map(item => <button key={item.label} type="button" onClick={() => { item.action ? item.action() : navigateToTab(item.tab); setShowToolsMenu(false); }}>{item.label}</button>)}</div>}
+                {showToolsMenu && <div id="desktop-tools-menu" className="tools-nav-menu">{toolMenuItems.map(item => <button key={item.label} type="button" onClick={() => { item.action ? item.action() : navigateToTab(item.tab); setShowToolsMenu(false); }}>{item.label}</button>)}</div>}
               </li>
             </ul>
           </div>
@@ -290,19 +290,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
                 aria-label="Select Language"
-                style={{
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  color: 'var(--accent-gold)',
-                  border: '1.5px solid var(--accent-gold)',
-                  borderRadius: '20px',
-                  padding: '0.35rem 0.75rem',
-                  fontSize: '0.82rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  transition: 'all 0.2s ease'
-                }}
               >
                 <optgroup label="✨ Native Shariah Languages" style={{ background: '#022c22', color: '#f59e0b' }}>
                   <option value="en" style={{ background: '#022c22', color: '#ffffff' }}>🇬🇧 English</option>
@@ -324,30 +311,17 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
             </select>
 
             {/* Search (Desktop) & Spotlight Trigger */}
-            <div 
-              className="search-wrapper desktop-only" 
+            <button
+              type="button"
+              className="nav-search-button"
               onClick={() => { if (openSpotlight) openSpotlight(); }}
-              style={{ position: 'relative', cursor: 'pointer' }}
-              title="Click or press Ctrl + K to search everything"
+              aria-label={t('search', 'Search')}
+              aria-keyshortcuts="Control+k Meta+k"
             >
-              <i className="fas fa-search search-icon" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)', fontSize: '0.8rem', pointerEvents: 'none', zIndex: 2 }}></i>
-              <input
-                type="text"
-                className="search-input"
-                placeholder={t('searchPlaceholder') + " (Ctrl+K)"}
-                value={searchQuery}
-                readOnly
-                style={{ paddingLeft: '2.1rem', paddingRight: '3rem', cursor: 'pointer' }}
-              />
-              <span style={{
-                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(245,158,11,0.2)', border: '1px solid var(--accent-gold)',
-                color: 'var(--accent-gold)', fontSize: '0.68rem', fontWeight: 800,
-                padding: '2px 6px', borderRadius: '6px', pointerEvents: 'none'
-              }}>
-                Ctrl+K
-              </span>
-            </div>
+              <i className="fas fa-search" aria-hidden="true" />
+              <span>{t('search', 'Search')}</span>
+              <kbd dir="ltr">Ctrl K</kbd>
+            </button>
 
             {/* Persistent Header Auth Area - Desktop Only */}
             <div className="desktop-auth-area desktop-only">
