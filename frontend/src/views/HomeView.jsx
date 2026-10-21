@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 import DailyReminderBanner from '../components/DailyReminderBanner';
-import { fetchWithCache } from '../utils/apiCache';
+import { fetchWithCache, getApiUrl } from '../utils/apiCache';
 import { useLanguage } from '../context/LanguageContext';
 import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
 
@@ -145,7 +145,29 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
   // ─── Document Viewer Modal State ───────────────────────────────────────────
   const [docViewer, setDocViewer] = useState(null); // { url, title, author }
-  const openDocViewer = (bk) => setDocViewer({ url: bk.document_url, title: bk.title, author: bk.author });
+  const getDocumentUrl = (book) => {
+    const rawUrl = book?.document_url || book?.pdf_url || book?.pdf_file || book?.file_url || '';
+    if (!rawUrl) return '';
+
+    const url = String(rawUrl).trim();
+    if (/^(https?:\/\/|blob:|data:)/i.test(url)) return url;
+
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return getApiUrl(path.startsWith('/media/') ? path : `/media${path}`);
+  };
+  const openDocViewer = (bk) => {
+    const url = getDocumentUrl(bk);
+    if (!url) {
+      alert('This document is not available to view yet.');
+      return;
+    }
+    setDocViewer({ url, title: bk.title, author: bk.author, fileType: bk.file_type });
+  };
+  const getViewerUrl = (doc) => {
+    const isPdf = ['pdf', 'book'].includes(doc.fileType) || /\.pdf(?:$|[?#])/i.test(doc.url);
+    if (!isPdf) return doc.url;
+    return `${doc.url.split('#')[0]}#view=FitH`;
+  };
   const closeDocViewer = () => setDocViewer(null);
 
   // Close modal on Escape
@@ -1389,7 +1411,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#1a1a1a' }}>
             <iframe
               key={docViewer.url}
-              src={docViewer.url}
+              src={getViewerUrl(docViewer)}
               title={docViewer.title}
               style={{
                 position: 'absolute',
