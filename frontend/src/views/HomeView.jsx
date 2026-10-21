@@ -78,6 +78,12 @@ const DAILY_VERSES_COLLECTION = [
   }
 ];
 
+const HOME_DAILY_DUAS = [
+  { arabic: 'رَبِّ زِدْنِي عِلْمًا', urdu: 'اے میرے رب! میرے علم میں اضافہ فرما۔', english: 'My Lord, increase me in knowledge.', reference: 'Surah Ta-Ha 20:114' },
+  { arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', urdu: 'اے ہمارے رب! ہمیں دنیا میں بھلائی عطا فرما، آخرت میں بھی بھلائی دے، اور ہمیں آگ کے عذاب سے بچا۔', english: 'Our Lord, grant us good in this world and the Hereafter, and protect us from the punishment of the Fire.', reference: 'Surah Al-Baqarah 2:201' },
+  { arabic: 'رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا', urdu: 'اے ہمارے رب! اگر ہم بھول جائیں یا خطا کریں تو ہماری گرفت نہ فرما۔', english: 'Our Lord, do not hold us accountable if we forget or make a mistake.', reference: 'Surah Al-Baqarah 2:286' }
+];
+
 const HADITH_OF_THE_DAY_COLLECTION = [
   {
     book: "Sahih Bukhari",
@@ -137,10 +143,19 @@ const HADITH_OF_THE_DAY_COLLECTION = [
   }
 ];
 
-export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal }) {
+const getTodayPlanKey = () => {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+};
+
+export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal, openSpotlight }) {
   const { t, lang } = useLanguage();
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
+    else if (typeof setActiveTab === 'function') setActiveTab(tab);
+  };
+  const navigate = (tab, query = null) => {
+    if (typeof navigateToTab === 'function') navigateToTab(tab, query);
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
   };
 
@@ -162,6 +177,11 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const rawUrl = book?.document_url || book?.pdf_url || book?.pdf_file || book?.file_url || '';
     return getCleanDocumentUrl(rawUrl);
   };
+  const rememberBookReading = (book, page = 1) => {
+    const saved = { id: book.id, title: book.title, author: book.author || '', page, pages_count: book.pages_count || book.pages || 1, timestamp: new Date().toISOString() };
+    setLastBook(saved);
+    try { localStorage.setItem('maktaba_last_read_book', JSON.stringify(saved)); } catch {}
+  };
   const openDocViewer = (bk) => {
     const url = getDocumentUrl(bk);
     if (!url) {
@@ -171,6 +191,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     setViewerEngine(isMobile ? 'google' : 'direct');
     setIsFullscreen(false);
+    rememberBookReading(bk);
     setDocViewer({ url, title: bk.title, author: bk.author, fileType: bk.file_type });
   };
   const getViewerUrl = (doc) => {
@@ -195,6 +216,34 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const [books, setBooks] = useState(DEFAULT_BOOKS);
   const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
+  const [lastBook, setLastBook] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('maktaba_last_read_book') || 'null'); } catch { return null; }
+  });
+  const [dailyPlan, setDailyPlan] = useState(() => {
+    const today = getTodayPlanKey();
+    try {
+      const saved = JSON.parse(localStorage.getItem('maktaba_daily_reading_plan') || 'null');
+      if (saved?.date === today) {
+        const target = [1, 3, 5, 10].includes(Number(saved.target)) ? Number(saved.target) : 5;
+        const completed = Math.max(0, Math.min(target, Number(saved.completed) || 0));
+        return { date: today, target, completed };
+      }
+    } catch {}
+    return { date: today, target: 5, completed: 0 };
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('maktaba_daily_reading_plan', JSON.stringify(dailyPlan)); } catch {}
+  }, [dailyPlan]);
+
+  useEffect(() => {
+    const checkDay = () => {
+      const today = getTodayPlanKey();
+      setDailyPlan(current => current.date === today ? current : { date: today, target: current.target || 5, completed: 0 });
+    };
+    const timer = setInterval(checkDay, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   const [copiedHadith, setCopiedHadith] = useState(false);
   const getDailyHadith = () => {
@@ -204,6 +253,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     return HADITH_OF_THE_DAY_COLLECTION[index];
   };
   const dailyHadith = getDailyHadith();
+  const dailyDua = HOME_DAILY_DUAS[Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24)) % HOME_DAILY_DUAS.length];
 
   const [locationInfo, setLocationInfo] = useState(null);
   const [ramadanCountdown, setRamadanCountdown] = useState(null);
@@ -228,7 +278,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         lng: parseFloat(cachedLng),
         countryCode: cachedCode || '',
         city: cachedLabel || 'Local City',
-        timings: cachedTimings
+        timings: cachedTimings,
+        timezone: localStorage.getItem('user_prayer_timezone') || ''
       });
     }
   }, []);
@@ -345,6 +396,26 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    fetch(getApiUrl('/api/user/dashboard/'))
+      .then(response => response.json())
+      .then(data => {
+        const recentBook = data.book_history?.[0];
+        if (data.status === 'success' && recentBook?.title) {
+          let localBook = null;
+          try { localBook = JSON.parse(localStorage.getItem('maktaba_last_read_book') || 'null'); } catch {}
+          const localTime = Date.parse(localBook?.timestamp || '');
+          const remoteTime = Date.parse(recentBook.timestamp || '');
+          if (Number.isFinite(localTime) && (!Number.isFinite(remoteTime) || localTime >= remoteTime)) return;
+          const saved = { id: recentBook.book_id, title: recentBook.title, author: recentBook.author || '', page: recentBook.page || 1, pages_count: recentBook.pages_count || 1, timestamp: recentBook.timestamp };
+          setLastBook(saved);
+          try { localStorage.setItem('maktaba_last_read_book', JSON.stringify(saved)); } catch {}
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
   const CAROUSEL_SLIDES = [
     {
       badge: t('slide1Badge'),
@@ -411,16 +482,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     }
   ];
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % CAROUSEL_SLIDES.length);
-    }, 5500);
-    return () => clearInterval(timer);
-  }, []);
-
-  const slide = CAROUSEL_SLIDES[currentSlide];
+  const slide = CAROUSEL_SLIDES[0];
 
   const isFriday = new Date().getDay() === 5;
   const FRIDAY_INLINE_AYAT = [
@@ -447,8 +509,40 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       {/* Dynamic Daily Prayer Reminders Banner */}
       <DailyReminderBanner 
         timings={locationInfo?.timings} 
+        timezone={locationInfo?.timezone}
         navigateToTab={navigateToTab} 
       />
+
+      <section className="container home-daily-dua" aria-labelledby="home-daily-dua-title">
+        <div className="home-daily-dua-heading">
+          <span className="home-reading-eyebrow">Daily Quranic supplication</span>
+          <span className="home-daily-dua-reference">{dailyDua.reference}</span>
+        </div>
+        <h2 id="home-daily-dua-title" className="home-daily-dua-arabic" dir="rtl">{dailyDua.arabic}</h2>
+        <p className="home-daily-dua-urdu" dir="rtl">{dailyDua.urdu}</p>
+        <p className="home-daily-dua-english">{dailyDua.english}</p>
+        <button type="button" className="home-daily-dua-link" onClick={() => handleNav('duas')}>Explore all Duas <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+      </section>
+
+      <section id="home-prayer-times" className="container" style={{ marginTop: '1.25rem', textAlign: 'center' }}>
+        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
+      </section>
+
+      <nav className="container home-quick-access" aria-label="Quick access" style={{ marginTop: '1rem' }}>
+        {[
+          { label: t('readQuran', 'Quran'), icon: 'fas fa-book-open', action: () => handleNav('read') },
+          { label: t('dailyDuas', 'Daily Duas'), icon: 'fas fa-hands', action: () => handleNav('duas') },
+          { label: t('dailyVerse', 'Daily verse'), icon: 'fas fa-sun', action: () => document.getElementById('home-daily-verse')?.scrollIntoView({ behavior: 'smooth' }) },
+          { label: t('prayerTimes', 'Prayer Times'), icon: 'fas fa-clock', action: () => document.getElementById('home-prayer-times')?.scrollIntoView({ behavior: 'smooth' }) },
+          { label: t('books', 'Books'), icon: 'fas fa-book', action: () => handleNav('books') },
+          { label: t('myBookmarks', 'Favorites'), icon: 'fas fa-heart', action: () => handleNav('bookmarks') },
+          { label: t('search', 'Search library'), icon: 'fas fa-search', action: () => openSpotlight?.() }
+        ].map(item => (
+          <button key={item.label} type="button" className="home-quick-access-button" onClick={item.action}>
+            <i className={item.icon} aria-hidden="true" /> <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
 
       {/* Hero Carousel Banner Section */}
       <section className="container" style={{ paddingTop: '1.5rem' }}>
@@ -512,35 +606,6 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             </div>
           </div>
 
-          {/* Navigation Arrows */}
-          <button
-            aria-label="Previous Slide"
-            className="hero-carousel-nav-btn"
-            style={{ left: '15px' }}
-            onClick={() => setCurrentSlide((currentSlide - 1 + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length)}
-          >
-            <i className="fas fa-chevron-left" style={{ fontSize: '1.1rem' }}></i>
-          </button>
-
-          <button
-            aria-label="Next Slide"
-            className="hero-carousel-nav-btn"
-            style={{ right: '15px' }}
-            onClick={() => setCurrentSlide((currentSlide + 1) % CAROUSEL_SLIDES.length)}
-          >
-            <i className="fas fa-chevron-right" style={{ fontSize: '1.1rem' }}></i>
-          </button>
-
-          {/* Indicator Dots */}
-          <div className="hero-carousel-dots">
-            {CAROUSEL_SLIDES.map((_, idx) => (
-              <span
-                key={idx}
-                className={`hero-carousel-dot ${idx === currentSlide ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(idx)}
-              ></span>
-            ))}
-          </div>
         </div>
 
         {/* ═══ FRIDAY JUMU'AH SECTION (only on Fridays) ═══ */}
@@ -878,7 +943,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
         const todayVerse = DAILY_VERSES_COLLECTION[dayOfYear % DAILY_VERSES_COLLECTION.length];
         return (
-          <section className="container" style={{ marginTop: '2rem' }}>
+          <section id="home-daily-verse" className="container" style={{ marginTop: '2rem' }}>
             <div
               style={{
                 background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
@@ -901,13 +966,13 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               </div>
 
               <div style={{ textAlign: 'center', margin: '1rem 0 1.5rem 0' }}>
-                <p className="arabic-font" style={{ fontSize: '1.8rem', color: '#ffffff', lineHeight: '2.2', marginBottom: '1rem', fontWeight: 700 }}>
+                <p className="arabic-font home-daily-verse-arabic" style={{ fontSize: '1.8rem', color: '#ffffff', lineHeight: '2.2', marginBottom: '1rem', fontWeight: 700 }}>
                   {todayVerse.arabic}
                 </p>
-                <p style={{ fontSize: '1.05rem', color: '#fef3c7', fontStyle: 'italic', maxWidth: '850px', margin: '0 auto 0.75rem auto', lineHeight: '1.6' }}>
+                <p className="home-daily-verse-translation" style={{ fontSize: '1.05rem', color: '#fef3c7', fontStyle: 'italic', maxWidth: '850px', margin: '0 auto 0.75rem auto', lineHeight: '1.6' }}>
                   "{todayVerse.translation_en}"
                 </p>
-                <p style={{ fontSize: '0.92rem', color: '#6ee7b7', margin: '0 auto', maxWidth: '800px', fontWeight: 600 }}>
+                <p className="home-daily-verse-urdu" style={{ fontSize: '0.92rem', color: '#6ee7b7', margin: '0 auto', maxWidth: '800px', fontWeight: 600 }}>
                   اردو ترجمہ: "{todayVerse.translation_ur}"
                 </p>
               </div>
@@ -1045,54 +1110,55 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         </section>
       )}
 
-      {/* Live Prayer Times & Hijri Date Widget */}
-      <section className="container" style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
-      </section>
+      {/* Continue-reading card and daily reading plan */}
+      <section className="container home-reading-hub" style={{ marginTop: '1.25rem', marginBottom: '2.5rem' }}>
+        <div className="home-reading-cards">
+          <article className="home-reading-card home-continue-card">
+            <div className="home-reading-icon"><i className="fas fa-bookmark" aria-hidden="true" /></div>
+            <div className="home-reading-copy">
+              <span className="home-reading-eyebrow">{t('readQuran', 'Quran reader')}</span>
+              <h2>{lastRead ? `${t('surah', 'Surah')} ${lastRead.surahName} · ${t('ayah', 'Ayah')} ${lastRead.ayahNumber}` : t('startReading', 'Begin reading the Quran')}</h2>
+              <p>{lastRead ? t('savedPositionMsg', 'Continue from your saved reading position.') : t('quranHeroSubtitle', 'Read and listen to the Quran with translations.')}</p>
+            </div>
+            <button type="button" className="home-reading-action" onClick={() => handleNav('read')}>
+              {lastRead ? t('continueReading', 'Continue reading') : t('readQuran', 'Open Quran')} <i className="fas fa-arrow-right" aria-hidden="true" />
+            </button>
+          </article>
 
-      {/* Continue Reading Quick Banner if saved position exists */}
-      {lastRead && (
-        <section className="container" style={{ marginBottom: '2.5rem' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)',
-            border: '1px solid #fde68a',
-            borderRadius: '14px',
-            padding: '1.25rem 1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '1rem',
-            flexWrap: 'wrap',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ background: 'var(--accent-gold)', color: '#fff', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
-                <i className="fas fa-bookmark"></i>
+          {lastBook && (
+            <article className="home-reading-card home-continue-card">
+              <div className="home-reading-icon"><i className="fas fa-book" aria-hidden="true" /></div>
+              <div className="home-reading-copy">
+                <span className="home-reading-eyebrow">{t('continueBook', 'Continue your book')}</span>
+                <h2>{lastBook.title}</h2>
+                <p>{t('page', 'Page')} {lastBook.page || 1} of {lastBook.pages_count || 1}{lastBook.author ? ` · ${lastBook.author}` : ''}</p>
               </div>
-              <div>
-                <h4 style={{ margin: 0, color: 'var(--primary-dark)', fontSize: '1.05rem', fontWeight: 800 }}>
-                  {t('resumeReading', 'Resume Reading')}: {t('surah', 'Surah')} {lastRead.surahName} ({t('ayah', 'Ayah')} {lastRead.ayahNumber})
-                </h4>
-                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#78350f' }}>
-                  {t('savedPositionMsg', 'Saved position from your recent reading session.')}
-                </p>
+              <button type="button" className="home-reading-action" onClick={() => navigate('books', lastBook.title)}>
+                {t('continueReading', 'Continue reading')} <i className="fas fa-arrow-right" aria-hidden="true" />
+              </button>
+            </article>
+          )}
+
+          <article className="home-reading-card home-plan-card">
+            <div className="home-reading-copy">
+              <span className="home-reading-eyebrow">{t('dailyReadingPlan', 'Daily reading plan')}</span>
+              <h2>{dailyPlan.completed} of {dailyPlan.target} pages today</h2>
+              <div className="home-plan-progress" role="progressbar" aria-label="Daily Quran reading progress" aria-valuemin="0" aria-valuemax={dailyPlan.target} aria-valuenow={dailyPlan.completed}>
+                <span style={{ width: `${Math.min(100, (dailyPlan.completed / dailyPlan.target) * 100)}%` }} />
+              </div>
+              <div className="home-plan-controls">
+                <label htmlFor="daily-plan-target">{t('dailyGoal', 'Daily goal')}</label>
+                <select id="daily-plan-target" value={dailyPlan.target} onChange={event => setDailyPlan(current => ({ ...current, target: Number(event.target.value), completed: Math.min(current.completed, Number(event.target.value)) }))}>
+                  {[1, 3, 5, 10].map(target => <option key={target} value={target}>{target} {t('pages', 'pages')}</option>)}
+                </select>
+                <button type="button" className="home-reading-action" onClick={() => setDailyPlan(current => ({ ...current, completed: Math.min(current.target, current.completed + 1) }))} disabled={dailyPlan.completed >= dailyPlan.target}>
+                  {dailyPlan.completed >= dailyPlan.target ? t('goalComplete', 'Goal complete') : t('markPageRead', '+ Mark a page')}
+                </button>
               </div>
             </div>
-
-            <a
-              href="/read"
-              className="btn-play"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNav('read');
-              }}
-              style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800, padding: '0.6rem 1.4rem', textDecoration: 'none', boxShadow: '0 3px 10px rgba(180,83,9,0.12)' }}
-            >
-              <i className="fas fa-arrow-right"></i> {t('continueReading', 'Continue Reading')}
-            </a>
-          </div>
-        </section>
-      )}
+          </article>
+        </div>
+      </section>
 
       {/* 1. FEATURED AUDIO RECITATIONS (EXACTLY 4 SURAHS - CENTERED) */}
       <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>

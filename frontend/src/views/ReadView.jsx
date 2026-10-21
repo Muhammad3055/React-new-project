@@ -98,6 +98,8 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   const { lang, t } = useLanguage();
   const [surahsList, setSurahsList] = useState(ALL_114_SURAHS);
   const [selectedSurah, setSelectedSurah] = useState(() => {
+    const requestedSurah = Number(new URLSearchParams(window.location.search).get('q'));
+    if (requestedSurah >= 1 && requestedSurah <= 114) return requestedSurah;
     if (user && user.preferences && user.preferences.last_read_surah) {
       return user.preferences.last_read_surah;
     }
@@ -111,6 +113,15 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
     return 1;
   });
   const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
+
+  useEffect(() => {
+    const syncRequestedSurah = () => {
+      const requestedSurah = Number(new URLSearchParams(window.location.search).get('q'));
+      if (requestedSurah >= 1 && requestedSurah <= 114) setSelectedSurah(requestedSurah);
+    };
+    window.addEventListener('popstate', syncRequestedSurah);
+    return () => window.removeEventListener('popstate', syncRequestedSurah);
+  }, []);
 
   // Main Modes: 'only_quran' (Pure Quran Pak Text, no voice) | 'with_translation' (Quran + Tarjuma)
   const [readMode, setReadMode] = useState('with_translation');
@@ -329,12 +340,24 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
           setBookmarks(map);
         })
         .catch(() => {});
+    } else {
+      try {
+        const saved = JSON.parse(localStorage.getItem('maktaba_local_ayah_bookmarks') || '[]');
+        setBookmarks(Object.fromEntries(saved.filter(item => item.surah_number === selectedSurah).map(item => [item.ayah_number, true])));
+      } catch { setBookmarks({}); }
     }
   }, [selectedSurah, user]);
 
   const toggleBookmark = (ayahNumber) => {
     if (!user) {
-      alert("Please login to save bookmarks.");
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('maktaba_local_ayah_bookmarks') || '[]'); } catch {}
+      const exists = saved.some(item => item.surah_number === selectedSurah && item.ayah_number === ayahNumber);
+      const next = exists
+        ? saved.filter(item => !(item.surah_number === selectedSurah && item.ayah_number === ayahNumber))
+        : [...saved, { id: `ayah-${selectedSurah}-${ayahNumber}`, surah_number: selectedSurah, ayah_number: ayahNumber, created_at: new Date().toISOString() }];
+      try { localStorage.setItem('maktaba_local_ayah_bookmarks', JSON.stringify(next)); } catch {}
+      setBookmarks(prev => ({ ...prev, [ayahNumber]: !exists }));
       return;
     }
     fetch('/api/bookmark/toggle/', {

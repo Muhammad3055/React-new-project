@@ -14,37 +14,58 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
   };
 
   useEffect(() => {
+    const localAyahBookmarks = (() => {
+      try { return JSON.parse(localStorage.getItem('maktaba_local_ayah_bookmarks') || '[]').map(item => ({ ...item, type: 'local_ayah' })); }
+      catch { return []; }
+    })();
+    const localDuaFavorites = (() => {
+      try { return JSON.parse(localStorage.getItem('maktaba_dua_favorites') || '[]').map(item => ({ ...item, type: 'dua' })); }
+      catch { return []; }
+    })();
+
     if (user) {
       fetch(getApiUrl('/api/bookmarks/'))
         .then(res => res.json())
         .then(data => {
-          setBookmarks(data.bookmarks || []);
+          setBookmarks([...(data.bookmarks || []).map(item => ({ ...item, type: 'ayah' })), ...localAyahBookmarks, ...localDuaFavorites]);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch(() => { setBookmarks(localDuaFavorites); setLoading(false); });
+    } else {
+      setBookmarks([...localAyahBookmarks, ...localDuaFavorites]);
+      setLoading(false);
     }
   }, [user]);
 
-  const removeBookmark = (surahNum, ayahNum) => {
+  const removeBookmark = (bookmark) => {
+    if (bookmark.type === 'dua') {
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('maktaba_dua_favorites') || '[]'); } catch {}
+      const next = saved.filter(item => item.id !== bookmark.id);
+      try { localStorage.setItem('maktaba_dua_favorites', JSON.stringify(next)); } catch {}
+      setBookmarks(prev => prev.filter(item => !(item.type === 'dua' && item.id === bookmark.id)));
+      return;
+    }
+    if (!user || bookmark.type === 'local_ayah') {
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('maktaba_local_ayah_bookmarks') || '[]'); } catch {}
+      const next = saved.filter(item => !(item.surah_number === bookmark.surah_number && item.ayah_number === bookmark.ayah_number));
+      try { localStorage.setItem('maktaba_local_ayah_bookmarks', JSON.stringify(next)); } catch {}
+      setBookmarks(prev => prev.filter(item => !(['ayah', 'local_ayah'].includes(item.type) && item.surah_number === bookmark.surah_number && item.ayah_number === bookmark.ayah_number)));
+      return;
+    }
     fetch(getApiUrl('/api/bookmark/toggle/'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ surah_number: surahNum, ayah_number: ayahNum })
+      body: JSON.stringify({ surah_number: bookmark.surah_number, ayah_number: bookmark.ayah_number })
     })
       .then(res => res.json())
       .then(() => {
-        setBookmarks(prev => prev.filter(b => !(b.surah_number === surahNum && b.ayah_number === ayahNum)));
+        setBookmarks(prev => prev.filter(item => !(item.type === 'ayah' && item.surah_number === bookmark.surah_number && item.ayah_number === bookmark.ayah_number)));
       });
   };
 
-  if (!user) {
-    return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-        <h2><i className="fas fa-lock" style={{ color: 'var(--accent-gold)' }}></i> {t('loginRequiredBookmarks', 'Login Required')}</h2>
-        <p style={{ color: 'var(--text-muted)', margin: '1rem 0' }}>{t('loginRequiredBookmarks', 'Please log in to view your saved Ayah bookmarks.')}</p>
-      </div>
-    );
-  }
+  const visibleBookmarks = bookmarks.filter(item => selectedFolder === 'All' || selectedFolder === 'Favorites' || (selectedFolder === 'Duas' && item.type === 'dua'));
 
   return (
     <div className="container">
@@ -58,8 +79,6 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
           { key: 'All', label: t('all', 'All') },
           { key: 'Favorites', label: '⭐ ' + t('favorites', 'Favorites') },
           { key: 'Duas', label: '🤲 ' + t('duas', 'Duas') },
-          { key: 'Study', label: '📖 ' + t('study', 'Study') },
-          { key: 'Hifz', label: '🧠 ' + t('hifzTracker', 'Hifz') }
         ].map((folder) => {
           const isSelected = selectedFolder === folder.key;
           return (
@@ -84,7 +103,7 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
           <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>{t('loading', 'Loading your saved bookmarks...')}</p>
         </div>
-      ) : bookmarks.length === 0 ? (
+      ) : visibleBookmarks.length === 0 ? (
         <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
           <i className="far fa-star fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
           <h3>{t('noBookmarksYet', 'No Bookmarks Saved Yet')}</h3>
@@ -103,32 +122,36 @@ export default function BookmarksView({ user, navigateToTab, setActiveTab }) {
         </div>
       ) : (
         <div className="grid-3">
-          {bookmarks.map((bm) => (
-            <div key={bm.id} className="card" style={{ padding: '1.5rem' }}>
+          {visibleBookmarks.map((bm) => (
+            <div key={`${bm.type}-${bm.id || `${bm.surah_number}-${bm.ayah_number}`}`} className="card" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <span className="surah-number-badge" style={{ width: 'auto', padding: '0.3rem 0.8rem', borderRadius: '15px', fontSize: '0.85rem' }}>
-                  {t('surah', 'Surah')} {bm.surah_number}:{bm.ayah_number}
+                  {bm.type === 'dua' ? t('duas', 'Dua') : `${t('surah', 'Surah')} ${bm.surah_number}:${bm.ayah_number}`}
                 </span>
                 <button
                   className="verse-btn"
                   style={{ color: '#ef4444' }}
                   title={t('removeBookmark', 'Remove Bookmark')}
-                  onClick={() => removeBookmark(bm.surah_number, bm.ayah_number)}
+                  onClick={() => removeBookmark(bm)}
                 >
                   <i className="fas fa-trash-alt"></i>
                 </button>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>{bm.created_at}</p>
+              {bm.title && <h3 style={{ margin: '0 0 0.65rem', fontSize: '1rem' }}>{bm.title}</h3>}
+              {bm.arabic && <p dir="rtl" style={{ fontFamily: "'Amiri', serif", fontSize: '1.4rem', lineHeight: 1.9, color: 'var(--primary-dark)' }}>{bm.arabic}</p>}
+              {bm.translation && <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{bm.translation}</p>}
+              {bm.reference && <p style={{ margin: '0 0 0.6rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{bm.reference}</p>}
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>{bm.created_at || bm.saved_at}</p>
               <a
-                href="/read"
+                href={bm.type === 'dua' ? '/duas' : '/read'}
                 className="btn-play"
                 style={{ width: '100%', justifyContent: 'center', textDecoration: 'none' }}
                 onClick={(e) => {
                   e.preventDefault();
-                  handleNav('read');
+                  handleNav(bm.type === 'dua' ? 'duas' : 'read');
                 }}
               >
-                <i className="fas fa-book-open"></i> {t('goToQuranReader', 'Go to Quran Reader')}
+                <i className="fas fa-book-open"></i> {bm.type === 'dua' ? t('openDua', 'Open Duas') : t('goToQuranReader', 'Go to Quran Reader')}
               </a>
             </div>
           ))}

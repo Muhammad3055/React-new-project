@@ -7,7 +7,11 @@ export default function DuasView({ playTrack, user }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState(null);
-  const [bookmarkedIds, setBookmarkedIds] = useState({});
+  const [bookmarkedIds, setBookmarkedIds] = useState(() => {
+    try {
+      return Object.fromEntries(JSON.parse(localStorage.getItem('maktaba_dua_favorites') || '[]').map(item => [item.id, true]));
+    } catch { return {}; }
+  });
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -346,19 +350,15 @@ export default function DuasView({ playTrack, user }) {
   };
 
   const handleBookmarkDua = (item) => {
-    if (!user) {
-      alert("Sign in to save this Dua to your Account Favorites!");
-      return;
-    }
-    const updated = { ...bookmarkedIds };
-    if (updated[item.id]) {
-      delete updated[item.id];
-      alert(`Removed "${item.title}" from your account favorites.`);
-    } else {
-      updated[item.id] = true;
-      alert(`Saved "${item.title}" to your User Account Favorites!`);
-    }
-    setBookmarkedIds(updated);
+    const saved = (() => {
+      try { return JSON.parse(localStorage.getItem('maktaba_dua_favorites') || '[]'); } catch { return []; }
+    })();
+    const exists = saved.some(favorite => favorite.id === item.id);
+    const next = exists
+      ? saved.filter(favorite => favorite.id !== item.id)
+      : [...saved, { id: item.id, title: item.title, title_ur: item.title_ur, arabic: item.arabic, translation: item.translation, translation_ur: item.translation_ur, reference: item.reference, saved_at: new Date().toISOString() }];
+    try { localStorage.setItem('maktaba_dua_favorites', JSON.stringify(next)); } catch {}
+    setBookmarkedIds(Object.fromEntries(next.map(favorite => [favorite.id, true])));
   };
 
   return (

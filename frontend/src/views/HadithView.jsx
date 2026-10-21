@@ -11,9 +11,13 @@ export default function HadithView({ openReportModal, user }) {
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    if (q) setQuery(q);
+    const syncSearch = () => {
+      const q = new URLSearchParams(window.location.search).get('q');
+      if (q) { setQuery(q); setPage(1); }
+    };
+    syncSearch();
+    window.addEventListener('popstate', syncSearch);
+    return () => window.removeEventListener('popstate', syncSearch);
   }, []);
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState('');

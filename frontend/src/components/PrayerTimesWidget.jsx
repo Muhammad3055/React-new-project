@@ -215,9 +215,10 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
         localStorage.setItem('user_lng', today.meta.longitude);
         localStorage.setItem('user_country_code', location.countryCode || '');
         localStorage.setItem('user_prayer_timings', JSON.stringify(times));
+        localStorage.setItem('user_prayer_timezone', result.timezone || '');
       } catch { /* Prayer times also work when browser storage is disabled. */ }
       callbackRef.current?.({ hijri: h, lat: today.meta.latitude, lng: today.meta.longitude,
-        countryCode: location.countryCode || '', city: location.label, timings: times });
+        countryCode: location.countryCode || '', city: location.label, timings: times, timezone: result.timezone || '' });
     }).catch(err => {
       if (!active) return;
       setSchedule(null);

@@ -84,13 +84,18 @@ export default function BooksView({ openReportModal, user }) {
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    if (q) setQuery(q);
-    const languages = (params.get('language') || '').split(',').filter(value => ['en','ur','ar','br'].includes(value));
-    setSelectedLanguages(languages);
-    const formats = (params.get('file_type') || '').split(',').filter(value => ['pdf','doc','ppt','book','image'].includes(value));
-    setSelectedFileTypes(formats);
+    const syncSearch = () => {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (q) { setQuery(q); setCurrentPage(1); }
+      const languages = (params.get('language') || '').split(',').filter(value => ['en','ur','ar','br'].includes(value));
+      setSelectedLanguages(languages);
+      const formats = (params.get('file_type') || '').split(',').filter(value => ['pdf','doc','ppt','book','image'].includes(value));
+      setSelectedFileTypes(formats);
+    };
+    syncSearch();
+    window.addEventListener('popstate', syncSearch);
+    return () => window.removeEventListener('popstate', syncSearch);
   }, []);
 
   // Debounce search query to prevent excessive backend API calls
@@ -367,6 +372,16 @@ export default function BooksView({ openReportModal, user }) {
   };
 
   const updateBookProgress = (bookId, pageNum) => {
+    const recentBook = previewDoc?.id === bookId ? previewDoc : books.find(book => book.id === bookId);
+    if (recentBook) {
+      try {
+        localStorage.setItem('maktaba_last_read_book', JSON.stringify({
+          id: recentBook.id, title: recentBook.title, author: recentBook.author || '',
+          page: pageNum, pages_count: recentBook.pages_count || recentBook.pages || 1,
+          timestamp: new Date().toISOString()
+        }));
+      } catch {}
+    }
     if (!user) return;
     const updated = userSavedBooks.map(b => {
       if (b.book_id === bookId) {
@@ -388,6 +403,15 @@ export default function BooksView({ openReportModal, user }) {
   const handleOpenDocModal = (doc) => {
     setPreviewDoc(doc);
     setIsFullscreen(false);
+    const match = userSavedBooks.find(b => b.book_id === doc.id);
+    const currentPage = match ? match.progress_page : 1;
+
+    try {
+      localStorage.setItem('maktaba_last_read_book', JSON.stringify({
+        id: doc.id, title: doc.title, author: doc.author || '', page: currentPage,
+        pages_count: doc.pages_count || doc.pages || 1, timestamp: new Date().toISOString()
+      }));
+    } catch {}
     
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile) {
@@ -397,8 +421,7 @@ export default function BooksView({ openReportModal, user }) {
     }
 
     // Automatically add to history when opened
-    const match = userSavedBooks.find(b => b.book_id === doc.id);
-    logBookHistory(doc.id, match ? match.progress_page : 1);
+    logBookHistory(doc.id, currentPage);
   };
 
 

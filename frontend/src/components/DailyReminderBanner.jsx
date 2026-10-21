@@ -141,7 +141,43 @@ const COMPLETION_KALIMAH = {
   hadithRef: 'صحیح مسلم: 597 • سنن ابو داؤد: 1504 • سنن نسائی: 1350'
 };
 
-export default function DailyReminderBanner({ timings, navigateToTab }) {
+const getPrayerDate = (timeText, now, timezone) => {
+  const match = String(timeText || '').match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (hour > 23 || minute > 59) return null;
+
+  if (!timezone) {
+    const date = new Date(now);
+    date.setHours(hour, minute, 0, 0);
+    return date;
+  }
+
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+    });
+    const partsFor = (date) => Object.fromEntries(formatter.formatToParts(date).map(part => [part.type, Number(part.value)]));
+    const localNow = partsFor(now);
+    const targetLocalAsUtc = Date.UTC(localNow.year, localNow.month - 1, localNow.day, hour, minute);
+    let timestamp = targetLocalAsUtc;
+    for (let pass = 0; pass < 2; pass += 1) {
+      const atTimestamp = partsFor(new Date(timestamp));
+      const representedAsUtc = Date.UTC(atTimestamp.year, atTimestamp.month - 1, atTimestamp.day,
+        atTimestamp.hour, atTimestamp.minute, atTimestamp.second);
+      timestamp += targetLocalAsUtc - representedAsUtc;
+    }
+    return new Date(timestamp);
+  } catch {
+    const date = new Date(now);
+    date.setHours(hour, minute, 0, 0);
+    return date;
+  }
+};
+
+export default function DailyReminderBanner({ timings, timezone, navigateToTab }) {
   const { t } = useLanguage();
   const [activeReminders, setActiveReminders] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
@@ -194,15 +230,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
         const cached = localStorage.getItem('user_prayer_timings');
         if (cached) return JSON.parse(cached);
       } catch (e) {}
-      // Fallback timings for Pakistan (Karachi Hanafi school=1: Asr 16:30)
-      return {
-        Fajr: '05:13',
-        Sunrise: '06:29',
-        Dhuhr: '12:18',
-        Asr: '16:30',
-        Maghrib: '18:07',
-        Isha: '19:23'
-      };
+      return null;
     };
 
     const checkReminders = () => {
@@ -212,20 +240,14 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
       const now = new Date();
       const active = [];
 
-      const parseTime = (timeStr) => {
-        if (!timeStr) return null;
-        const cleanTime = timeStr.split(' ')[0];
-        const [hours, minutes] = cleanTime.split(':').map(Number);
-        const d = new Date(now);
-        d.setHours(hours, minutes, 0, 0);
-        return d;
-      };
-
-      const fajr = parseTime(prayerTimings.Fajr);
-      const dhuhr = parseTime(prayerTimings.Dhuhr);
-      const asr = parseTime(prayerTimings.Asr);
-      const maghrib = parseTime(prayerTimings.Maghrib);
-      const isha = parseTime(prayerTimings.Isha);
+      const prayerTimezone = timezone || (() => {
+        try { return localStorage.getItem('user_prayer_timezone') || ''; } catch { return ''; }
+      })();
+      const fajr = getPrayerDate(prayerTimings.Fajr, now, prayerTimezone);
+      const dhuhr = getPrayerDate(prayerTimings.Dhuhr, now, prayerTimezone);
+      const asr = getPrayerDate(prayerTimings.Asr, now, prayerTimezone);
+      const maghrib = getPrayerDate(prayerTimings.Maghrib, now, prayerTimezone);
+      const isha = getPrayerDate(prayerTimings.Isha, now, prayerTimezone);
 
       // =========================================================================
       // 1. FAJR TIMING RULE:
@@ -255,12 +277,12 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
 
       // =========================================================================
       // 3. ASR TIMING RULE:
-      // When Asr time comes, after 1 hour (60 mins), visible for 1 hour (60 mins), then hides.
-      // Window: [Asr + 60m] to [Asr + 120m]
+      // Show at the selected location's Asr time and keep it visible for 40 minutes.
+      // Window: [Asr] to [Asr + 40m]
       // =========================================================================
       if (asr) {
-        const asrStart = new Date(asr.getTime() + 60 * 60000);
-        const asrEnd = new Date(asr.getTime() + 120 * 60000);
+        const asrStart = asr;
+        const asrEnd = new Date(asr.getTime() + 40 * 60000);
         if (now >= asrStart && now < asrEnd) {
           active.push(PRAYER_DUAS.asr);
         }
@@ -311,7 +333,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
     checkReminders();
     const interval = setInterval(checkReminders, 15000); // Check every 15 seconds
     return () => clearInterval(interval);
-  }, [timings]);
+  }, [timings, timezone]);
 
   // Copy Dua to Clipboard
   const handleCopyDua = (dua) => {
@@ -439,7 +461,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
               <div className="prayer-dua-reading">
             {/* 📜 Complete Arabic Dua Box */}
             <div style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1.5px solid #86efac', marginBottom: '0.7rem', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: 'clamp(1.35rem, 3vw, 1.8rem)', fontWeight: 800, fontFamily: "'Amiri', 'Traditional Arabic', serif", color: '#064e3b', direction: 'rtl', lineHeight: 1.75, letterSpacing: '0.5px' }}>
+              <p className="prayer-dua-arabic" style={{ margin: 0, fontSize: 'clamp(1.35rem, 3vw, 1.8rem)', fontWeight: 800, fontFamily: "'Amiri', 'Traditional Arabic', serif", color: '#064e3b', direction: 'rtl', lineHeight: 1.75, letterSpacing: '0.5px' }}>
                 {dua.arabic}
               </p>
             </div>
@@ -449,7 +471,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
               <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#059669', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 اردو با محاورہ ترجمہ:
               </span>
-              <p style={{ margin: 0, fontSize: '1.08rem', color: '#0f172a', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', 'Jameel Noori Nastaleeq', serif", lineHeight: 1.7 }}>
+              <p className="prayer-dua-translation-urdu" style={{ margin: 0, fontSize: '1.08rem', color: '#0f172a', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', 'Jameel Noori Nastaleeq', serif", lineHeight: 1.7 }}>
                 "{dua.translationUrdu}"
               </p>
             </div>
@@ -459,7 +481,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 English Meaning:
               </span>
-              <p style={{ margin: 0, fontSize: '0.92rem', color: '#334155', lineHeight: 1.55 }}>
+              <p className="prayer-dua-translation-english" style={{ margin: 0, fontSize: '0.92rem', color: '#334155', lineHeight: 1.55 }}>
                 "{dua.translationEn}"
               </p>
             </div>

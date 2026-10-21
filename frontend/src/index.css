@@ -3952,6 +3952,12 @@ img {
 .prayer-dua-card span { overflow-wrap: break-word; }
 .post-prayer-counter-actions { flex-wrap: wrap; }
 .post-prayer-counter-actions > button { min-width: 0; }
+.prayer-dua-arabic { font-size: clamp(2rem, 4vw, 2.55rem) !important; line-height: 1.9 !important; }
+.prayer-dua-translation-urdu { font-size: 0.98rem !important; color: #475569 !important; }
+.prayer-dua-translation-english { font-size: 0.84rem !important; color: #64748b !important; }
+.home-daily-verse-arabic { font-size: clamp(2.15rem, 5vw, 3rem) !important; line-height: 2 !important; color: #fef3c7 !important; }
+.home-daily-verse-translation { font-size: 0.96rem !important; color: #dbeafe !important; }
+.home-daily-verse-urdu { font-size: 0.88rem !important; color: #a7f3d0 !important; }
 @media (min-width: 960px) {
   .prayer-dua-columns { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 24px; }
   .prayer-dua-columns .post-prayer-counter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; }
@@ -3966,6 +3972,8 @@ img {
   .post-prayer-tasbeeh { padding: 12px !important; }
   .post-prayer-counter-card { padding: 11px !important; }
   .post-prayer-counter-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .prayer-dua-arabic { font-size: clamp(1.8rem, 8vw, 2.2rem) !important; }
+  .home-daily-verse-arabic { font-size: clamp(1.9rem, 8vw, 2.4rem) !important; }
   .zakat-settings-bar > div, .zakat-currency-control,
   .zakat-currency-options { width: 100%; flex-wrap: wrap; }
   .zakat-currency-options > button { flex: 1 1 55px; }
@@ -3975,6 +3983,47 @@ img {
   .qada-target-pace select { width: 100%; min-width: 0; font-size: 12px; }
   .world-clock-task-form { width: 100%; flex-wrap: wrap; }
   .world-clock-task-form input { flex: 1 1 150px; min-width: 0; }
+}
+
+.home-quick-access { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin: 0 0 18px; }
+.home-daily-dua { margin-top: 12px; padding: 20px 24px; border: 1px solid #bbf7d0; border-radius: 18px; background: linear-gradient(135deg, #f0fdf4 0%, #fff 80%); box-shadow: 0 8px 24px rgba(15, 23, 42, .045); text-align: center; }
+.home-daily-dua-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; text-align: left; }
+.home-daily-dua-reference { color: #64748b; font-size: .78rem; font-weight: 700; }
+.home-daily-dua-arabic { margin: 8px auto 10px; color: #064e3b; font-family: 'Amiri', 'Traditional Arabic', serif; font-size: clamp(2rem, 5vw, 2.7rem); line-height: 1.9; }
+.home-daily-dua-urdu { margin: 0 auto 5px; color: #475569; font-family: 'Amiri', 'Jameel Noori Nastaleeq', serif; font-size: .98rem; line-height: 1.8; }
+.home-daily-dua-english { margin: 0 auto 12px; color: #64748b; font-size: .84rem; line-height: 1.6; }
+.home-daily-dua-link { border: 0; background: transparent; color: #047857; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; }
+.home-quick-access-button { min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 12px; border: 1px solid #dce8e2; border-radius: 12px; background: #fff; color: #14532d; font: inherit; font-weight: 700; cursor: pointer; transition: background .18s ease, border-color .18s ease, transform .18s ease; }
+.home-quick-access-button:hover { background: #f0fdf4; border-color: #86efac; transform: translateY(-1px); }
+.home-quick-access-button i { color: #059669; }
+.home-reading-cards { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 16px; }
+.home-reading-card { min-width: 0; display: flex; align-items: center; gap: 14px; padding: 20px; border: 1px solid #dce8e2; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px rgba(15, 23, 42, .045); }
+.home-continue-card { background: linear-gradient(135deg, #f0fdf4, #fff 70%); }
+.home-reading-icon { width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; border-radius: 13px; background: #dcfce7; color: #047857; font-size: 1.1rem; }
+.home-reading-copy { min-width: 0; flex: 1; }
+.home-reading-eyebrow { display: block; margin-bottom: 4px; color: #047857; font-size: .76rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.home-reading-copy h2 { margin: 0; color: #0f2f25; font-size: 1.05rem; line-height: 1.4; }
+.home-reading-copy p { margin: 4px 0 0; color: #64748b; font-size: .84rem; }
+.home-reading-action { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 13px; border: 0; border-radius: 10px; background: #047857; color: #fff; font: inherit; font-size: .84rem; font-weight: 700; text-decoration: none; cursor: pointer; }
+.home-reading-action:disabled { background: #94a3b8; cursor: default; }
+.home-plan-card { align-items: stretch; }
+.home-plan-progress { height: 8px; margin: 12px 0 10px; overflow: hidden; border-radius: 99px; background: #e2e8f0; }
+.home-plan-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #10b981, #047857); transition: width .2s ease; }
+.home-plan-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #64748b; font-size: .82rem; }
+.home-plan-controls select { min-height: 36px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #334155; font: inherit; }
+@media (max-width: 900px) {
+  .home-quick-access { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .home-reading-cards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .home-daily-dua { padding: 16px; }
+  .home-daily-dua-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .home-daily-dua-arabic { font-size: clamp(1.9rem, 8vw, 2.35rem); }
+  .home-quick-access { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .home-quick-access-button { justify-content: flex-start; min-height: 48px; padding: 9px; font-size: .86rem; }
+  .home-reading-card { align-items: flex-start; flex-wrap: wrap; padding: 16px; }
+  .home-reading-action { margin-left: 58px; }
+  .home-plan-controls .home-reading-action { margin-left: 0; }
 }
 
 /* ═══════════════════════════════════════════════════════

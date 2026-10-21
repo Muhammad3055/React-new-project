@@ -189,16 +189,18 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    if (params.get('section') === 'lectures') {
-      const language = params.get('language');
-      setSubCategory(language === 'brahui' ? 'taqreer_brahui' : language === 'arabic' ? 'taqreer_arabic' : 'taqreer_urdu');
-    }
-    if (q) {
-      setQuranQuery(q);
-      setTaqreerQuery(q);
-    }
+    const syncSearch = () => {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (params.get('section') === 'lectures') {
+        const language = params.get('language');
+        setSubCategory(language === 'brahui' ? 'taqreer_brahui' : language === 'arabic' ? 'taqreer_arabic' : 'taqreer_urdu');
+      }
+      if (q) { setQuranQuery(q); setTaqreerQuery(q); }
+    };
+    syncSearch();
+    window.addEventListener('popstate', syncSearch);
+    return () => window.removeEventListener('popstate', syncSearch);
   }, []);
 
   const handleShareMp3 = (surahTitle, audioUrl) => {

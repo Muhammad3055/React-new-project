@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { getApiUrl } from '../utils/apiCache';
+import { ALL_114_SURAHS } from '../data/quran_data';
 import { 
   Search, BookOpen, Compass, Calculator, Scale, FileText, 
   Clock, ShieldCheck, Heart, Star, Sparkles, Moon, Sun, 
@@ -7,39 +9,23 @@ import {
 } from 'lucide-react';
 
 // Indexed Surah List for Instant Spotlight Navigation
-const SURAHS_INDEX = [
-  { num: 1, nameEn: "Al-Fatihah", nameAr: "الفاتحة", nameUr: "الفاتحہ", verses: 7, type: "Meccan" },
-  { num: 2, nameEn: "Al-Baqarah", nameAr: "البقرة", nameUr: "البقرہ", verses: 286, type: "Medinan" },
-  { num: 3, nameEn: "Ali 'Imran", nameAr: "آل عمران", nameUr: "آل عمران", verses: 200, type: "Medinan" },
-  { num: 4, nameEn: "An-Nisa", nameAr: "النساء", nameUr: "النساء", verses: 176, type: "Medinan" },
-  { num: 5, nameEn: "Al-Ma'idah", nameAr: "المائدة", nameUr: "المائدہ", verses: 120, type: "Medinan" },
-  { num: 6, nameEn: "Al-An'am", nameAr: "الأنعام", nameUr: "الانعام", verses: 165, type: "Meccan" },
-  { num: 7, nameEn: "Al-A'raf", nameAr: "الأعراف", nameUr: "الاعراف", verses: 206, type: "Meccan" },
-  { num: 8, nameEn: "Al-Anfal", nameAr: "الأنفال", nameUr: "الانفال", verses: 75, type: "Medinan" },
-  { num: 9, nameEn: "At-Tawbah", nameAr: "التوبة", nameUr: "التوبہ", verses: 129, type: "Medinan" },
-  { num: 10, nameEn: "Yunus", nameAr: "يونس", nameUr: "یونس", verses: 109, type: "Meccan" },
-  { num: 11, nameEn: "Hud", nameAr: "هود", nameUr: "ہود", verses: 123, type: "Meccan" },
-  { num: 12, nameEn: "Yusuf", nameAr: "يوسف", nameUr: "یوسف", verses: 111, type: "Meccan" },
-  { num: 18, nameEn: "Al-Kahf", nameAr: "الكهف", nameUr: "الکہف", verses: 110, type: "Meccan" },
-  { num: 19, nameEn: "Maryam", nameAr: "مريم", nameUr: "مریم", verses: 98, type: "Meccan" },
-  { num: 20, nameEn: "Ta-Ha", nameAr: "طه", nameUr: "طٰہٰ", verses: 135, type: "Meccan" },
-  { num: 24, nameEn: "An-Nur", nameAr: "النور", nameUr: "النور", verses: 64, type: "Medinan" },
-  { num: 36, nameEn: "Ya-Sin", nameAr: "يس", nameUr: "یٰسٓ", verses: 83, type: "Meccan" },
-  { num: 49, nameEn: "Al-Hujurat", nameAr: "الحجرات", nameUr: "الحجرات", verses: 18, type: "Medinan" },
-  { num: 55, nameEn: "Ar-Rahman", nameAr: "الرحمن", nameUr: "الرحمٰن", verses: 78, type: "Medinan" },
-  { num: 56, nameEn: "Al-Waqi'ah", nameAr: "الواقعة", nameUr: "الواقعہ", verses: 96, type: "Meccan" },
-  { num: 67, nameEn: "Al-Mulk", nameAr: "الملك", nameUr: "الملک", verses: 30, type: "Meccan" },
-  { num: 78, nameEn: "An-Naba", nameAr: "النبأ", nameUr: "النباء (عم)", verses: 40, type: "Meccan" },
-  { num: 112, nameEn: "Al-Ikhlas", nameAr: "الإخلاص", nameUr: "الاخلاص", verses: 4, type: "Meccan" },
-  { num: 113, nameEn: "Al-Falaq", nameAr: "الفلق", nameUr: "الفلق", verses: 5, type: "Meccan" },
-  { num: 114, nameEn: "An-Nas", nameAr: "الناس", nameUr: "الناس", verses: 6, type: "Meccan" },
-];
+const SURAHS_INDEX = ALL_114_SURAHS.map(surah => ({
+  num: surah.number,
+  nameEn: surah.name,
+  nameAr: surah.arabic,
+  nameUr: surah.arabic,
+  verses: surah.ayahs,
+  type: surah.type
+}));
 
 export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
   const { lang, t } = useLanguage();
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [libraryResults, setLibraryResults] = useState([]);
+  const [topicsIndex, setTopicsIndex] = useState([]);
+  const [quranMatches, setQuranMatches] = useState([]);
   const inputRef = useRef(null);
 
   // Auto focus input when modal opens
@@ -51,6 +37,47 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
       setQuery('');
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch(getApiUrl('/api/topics/'))
+      .then(response => response.json())
+      .then(data => setTopicsIndex(data.results || []))
+      .catch(() => setTopicsIndex([]));
+  }, [isOpen]);
+
+  useEffect(() => {
+    const term = query.trim();
+    if (term.length < 2) {
+      setLibraryResults([]);
+      return undefined;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch(getApiUrl(`/api/search/?q=${encodeURIComponent(term)}`), { signal: controller.signal })
+        .then(response => response.json())
+        .then(data => setLibraryResults(data.results || []))
+        .catch(error => { if (error.name !== 'AbortError') setLibraryResults([]); });
+    }, 180);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [query]);
+
+  useEffect(() => {
+    const term = query.trim();
+    if (term.length < 2 || !['all', 'quran'].includes(activeCategory)) {
+      setQuranMatches([]);
+      return undefined;
+    }
+    const controller = new AbortController();
+    const edition = /[\u0600-\u06FF]/.test(term) ? 'quran-uthmani' : lang === 'ur' ? 'ur.jalandhry' : 'en.sahih';
+    const timer = setTimeout(() => {
+      fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(term)}/all/${edition}`, { signal: controller.signal })
+        .then(response => response.json())
+        .then(data => setQuranMatches(data.data?.matches || []))
+        .catch(error => { if (error.name !== 'AbortError') setQuranMatches([]); });
+    }, 220);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [query, activeCategory, lang]);
 
   // Master Tools & Views Index
   const TOOLS_INDEX = useMemo(() => [
@@ -217,7 +244,7 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
 
     // 2. Filter Surahs
     let matchedSurahs = [];
-    if (activeCategory === 'all' || activeCategory === 'surahs') {
+    if (activeCategory === 'all' || activeCategory === 'quran') {
       matchedSurahs = SURAHS_INDEX.filter(s => {
         if (!q) return true;
         const numStr = String(s.num);
@@ -230,7 +257,7 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
       }).map(s => ({
         id: `surah_${s.num}`,
         resultType: 'surah',
-        category: 'surahs',
+        category: 'quran',
         titleEn: `Surah ${s.num}. ${s.nameEn}`,
         titleUr: `سورۃ نمبر ${s.num}: ${s.nameUr}`,
         titleAr: `سورة ${s.nameAr} (${s.num})`,
@@ -238,14 +265,61 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
         icon: "fas fa-quran",
         color: "#059669",
         action: () => {
-          navigateToTab('read');
-          // Dispatch custom event or URL update if supported
+          navigateToTab('read', String(s.num));
+          window.dispatchEvent(new PopStateEvent('popstate'));
         }
       }));
     }
 
-    return [...matchedTools, ...matchedSurahs];
-  }, [query, activeCategory, TOOLS_INDEX]);
+    const matchedQuranVerses = (activeCategory === 'all' || activeCategory === 'quran')
+      ? quranMatches.slice(0, 8).map(match => ({
+        id: `quran-verse-${match.number}`,
+        resultType: 'ayah', category: 'quran',
+        titleEn: `Surah ${match.surah.englishName} ${match.surah.number}:${match.numberInSurah}`,
+        titleUr: `سورۃ ${match.surah.name} ${match.surah.number}:${match.numberInSurah}`,
+        titleAr: `سورة ${match.surah.name} ${match.surah.number}:${match.numberInSurah}`,
+        descEn: match.text,
+        icon: 'fas fa-quran', color: '#047857',
+        action: () => {
+          navigateToTab('read', String(match.surah.number));
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      }))
+      : [];
+
+    const categoryForType = (type) => ({
+      'Quran Audio': 'quran', 'Hadith': 'hadith', 'Book PDF': 'books',
+      'Tafseer': 'quran', 'Taqreer MP3': 'tools', 'Video Lecture': 'tools'
+    }[type] || 'tools');
+    const matchedLibrary = libraryResults
+      .filter(item => activeCategory === 'all' || categoryForType(item.type) === activeCategory)
+      .map((item, index) => ({
+        id: `library-${item.type}-${index}-${item.title}`,
+        resultType: 'library', category: categoryForType(item.type),
+        titleEn: item.title, titleUr: item.title, titleAr: item.title,
+        descEn: item.subtitle || item.type, icon: item.badge_icon || 'fas fa-book',
+        color: item.type === 'Hadith' ? '#7c3aed' : item.type === 'Book PDF' ? '#b45309' : '#059669',
+        action: () => {
+          navigateToTab(item.tab || 'home', item.query || query);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      }));
+
+    const q = query.trim().toLowerCase();
+    const matchedTopics = (activeCategory === 'all' || activeCategory === 'topics')
+      ? topicsIndex.filter(topic => !q || `${topic.title} ${topic.description}`.toLowerCase().includes(q)).map(topic => ({
+        id: `topic-${topic.id}`, resultType: 'topic', category: 'topics',
+        titleEn: topic.title, titleUr: topic.title, titleAr: topic.title,
+        descEn: topic.description || 'Explore this topic', icon: 'fas fa-layer-group', color: '#0f766e',
+        action: () => {
+          navigateToTab('topics', topic.slug);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      }))
+      : [];
+
+    return [...matchedTools, ...matchedSurahs, ...matchedQuranVerses, ...matchedLibrary, ...matchedTopics];
+  }, [query, activeCategory, TOOLS_INDEX, libraryResults, topicsIndex, quranMatches, navigateToTab]);
 
   // Handle Keyboard Navigation
   useEffect(() => {
@@ -343,8 +417,12 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
           {[
             { id: 'all', label: lang === 'ar' ? 'الكل' : (lang === 'ur' || lang === 'br') ? 'تمام' : 'All' },
             { id: 'tools', label: lang === 'ar' ? 'الأدوات والفتاوى' : (lang === 'ur' || lang === 'br') ? 'ٹولز و احکام' : 'Tools & Services' },
-            { id: 'surahs', label: lang === 'ar' ? 'السور القرآنية' : (lang === 'ur' || lang === 'br') ? 'سورتیں' : 'Surahs' },
-            { id: 'duas', label: lang === 'ar' ? 'الأدعية والأذكار' : (lang === 'ur' || lang === 'br') ? 'دعائیں و اذکار' : 'Duas' }
+            { id: 'quran', label: lang === 'ar' ? 'القرآن' : (lang === 'ur' || lang === 'br') ? 'قرآن' : 'Quran' },
+            { id: 'hadith', label: lang === 'ar' ? 'الحديث' : (lang === 'ur' || lang === 'br') ? 'حدیث' : 'Hadith' },
+            { id: 'books', label: lang === 'ar' ? 'الكتب' : (lang === 'ur' || lang === 'br') ? 'کتب' : 'Books' },
+            { id: 'topics', label: lang === 'ar' ? 'الموضوعات' : (lang === 'ur' || lang === 'br') ? 'موضوعات' : 'Topics' },
+            { id: 'duas', label: lang === 'ar' ? 'الأدعية والأذكار' : (lang === 'ur' || lang === 'br') ? 'دعائیں و اذکار' : 'Duas' },
+            { id: 'tools', label: lang === 'ar' ? 'الأدوات' : (lang === 'ur' || lang === 'br') ? 'ٹولز' : 'Tools' }
           ].map(cat => (
             <button
               key={cat.id}
@@ -395,7 +473,7 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
                         color: isSelected ? '#b45309' : '#0f172a',
                         whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden'
                       }}>
-                        {lang === 'ar' ? item.titleAr : (lang === 'ur' || lang === 'br') ? item.titleUr : item.titleEn}
+                        {lang === 'ar' ? (item.titleAr || item.titleEn) : (lang === 'ur' || lang === 'br') ? (item.titleUr || item.titleEn) : item.titleEn}
                       </div>
                       <div style={{
                         fontSize: '0.78rem', color: '#64748b',

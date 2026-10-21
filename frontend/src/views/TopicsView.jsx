@@ -46,7 +46,10 @@ function ResourceCard({ item, kind, playTrack }) {
 export default function TopicsView({ user, playTrack }) {
   const isAdmin = Boolean(user?.is_staff || user?.is_superuser);
   const [topics, setTopics] = useState([]);
-  const [activeSlug, setActiveSlug] = useState(() => new URLSearchParams(window.location.search).get('topic') || '');
+  const [activeSlug, setActiveSlug] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('topic') || params.get('q') || '';
+  });
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -76,7 +79,10 @@ export default function TopicsView({ user, playTrack }) {
   }, []);
 
   useEffect(() => {
-    const onPopState = () => setActiveSlug(new URLSearchParams(window.location.search).get('topic') || '');
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      setActiveSlug(params.get('topic') || params.get('q') || '');
+    };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);

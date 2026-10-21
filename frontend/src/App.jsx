@@ -476,6 +476,7 @@ function MainAppContent() {
               playTrack={playTrack}
               user={user}
               openAuthModal={openAuthModal}
+              openSpotlight={() => setIsSpotlightOpen(true)}
             />
           )}
 
