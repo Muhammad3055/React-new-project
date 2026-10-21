@@ -673,6 +673,15 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           ))}
         </nav>
 
+        <button type="button" className="mobile-section-title mobile-only" aria-expanded={showToolsMenu} onClick={() => setShowToolsMenu(open => !open)}>
+          Tools <i className={`fas fa-chevron-${showToolsMenu ? 'up' : 'down'}`} aria-hidden="true" />
+        </button>
+        {showToolsMenu && <nav className="mobile-nav-grid mobile-only" aria-label="Tools">
+          {toolMenuItems.map(item => <button key={item.label} type="button" className="mobile-nav-item" onClick={() => { item.action ? item.action() : navigateToTab(item.tab); setShowToolsMenu(false); setMobileActive(false); }}>
+            <span>{item.label}</span>
+          </button>)}
+        </nav>}
+
         {/* Explore Features Grid */}
         <div className="mobile-section-title">{t('exploreMore')}</div>
         <nav className="mobile-nav-grid extra-nav-grid" aria-label={t('exploreMore')}>

@@ -154,6 +154,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   const [translationData, setTranslationData] = useState({ en: FALLBACK_ENGLISH_FATIHAH });
   const [fontSize, setFontSize] = useState(28);
   const [loading, setLoading] = useState(false);
+  const [surahError, setSurahError] = useState(false);
   const [bookmarks, setBookmarks] = useState({});
   const [surahFilter, setSurahFilter] = useState('');
   const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark' | 'custom'
@@ -247,21 +248,20 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   // Fetch Surah Arabic Text with Caching
   useEffect(() => {
     setLoading(true);
+    setSurahError(false);
+    setSurahData(null);
 
     fetchWithCache(`https://api.alquran.cloud/v1/surah/${selectedSurah}`)
       .then(data => {
         if (data && data.data && data.data.ayahs && data.data.ayahs.length > 0) {
           setSurahData(data.data);
-        } else if (!surahData) {
-          setSurahData(FALLBACK_FATIHAH);
+        } else {
+          setSurahError(true);
         }
         setLoading(false);
       })
       .catch(() => {
-        if (!surahData) {
-          setSurahData(FALLBACK_FATIHAH);
-          setTranslationData(prev => ({ ...prev, en: FALLBACK_ENGLISH_FATIHAH }));
-        }
+        setSurahError(true);
         setLoading(false);
       });
   }, [selectedSurah]);
@@ -692,9 +692,12 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
           {/* Reader Controls Bar */}
           <div className="card read-controls-card" style={{ padding: '1rem 1.5rem', marginBottom: '1.25rem', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-dark)' }}>Surah {activeSurahMeta.name} ({activeSurahMeta.englishName})</h2>
+              <div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-dark)' }}>Surah {activeSurahMeta.name}</h2>
+                {activeSurahMeta.arabic && <p className="arabic-font reader-surah-arabic" lang="ar" dir="rtl">{activeSurahMeta.arabic}</p>}
+              </div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                {activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Verses &bull; Mode: {readMode === 'only_quran' ? (quranSubMode === 'page_view' ? 'Continuous Mushaf Page View (Pure Quran)' : 'Verse-by-Verse (Pure Quran)') : (translationSubMode === 'audio_and_text' ? `Audio MP3 (${currentQariObj.name}) + Spoken Translation` : 'Text & Translation Only')}
+                Surah {selectedSurah} of 114 &bull; {activeSurahMeta.type} &bull; {activeSurahMeta.ayahs} Ayahs &bull; Mode: {readMode === 'only_quran' ? (quranSubMode === 'page_view' ? 'Continuous Mushaf Page View (Pure Quran)' : 'Verse-by-Verse (Pure Quran)') : (translationSubMode === 'audio_and_text' ? `Audio MP3 (${currentQariObj.name}) + Spoken Translation` : 'Text & Translation Only')}
               </p>
             </div>
 
@@ -801,7 +804,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
               {readMode === 'with_translation' && translationSubMode === 'audio_and_text' && (
                 <button
                   className="btn-play"
-                  onClick={() => playTrack(`https://server8.mp3quran.net/afs/${selectedSurah < 10 ? '00' + selectedSurah : (selectedSurah < 100 ? '0' + selectedSurah : selectedSurah)}.mp3`, `Surah ${activeSurahMeta.name}`, currentQariObj.name)}
+                  onClick={() => playTrack(`https://cdn.islamic.network/quran/audio-surah/128/${selectedQari}/${selectedSurah}.mp3`, `Surah ${activeSurahMeta.name}`, currentQariObj.name)}
                 >
                   <i className="fas fa-play"></i> Play Full Surah ({currentQariObj.name.split(' ')[0]})
                 </button>
@@ -840,6 +843,8 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                   <div className="skeleton-line skeleton-shimmer"></div>
                   <div className="skeleton-line skeleton-shimmer" style={{ width: '70%' }}></div>
                 </div>
+              ) : surahError ? (
+                <p className="reader-error" role="alert">Unable to load this Surah. Check your connection and try selecting it again.</p>
               ) : (
                 /* Continuous Mushaf Flowing Text (Matching Image 3!) */
                 <div
@@ -925,6 +930,8 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                       </div>
                     ))}
                   </div>
+                ) : surahError ? (
+                  <p className="reader-error" role="alert">Unable to load this Surah. Check your connection and try selecting it again.</p>
                 ) : (
                   surahData && surahData.ayahs && surahData.ayahs.map((ayah, index) => {
                     const isLastRead = lastReadPosition && lastReadPosition.surahNumber === selectedSurah && lastReadPosition.ayahNumber === ayah.numberInSurah;

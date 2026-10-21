@@ -4262,6 +4262,23 @@ img {
 .btn-play:hover, .auth-btn.signup-btn:hover, .home-reading-action:hover { background: var(--primary-dark); color: #fff; }
 .auth-btn.login-btn { background: transparent; color: var(--primary-emerald); border: 1px solid var(--primary-emerald); }
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: none; box-shadow: var(--focus-ring); outline-offset: 2px; }
+
+/* Quran reader polish */
+.read-controls-card { border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm); }
+.reader-surah-arabic { margin: .2rem 0 0; color: var(--primary-emerald); font-size: 1.4rem; font-weight: 700; }
+.verse-by-verse-container > .card { overflow: hidden; border-radius: 16px; box-shadow: var(--shadow-sm); }
+.verse-block { padding: 1.4rem clamp(1rem, 3vw, 2rem); }
+.verse-block + .verse-block { margin-top: .7rem; border: 1px solid var(--border-color); border-radius: 14px; }
+.verse-actions { flex-wrap: wrap; gap: .45rem; }
+.verse-btn { width: 40px; height: 40px; flex: 0 0 40px; }
+.arabic-text-render { line-height: 2.15; }
+.reader-error { margin: 0; padding: 1rem; border: 1px solid #efb8b8; border-radius: 12px; background: #fff5f5; color: #8a2020; text-align: center; }
+@media (max-width: 640px) {
+  .read-controls-card { padding: 1rem !important; }
+  .verse-top-bar { align-items: flex-start; }
+  .verse-actions { width: 100%; }
+  .mushaf-page-container { padding: 1.25rem .8rem !important; }
+}
 @media (max-width: 1100px) { .nav-links.desktop-nav { display: none !important; } .mobile-toggle-btn { display: flex !important; } .desktop-lang-selector, .header-theme-selector, .desktop-auth-area, .search-wrapper.desktop-only { display: none !important; } .brand-text { font-size: .92rem; } }
 @media (max-width: 480px) { .brand-text { font-size: .82rem; } }
 
