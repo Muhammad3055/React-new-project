@@ -137,7 +137,7 @@ const HADITH_OF_THE_DAY_COLLECTION = [
 ];
 
 export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
@@ -682,92 +682,124 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         </div>
 
         {/* Interactive Islamic Tools & Services Section */}
+        {(() => {
+          const interactiveTools = [
+            {
+              id: 'asanNimaz',
+              icon: 'fas fa-mosque',
+              title: t('asanNimaz', 'Asan Nimaz'),
+              sub: (lang === 'ur' || lang === 'br') ? 'مکمل طریقہ و احکام' : lang === 'ar' ? 'طريقة الصلاة وأحكامها' : 'Step-by-Step Prayer',
+              accent: '#059669',
+              gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              glow: 'rgba(16, 185, 129, 0.35)',
+              badge: (lang === 'ur' || lang === 'br') ? 'اہم' : lang === 'ar' ? 'مهم' : 'Featured',
+              badgeBg: '#ecfdf5',
+              badgeColor: '#059669',
+              badgeBorder: '#a7f3d0'
+            },
+            {
+              id: 'read',
+              icon: 'fas fa-book-open',
+              title: t('readQuran', 'Read Quran'),
+              sub: (lang === 'ur' || lang === 'br') ? '114 سورتیں و تفسیر' : lang === 'ar' ? '١١٤ سورة وتفسير' : '114 Surahs & Tafseer',
+              accent: '#2563eb',
+              gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+              glow: 'rgba(37, 99, 235, 0.35)',
+            },
+            {
+              id: 'quran',
+              icon: 'fas fa-headphones',
+              title: t('mp3Audio', 'MP3 Recitations'),
+              sub: t('mp3RecitationsSub', '20 Qaris & Brahui MP3'),
+              accent: '#7c3aed',
+              gradient: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+              glow: 'rgba(124, 58, 237, 0.35)',
+            },
+            {
+              id: 'khatam',
+              icon: 'fas fa-chart-line',
+              title: t('khatam', 'Khatam Tracker'),
+              sub: t('khatamTrackerSub', '30-Day Quran Goal'),
+              accent: '#d97706',
+              gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              glow: 'rgba(217, 119, 6, 0.35)',
+            },
+            {
+              id: 'tasbeeh',
+              icon: 'fas fa-fingerprint',
+              title: t('tasbeeh', 'Digital Tasbeeh'),
+              sub: t('digitalTasbeehSub', 'Zikr & Counter'),
+              accent: '#e11d48',
+              gradient: 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)',
+              glow: 'rgba(225, 29, 72, 0.35)',
+            },
+            {
+              id: 'qibla',
+              icon: 'fas fa-compass',
+              title: t('qibla', 'Qibla Direction'),
+              sub: t('qiblaCompassSub', 'Kaaba Direction'),
+              accent: '#0891b2',
+              gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+              glow: 'rgba(8, 145, 178, 0.35)',
+            },
+            {
+              id: 'books',
+              icon: 'fas fa-book-reader',
+              title: t('books', 'Islamic Books'),
+              sub: t('pdfBooksSub', 'Authentic Library'),
+              accent: '#92400e',
+              gradient: 'linear-gradient(135deg, #b45309 0%, #78350f 100%)',
+              glow: 'rgba(180, 83, 9, 0.35)',
+            },
+          ];
 
-        <div style={{ marginTop: '1.75rem', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <i className="fas fa-tools" style={{ color: 'var(--accent-gold)' }}></i> {t('interactiveServices')}
-            </h3>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{t('interactiveSubtitle')}</span>
-          </div>
+          return (
+            <div style={{ marginTop: '1.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0 }}>
+                  <span style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', fontSize: '0.95rem' }}>
+                    <i className="fas fa-tools"></i>
+                  </span>
+                  <span>{t('interactiveServices')}</span>
+                </h3>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t('interactiveSubtitle')}</span>
+              </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '0.85rem'
-          }}>
-            <div 
-              onClick={() => handleNav('asanNimaz')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid #10b981', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)', color: '#fff', boxShadow: '0 4px 14px rgba(6,78,59,0.2)' }}
-            >
-              <i className="fas fa-mosque" style={{ fontSize: '1.7rem', color: '#fde68a', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: '#fde68a' }}>آسان نماز</h4>
-              <p style={{ fontSize: '0.72rem', color: '#d1fae5', margin: '0.25rem 0 0 0' }}>مکمل طریقہ و احکام</p>
+              <div className="interactive-tools-grid">
+                {interactiveTools.map((tool) => (
+                  <div
+                    key={tool.id}
+                    onClick={() => handleNav(tool.id)}
+                    className="interactive-tool-card"
+                    style={{
+                      '--tool-accent': tool.accent,
+                      '--tool-gradient': tool.gradient,
+                      '--tool-glow': tool.glow,
+                    }}
+                  >
+                    {tool.badge && (
+                      <span
+                        className="interactive-tool-badge"
+                        style={{
+                          background: tool.badgeBg,
+                          color: tool.badgeColor,
+                          border: `1px solid ${tool.badgeBorder}`,
+                        }}
+                      >
+                        {tool.badge}
+                      </span>
+                    )}
+                    <div className="interactive-tool-icon-wrap">
+                      <i className={tool.icon}></i>
+                    </div>
+                    <h4 className="interactive-tool-title">{tool.title}</h4>
+                    <p className="interactive-tool-sub">{tool.sub}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-
-            <div 
-              onClick={() => handleNav('read')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
-            >
-              <i className="fas fa-book-open" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('readQuran')}</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('readQuranSub')}</p>
-            </div>
-
-            <div 
-              onClick={() => handleNav('quran')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
-            >
-              <i className="fas fa-headphones" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('mp3Audio')}</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('mp3RecitationsSub')}</p>
-            </div>
-
-            <div 
-              onClick={() => handleNav('khatam')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
-            >
-              <i className="fas fa-chart-line" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('khatam')}</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('khatamTrackerSub')}</p>
-            </div>
-
-            <div 
-              onClick={() => handleNav('tasbeeh')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
-            >
-              <i className="fas fa-ring" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('tasbeeh')}</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('digitalTasbeehSub')}</p>
-            </div>
-
-            <div 
-              onClick={() => handleNav('qibla')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
-            >
-              <i className="fas fa-compass" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('qibla')}</h4>
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('qiblaCompassSub')}</p>
-            </div>
-
-            <div 
-              onClick={() => handleNav('books')}
-              className="card"
-              style={{ padding: '1.1rem 0.85rem', textAlign: 'center', cursor: 'pointer', border: '1.5px solid var(--accent-gold)', borderRadius: '18px', transition: 'all 0.25s ease', background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', color: '#fff' }}
-            >
-              <i className="fas fa-book-reader" style={{ fontSize: '1.7rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, color: 'var(--accent-gold)' }}>{t('books')}</h4>
-
-              <p style={{ fontSize: '0.72rem', color: '#cbd5e1', margin: '0.25rem 0 0 0' }}>{t('pdfBooksSub')}</p>
-            </div>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* Live Portal Stats Grid (Option 4 Styled) */}
 
