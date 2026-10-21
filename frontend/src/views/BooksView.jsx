@@ -412,80 +412,59 @@ export default function BooksView({ openReportModal, user }) {
         </h1>
       </div>
 
-      {/* Language Multi-Select Toggle Pill Bar */}
-      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <i className="fas fa-language" style={{ color: '#0284c7' }}></i> {t('filterByLang')}
+      <section className="library-filter-panel" aria-label={t('filterByLang')}>
+        <div className="library-filter-heading">
+          <span className="library-filter-heading-icon" aria-hidden="true"><i className="fas fa-language"></i></span>
+          <h2>{t('filterByLang')}</h2>
         </div>
-        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+        <div className="library-filter-options" role="group" aria-label={t('filterByLang')}>
           {languageOptions.map((opt) => {
             const isAll = opt.id === '';
             const isActive = isAll ? selectedLanguages.length === 0 : selectedLanguages.includes(opt.id);
             return (
               <button
+                type="button"
                 key={opt.id || 'all-lang'}
-                className="filter-pill-btn"
+                className={`library-filter-chip${isActive ? ' is-selected' : ''}`}
+                style={{ '--filter-accent': opt.color }}
+                aria-pressed={isActive}
                 onClick={() => toggleLanguage(opt.id)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '30px',
-                  border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
-                  background: isActive ? opt.color : '#ffffff',
-                  color: isActive ? '#ffffff' : '#334155',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isActive ? `0 4px 12px ${opt.color}40` : 'none',
-                }}
               >
-                <i className={isActive && !isAll ? 'fas fa-check-circle' : opt.icon}></i> {opt.label}
+                <span className="library-filter-chip-icon" aria-hidden="true"><i className={opt.icon}></i></span>
+                <span className="library-filter-chip-label">{opt.label}</span>
+                {isActive && <i className="fas fa-check-circle library-filter-chip-check" aria-hidden="true"></i>}
               </button>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      {/* Format Multi-Select Toggle Pill Bar */}
-      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <i className="fas fa-file-alt" style={{ color: '#059669' }}></i> {t('filterByFormat')}
+      <section className="library-filter-panel" aria-label={t('filterByFormat')}>
+        <div className="library-filter-heading">
+          <span className="library-filter-heading-icon" aria-hidden="true"><i className="fas fa-file-alt"></i></span>
+          <h2>{t('filterByFormat')}</h2>
         </div>
-        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+        <div className="library-filter-options" role="group" aria-label={t('filterByFormat')}>
           {fileTypeOptions.map((opt) => {
             const isAll = opt.id === '';
             const isActive = isAll ? selectedFileTypes.length === 0 : selectedFileTypes.includes(opt.id);
             return (
               <button
+                type="button"
                 key={opt.id || 'all-format'}
-                className="filter-pill-btn"
+                className={`library-filter-chip${isActive ? ' is-selected' : ''}`}
+                style={{ '--filter-accent': opt.color }}
+                aria-pressed={isActive}
                 onClick={() => toggleFileType(opt.id)}
-                style={{
-                  padding: '0.55rem 1.15rem',
-                  borderRadius: '30px',
-                  border: isActive ? `2px solid ${opt.color}` : '1px solid #cbd5e1',
-                  background: isActive ? opt.color : '#ffffff',
-                  color: isActive ? '#ffffff' : '#334155',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
-                  transition: 'all 0.2s ease-in-out'
-                }}
               >
-                <i className={isActive && !isAll ? 'fas fa-check-circle' : opt.icon} style={{ color: isActive ? '#ffffff' : opt.color }}></i>
-                {opt.label}
+                <span className="library-filter-chip-icon" aria-hidden="true"><i className={opt.icon}></i></span>
+                <span className="library-filter-chip-label">{opt.label}</span>
+                {isActive && <i className="fas fa-check-circle library-filter-chip-check" aria-hidden="true"></i>}
               </button>
             );
           })}
         </div>
-      </div>
+      </section>
 
       {/* Active Selection Summary Banner */}
       {(selectedLanguages.length > 0 || selectedFileTypes.length > 0 || selectedCategory || query) && (
