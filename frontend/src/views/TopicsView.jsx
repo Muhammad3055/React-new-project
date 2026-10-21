@@ -24,10 +24,10 @@ function canUseMediaUrl(url) {
 
 function TopicCard({ topic, onClick }) {
   const count = Object.values(topic.counts || {}).reduce((total, value) => total + value, 0);
-  return <button type="button" className="topic-card" onClick={onClick}>
+  return <a href={`/topics?topic=${encodeURIComponent(topic.slug)}`} className="topic-card" onClick={event => { if (!event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) { event.preventDefault(); onClick(); } }}>
     <span className="topic-card-icon"><i className="fas fa-mosque" aria-hidden="true" /></span>
     <span className="topic-card-body"><strong>{topic.title}</strong><small>{topic.description}</small><span>{count} {count === 1 ? 'resource' : 'resources'} <i className="fas fa-arrow-right" aria-hidden="true" /></span></span>
-  </button>;
+  </a>;
 }
 
 function ResourceCard({ item, kind, playTrack }) {
@@ -70,6 +70,10 @@ export default function TopicsView({ user, playTrack }) {
     setAdminTopics(data.results || []);
     setCsrfToken(data.csrf_token || '');
   };
+
+  useEffect(() => {
+    loadTopics().catch(err => setEditorNotice(`Topic navigation unavailable: ${err.message}`));
+  }, []);
 
   useEffect(() => {
     const onPopState = () => setActiveSlug(new URLSearchParams(window.location.search).get('topic') || '');
@@ -199,6 +203,7 @@ export default function TopicsView({ user, playTrack }) {
         {activeSlug ? <button type="button" className="topics-back" onClick={() => navigate('')}><i className="fas fa-arrow-left" aria-hidden="true" /> All topics</button> : <span className="topics-section-label">CURATED LIBRARY</span>}
         {isAdmin && <button type="button" className="topics-admin-button" onClick={() => openEditor(activeSlug ? detail : null)} disabled={Boolean(activeSlug && !detail)}><i className="fas fa-pen" aria-hidden="true" /> {activeSlug ? 'Edit this topic' : 'Create topic'}</button>}
       </div>
+      {topics.length > 0 && <nav className="topic-navigation" aria-label="Browse topics"><span>Browse topics</span><div>{topics.map(topic => <a key={topic.id} href={`/topics?topic=${encodeURIComponent(topic.slug)}`} aria-current={activeSlug === topic.slug ? 'page' : undefined} onClick={event => { if (!event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) { event.preventDefault(); navigate(topic.slug); } }}>{topic.title}</a>)}</div></nav>}
       {editorNotice && <div className="topics-notice" role="status">{editorNotice}</div>}
       {loading && <div className="topics-state" role="status">Loading topics…</div>}
       {!loading && error && <div className="topics-state topics-error" role="alert">{error}<button type="button" onClick={() => navigate('')}>View all topics</button></div>}
@@ -207,7 +212,7 @@ export default function TopicsView({ user, playTrack }) {
         {isAdmin && adminTopics.some(topic => !topic.is_published) && <section className="topics-drafts"><h2>Draft topics</h2><p>Only staff can see these until you publish them.</p><div>{adminTopics.filter(topic => !topic.is_published).map(topic => <button type="button" key={topic.id} onClick={() => openEditor(topic)}>{topic.title} <i className="fas fa-pen" /></button>)}</div></section>}
       </>}
       {!loading && !error && activeSlug && detail && <>
-        <div className="topics-detail-summary"><span className="topics-detail-symbol"><i className="fas fa-mosque" aria-hidden="true" /></span><div><strong>A curated collection</strong><p>These resources reuse the original library files. Nothing has been uploaded twice.</p></div></div>
+        <div className="topics-detail-summary"><span className="topics-detail-symbol"><i className="fas fa-mosque" aria-hidden="true" /></span><div><strong>A curated collection</strong><p>Explore recitations, lectures, books, and videos selected for this topic.</p></div></div>
         {mediaSections.map(section => {
           const items = detail.sections?.[section.key] || [];
           return items.length ? <section className="topics-resource-section" key={section.key}><div className="topics-resource-heading"><span><i className={`fas ${section.icon}`} aria-hidden="true" /> {section.label}</span><small>{items.length} {items.length === 1 ? 'item' : 'items'}</small></div><div className="topics-resource-list">{items.map(item => <ResourceCard key={item.id} item={item} kind={section.key} playTrack={playTrack} />)}</div></section> : null;

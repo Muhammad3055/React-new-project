@@ -1,3 +1,4 @@
+import ChatFormattedText from './ChatFormattedText';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Bot,
@@ -208,12 +209,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     const fileToSend = attachedFile;
     setAttachedFile(null);
     setIsLoading(true);
-    setAgentStep(fileToSend ? 'Reading file content...' : 'Analyzing intent...');
-
-    if (!fileToSend) {
-      setTimeout(() => setAgentStep('Searching Islamic knowledge base...'), 800);
-      setTimeout(() => setAgentStep('Synthesizing authentic answer...'), 1600);
-    }
+    setAgentStep(fileToSend ? 'Reading your file…' : 'Preparing your answer…');
 
     try {
       let data;
@@ -249,6 +245,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         id: Date.now() + 1,
         sender: 'ai',
         text: data.answer || 'I apologize, I could not process your request.',
+        references: data.references || [],
         intent: data.intent,
         language: data.language,
         quran: data.quran || [],
@@ -263,7 +260,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       setMessages((prev) => [...prev, aiMsg]);
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'Network connection issue.' }]);
+      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'Unable to get an answer. Please check your connection and try again.' }]);
     } finally {
       setIsLoading(false);
       setAgentStep('');
@@ -272,14 +269,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
   };
 
 
-  const renderFormattedText = (rawText) => {
-    if (!rawText) return null;
-    const html = String(rawText)
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color: #0066FF; text-decoration: underline;">$1</a>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br />');
-    return <span dangerouslySetInnerHTML={{ __html: html }} />;
-  };
+  const renderFormattedText = text => <ChatFormattedText text={text} />;
 
   if (!isOpen) return null;
 
@@ -299,7 +289,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             </h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#059669' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669' }} />
-              Online
+              Ask about your library
             </div>
           </div>
         </div>
@@ -353,7 +343,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                     borderRadius: '12px', cursor: 'pointer', textAlign: 'left',
                     transition: 'all 0.2s', color: '#334155', fontSize: '14px', fontWeight: 500
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.borderColor = '#0066FF'}
+                  onMouseOver={(e) => e.currentTarget.style.borderColor = '#176141'}
                   onMouseOut={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -373,7 +363,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
               <div style={{
                 maxWidth: '85%', padding: '12px 16px', fontSize: '14px', lineHeight: '1.5',
                 borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                background: msg.sender === 'user' ? '#0066FF' : '#ffffff',
+                background: msg.sender === 'user' ? '#176141' : '#ffffff',
                 color: msg.sender === 'user' ? '#ffffff' : '#1e293b',
                 boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: msg.sender === 'ai' ? '1px solid #f1f5f9' : 'none'
               }}>
@@ -393,7 +383,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
 
                 {msg.sender === 'ai' && (
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '8px', color: '#0066FF', fontWeight: 600 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '8px', color: '#176141', fontWeight: 600 }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Sparkles size={14} /> AI Agent
                     </span>
@@ -409,7 +399,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                         borderRadius: '4px',
                         transition: 'all 0.2s'
                       }}
-                      onMouseOver={(e) => e.currentTarget.style.color = '#0066FF'}
+                      onMouseOver={(e) => e.currentTarget.style.color = '#176141'}
                       onMouseOut={(e) => e.currentTarget.style.color = '#94a3b8'}
                       title="Read response aloud"
                     >
@@ -418,6 +408,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                   </div>
                 )}
                 {renderFormattedText(msg.text)}
+                {msg.references?.length > 0 && <div className="chat-references"><strong>Sources</strong>{msg.references.map((ref, index) => typeof ref === 'object' && /^https?:\/\//i.test(ref?.url || '') ? <a key={index} href={ref.url} target="_blank" rel="noopener noreferrer">{ref.title || ref.url}</a> : <span key={index}>{typeof ref === 'string' ? ref : ref?.title}</span>)}</div>}
 
                 {/* File analysis success tag */}
                 {msg.file_analysis && (
@@ -491,9 +482,9 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
             <div style={{ padding: '12px 16px', background: '#ffffff', borderRadius: '16px 16px 16px 4px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="lyro-dots" style={{ display: 'flex', gap: '4px' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0066FF', animation: 'bounce 1.4s infinite ease-in-out both' }} />
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0066FF', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.2s' }} />
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0066FF', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.4s' }} />
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both' }} />
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.2s' }} />
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.4s' }} />
               </div>
               <span style={{ fontSize: '12px', color: '#64748b', marginLeft: '4px' }}>{agentStep}</span>
             </div>
@@ -534,7 +525,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       <div style={{ padding: '16px', background: '#ffffff', borderTop: '1px solid #f1f5f9' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '8px 16px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
           {/* File select paperclip button */}
-          <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: attachedFile ? '#0066FF' : '#94a3b8', cursor: 'pointer', display: 'flex', padding: '4px' }} title="Attach image or PDF (max 30MB)">
+          <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: attachedFile ? '#176141' : '#94a3b8', cursor: 'pointer', display: 'flex', padding: '4px' }} title="Attach image or PDF (max 30MB)">
             <Paperclip size={20} />
           </button>
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" style={{ display: 'none' }} onChange={handleFileSelect} />
@@ -543,6 +534,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
           </button>
           <input
+            aria-label="Your message"
             type="text"
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
@@ -555,13 +547,13 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             onClick={() => handleSend()}
             disabled={(!inputPrompt.trim() && !attachedFile) || isLoading}
             style={{
-              background: (inputPrompt.trim() || attachedFile) ? '#0066FF' : '#e2e8f0', color: '#fff',
+              background: (inputPrompt.trim() || attachedFile) ? '#176141' : '#e2e8f0', color: '#fff',
               border: 'none', borderRadius: '50%', width: '32px', height: '32px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (inputPrompt.trim() || attachedFile) ? 'pointer' : 'default',
               transition: 'background 0.2s'
             }}
           >
-            <Send size={14} style={{ marginLeft: '2px' }} />
+            <Send aria-label="Send message" size={14} style={{ marginLeft: '2px' }} />
           </button>
         </div>
         <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>

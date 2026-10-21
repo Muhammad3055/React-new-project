@@ -506,10 +506,11 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       }}
     >
       <div
-        className="modal-card auth-modal-card"
+        className={`modal-card auth-modal-card auth-redesign ${isDarkMode ? 'auth-dark' : ''}`}
+        role="dialog" aria-modal="true" aria-label={mode === 'signup' ? 'Create account' : 'Sign in'}
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxWidth: '450px',
+          maxWidth: '490px',
           width: '92%',
           maxHeight: '94vh',
           overflowY: 'auto',
@@ -524,7 +525,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
       >
         {/* Clean Light Header with Gold branding */}
         <div style={{ background: '#fdfbf7', padding: '1.4rem 1.5rem 1.2rem 1.5rem', position: 'relative', borderBottom: '1.5px solid #e7e5e4' }}>
-          
+
           {/* Top Bar: Language Selector & Theme Toggle & Close */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
             <div style={{ display: 'flex', gap: '6px', background: '#f5f5f4', padding: '3px', borderRadius: '10px', border: '1px solid #e7e5e4' }}>
@@ -651,7 +652,8 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         </div>
 
         {/* Modal Body */}
-        <div style={{ padding: '1.4rem 1.5rem', background: '#ffffff', color: '#1c1917' }}>
+        <div className="auth-form-body" style={{ padding: '1.4rem 1.5rem', background: '#ffffff', color: '#1c1917' }}>
+          {step === 'input' && <div className="auth-welcome"><span>YOUR PERSONAL ISLAMIC LIBRARY</span><h2>{mode === 'signup' ? t('createAccountBtn', 'Create Account') : mode === 'forgot_password' ? t('resetPassword', 'Reset your password') : t('welcomeBack', 'Welcome back')}</h2><p>{mode === 'signup' ? 'Save what inspires you. Continue learning every day.' : 'Continue your journey of reading, listening, and learning.'}</p></div>}
 
           {/* ===== OTP VERIFICATION SCREEN ===== */}
           {step === 'otp' ? (
