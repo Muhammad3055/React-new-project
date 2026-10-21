@@ -158,7 +158,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   const [bookmarks, setBookmarks] = useState({});
   const [surahFilter, setSurahFilter] = useState('');
   const [theme, setTheme] = useState('light'); // 'light' | 'sepia' | 'dark' | 'custom'
-  const [readerBgColor, setReaderBgColor] = useState('#ffffff');
+  const [readerBgColor, setReaderBgColor] = useState('#f6efdf');
 
   // Reading Time Counter & Tadabbur Reflection Note State
   const [readingSeconds, setReadingSeconds] = useState(0);
@@ -203,7 +203,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   const handleSetTheme = (newTheme) => {
     setTheme(newTheme);
     if (newTheme === 'light') {
-      setReaderBgColor('#ffffff');
+      setReaderBgColor('#f6efdf');
       setTranslationTextColor('#000000');
       setArabicTextColor('#000000');
     } else if (newTheme === 'sepia') {
@@ -518,7 +518,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
   });
 
   const themeStyles = {
-    light: { background: '#ffffff', color: '#1e293b', border: '1px solid #e2e8f0' },
+    light: { background: 'var(--surface-paper)', color: '#1e293b', border: '1px solid #e2e8f0' },
     sepia: { background: '#fbf0d9', color: '#432818', border: '1px solid #e9d5a1' },
     dark: { background: '#0f172a', color: '#f8fafc', border: '1px solid #1e293b' }
   };
@@ -651,7 +651,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                   fontSize: '0.7rem',
                   fontWeight: 600,
                   border: '1px solid #cbd5e1',
-                  background: topicFilter === t ? 'var(--accent-gold)' : '#ffffff',
+                  background: topicFilter === t ? 'var(--accent-gold)' : 'var(--surface-paper)',
                   color: topicFilter === t ? 'var(--primary-dark)' : '#475569',
                   cursor: 'pointer',
                   textTransform: 'capitalize'
@@ -726,7 +726,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>{t('theme', 'Theme')}:</span>
                 <button
                   onClick={() => handleSetTheme('light')}
-                  style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'light' ? '#ffffff' : 'transparent', color: '#1e293b', cursor: 'pointer' }}
+                  style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: theme === 'light' ? 'var(--surface-paper)' : 'transparent', color: '#1e293b', cursor: 'pointer' }}
                 >{t('themeLight', 'Light')}</button>
                 <button
                   onClick={() => handleSetTheme('sepia')}

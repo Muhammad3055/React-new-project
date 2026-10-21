@@ -234,7 +234,7 @@ export default function MuhasabaView() {
           
           {/* Column 1: Today's Interactive Checklist */}
           <div style={{
-            background: '#ffffff', borderRadius: '20px', padding: '1.75rem',
+            background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.75rem',
             border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
@@ -325,7 +325,7 @@ export default function MuhasabaView() {
 
             {/* 30-Day Activity Heatmap */}
             <div style={{
-              background: '#ffffff', borderRadius: '20px', padding: '1.75rem',
+              background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.75rem',
               border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
             }}>
               <h3 style={{ margin: '0 0 6px', fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
@@ -372,7 +372,7 @@ export default function MuhasabaView() {
 
             {/* Spiritual Achievement Badges */}
             <div style={{
-              background: '#ffffff', borderRadius: '20px', padding: '1.75rem',
+              background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.75rem',
               border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
             }}>
               <h3 style={{ margin: '0 0 1rem', fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>

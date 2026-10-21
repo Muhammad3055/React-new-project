@@ -604,7 +604,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           <div style={{
             fontSize: '0.75rem',
             fontWeight: 800,
-            background: '#ffffff',
+            background: 'var(--surface-paper)',
             color: '#065f46',
             padding: '5px 10px',
             borderRadius: '10px',

@@ -62,7 +62,7 @@ export default function QuranWordsView() {
         <div
           onClick={() => setIsFlipped(!isFlipped)}
           style={{
-            background: isFlipped ? '#0f172a' : '#ffffff',
+            background: isFlipped ? '#0f172a' : 'var(--surface-paper)',
             color: isFlipped ? '#ffffff' : '#0f172a',
             borderRadius: '24px', padding: '3.5rem 2rem',
             border: isFlipped ? '2px solid #38bdf8' : '2px solid #f59e0b',

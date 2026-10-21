@@ -254,7 +254,7 @@ export default function WorldClockView() {
         </div>
 
         {/* ── Add Custom City Form ── */}
-        <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', marginBottom: '2.5rem' }}>
+        <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', marginBottom: '2.5rem' }}>
           <h3 style={{ margin: '0 0 1rem', fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Plus size={18} style={{ color: '#059669' }} /> {t('addCity', 'Add Any World City & Country')}
           </h3>
@@ -304,7 +304,7 @@ export default function WorldClockView() {
                 <div
                   key={key}
                   style={{
-                    background: isHoly ? 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)' : '#ffffff',
+                    background: isHoly ? 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)' : 'var(--surface-paper)',
                     color: isHoly ? '#ffffff' : '#0f172a',
                     borderRadius: '20px', padding: '1.5rem',
                     border: isHoly ? '2px solid #f59e0b' : '1px solid #e2e8f0',
@@ -355,7 +355,7 @@ export default function WorldClockView() {
         </div>
 
         {/* ── Section: Islamic Daily Todo Checklist Manager ── */}
-        <div style={{ background: '#ffffff', borderRadius: '24px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)' }}>
+        <div style={{ background: 'var(--surface-paper)', borderRadius: '24px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

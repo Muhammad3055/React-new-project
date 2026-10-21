@@ -363,7 +363,7 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
       <div 
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: '#ffffff', borderRadius: '24px', width: '100%',
+          background: 'var(--surface-paper)', borderRadius: '24px', width: '100%',
           maxWidth: '680px', boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
           overflow: 'hidden', border: '2px solid var(--accent-gold, #f59e0b)',
           direction: isRtl ? 'rtl' : 'ltr', animation: 'scaleUp 0.15s ease-out'
@@ -411,7 +411,7 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
         {/* ── Category Filter Pills ── */}
         <div style={{
           padding: '0.6rem 1.25rem', borderBottom: '1px solid #f1f5f9',
-          display: 'flex', gap: '0.4rem', overflowX: 'auto', background: '#ffffff'
+          display: 'flex', gap: '0.4rem', overflowX: 'auto', background: 'var(--surface-paper)'
         }}>
           {[
             { id: 'all', label: lang === 'ar' ? 'الكل' : (lang === 'ur' || lang === 'br') ? 'تمام' : 'All' },

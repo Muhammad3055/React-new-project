@@ -609,7 +609,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
               width: isFullscreen ? '100vw' : '100%',
               maxWidth: isFullscreen ? '100vw' : '1150px',
               height: isFullscreen ? '100vh' : '94vh',
-              background: '#ffffff',
+              background: 'var(--surface-paper)',
               borderRadius: isFullscreen ? 0 : '12px',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
               display: 'flex',
@@ -671,7 +671,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
                 key={`${viewerEngine}_${docViewer.url}`}
                 src={getViewerUrl(docViewer)}
                 title={docViewer.title || 'Document Reader'}
-                style={{ border: 'none', width: '100%', height: '100%', background: '#ffffff' }}
+                style={{ border: 'none', width: '100%', height: '100%', background: 'var(--surface-paper)' }}
                 allowFullScreen
               />
             </div>

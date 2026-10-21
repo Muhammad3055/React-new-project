@@ -304,7 +304,7 @@ export default function QadaView({ navigateToTab }) {
 
             {/* Quick Batch Actions & Pace Selector */}
             <div style={{
-              background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
+              background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem',
               border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
               marginBottom: '2rem', display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem'
@@ -373,7 +373,7 @@ export default function QadaView({ navigateToTab }) {
                   <div
                     key={prayer.key}
                     style={{
-                      background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
+                      background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem',
                       border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
                       display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                     }}
@@ -465,7 +465,7 @@ export default function QadaView({ navigateToTab }) {
 
             {/* Ramadan Missed Fasts (Roza) Card */}
             <div style={{
-              background: '#ffffff', borderRadius: '20px', padding: '1.75rem',
+              background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.75rem',
               border: '2px solid #f59e0b', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
               marginBottom: '2rem', display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem'
@@ -559,7 +559,7 @@ export default function QadaView({ navigateToTab }) {
         {activeTab === 'calculator' && (
           <div style={{ maxWidth: '750px', margin: '0 auto' }}>
             <div style={{
-              background: '#ffffff', borderRadius: '24px', padding: '2.5rem 2rem',
+              background: 'var(--surface-paper)', borderRadius: '24px', padding: '2.5rem 2rem',
               border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)'
             }}>
               <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -685,7 +685,7 @@ export default function QadaView({ navigateToTab }) {
         {activeTab === 'fiqh' && (
           <div style={{ maxWidth: '850px', margin: '0 auto' }}>
             <div style={{
-              background: '#ffffff', borderRadius: '24px', padding: '2.5rem 2rem',
+              background: 'var(--surface-paper)', borderRadius: '24px', padding: '2.5rem 2rem',
               border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)'
             }}>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#064e3b', marginBottom: '1.25rem', borderBottom: '2px solid #f1f5f9', paddingBottom: '0.75rem' }}>
@@ -859,7 +859,7 @@ const inputStyle = {
   border: '1.5px solid #cbd5e1',
   outline: 'none',
   fontSize: '0.9rem',
-  background: '#ffffff',
+  background: 'var(--surface-paper)',
   boxSizing: 'border-box'
 };
 
@@ -872,7 +872,7 @@ const labelStyle = {
 };
 
 const statCardStyle = {
-  background: '#ffffff',
+  background: 'var(--surface-paper)',
   borderRadius: '20px',
   padding: '1.5rem',
   border: '1px solid #e2e8f0',

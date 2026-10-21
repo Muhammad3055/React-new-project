@@ -392,7 +392,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
             key={dua.id}
             className="prayer-dua-card"
             style={{
-              background: '#ffffff',
+              background: 'var(--surface-paper)',
               border: '2px solid #059669',
               borderRadius: '18px',
               padding: '1.1rem 1.25rem',
@@ -493,7 +493,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                   <i className="fas fa-star" style={{ color: '#d97706' }}></i> فضیلت اور مسنون وجہ (Why to Recite & Hadith Reference)
                 </span>
 
-                <span style={{ background: '#ffffff', color: '#78350f', border: '1px solid #fde68a', padding: '3px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800 }}>
+                <span style={{ background: 'var(--surface-paper)', color: '#78350f', border: '1px solid #fde68a', padding: '3px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800 }}>
                   📚 {dua.hadithRef}
                 </span>
               </div>
@@ -550,7 +550,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                     type="button"
                     onClick={handleCopyTasbeeh}
                     style={{
-                      background: copiedId === 'tasbeeh_full' ? '#10b981' : '#ffffff',
+                      background: copiedId === 'tasbeeh_full' ? '#10b981' : 'var(--surface-paper)',
                       color: copiedId === 'tasbeeh_full' ? '#ffffff' : '#065f46',
                       border: '1px solid #a7f3d0',
                       padding: '5px 12px',
@@ -573,7 +573,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                       type="button"
                       onClick={resetAllTasbeeh}
                       style={{
-                        background: '#ffffff',
+                        background: 'var(--surface-paper)',
                         color: '#dc2626',
                         border: '1px solid #fecaca',
                         padding: '5px 12px',
@@ -594,7 +594,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
               </div>
 
               {/* Overall Progress Meter */}
-              <div className="tasbeeh-progress" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.5rem 0.75rem', marginBottom: '0.65rem' }}>
+              <div className="tasbeeh-progress" style={{ background: 'var(--surface-paper)', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.5rem 0.75rem', marginBottom: '0.65rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.82rem', fontWeight: 800 }}>
                   <span style={{ color: isTasbeehComplete ? '#059669' : '#334155' }}>
                     {isTasbeehComplete ? '🎉 ماشاء اللہ! ۹۹ مرتبہ تسبیح مکمل ہو گئی' : 'مجموعی تسبیح کاؤنٹر:'}
@@ -633,7 +633,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                       key={item.id}
                       className={`post-prayer-counter-card${isItemDone ? ' is-complete' : ''}`}
                       style={{
-                        background: isItemDone ? item.bgLight : '#ffffff',
+                        background: isItemDone ? item.bgLight : 'var(--surface-paper)',
                         border: `2px solid ${isItemDone ? item.badgeColor : item.borderLight}`,
                         borderRadius: '13px',
                         padding: '0.7rem 0.8rem',
@@ -756,7 +756,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
               <div
                 className={`tasbeeh-completion${isTasbeehComplete ? ' is-complete' : ''}`}
                 style={{
-                  background: isTasbeehComplete ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : '#ffffff',
+                  background: isTasbeehComplete ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : 'var(--surface-paper)',
                   border: `2px dashed ${isTasbeehComplete ? '#d97706' : '#94a3b8'}`,
                   borderRadius: '14px',
                   padding: '0.8rem 1rem',
@@ -765,7 +765,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                   transition: 'all 0.3s ease'
                 }}
               >
-                <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '0.4rem', background: '#ffffff', color: '#92400e', border: '1px solid #fde68a', padding: '3px 12px', borderRadius: '12px', fontSize: '0.78rem', fontWeight: 800, marginBottom: '0.4rem' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '0.4rem', background: 'var(--surface-paper)', color: '#92400e', border: '1px solid #fde68a', padding: '3px 12px', borderRadius: '12px', fontSize: '0.78rem', fontWeight: 800, marginBottom: '0.4rem' }}>
                   <span>✨ سوواں (100) کلمہ برائے تکمیلِ تسبیح</span>
                   {isTasbeehComplete && <span style={{ color: '#059669', fontWeight: 900 }}>• اب یہ کلمہ پڑھیں!</span>}
                 </div>

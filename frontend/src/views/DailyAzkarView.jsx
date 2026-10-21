@@ -93,7 +93,7 @@ export default function DailyAzkarView() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {azkarSections.map((section) => (
             <div key={section.id} id={section.id} style={{
-              background: '#ffffff', borderRadius: '20px', padding: '2rem',
+              background: 'var(--surface-paper)', borderRadius: '20px', padding: '2rem',
               border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', borderBottom: '2px solid #f1f5f9', paddingBottom: '1rem' }}>

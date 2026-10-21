@@ -195,7 +195,7 @@ export default function TafseerView({ openReportModal, user }) {
           ))}
 
           {tafseers.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#ffffff', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
+            <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
               <i className="fas fa-info-circle fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
                 {t('tafseerComingSoon', 'Tafseer Ibn Kathir text commentary is currently being compiled and verified, and will be uploaded soon.')}

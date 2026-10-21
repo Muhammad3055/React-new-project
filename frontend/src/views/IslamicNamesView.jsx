@@ -52,7 +52,7 @@ export default function IslamicNamesView() {
 
         {/* ── Filter Bar ── */}
         <div style={{
-          background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
+          background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem',
           border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
           marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem'
         }}>
@@ -125,7 +125,7 @@ export default function IslamicNamesView() {
               <div
                 key={idx}
                 style={{
-                  background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
+                  background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem',
                   border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
                   display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
                 }}

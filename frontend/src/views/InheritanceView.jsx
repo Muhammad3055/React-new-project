@@ -244,7 +244,7 @@ export default function InheritanceView() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
               {/* Estate Value & Deceased Gender */}
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+              <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
                 <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('netEstateDeceasedInfo', 'Net Estate & Deceased Details')}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div>
@@ -280,7 +280,7 @@ export default function InheritanceView() {
               </div>
 
               {/* Surviving Family Heirs */}
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+              <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
                 <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('survivingLegalHeirs', 'Surviving Primary Legal Heirs')}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div style={heirRowStyle}>
@@ -606,7 +606,7 @@ export default function InheritanceView() {
                   <div
                     id="printable-wasiyyah-document"
                     style={{
-                      background: '#ffffff', borderRadius: '18px', padding: '2.5rem 2rem',
+                      background: 'var(--surface-paper)', borderRadius: '18px', padding: '2.5rem 2rem',
                       border: '3px double #d97706', boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
                       color: '#0f172a', fontFamily: 'serif', lineHeight: 1.6, maxHeight: '80vh', overflowY: 'auto',
                       direction: (lang === 'ar' || lang === 'ur' || lang === 'br') ? 'rtl' : 'ltr',
@@ -792,7 +792,7 @@ const inputStyle = {
   border: '1.5px solid #cbd5e1',
   outline: 'none',
   fontSize: '0.9rem',
-  background: '#ffffff',
+  background: 'var(--surface-paper)',
   boxSizing: 'border-box'
 };
 
@@ -815,7 +815,7 @@ const sectionTitleStyle = {
 };
 
 const cardStyle = {
-  background: '#ffffff',
+  background: 'var(--surface-paper)',
   borderRadius: '20px',
   padding: '1.5rem',
   border: '1px solid #e2e8f0',

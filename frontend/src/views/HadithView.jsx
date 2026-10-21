@@ -115,7 +115,7 @@ export default function HadithView({ openReportModal, user }) {
               padding: '0.55rem 1.15rem',
               borderRadius: '25px',
               border: selectedGrade === g.value ? '2px solid var(--accent-gold)' : '1.5px solid #cbd5e1',
-              background: selectedGrade === g.value ? 'rgba(245, 158, 11, 0.2)' : '#ffffff',
+              background: selectedGrade === g.value ? 'rgba(245, 158, 11, 0.2)' : 'var(--surface-paper)',
               color: selectedGrade === g.value ? '#b45309' : '#000000',
               fontWeight: 700,
               fontSize: '0.9rem',

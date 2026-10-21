@@ -196,7 +196,7 @@ export default function QiblaView() {
           style={{
             padding: '2rem 1.5rem',
             textAlign: 'center',
-            background: '#ffffff',
+            background: 'var(--surface-paper)',
             borderRadius: '24px',
             border: '2px solid var(--border-color)',
             boxShadow: '0 12px 35px rgba(0,0,0,0.06)',
@@ -272,7 +272,7 @@ export default function QiblaView() {
                 {typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function' && permissionState === 'prompt' && (
                   <button
                     onClick={requestOrientationPermission}
-                    style={{ padding: '0.4rem 0.9rem', borderRadius: '16px', background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
+                    style={{ padding: '0.4rem 0.9rem', borderRadius: '16px', background: 'var(--surface-paper)', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
                   >
                     <i className="fas fa-compass"></i> {t('enableMobileSensor', 'Enable Mobile Live Sensor')}
                   </button>
@@ -285,7 +285,7 @@ export default function QiblaView() {
         {/* Location & Controls Card */}
         <div>
           {/* Current Location Badge */}
-          <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1rem', background: '#ffffff', borderRadius: '20px', border: '1.5px solid var(--border-color)' }}>
+          <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1.5px solid var(--border-color)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <i className="fas fa-map-marker-alt" style={{ color: 'var(--accent-gold)', fontSize: '1.2rem' }}></i>
@@ -296,7 +296,7 @@ export default function QiblaView() {
               <button
                 onClick={requestGpsLocation}
                 disabled={loadingLoc}
-                style={{ padding: '0.35rem 0.75rem', borderRadius: '14px', background: '#ffffff', border: '1.5px solid var(--accent-gold)', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
+                style={{ padding: '0.35rem 0.75rem', borderRadius: '14px', background: 'var(--surface-paper)', border: '1.5px solid var(--accent-gold)', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
               >
                 {loadingLoc ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-crosshairs"></i> {t('gpsDetect', 'GPS Detect')}</>}
               </button>
@@ -320,7 +320,7 @@ export default function QiblaView() {
           </div>
 
           {/* Manual City Selector */}
-          <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1rem', background: '#ffffff', borderRadius: '20px', border: '1.5px solid var(--border-color)' }}>
+          <div className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '1rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1.5px solid var(--border-color)' }}>
             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: '#1c1917', marginBottom: '0.5rem' }}>
               <i className="fas fa-city" style={{ color: 'var(--accent-gold)', marginRight: '0.35rem' }}></i>
               {t('selectCity', 'Select City Manually')}
@@ -328,7 +328,7 @@ export default function QiblaView() {
             <select
               value={manualCity}
               onChange={(e) => handleCitySelect(e.target.value)}
-              style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1.5px solid #d1d5db', fontSize: '0.88rem', background: '#ffffff', color: '#1c1917', fontWeight: 600, outline: 'none' }}
+              style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1.5px solid #d1d5db', fontSize: '0.88rem', background: 'var(--surface-paper)', color: '#1c1917', fontWeight: 600, outline: 'none' }}
             >
               <option value="">{t('choosePresetCity', '-- Choose Preset City --')}</option>
               {PRESET_CITIES.map((c) => (
@@ -338,7 +338,7 @@ export default function QiblaView() {
           </div>
 
           {/* Custom Latitude & Longitude Input Form */}
-          <div className="card" style={{ padding: '1.25rem 1.5rem', background: '#ffffff', borderRadius: '20px', border: '1.5px solid var(--border-color)' }}>
+          <div className="card" style={{ padding: '1.25rem 1.5rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1.5px solid var(--border-color)' }}>
             <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', fontWeight: 800, color: '#1c1917' }}>
               <i className="fas fa-sliders-h" style={{ color: 'var(--accent-gold)', marginRight: '0.35rem' }}></i>
               {t('customCoordinates', 'Enter Custom Latitude & Longitude')}
@@ -362,7 +362,7 @@ export default function QiblaView() {
               />
               <button
                 type="submit"
-                style={{ padding: '0.55rem 1rem', borderRadius: '10px', border: '2px solid var(--accent-gold)', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
+                style={{ padding: '0.55rem 1rem', borderRadius: '10px', border: '2px solid var(--accent-gold)', background: 'var(--surface-paper)', color: 'var(--accent-gold)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
               >
                 {t('apply', 'Apply')}
               </button>

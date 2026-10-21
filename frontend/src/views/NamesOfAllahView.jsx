@@ -156,7 +156,7 @@ export default function NamesOfAllahView() {
       {/* Grid of 99 Names */}
       <div className="grid-3">
         {filteredNames.slice(0, search ? filteredNames.length : visibleCount).map((name) => (
-          <div key={name.number} className="card" style={{ padding: '1.35rem', position: 'relative', background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div key={name.number} className="card" style={{ padding: '1.35rem', position: 'relative', background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span className="surah-number-badge" style={{ width: '34px', height: '34px', fontSize: '0.85rem' }}>
@@ -209,7 +209,7 @@ export default function NamesOfAllahView() {
               padding: '0.75rem 2rem',
               borderRadius: '25px',
               border: '2px solid var(--accent-gold)',
-              background: '#ffffff',
+              background: 'var(--surface-paper)',
               color: 'var(--accent-gold)',
               fontWeight: 800,
               fontSize: '0.92rem',

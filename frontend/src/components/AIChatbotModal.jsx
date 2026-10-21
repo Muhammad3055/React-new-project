@@ -231,7 +231,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
     <div className="ai-chatbot-container">
       {/* Header */}
       <div style={{
-        padding: '16px', background: '#ffffff', borderBottom: '1px solid #f1f5f9',
+        padding: '16px', background: 'var(--surface-paper)', borderBottom: '1px solid #f1f5f9',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
       }}>
@@ -293,7 +293,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
                   onClick={() => handleSend(q.prompt)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '12px 16px', background: '#ffffff', border: '1px solid #e2e8f0',
+                    padding: '12px 16px', background: 'var(--surface-paper)', border: '1px solid #e2e8f0',
                     borderRadius: '12px', cursor: 'pointer', textAlign: 'left',
                     transition: 'all 0.2s', color: '#334155', fontSize: '14px', fontWeight: 500
                   }}
@@ -317,7 +317,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
               <div style={{
                 maxWidth: '85%', padding: '12px 16px', fontSize: '14px', lineHeight: '1.5',
                 borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                background: msg.sender === 'user' ? '#176141' : '#ffffff',
+                background: msg.sender === 'user' ? '#176141' : 'var(--surface-paper)',
                 color: msg.sender === 'user' ? '#ffffff' : '#1e293b',
                 boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: msg.sender === 'ai' ? '1px solid #f1f5f9' : 'none'
               }}>
@@ -435,7 +435,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
         
         {isLoading && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-            <div style={{ padding: '12px 16px', background: '#ffffff', borderRadius: '16px 16px 16px 4px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ padding: '12px 16px', background: 'var(--surface-paper)', borderRadius: '16px 16px 16px 4px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="lyro-dots" style={{ display: 'flex', gap: '4px' }}>
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both' }} />
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.2s' }} />
@@ -478,7 +478,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
 
       {(voiceStatus || voiceError) && <div className={`chat-voice-status ${voiceError ? 'chat-voice-error' : ''}`} role={voiceError ? 'alert' : 'status'} aria-live="polite">{voiceError || voiceStatus}</div>}
       {/* Input Area */}
-      <div style={{ padding: '16px', background: '#ffffff', borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ padding: '16px', background: 'var(--surface-paper)', borderTop: '1px solid #f1f5f9' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '8px 16px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
           {/* File select paperclip button */}
           <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: attachedFile ? '#176141' : '#94a3b8', cursor: 'pointer', display: 'flex', padding: '4px' }} title="Attach image or PDF (max 30MB)">

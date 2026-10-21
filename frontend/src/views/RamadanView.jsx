@@ -44,7 +44,7 @@ export default function RamadanView() {
         </div>
 
         {/* ── 30-Day Ramadan Fasting Tracker Grid ── */}
-        <div style={{ background: '#ffffff', borderRadius: '24px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', marginBottom: '3rem' }}>
+        <div style={{ background: 'var(--surface-paper)', borderRadius: '24px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', marginBottom: '3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>{t('dayFastingProgress')}</h2>
@@ -82,7 +82,7 @@ export default function RamadanView() {
         {/* ── Ramadan Duas Section ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
           {ramadanDuas.map((dua, idx) => (
-            <div key={idx} style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+            <div key={idx} style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase' }}>{t('authenticSupplication')}</span>
               <h3 style={{ margin: '0.3rem 0 0.75rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{dua.title}</h3>
               <div style={{ fontSize: '1.35rem', fontWeight: 700, fontFamily: 'Amiri, serif', color: '#022c22', textAlign: 'right', marginBottom: '0.75rem', lineHeight: 1.8 }}>

@@ -117,7 +117,7 @@ export default function TajweedView() {
               key={rule.id}
               onClick={() => setSelectedRule(rule.id)}
               style={{
-                background: selectedRule === rule.id ? rule.color : '#ffffff',
+                background: selectedRule === rule.id ? rule.color : 'var(--surface-paper)',
                 color: selectedRule === rule.id ? '#ffffff' : '#1e293b',
                 borderRadius: '16px', padding: '1rem', border: '1px solid #e2e8f0',
                 boxShadow: selectedRule === rule.id ? `0 8px 20px ${rule.color}40` : '0 2px 8px rgba(0,0,0,0.03)',
@@ -132,7 +132,7 @@ export default function TajweedView() {
 
         {/* ── Selected Rule Detail Section ── */}
         <div style={{
-          background: '#ffffff', borderRadius: '24px', padding: '2rem',
+          background: 'var(--surface-paper)', borderRadius: '24px', padding: '2rem',
           border: `2px solid ${currentRuleObj.color}`, boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
           marginBottom: '3rem'
         }}>

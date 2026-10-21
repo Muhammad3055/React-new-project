@@ -117,7 +117,7 @@ export default function ImagesView({ user }) {
               borderRadius: '50px',
               border: '1px solid',
               borderColor: selectedCategory === cat.id ? 'var(--primary-dark)' : '#e2e8f0',
-              background: selectedCategory === cat.id ? 'var(--primary-dark)' : '#ffffff',
+              background: selectedCategory === cat.id ? 'var(--primary-dark)' : 'var(--surface-paper)',
               color: selectedCategory === cat.id ? '#ffffff' : '#64748b',
               fontWeight: 600,
               fontSize: '0.95rem',
@@ -146,7 +146,7 @@ export default function ImagesView({ user }) {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
           {images.map(img => (
-            <div key={img.id} style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', transition: 'transform 0.2s', display: 'flex', flexDirection: 'column' }}>
+            <div key={img.id} style={{ background: 'var(--surface-paper)', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', transition: 'transform 0.2s', display: 'flex', flexDirection: 'column' }}>
               <div 
                 style={{ height: '220px', position: 'relative', background: '#f1f5f9', cursor: 'pointer' }}
                 onClick={() => setPreviewImage(img.image_url)}
@@ -206,7 +206,7 @@ export default function ImagesView({ user }) {
       {/* Admin Upload Modal */}
       {showUploadModal && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 99999, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', padding: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+          <div style={{ background: 'var(--surface-paper)', borderRadius: '16px', padding: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <h2 style={{ margin: '0 0 1.5rem 0', color: '#0f172a' }}>{editingImage ? 'Update Image' : 'Upload New Image'}</h2>
             <form onSubmit={handleUploadSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>

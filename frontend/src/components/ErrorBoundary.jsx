@@ -25,7 +25,7 @@ export default class ErrorBoundary extends React.Component {
           </p>
           <button
             onClick={() => window.location.reload()}
-            style={{ padding: '0.65rem 1.5rem', borderRadius: '20px', border: '2px solid #b45309', background: '#ffffff', color: '#b45309', fontWeight: 800, cursor: 'pointer' }}
+            style={{ padding: '0.65rem 1.5rem', borderRadius: '20px', border: '2px solid #b45309', background: 'var(--surface-paper)', color: '#b45309', fontWeight: 800, cursor: 'pointer' }}
           >
             Reload Page / صفحہ دوبارہ لوڈ کریں
           </button>

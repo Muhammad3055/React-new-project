@@ -78,7 +78,7 @@ export default function CardCreatorView() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
             {/* Quick Sample Selector */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('quickVersePresets')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {sampleQuotes.map((q, i) => (
@@ -98,7 +98,7 @@ export default function CardCreatorView() {
             </div>
 
             {/* Custom Inputs */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('customizeContent')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
@@ -113,7 +113,7 @@ export default function CardCreatorView() {
             </div>
 
             {/* Theme & Ratio Controls */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{t('colorThemeFormat')}</h3>
               <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1rem' }}>
                 {Object.keys(themes).map(th => (

@@ -1566,7 +1566,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       {activeTab === 'namaz' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.5rem' }}>
           
-          <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '20px', border: '1.5px solid #e2e8f0' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1.5px solid #e2e8f0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>
                 <i className="fas fa-pray" style={{ color: 'var(--accent-gold)' }}></i> Daily 5 Namaz Tracker
@@ -1653,7 +1653,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       {activeTab === 'duas' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
-          <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '20px' }}>
+          <div className="card" style={{ padding: '1.5rem', background: 'var(--surface-paper)', borderRadius: '20px' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '1rem' }}>
               <i className="fas fa-hand-holding-heart" style={{ color: 'var(--accent-gold)' }}></i> Daily Tasbeeh & Dhikr Counter
             </h3>
@@ -1728,7 +1728,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px' }}>
           
           {/* Profile & Customization */}
-          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <div className="card" style={{ padding: '2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <i className="fas fa-user-edit" style={{ color: 'var(--accent-gold)' }}></i> Edit Profile & Settings
             </h3>
@@ -1867,7 +1867,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* Privacy & Notification Settings */}
-          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <div className="card" style={{ padding: '2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <i className="fas fa-sliders-h" style={{ color: 'var(--accent-gold)' }}></i> Notification & Privacy Preferences
             </h3>
@@ -1906,7 +1906,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* Account Security (Change Password) */}
-          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <div className="card" style={{ padding: '2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <i className="fas fa-shield-alt" style={{ color: 'var(--accent-gold)' }}></i> Account Security
             </h3>
@@ -1965,7 +1965,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* 📥 Data Portability & Offline Backup */}
-          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <div className="card" style={{ padding: '2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <i className="fas fa-cloud-download-alt" style={{ color: 'var(--accent-gold)' }}></i> Data Portability & Offline Backup
             </h3>
@@ -1995,7 +1995,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* 💻 Active Sessions & Connected Devices */}
-          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <div className="card" style={{ padding: '2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-dark)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <i className="fas fa-laptop-house" style={{ color: 'var(--accent-gold)' }}></i> Active Sessions & Security
             </h3>
@@ -2026,7 +2026,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
                     fetch(getApiUrl('/api/auth/logout/'), { method: 'POST' }).then(() => window.location.reload());
                   }
                 }}
-                style={{ background: '#fff', border: '1px solid #cbd5e1', color: '#475569', padding: '0.45rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', color: '#475569', padding: '0.45rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
               >
                 Log Out All Other Devices
               </button>
@@ -2034,7 +2034,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* ⚠️ Danger Zone */}
-          <div className="card" style={{ padding: '2rem', background: '#fff', borderRadius: '20px', border: '1.5px solid #fca5a5' }}>
+          <div className="card" style={{ padding: '2rem', background: 'var(--surface-paper)', borderRadius: '20px', border: '1.5px solid #fca5a5' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#dc2626', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <i className="fas fa-exclamation-triangle"></i> Danger Zone
             </h3>

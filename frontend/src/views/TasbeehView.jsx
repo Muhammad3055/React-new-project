@@ -95,7 +95,7 @@ export default function TasbeehView() {
               padding: '0.55rem 1.1rem',
               borderRadius: '25px',
               border: selectedDhikr.id === d.id ? '2px solid var(--accent-gold)' : '1.5px solid #cbd5e1',
-              background: selectedDhikr.id === d.id ? 'rgba(245, 158, 11, 0.2)' : '#ffffff',
+              background: selectedDhikr.id === d.id ? 'rgba(245, 158, 11, 0.2)' : 'var(--surface-paper)',
               color: selectedDhikr.id === d.id ? '#b45309' : '#0f172a',
               fontWeight: 700,
               fontSize: '0.88rem',

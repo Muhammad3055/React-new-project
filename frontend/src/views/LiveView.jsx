@@ -106,7 +106,7 @@ export default function LiveView({ user }) {
             onClick={() => { setActiveTab('makkah'); setSelectedServer('server1'); }}
             style={{
               padding: '12px 24px', borderRadius: '18px', fontWeight: 900, fontSize: '1rem', cursor: 'pointer',
-              background: activeTab === 'makkah' ? '#059669' : '#ffffff',
+              background: activeTab === 'makkah' ? '#059669' : 'var(--surface-paper)',
               color: activeTab === 'makkah' ? '#ffffff' : 'var(--text-main)',
               border: activeTab === 'makkah' ? 'none' : '1.5px solid var(--border-color)',
               boxShadow: activeTab === 'makkah' ? '0 8px 20px rgba(5,150,105,0.3)' : 'none', transition: 'all 0.2s'
@@ -118,7 +118,7 @@ export default function LiveView({ user }) {
             onClick={() => { setActiveTab('madinah'); setSelectedServer('server1'); }}
             style={{
               padding: '12px 24px', borderRadius: '18px', fontWeight: 900, fontSize: '1rem', cursor: 'pointer',
-              background: activeTab === 'madinah' ? '#059669' : '#ffffff',
+              background: activeTab === 'madinah' ? '#059669' : 'var(--surface-paper)',
               color: activeTab === 'madinah' ? '#ffffff' : 'var(--text-main)',
               border: activeTab === 'madinah' ? 'none' : '1.5px solid var(--border-color)',
               boxShadow: activeTab === 'madinah' ? '0 8px 20px rgba(5,150,105,0.3)' : 'none', transition: 'all 0.2s'
@@ -131,7 +131,7 @@ export default function LiveView({ user }) {
 
         {/* ── Main Live Stream Container (Makkah or Madinah) ── */}
         {(activeTab === 'makkah' || activeTab === 'madinah') && (
-          <div style={{ background: '#ffffff', borderRadius: '24px', padding: '1.75rem', border: '1.5px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', marginBottom: '3rem' }}>
+          <div style={{ background: 'var(--surface-paper)', borderRadius: '24px', padding: '1.75rem', border: '1.5px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', marginBottom: '3rem' }}>
             
             {/* Header & Title Info */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -165,7 +165,7 @@ export default function LiveView({ user }) {
                   onClick={() => setSelectedServer('server1')}
                   style={{
                     padding: '4px 12px', borderRadius: '12px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer',
-                    background: selectedServer === 'server1' ? '#059669' : '#ffffff',
+                    background: selectedServer === 'server1' ? '#059669' : 'var(--surface-paper)',
                     color: selectedServer === 'server1' ? '#ffffff' : '#475569',
                     border: '1px solid #cbd5e1'
                   }}
@@ -177,7 +177,7 @@ export default function LiveView({ user }) {
                   onClick={() => setSelectedServer('server2')}
                   style={{
                     padding: '4px 12px', borderRadius: '12px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer',
-                    background: selectedServer === 'server2' ? '#059669' : '#ffffff',
+                    background: selectedServer === 'server2' ? '#059669' : 'var(--surface-paper)',
                     color: selectedServer === 'server2' ? '#ffffff' : '#475569',
                     border: '1px solid #cbd5e1'
                   }}
@@ -190,7 +190,7 @@ export default function LiveView({ user }) {
                     onClick={() => setSelectedServer('custom')}
                     style={{
                       padding: '4px 12px', borderRadius: '12px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer',
-                      background: selectedServer === 'custom' ? '#b45309' : '#ffffff',
+                      background: selectedServer === 'custom' ? '#b45309' : 'var(--surface-paper)',
                       color: selectedServer === 'custom' ? '#ffffff' : '#475569',
                       border: '1px solid #cbd5e1'
                     }}

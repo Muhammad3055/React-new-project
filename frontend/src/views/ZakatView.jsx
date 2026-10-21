@@ -82,7 +82,7 @@ export default function ZakatView() {
 
         {/* ── Settings Bar: Currency & Nisab Threshold Selector ── */}
         <div className="zakat-settings-bar" style={{
-          background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
+          background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem',
           border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
           marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', justifyContent: 'space-between', alignItems: 'center'
         }}>
@@ -142,7 +142,7 @@ export default function ZakatView() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
             {/* 1. Cash & Bank */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#059669' }}>
                 <DollarSign size={20} />
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('cashLiquidFunds', 'Cash & Liquid Funds')}</h3>
@@ -160,7 +160,7 @@ export default function ZakatView() {
             </div>
 
             {/* 2. Gold & Silver */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#d97706' }}>
                 <Coins size={20} />
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('goldSilverAssets', 'Gold & Silver Assets')}</h3>
@@ -186,7 +186,7 @@ export default function ZakatView() {
             </div>
 
             {/* 3. Investments & Business */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#2563eb' }}>
                 <TrendingUp size={20} />
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('investmentsBusiness', 'Investments & Business Stock')}</h3>
@@ -208,7 +208,7 @@ export default function ZakatView() {
             </div>
 
             {/* 4. Deductible Liabilities */}
-            <div style={{ background: '#ffffff', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+            <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', color: '#dc2626' }}>
                 <CreditCard size={20} />
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{t('deductibleDebts', 'Deductible Debts & Expenses')}</h3>

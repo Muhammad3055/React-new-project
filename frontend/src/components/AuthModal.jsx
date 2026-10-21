@@ -516,7 +516,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
           overflowY: 'auto',
           borderRadius: '20px',
           margin: 'auto',
-          background: isDarkMode ? '#0d1f19' : '#ffffff',
+          background: isDarkMode ? '#0d1f19' : 'var(--surface-paper)',
           color: isDarkMode ? '#f8fafc' : '#1f2937',
           boxShadow: '0 25px 60px -15px rgba(2, 44, 34, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.25)',
           border: 'none',
@@ -619,7 +619,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   padding: '0.55rem',
                   borderRadius: '9px',
                   border: mode === 'login' ? '2px solid var(--accent-gold)' : 'none',
-                  background: mode === 'login' ? '#ffffff' : 'transparent',
+                  background: mode === 'login' ? 'var(--surface-paper)' : 'transparent',
                   color: mode === 'login' ? 'var(--accent-gold)' : '#78716c',
                   fontWeight: mode === 'login' ? 800 : 600,
                   fontSize: '0.84rem',
@@ -637,7 +637,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   padding: '0.55rem',
                   borderRadius: '9px',
                   border: mode === 'signup' ? '2px solid var(--accent-gold)' : 'none',
-                  background: mode === 'signup' ? '#ffffff' : 'transparent',
+                  background: mode === 'signup' ? 'var(--surface-paper)' : 'transparent',
                   color: mode === 'signup' ? 'var(--accent-gold)' : '#78716c',
                   fontWeight: mode === 'signup' ? 800 : 600,
                   fontSize: '0.84rem',
@@ -652,7 +652,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
         </div>
 
         {/* Modal Body */}
-        <div className="auth-form-body" style={{ padding: '1.4rem 1.5rem', background: '#ffffff', color: '#1c1917' }}>
+        <div className="auth-form-body" style={{ padding: '1.4rem 1.5rem', background: 'var(--surface-paper)', color: '#1c1917' }}>
           {step === 'input' && <div className="auth-welcome"><span>YOUR PERSONAL ISLAMIC LIBRARY</span><h2>{mode === 'signup' ? t('createAccountBtn', 'Create Account') : mode === 'forgot_password' ? t('resetPassword', 'Reset your password') : t('welcomeBack', 'Welcome back')}</h2><p>{mode === 'signup' ? 'Save what inspires you. Continue learning every day.' : 'Continue your journey of reading, listening, and learning.'}</p></div>}
 
           {/* ===== OTP VERIFICATION SCREEN ===== */}
@@ -704,7 +704,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                           height: '48px',
                           borderRadius: '12px',
                           border: `2px solid ${otpDigits[idx] ? 'var(--accent-gold)' : '#cbd5e1'}`,
-                          background: otpDigits[idx] ? '#fef3c7' : '#ffffff',
+                          background: otpDigits[idx] ? '#fef3c7' : 'var(--surface-paper)',
                           color: '#1c1917',
                           fontSize: '1.4rem',
                           fontWeight: 800,
@@ -726,7 +726,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                           placeholder={t('newPasswordPlaceholder', 'New password...')}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', background: '#ffffff', color: '#1c1917' }}
+                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', background: 'var(--surface-paper)', color: '#1c1917' }}
                         />
                       </div>
                       <div style={{ marginBottom: '0.85rem' }}>
@@ -737,7 +737,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                           placeholder={t('confirmNewPasswordPlaceholder', 'Confirm new password...')}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', background: '#ffffff', color: '#1c1917' }}
+                          style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', background: 'var(--surface-paper)', color: '#1c1917' }}
                         />
                       </div>
                     </>
@@ -763,7 +763,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       padding: '0.8rem',
                       borderRadius: '12px',
                       border: '2px solid var(--accent-gold)',
-                      background: '#ffffff',
+                      background: 'var(--surface-paper)',
                       color: 'var(--accent-gold)',
                       fontWeight: 800,
                       fontSize: '0.95rem',
@@ -818,7 +818,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         placeholder={t('fullNamePlaceholder', 'e.g. Muhammad Ali')}
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -835,7 +835,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         placeholder={t('usernamePlaceholder', 'Choose a username...')}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -852,7 +852,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         placeholder={t('emailPlaceholder', 'name@example.com')}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -866,7 +866,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       <select
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
-                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917', appearance: 'none' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917', appearance: 'none' }}
                       >
                         <option value="male">{t('male', 'Male')}</option>
                         <option value="female">{t('female', 'Female')}</option>
@@ -894,7 +894,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         placeholder={t('createPassword', 'Create a password...')}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                        style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                       />
                       <i
                         className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
@@ -929,7 +929,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         placeholder={t('confirmPasswordPlaceholder', 'Confirm password...')}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                        style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -965,7 +965,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                         placeholder={t('emailUsernamePlaceholder', 'e.g. name@example.com or username')}
                         value={username}
                         onChange={(e) => { setUsername(e.target.value); setEmail(e.target.value); }}
-                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                        style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                       />
                     </div>
                   </div>
@@ -990,7 +990,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                           placeholder={t('passwordPlaceholder', 'Password...')}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#ffffff', color: '#1c1917' }}
+                          style={{ width: '100%', padding: '0.75rem 2.4rem 0.75rem 2.5rem', borderRadius: '10px', border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: 'var(--surface-paper)', color: '#1c1917' }}
                         />
                         <i
                           className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
@@ -1034,7 +1034,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       padding: '0.75rem 1rem',
                       borderRadius: '12px',
                       border: '1.5px solid #cbd5e1',
-                      background: '#ffffff',
+                      background: 'var(--surface-paper)',
                       color: '#1c1917',
                       fontWeight: 700,
                       fontSize: '0.85rem',
@@ -1052,7 +1052,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     padding: '0.8rem',
                     borderRadius: '12px',
                     border: '2px solid var(--accent-gold)',
-                    background: '#ffffff',
+                    background: 'var(--surface-paper)',
                     color: 'var(--accent-gold)',
                     fontWeight: 800,
                     fontSize: '0.95rem',
@@ -1093,7 +1093,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     type="button"
                     onClick={() => handleOpenSocialModal('google')}
                     disabled={submitting}
-                    style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: 'var(--surface-paper)', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg> Google
                   </button>
@@ -1101,7 +1101,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                     type="button"
                     onClick={() => handleOpenSocialModal('microsoft')}
                     disabled={submitting}
-                    style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    style={{ flex: 1, padding: '0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: 'var(--surface-paper)', color: '#1e293b', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                   >
                     <svg width="15" height="15" viewBox="0 0 23 23"><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M12 1h10v10H1z"/><path fill="#05a6f0" d="M1 12h10v10H1z"/><path fill="#ffba08" d="M12 12h10v10H1z"/></svg> Microsoft
                   </button>

@@ -243,7 +243,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
           <div>
             {/* Stats Card */}
             <div style={{
-              background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
+              background: 'var(--surface-paper)', borderRadius: '20px', padding: '1.5rem',
               border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
               marginBottom: '2rem', display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem'
@@ -312,7 +312,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
                     key={juz.id}
                     onClick={() => togglePersonalJuz(juz.id)}
                     style={{
-                      background: isDone ? '#ecfdf5' : '#ffffff',
+                      background: isDone ? '#ecfdf5' : 'var(--surface-paper)',
                       border: isDone ? '2px solid #10b981' : '1px solid #e2e8f0',
                       borderRadius: '16px', padding: '1.25rem', cursor: 'pointer',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
@@ -361,7 +361,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
           <div>
             {/* Room Header Card */}
             <div style={{
-              background: '#ffffff', borderRadius: '24px', padding: '2rem',
+              background: 'var(--surface-paper)', borderRadius: '24px', padding: '2rem',
               border: '2px solid #f59e0b', boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
               marginBottom: '2rem'
             }}>
@@ -459,7 +459,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
                   <div
                     key={juz.id}
                     style={{
-                      background: isCompleted ? '#f0fdf4' : isClaimed ? '#fffbeb' : '#ffffff',
+                      background: isCompleted ? '#f0fdf4' : isClaimed ? '#fffbeb' : 'var(--surface-paper)',
                       border: isCompleted ? '2px solid #10b981' : isClaimed ? '2px solid #f59e0b' : '1px solid #cbd5e1',
                       borderRadius: '18px', padding: '1.25rem',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
@@ -537,7 +537,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
                             title={t('releaseJuz', 'Release Juz')}
                             style={{
                               padding: '8px 10px', borderRadius: '10px', border: '1px solid #cbd5e1',
-                              background: '#fff', color: '#dc2626', cursor: 'pointer'
+                              background: 'var(--surface-paper)', color: '#dc2626', cursor: 'pointer'
                             }}
                           >
                             ✕
@@ -603,7 +603,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
 
             {/* Khatam Dua Banner */}
             <div style={{
-              marginTop: '3rem', background: '#ffffff', borderRadius: '20px',
+              marginTop: '3rem', background: 'var(--surface-paper)', borderRadius: '20px',
               padding: '2rem', border: '1.5px solid #10b981', textAlign: 'center',
               boxShadow: '0 6px 20px rgba(0,0,0,0.03)'
             }}>
@@ -642,7 +642,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
           position: 'fixed', inset: 0, zIndex: 99999, background: 'rgba(0,0,0,0.6)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
         }}>
-          <div style={{ background: '#fff', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '480px', direction: isRtl ? 'rtl' : 'ltr' }}>
+          <div style={{ background: 'var(--surface-paper)', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '480px', direction: isRtl ? 'rtl' : 'ltr' }}>
             <h3 style={{ margin: '0 0 1rem', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
               {lang === 'ar' ? 'تعديل بيانات الغرفة' : (lang === 'ur' || lang === 'br') ? 'ختمِ قرآن روم کی تفصیلات' : 'Edit Khatam Room'}
             </h3>
@@ -697,7 +697,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
           justifyContent: 'center', padding: '1rem', overflowY: 'auto'
         }}>
           <div style={{
-            background: '#ffffff', borderRadius: '24px', padding: '2rem', width: '100%',
+            background: 'var(--surface-paper)', borderRadius: '24px', padding: '2rem', width: '100%',
             maxWidth: '680px', maxHeight: '85vh', overflowY: 'auto', direction: isRtl ? 'rtl' : 'ltr',
             border: '2px solid #10b981', boxShadow: '0 20px 50px rgba(0,0,0,0.3)'
           }}>

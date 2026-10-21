@@ -68,7 +68,7 @@ export default function PrayersView({ navigateToTab }) {
         <button
           type="button"
           style={{
-            background: '#ffffff',
+            background: 'var(--surface-paper)',
             color: '#064e3b',
             border: 'none',
             padding: '10px 22px',
@@ -102,7 +102,7 @@ export default function PrayersView({ navigateToTab }) {
               style={{
                 padding: '1.5rem',
                 borderRadius: '20px',
-                background: '#ffffff',
+                background: 'var(--surface-paper)',
                 border: '1.5px solid #e7e5e4',
                 boxShadow: '0 6px 20px rgba(0,0,0,0.04)',
                 cursor: 'pointer',
@@ -123,7 +123,7 @@ export default function PrayersView({ navigateToTab }) {
 
               <button
                 className="btn-play"
-                style={{ marginTop: '1.25rem', padding: '0.5rem 1rem', fontSize: '0.85rem', borderRadius: '20px', background: '#ffffff', color: item.color, border: `1.5px solid ${item.color}`, fontWeight: 800, width: '100%', justifyContent: 'center' }}
+                style={{ marginTop: '1.25rem', padding: '0.5rem 1rem', fontSize: '0.85rem', borderRadius: '20px', background: 'var(--surface-paper)', color: item.color, border: `1.5px solid ${item.color}`, fontWeight: 800, width: '100%', justifyContent: 'center' }}
               >
                 {t('openTool', 'Open Tool')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.35rem' }}></i>
               </button>

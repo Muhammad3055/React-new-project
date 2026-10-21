@@ -120,7 +120,7 @@ export default function HajjUmrahView() {
             onClick={() => { setActiveMode('umrah'); setActiveStep(0); }}
             style={{
               padding: '12px 28px', borderRadius: '16px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer',
-              background: activeMode === 'umrah' ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : '#ffffff',
+              background: activeMode === 'umrah' ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'var(--surface-paper)',
               color: activeMode === 'umrah' ? '#ffffff' : '#475569',
               border: activeMode === 'umrah' ? 'none' : '1px solid #cbd5e1',
               boxShadow: activeMode === 'umrah' ? '0 8px 20px rgba(5,150,105,0.3)' : 'none',
@@ -133,7 +133,7 @@ export default function HajjUmrahView() {
             onClick={() => { setActiveMode('hajj'); setActiveStep(0); }}
             style={{
               padding: '12px 28px', borderRadius: '16px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer',
-              background: activeMode === 'hajj' ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)' : '#ffffff',
+              background: activeMode === 'hajj' ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)' : 'var(--surface-paper)',
               color: activeMode === 'hajj' ? '#ffffff' : '#475569',
               border: activeMode === 'hajj' ? 'none' : '1px solid #cbd5e1',
               boxShadow: activeMode === 'hajj' ? '0 8px 20px rgba(217,119,6,0.3)' : 'none',
@@ -181,7 +181,7 @@ export default function HajjUmrahView() {
                 key={idx}
                 onClick={() => setActiveStep(idx)}
                 style={{
-                  background: activeStep === idx ? '#0f172a' : '#ffffff',
+                  background: activeStep === idx ? '#0f172a' : 'var(--surface-paper)',
                   color: activeStep === idx ? '#ffffff' : '#1e293b',
                   borderRadius: '18px', padding: '1.25rem 1.5rem',
                   border: activeStep === idx ? '2px solid #f59e0b' : '1px solid #e2e8f0',
@@ -210,7 +210,7 @@ export default function HajjUmrahView() {
           {/* Right Column: Step Detail Card with Dua */}
           <div>
             <div style={{
-              position: 'sticky', top: '100px', background: '#ffffff', borderRadius: '24px',
+              position: 'sticky', top: '100px', background: 'var(--surface-paper)', borderRadius: '24px',
               padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.06)'
             }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -262,7 +262,7 @@ export default function HajjUmrahView() {
                     >
                       <div style={{
                         width: '20px', height: '20px', borderRadius: '6px',
-                        background: item.done ? '#10b981' : '#ffffff',
+                        background: item.done ? '#10b981' : 'var(--surface-paper)',
                         border: item.done ? 'none' : '2px solid #cbd5e1',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'
                       }}>

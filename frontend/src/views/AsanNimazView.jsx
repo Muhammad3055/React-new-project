@@ -115,7 +115,7 @@ export default function AsanNimazView({ navigateToTab }) {
                     fontWeight: 800,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
-                    background: isEn ? '#ffffff' : 'transparent',
+                    background: isEn ? 'var(--surface-paper)' : 'transparent',
                     color: isEn ? '#065f46' : '#ffffff',
                     transition: 'all 0.2s ease',
                     display: 'inline-flex',
@@ -136,7 +136,7 @@ export default function AsanNimazView({ navigateToTab }) {
                     fontWeight: 800,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
-                    background: (!isEn && !isAr) ? '#ffffff' : 'transparent',
+                    background: (!isEn && !isAr) ? 'var(--surface-paper)' : 'transparent',
                     color: (!isEn && !isAr) ? '#065f46' : '#ffffff',
                     transition: 'all 0.2s ease',
                     display: 'inline-flex',
@@ -157,7 +157,7 @@ export default function AsanNimazView({ navigateToTab }) {
                     fontWeight: 800,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
-                    background: isAr ? '#ffffff' : 'transparent',
+                    background: isAr ? 'var(--surface-paper)' : 'transparent',
                     color: isAr ? '#065f46' : '#ffffff',
                     transition: 'all 0.2s ease',
                     display: 'inline-flex',
@@ -208,7 +208,7 @@ export default function AsanNimazView({ navigateToTab }) {
                     padding: isEn ? '12px 14px 12px 42px' : '12px 42px 12px 14px',
                     borderRadius: '16px',
                     border: '1.5px solid rgba(255,255,255,0.3)',
-                    background: '#ffffff',
+                    background: 'var(--surface-paper)',
                     color: '#0f172a',
                     fontSize: '0.95rem',
                     boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
@@ -237,7 +237,7 @@ export default function AsanNimazView({ navigateToTab }) {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               style={{
-                background: activeTab === tab.id ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : '#ffffff',
+                background: activeTab === tab.id ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'var(--surface-paper)',
                 color: activeTab === tab.id ? '#ffffff' : '#334155',
                 border: activeTab === tab.id ? '2px solid #059669' : '1.5px solid #e2e8f0',
                 padding: '11px 18px',
@@ -303,7 +303,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
       {/* 1.1: روزانہ کی ۵ نمازیں اور کل رکعتیں / جدول ركعات الصلوات الخمس / 5 Daily Prayers Breakdown */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#ecfdf5', color: '#059669', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-calendar-day" />
@@ -395,7 +395,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.25rem' }}>
         
         {/* ۷ شرائط (خارجی فرائض) / 7 Conditions */}
-        <div style={{ background: '#ffffff', border: '1.5px solid #fed7aa', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
+        <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #fed7aa', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
             <span style={{ background: '#ffedd5', color: '#c2410c', padding: '6px 10px', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem' }}>
               {isEn ? 'Pre-requisites' : isAr ? 'شروط الصلاة' : 'خارجی فرائض'}
@@ -416,7 +416,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
         </div>
 
         {/* ۶ ارکان (داخلی فرائض) / 6 Pillars */}
-        <div style={{ background: '#ffffff', border: '1.5px solid #a7f3d0', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
+        <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #a7f3d0', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
             <span style={{ background: '#ecfdf5', color: '#047857', padding: '6px 10px', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem' }}>
               {isEn ? 'Internal Pillars' : isAr ? 'أركان الصلاة' : 'داخلی فرائض'}
@@ -437,7 +437,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
       </div>
 
       {/* 1.3: Step-by-Step Illustrated Method */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', textAlign: 'center' }}>
           {isEn ? 'Step-by-Step Complete Illustrated Salah Method' : isAr ? 'صفة الصلاة خطوة بخطوة مع الأذكار والمعاني' : 'نماز کا مکمل مسنون طریقہ مع دعائیں و ترجمہ'}
         </h2>
@@ -462,7 +462,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                   : 'قبلہ رخ کھڑے ہو کر نیت کریں۔ مرد دونوں ہاتھ کانوں کی لو تک اٹھائیں اور عورتیں سینے تک، پھر کہیں:'
               }
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.85rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.85rem', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                 اللَّهُ أَكْبَرُ
               </p>
@@ -490,7 +490,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                   : 'مرد دائیں ہاتھ سے بائیں کلائی پکڑ کر ناف کے نیچے باندھیں اور عورتیں سینے پر ہاتھ رکھیں، پھر ثناء پڑھیں:'
               }
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.1rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.1rem', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 1.9 }}>
                 سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، وَتَبَارَكَ اسْمُكَ، وَتَعَالَىٰ جَدُّكَ، وَلَا إِلَـٰهَ غَيْرُكَ
               </p>
@@ -515,7 +515,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                 {isEn ? 'Surah Al-Fatiha & Quran Recitation' : isAr ? 'التعوذ والتسمية وقراءة سورة الفاتحة' : 'تعوذ، تسمیہ اور سورۃ الفاتحہ'}
               </h4>
             </div>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.1rem', textAlign: 'center', lineHeight: 2.1 }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.1rem', textAlign: 'center', lineHeight: 2.1 }}>
               <p style={{ margin: 0, fontSize: '1.25rem', fontFamily: "'Amiri', serif", color: '#064e3b' }}>
                 أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ • بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
               </p>
@@ -544,7 +544,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
               </h4>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.75rem' }}>
-              <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
                 <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
                   {isEn ? 'Tasbeeh of Ruku\' (3 times):' : isAr ? 'تسبيح الركوع (٣ مرات):' : 'رکوع کی تسبیح (۳ بار):'}
                 </span>
@@ -555,7 +555,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                   {isEn ? 'Meaning: "Glory be to my Lord, the Magnificent"' : isAr ? 'المعنى: "أُنَزِّهُ رَبِّيَ صَاحِبَ الْعَظَمَةِ وَالْكِبْرِيَاءِ عَنْ كُلِّ عَيْبٍ."' : 'ترجمہ: "میرا عظمت والا رب پاک ہے"'}
                 </p>
               </div>
-              <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
                 <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
                   {isEn ? 'Standing Up (Qawmah):' : isAr ? 'عند الرفع من الركوع (القومـة):' : 'قومہ (رکوع سے اٹھتے وقت):'}
                 </span>
@@ -585,7 +585,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
               </h4>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.75rem' }}>
-              <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
                 <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
                   {isEn ? 'Tasbeeh of Sujood (3 times):' : isAr ? 'تسبيح السجود (٣ مرات):' : 'سجدے کی تسبیح (۳ بار):'}
                 </span>
@@ -596,7 +596,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                   {isEn ? 'Meaning: "Glory be to my Lord, the Most High"' : isAr ? 'المعنى: "أُنَزِّهُ رَبِّيَ الْعَلِيَّ الْأَعْلَى فِي ذَاتِهِ وَصِفَاتِهِ عَنْ كُلِّ نَقْصٍ."' : 'ترجمہ: "میرا بلند و برتر رب پاک ہے"'}
                 </p>
               </div>
-              <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
+              <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
                 <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
                   {isEn ? 'Supplication Between Prostrations (Jalsah):' : isAr ? 'الدعاء بين السجدتين (الجلسة):' : 'دو سجدوں کے درمیان دعا:'}
                 </span>
@@ -620,7 +620,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                 {isEn ? 'Tashahhud (At-Tahiyyat)' : isAr ? 'التشهد في القعود (التحيات لله)' : 'قعدہ میں تشہد (التحیات)'}
               </h4>
             </div>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2.1 }}>
                 التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا اللَّهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ
               </p>
@@ -645,7 +645,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                 {isEn ? 'Durood-e-Ibrahimi (Salawat upon the Prophet)' : isAr ? 'الصلاة الإبراهيمية المباركة' : 'درودِ ابراہیمی'}
               </h4>
             </div>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2.1 }}>
                 اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ
               </p>
@@ -670,7 +670,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                 {isEn ? 'Dua Ma\'thoora & Tasleem (Concluding the Prayer)' : isAr ? 'الدعاء المأثور والتسليم' : 'دعائے ماثورہ اور سلام'}
               </h4>
             </div>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1.2rem', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', lineHeight: 2.1 }}>
                 اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا، وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ، وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ
               </p>
@@ -697,7 +697,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
       </div>
 
       {/* 1.4: مرد اور عورت کی نماز میں مستند فرق / Differences Between Men & Women */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#fdf2f8', color: '#db2777', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-venus-mars" />
@@ -803,7 +803,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
       {/* 2.1: فرائض الوضوء / 4 Fard of Wudu */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #0284c7', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(2,132,199,0.06)' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #0284c7', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(2,132,199,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#e0f2fe', color: '#0284c7', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-water" />
@@ -841,7 +841,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
             {isEn ? 'Masnoon Duas of Wudu (with Virtues)' : isAr ? 'الأدعية المأثورة في الوضوء مع المعاني والفضائل' : 'وضو کی مسنون دعائیں مع ترجمہ و فضیلت'}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
               <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem' }}>
                 {isEn ? 'Before Starting Wudu:' : isAr ? 'عند ابتداء الوضوء:' : 'وضو شروع کرتے وقت:'}
               </span>
@@ -852,7 +852,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
                 {isEn ? 'Meaning: "In the name of Allah, and all praise is for Allah."' : isAr ? 'المعنى: "الابْتِدَاءُ بِذِكْرِ اسْمِ اللَّهِ تَعَالَى تَبَرُّكًا، وَحَمْدُهُ سُبْحَانَهُ عَلَى نِعْمَةِ الْإِسْلَامِ وَالْمَاءِ الطَّهُورِ."' : 'ترجمہ: "اللہ کے نام سے اور تمام تعریفیں اللہ کے لیے ہیں"'}
               </p>
             </div>
-            <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
               <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem' }}>
                 {isEn ? 'Supplication After Finishing Wudu (All 8 gates of Jannah open - Sahih Muslim: 234):' : isAr ? 'الدعاء بعد الفراغ من الوضوء (تُفتح له أبواب الجنة الثمانية - صحيح مسلم: 234):' : 'وضو کے بعد کی دعا (جنت کے آٹھوں دروازے کھل جاتے ہیں - مسلم: 234):'}
               </span>
@@ -873,7 +873,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
       </div>
 
       {/* 2.2: فرائض الغسل / 3 Fard of Ghusl */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #059669', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #059669', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#ecfdf5', color: '#059669', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-shower" />
@@ -908,7 +908,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
       </div>
 
       {/* 2.3: التيمم / Tayammum */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #f59e0b', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #f59e0b', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
           <span style={{ background: '#fef3c7', color: '#d97706', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-mountain" />
@@ -947,7 +947,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
       {/* 3.1: صلاة الجنازة / Funeral Prayer Method */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #059669', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #059669', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#ecfdf5', color: '#059669', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-users" />
@@ -987,7 +987,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
       </div>
 
       {/* 3.2: 3 Authentic Janaza Duas */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #cbd5e1', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', textAlign: 'center' }}>
           {isEn ? '3 Authentic Janaza Supplications (with Meanings)' : isAr ? 'الأدعية المأثورة في صلاة الجنازة مع المعنى والبيان' : 'نمازِ جنازہ کی مسنون دعائیں مع ترجمہ'}
         </h2>
@@ -1007,7 +1007,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
             <p style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#064e3b', textAlign: 'center', lineHeight: 2.1, direction: 'rtl' }}>
               اللَّهُمَّ اغْفِرْ لِحَيِّنَا وَمَيِّتِنَا، وَشَاهِدِنَا وَغَائِبِنَا، وَصَغِيرِنَا وَكَبِيرِنَا، وَذَكَرِنَا وَأُنْثَانَا، اللَّهُمَّ مَنْ أَحْيَيْتَهُ مِنَّا فَأَحْيِهِ عَلَى الْإِسْلَامِ، وَمَنْ تَوَفَّيْتَهُ مِنَّا فَتَوَفَّهُ عَلَى الْإِيمَانِ
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: dir }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: dir }}>
               <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>
                 {isEn ? 'Meaning / Translation:' : isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
               </span>
@@ -1035,7 +1035,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
             <p style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#0369a1', textAlign: 'center', lineHeight: 2.1, direction: 'rtl' }}>
               اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطًا، وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا، وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #bae6fd', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: dir }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #bae6fd', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: dir }}>
               <span style={{ color: '#0284c7', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>
                 {isEn ? 'Meaning / Translation:' : isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
               </span>
@@ -1063,7 +1063,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
             <p style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Amiri', serif", color: '#831843', textAlign: 'center', lineHeight: 2.1, direction: 'rtl' }}>
               اللَّهُمَّ اجْعَلْهَا لَنَا فَرَطًا، وَاجْعَلْهَا لَنَا أَجْرًا وَذُخْرًا، وَاجْعَلْهَا لَنَا شَافِعَةً وَمُشَفَّعَةً
             </p>
-            <div style={{ background: '#ffffff', border: '1px solid #fbcfe8', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: dir }}>
+            <div style={{ background: 'var(--surface-paper)', border: '1px solid #fbcfe8', borderRadius: '12px', padding: '0.85rem 1.15rem', marginTop: '0.85rem', direction: dir }}>
               <span style={{ color: '#db2777', fontWeight: 800, fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>
                 {isEn ? 'Meaning / Translation:' : isAr ? 'المعنى والتفسير:' : 'اردو ترجمہ:'}
               </span>
@@ -1082,7 +1082,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
       </div>
 
       {/* 3.3: Grave Duas */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h2 style={{ margin: '0 0 1.25rem 0', fontSize: '1.35rem', fontWeight: 900, color: '#064e3b', textAlign: 'center' }}>
           {isEn ? 'Lowering into Grave, Burial Earth, and Visiting Graves' : isAr ? 'أدعية إنزال الميت، إهالة التراب، وزيارة المقابر' : 'میت کو قبر میں اتارنے، مٹی ڈالنے اور قبرستان کی دعائیں'}
         </h2>
@@ -1326,7 +1326,7 @@ function DailyDuasTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
             <div
               key={item.id}
               style={{
-                background: '#ffffff',
+                background: 'var(--surface-paper)',
                 border: '1.5px solid #e2e8f0',
                 borderRadius: '18px',
                 padding: '1.35rem 1.5rem',
@@ -1559,7 +1559,7 @@ function MasaelTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) 
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {masaelList.map((item, idx) => (
-          <div key={idx} style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '18px', padding: '1.5rem 1.75rem', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+          <div key={idx} style={{ background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '18px', padding: '1.5rem 1.75rem', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
               <span style={{ background: item.bgLight, color: item.badgeColor, border: `1px solid ${item.badgeColor}40`, padding: '3px 12px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 800 }}>
                 {isEn ? item.badgeEn : isAr ? item.badgeAr : item.badgeUr}
@@ -1593,7 +1593,7 @@ function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn,
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
       {/* 6.1: صلاة الوتر ودعاء القنوت */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #7c3aed', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(124,58,237,0.06)' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #7c3aed', borderRadius: '20px', padding: '1.75rem 2rem', boxShadow: '0 4px 16px rgba(124,58,237,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
           <span style={{ background: '#f5f3ff', color: '#7c3aed', padding: '8px 12px', borderRadius: '12px', fontSize: '1.2rem' }}>
             <i className="fas fa-moon" />
@@ -1640,7 +1640,7 @@ function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn,
       </div>
 
       {/* 6.2: Eidain Prayer */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h3 style={{ margin: '0 0 0.85rem 0', color: '#065f46', fontSize: '1.25rem', fontWeight: 800 }}>
           {isEn ? 'Eidain Prayer Method (Eid ul-Fitr & Eid ul-Adha - 6 Extra Takbeerat):' : isAr ? 'صفة صلاة العيدين (ست تكبيرات زوائد واجبة):' : 'نمازِ عیدین (عید الفطر و عید الاضحیٰ) کا طریقہ:'}
         </h3>
@@ -1704,7 +1704,7 @@ function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn,
       </div>
 
       {/* 6.3: صلاة التسابيح / Salat al-Tasbeeh */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
+      <div style={{ background: 'var(--surface-paper)', border: '1.5px solid #e2e8f0', borderRadius: '20px', padding: '1.75rem 2rem' }}>
         <h3 style={{ margin: '0 0 0.85rem 0', color: '#0284c7', fontSize: '1.25rem', fontWeight: 800 }}>
           {isEn ? 'Salat al-Tasbeeh Method (4 Rak\'ats with 300 Glorifications):' : isAr ? 'صفة صلاة التسابيح (٤ ركعات بـ ٣٠٠ تسبيحة):' : 'صلوٰۃ التسبیح کا مسنون طریقہ (۴ رکعتوں میں ۳۰۰ بار تسبیح):'}
         </h3>

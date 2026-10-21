@@ -511,12 +511,12 @@ export default function BooksView({ openReportModal, user }) {
             <i className="fas fa-filter"></i>
             <span>{t('activeFiltersLabel')}</span>
             {selectedLanguages.length > 0 && (
-              <span style={{ background: '#ffffff', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
+              <span style={{ background: 'var(--surface-paper)', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
                 Languages: {selectedLanguages.map(l => languageOptions.find(o => o.id === l)?.label || l).join(', ')}
               </span>
             )}
             {selectedFileTypes.length > 0 && (
-              <span style={{ background: '#ffffff', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
+              <span style={{ background: 'var(--surface-paper)', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bae6fd' }}>
                 Formats: {selectedFileTypes.map(f => fileTypeOptions.find(o => o.id === f)?.label || f).join(', ')}
               </span>
             )}
@@ -568,7 +568,7 @@ export default function BooksView({ openReportModal, user }) {
               padding: '0.45rem 0.85rem',
               borderRadius: '6px',
               border: 'none',
-              background: viewMode === 'grid' ? '#ffffff' : 'transparent',
+              background: viewMode === 'grid' ? 'var(--surface-paper)' : 'transparent',
               color: viewMode === 'grid' ? 'var(--primary-dark)' : '#64748b',
               fontWeight: 700,
               fontSize: '0.85rem',
@@ -585,7 +585,7 @@ export default function BooksView({ openReportModal, user }) {
               padding: '0.45rem 0.85rem',
               borderRadius: '6px',
               border: 'none',
-              background: viewMode === 'list' ? '#ffffff' : 'transparent',
+              background: viewMode === 'list' ? 'var(--surface-paper)' : 'transparent',
               color: viewMode === 'list' ? 'var(--primary-dark)' : '#64748b',
               fontWeight: 700,
               fontSize: '0.85rem',
@@ -609,7 +609,7 @@ export default function BooksView({ openReportModal, user }) {
             <select
               value={itemsPerPage}
               onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-              style={{ padding: '0.35rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700, background: '#ffffff', color: '#0f172a', cursor: 'pointer' }}
+              style={{ padding: '0.35rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700, background: 'var(--surface-paper)', color: '#0f172a', cursor: 'pointer' }}
             >
               <option value={12}>12 per page</option>
               <option value={24}>24 per page</option>
@@ -711,7 +711,7 @@ export default function BooksView({ openReportModal, user }) {
                         <button
                           title="Report Issue"
                           onClick={() => openReportModal('book', bk.title)}
-                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-paper)', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
@@ -722,7 +722,7 @@ export default function BooksView({ openReportModal, user }) {
                           <>
                             <button
                               onClick={() => toggleSaveBook(bk.id, false)}
-                              style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                              style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-paper)', color: userSavedBooks.some(b => b.book_id === bk.id) ? '#3b82f6' : '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                               title={userSavedBooks.some(b => b.book_id === bk.id) ? "Saved in Library" : "Save to Library"}
                               onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                               onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
@@ -732,7 +732,7 @@ export default function BooksView({ openReportModal, user }) {
 
                             <button
                               onClick={() => toggleSaveBook(bk.id, true)}
-                              style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                              style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-paper)', color: userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? '#eab308' : '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                               title={userSavedBooks.some(b => b.book_id === bk.id && b.favorite) ? "Favorited" : "Favorite Book"}
                               onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                               onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
@@ -788,7 +788,7 @@ export default function BooksView({ openReportModal, user }) {
                         {documentUrl && <>
                         <button className="books-read-button"
                           onClick={() => handleOpenDocModal(bk)}
-                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '30px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: 'var(--surface-paper)', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '30px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
@@ -850,7 +850,7 @@ export default function BooksView({ openReportModal, user }) {
               width: isFullscreen ? '100vw' : '100%',
               maxWidth: isFullscreen ? '100vw' : '1150px',
               height: isFullscreen ? '100vh' : '94vh',
-              background: '#ffffff',
+              background: 'var(--surface-paper)',
               borderRadius: isFullscreen ? '0' : '12px',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
               display: 'flex',
@@ -1098,14 +1098,14 @@ export default function BooksView({ openReportModal, user }) {
               )}
 
 
-              <div style={{ flex: 1, width: '100%', height: '100%', background: '#ffffff', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ flex: 1, width: '100%', height: '100%', background: 'var(--surface-paper)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
                 <iframe
                   key={viewerEngine + '_' + getCleanDocumentUrl(getDocRawUrl(previewDoc))}
                   src={getEmbedViewerUrl(previewDoc)}
                   title={previewDoc.title || 'Document Reader'}
                   width="100%"
                   height="100%"
-                  style={{ border: 'none', width: '100%', height: '100%', flex: 1, background: '#ffffff' }}
+                  style={{ border: 'none', width: '100%', height: '100%', flex: 1, background: 'var(--surface-paper)' }}
                   allowFullScreen
                 />
               </div>
@@ -1115,7 +1115,7 @@ export default function BooksView({ openReportModal, user }) {
             <div
               style={{
                 padding: '0.35rem 0.65rem',
-                background: '#ffffff',
+                background: 'var(--surface-paper)',
                 borderTop: '1px solid #e2e8f0',
                 display: 'flex',
                 justifyContent: 'space-between',

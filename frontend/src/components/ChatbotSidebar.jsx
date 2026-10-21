@@ -267,7 +267,7 @@ export default function ChatbotSidebar() {
       <aside className="chat-sidebar-panel" aria-label="Maktaba AI assistant" aria-hidden={!isOpen} inert={!isOpen ? '' : undefined} style={{
         position: 'fixed', top: 0, left: isOpen ? 0 : '-400px', width: 'min(400px, 100vw)', height: '100dvh',
         zIndex: 99989, display: 'flex', flexDirection: 'column',
-        background: '#ffffff',
+        background: 'var(--surface-paper)',
         borderRight: '1px solid rgba(226, 232, 240, 0.8)',
         boxShadow: isOpen ? '8px 0 32px rgba(0,0,0,0.1)' : 'none',
         transition: 'left 0.35s cubic-bezier(0.4, 0, 0.2, 1)', overflow: 'hidden',
@@ -275,7 +275,7 @@ export default function ChatbotSidebar() {
       }}>
 
         {/* Header */}
-        <div style={{ padding: '16px', background: '#ffffff', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ padding: '16px', background: 'var(--surface-paper)', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src="/favicon.svg" alt="Maktaba AI Logo" style={{ width: '36px', height: '36px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(245,158,11,0.4)', flexShrink: 0 }} />
             <div>
@@ -327,7 +327,7 @@ export default function ChatbotSidebar() {
                     onClick={() => handleSend(q.prompt)}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '10px 14px', background: '#ffffff', border: '1px solid #e2e8f0',
+                      padding: '10px 14px', background: 'var(--surface-paper)', border: '1px solid #e2e8f0',
                       borderRadius: '12px', cursor: 'pointer', textAlign: 'left',
                       transition: 'all 0.2s', color: '#334155', fontSize: '13px', fontWeight: 500
                     }}
@@ -348,7 +348,7 @@ export default function ChatbotSidebar() {
                 <div style={{
                   maxWidth: '85%', padding: '12px 16px', fontSize: '14px', lineHeight: '1.5',
                   borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  background: msg.sender === 'user' ? '#176141' : '#ffffff',
+                  background: msg.sender === 'user' ? '#176141' : 'var(--surface-paper)',
                   color: msg.sender === 'user' ? '#ffffff' : '#1e293b',
                   boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: msg.sender === 'ai' ? '1px solid #f1f5f9' : 'none'
                 }}>
@@ -465,7 +465,7 @@ export default function ChatbotSidebar() {
           {/* Loading status */}
           {isLoading && (
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-              <div style={{ padding: '12px 16px', background: '#ffffff', borderRadius: '16px 16px 16px 4px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ padding: '12px 16px', background: 'var(--surface-paper)', borderRadius: '16px 16px 16px 4px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both' }} />
                   <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#176141', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.2s' }} />
@@ -508,7 +508,7 @@ export default function ChatbotSidebar() {
 
         {(voiceStatus || voiceError) && <div className={`chat-voice-status ${voiceError ? 'chat-voice-error' : ''}`} role={voiceError ? 'alert' : 'status'} aria-live="polite">{voiceError || voiceStatus}</div>}
       {/* Input Area */}
-        <div style={{ padding: '16px', background: '#ffffff', borderTop: '1px solid #f1f5f9' }}>
+        <div style={{ padding: '16px', background: 'var(--surface-paper)', borderTop: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '8px 16px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
             <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: attachedFile ? '#176141' : '#94a3b8', cursor: 'pointer', display: 'flex', padding: '4px' }} title="Attach image or PDF (max 30MB)">
               <Paperclip size={20} />

@@ -383,7 +383,7 @@ export default function DuasView({ playTrack, user }) {
               padding: '0.6rem 1.15rem',
               borderRadius: '30px',
               border: activeCategory === cat.id ? '2px solid var(--accent-gold)' : '1.5px solid #cbd5e1',
-              background: activeCategory === cat.id ? 'rgba(245, 158, 11, 0.2)' : '#ffffff',
+              background: activeCategory === cat.id ? 'rgba(245, 158, 11, 0.2)' : 'var(--surface-paper)',
               color: activeCategory === cat.id ? '#b45309' : '#0f172a',
               fontWeight: 700,
               fontSize: '0.86rem',
@@ -426,7 +426,7 @@ export default function DuasView({ playTrack, user }) {
           <div
             key={item.id}
             className="card"
-            style={{ padding: '1.6rem', background: '#ffffff', borderRadius: '18px', border: '1.5px solid #e2e8f0', boxShadow: '0 4px 16px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+            style={{ padding: '1.6rem', background: 'var(--surface-paper)', borderRadius: '18px', border: '1.5px solid #e2e8f0', boxShadow: '0 4px 16px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
           >
             {/* Top Bar Badges & Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
