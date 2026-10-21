@@ -7,15 +7,19 @@ import AdminUploadModal from '../components/AdminUploadModal';
 export default function VideosView({ user }) {
   const { t } = useLanguage();
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const query = new URLSearchParams(window.location.search).get('q') || '';
   const [editingVideo, setEditingVideo] = useState(null);
   const isAdmin = user?.is_staff || user?.is_superuser;
 
   const loadVideos = () => {
-    if (!isAdmin) return;
-    fetch(getApiUrl('/api/videos/'))
-      .then(response => response.json())
+    setLoading(true);
+    setError('');
+    fetch(getApiUrl(`/api/videos/?q=${encodeURIComponent(query)}`))
+      .then(response => { if (!response.ok) throw new Error('Could not load videos. Please retry.'); return response.json(); })
       .then(data => setVideos(data.results || []))
-      .catch(error => console.error('Could not load videos for editing:', error));
+      .catch(error => setError(error.message)).finally(() => setLoading(false));
   };
 
   useEffect(() => { loadVideos(); }, [isAdmin]);
@@ -27,7 +31,10 @@ export default function VideosView({ user }) {
         </h1>
       </div>
 
-      <div 
+      {loading && <p role="status">Loading videos…</p>}
+      {error && <p role="alert">{error} <button type="button" onClick={loadVideos}>Retry</button></p>}
+      {!loading && !error && videos.length > 0 && <div className="video-library-grid">{videos.filter(video => !query || video.title.toLowerCase().includes(query.toLowerCase())).map(video => <article key={video.id} className="video-library-card">{video.thumbnail_url && <img src={video.thumbnail_url} alt="" loading="lazy" />}<h2>{video.title}</h2><p>{video.speaker}</p>{/^https?:\/\//i.test(video.video_url || '') || /^\/(?!\/)/.test(video.video_url || '') ? <a href={video.video_url} target="_blank" rel="noopener noreferrer">Watch video ↗</a> : <span>Video currently unavailable</span>}</article>)}</div>}
+      {!loading && !error && videos.length === 0 && <div
         className="card" 
         style={{ 
           maxWidth: '650px', 
@@ -55,7 +62,7 @@ export default function VideosView({ user }) {
         <p style={{ fontSize: '0.95rem', color: '#44403c', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto' }}>
           {t('videosComingSoonDesc', 'We are preparing high-quality Islamic video lectures, Seerah series, and Quranic reflections. Stay tuned — video bayanat will be uploaded soon!')}
         </p>
-      </div>
+      </div>}
       {isAdmin && (
         <div style={{ maxWidth: '750px', margin: '2rem auto', textAlign: 'left' }}>
           <h2>Manage uploaded videos</h2>

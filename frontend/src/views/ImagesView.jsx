@@ -17,6 +17,7 @@ const CATEGORIES = [
 ];
 
 export default function ImagesView({ user }) {
+  const searchQuery = new URLSearchParams(window.location.search).get('q') || '';
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('mix');
@@ -40,7 +41,7 @@ export default function ImagesView({ user }) {
   const fetchImages = async () => {
     setLoading(true);
     try {
-      const url = `${API_BASE_URL}/api/images/?category=${selectedCategory === 'mix' ? '' : selectedCategory}&page=${page}`;
+      const url = `${API_BASE_URL}/api/images/?category=${selectedCategory === 'mix' ? '' : selectedCategory}&page=${page}&q=${encodeURIComponent(searchQuery)}`;
       const response = await fetch(url);
       const data = await response.json();
       setImages(data.results || []);

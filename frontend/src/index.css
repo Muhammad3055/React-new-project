@@ -3800,3 +3800,15 @@ img {
 .chat-references a { color: #176141; text-decoration: underline; overflow-wrap: anywhere; }
 .topic-card:focus-visible, .topic-navigation a:focus-visible, .auth-redesign button:focus-visible { outline: 3px solid #b99246; outline-offset: 3px; }
 @media (max-width: 480px) { .auth-redesign .auth-form-body { padding: 20px !important; } .auth-welcome h2 { font-size: 25px; } }
+.chat-page-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+.chat-page-links a { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #c9dfd0; background: #f1f8f3; color: #175338; padding: 7px 11px; border-radius: 10px; font-size: 12px; line-height: 1.5; text-decoration: none; overflow-wrap: anywhere; }
+.chat-page-links a:hover { background: #dcefe2; }
+.chat-page-links a:focus-visible { outline: 2px solid #176141; outline-offset: 2px; }
+.chat-voice-status { padding: 10px 16px; background: #eef7f0; color: #175338; font-size: 12px; line-height: 1.6; flex-shrink: 0; }
+.chat-voice-error { background: #fff1f0; color: #a32424; }
+.video-library-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; text-align: start; }
+.video-library-card { border: 1px solid #dce7df; border-radius: 18px; background: white; padding: 20px; }
+.video-library-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; }
+.video-library-card h2 { font-size: 18px; line-height: 1.5; color: #183d30; }
+.video-library-card p { color: #63756c; }
+.video-library-card a { color: #176141; font-weight: 700; }

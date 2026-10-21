@@ -1,3 +1,6 @@
+import useAssistantMessages from '../hooks/useAssistantMessages';
+import useVoiceQuestion from '../hooks/useVoiceQuestion';
+import ChatActions from './ChatActions';
 import ChatFormattedText from './ChatFormattedText';
 import React, { useState, useRef, useEffect } from 'react';
 import {
@@ -19,10 +22,11 @@ import {
   BookOpen,
   ShieldCheck
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
 
 const QUICK_PROMPTS = [
-  { icon: '🤲', label: 'Virtues of Patience', prompt: 'What does Islam say about patience (Sabr)?' },
+  { icon: '📚', label: 'Find books', prompt: 'Where can I find Tafsir books on this website?' },
   { icon: '🕌', label: 'Salah Guide', prompt: 'How do I perform Fajr prayer step-by-step?' },
   { icon: '📖', label: 'Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?' },
   { icon: '🕋', label: 'Hajj & Umrah', prompt: 'Explain the step by step guide to perform Hajj and Umrah' },
@@ -40,21 +44,22 @@ const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
 const renderFormattedText = text => <ChatFormattedText text={text} />;
 
 export default function ChatbotSidebar() {
+  const { lang: siteLang } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('auto');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useAssistantMessages();
   const [inputPrompt, setInputPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [agentStep, setAgentStep] = useState('');
   const [copiedId, setCopiedId] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
+
 
   // File upload state
   const [attachedFile, setAttachedFile] = useState(null); // { name, type, size, base64, preview }
   const [fileError, setFileError] = useState('');
 
   const messagesEndRef = useRef(null);
-  const recognitionRef = useRef(null);
+  const requestInFlight = useRef(false);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -73,42 +78,12 @@ export default function ChatbotSidebar() {
   }, [isOpen]);
 
   // Voice recording logic
-  const toggleVoiceRecording = () => {
-    if (isRecording) {
-      recognitionRef.current?.stop();
-      setIsRecording(false);
-      return;
-    }
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Speech Recognition is not supported in your browser.');
-      return;
-    }
-    const rec = new SpeechRecognition();
-    rec.continuous = false;
-    rec.interimResults = false;
-    
-    let recognitionLang = 'en-US';
-    if (selectedLang !== 'auto') {
-      recognitionLang = selectedLang;
-    } else {
-      recognitionLang = 'en-US';
-    }
-    rec.lang = recognitionLang;
-    
-    rec.onstart = () => setIsRecording(true);
-    rec.onresult = (event) => {
-      setInputPrompt(event?.results?.[0]?.[0]?.transcript || '');
-      setIsRecording(false);
-    };
-    rec.onerror = () => setIsRecording(false);
-    rec.onend = () => setIsRecording(false);
-    
-    recognitionRef.current = rec;
-    rec.start();
-  };
+  const { isRecording, isTranscribing, voiceError, voiceStatus, toggleVoiceRecording } = useVoiceQuestion({
+    language: selectedLang, siteLanguage: siteLang, enabled: isOpen, busy: isLoading,
+    onTranscript: text => handleSend(text),
+  });
 
-  // TTS Read Aloud
+
   const handleSpeak = (text, msgLang) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -163,7 +138,8 @@ export default function ChatbotSidebar() {
   // Send message handler
   const handleSend = async (customPrompt = null) => {
     const query = (customPrompt ?? inputPrompt).trim();
-    if ((!query && !attachedFile) || isLoading) return;
+    if ((!query && !attachedFile) || requestInFlight.current) return;
+    requestInFlight.current = true;
 
     const displayText = query || (attachedFile ? `[Attached: ${attachedFile.name}]` : '');
     const userMsg = {
@@ -204,7 +180,8 @@ export default function ChatbotSidebar() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ prompt: query, language: selectedLang === 'auto' ? '' : selectedLang })
+          body: JSON.stringify({ prompt: query, language: selectedLang === 'auto' ? '' : selectedLang,
+            history: messages.filter(msg => !msg.isError && typeof msg.text === 'string').slice(-10).map(msg => ({ role: msg.sender === 'user' ? 'user' : 'assistant', content: msg.text.slice(0, 3000) })) })
         });
         if (!response.ok) throw new Error('AI request failed');
         data = await response.json();
@@ -214,14 +191,14 @@ export default function ChatbotSidebar() {
         id: Date.now() + 1,
         sender: 'ai',
         text: data.answer || 'I apologize, I could not process your request.',
-        references: data.references || [],
+        references: Array.isArray(data.references) ? data.references : [],
         intent: data.intent,
         language: data.language,
         quran: data.quran || [],
         hadith: data.hadith || [],
         tafseer: data.tafseer || [],
         books: data.books || [],
-        actions: data.actions || [],
+        actions: Array.isArray(data.actions) ? data.actions : [],
         suggested: data.suggested_questions || [],
         file_analysis: data.file_analysis || null,
       };
@@ -229,8 +206,9 @@ export default function ChatbotSidebar() {
       setMessages((prev) => [...prev, aiMsg]);
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'Unable to get an answer. Please check your connection and try again.' }]);
+      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'Unable to get an answer. Please check your connection and try again.', isError: true }]);
     } finally {
+      requestInFlight.current = false;
       setIsLoading(false);
       setAgentStep('');
     }
@@ -253,7 +231,7 @@ export default function ChatbotSidebar() {
       {/* ── Left tab handle button (always visible) ── */}
       <div style={{
         position: 'fixed',
-        left: isOpen ? '360px' : 0,
+        left: isOpen ? 'min(400px, calc(100vw - 36px))' : 0,
         top: '50%',
         transform: 'translateY(-50%)',
         zIndex: 99990,
@@ -406,6 +384,7 @@ export default function ChatbotSidebar() {
                   )}
 
                   {renderFormattedText(msg.text)}
+                <ChatActions actions={msg.actions} />
                 {msg.references?.length > 0 && <div className="chat-references"><strong>Sources</strong>{msg.references.map((ref, index) => typeof ref === 'object' && /^https?:\/\//i.test(ref?.url || '') ? <a key={index} href={ref.url} target="_blank" rel="noopener noreferrer">{ref.title || ref.url}</a> : <span key={index}>{typeof ref === 'string' ? ref : ref?.title}</span>)}</div>}
 
                   {/* File analysis success tag */}
@@ -527,7 +506,8 @@ export default function ChatbotSidebar() {
           </div>
         )}
 
-        {/* Input Area */}
+        {(voiceStatus || voiceError) && <div className={`chat-voice-status ${voiceError ? 'chat-voice-error' : ''}`} role={voiceError ? 'alert' : 'status'} aria-live="polite">{voiceError || voiceStatus}</div>}
+      {/* Input Area */}
         <div style={{ padding: '16px', background: '#ffffff', borderTop: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '8px 16px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
             <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: attachedFile ? '#176141' : '#94a3b8', cursor: 'pointer', display: 'flex', padding: '4px' }} title="Attach image or PDF (max 30MB)">
@@ -535,7 +515,7 @@ export default function ChatbotSidebar() {
             </button>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" style={{ display: 'none' }} onChange={handleFileSelect} />
 
-            <button onClick={toggleVoiceRecording} style={{ background: 'none', border: 'none', color: isRecording ? '#ef4444' : '#94a3b8', cursor: 'pointer', display: 'flex' }}>
+            <button type="button" aria-label={isRecording ? "Stop recording and send question" : "Ask a question with your voice"} aria-pressed={isRecording} disabled={isLoading || isTranscribing} onClick={toggleVoiceRecording} style={{ background: 'none', border: 'none', color: isRecording ? '#ef4444' : '#94a3b8', cursor: 'pointer', display: 'flex' }}>
               {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
             </button>
             <input
@@ -543,7 +523,7 @@ export default function ChatbotSidebar() {
               type="text"
               value={inputPrompt}
               onChange={e => setInputPrompt(e.target.value)}
-              onKeyPress={e => e.key === 'Enter' && handleSend()}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSend(); }}
               placeholder={attachedFile ? "Ask about this file..." : "Type your message..."}
               style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', color: '#334155' }}
               disabled={isLoading}

@@ -87,6 +87,10 @@ export default function BooksView({ openReportModal, user }) {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q');
     if (q) setQuery(q);
+    const languages = (params.get('language') || '').split(',').filter(value => ['en','ur','ar','br'].includes(value));
+    setSelectedLanguages(languages);
+    const formats = (params.get('file_type') || '').split(',').filter(value => ['pdf','doc','ppt','book','image'].includes(value));
+    setSelectedFileTypes(formats);
   }, []);
 
   // Debounce search query to prevent excessive backend API calls

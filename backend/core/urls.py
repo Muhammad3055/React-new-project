@@ -22,6 +22,7 @@ urlpatterns = [
     
     # AI Assistant & Special Features API
     path('api/ai-assistant/', ai_views.ai_assistant_api, name='ai_assistant_api'),
+    path('api/ai-assistant/transcribe/', ai_views.ai_assistant_transcribe_api, name='ai_assistant_transcribe_api'),
     path('api/ai-assistant/file/', ai_views.ai_assistant_file_api, name='ai_assistant_file_api'),
     path('api/quiz/daily/', ai_views.get_daily_quiz, name='api_quiz_daily'),
     path('api/playlists/', ai_views.api_playlists, name='api_playlists'),
