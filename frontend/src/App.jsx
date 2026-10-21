@@ -59,7 +59,6 @@ const QuranicMapsView = lazy(() => import('./views/QuranicMapsView'));
 const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
 const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
 const QadaView = lazy(() => import('./views/QadaView'));
-const HalalCheckerView = lazy(() => import('./views/HalalCheckerView'));
 const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal'));
 import SocialCardModal from './components/SocialCardModal';
 
@@ -103,7 +102,6 @@ function MainAppContent() {
     inheritance: '/inheritance',
     wasiyyah: '/inheritance',
     qada: '/qada',
-    halal: '/halal',
     janazah: '/asan-nimaz',
     janaza: '/asan-nimaz',
     ramadan: '/ramadan',
@@ -605,10 +603,6 @@ function MainAppContent() {
 
           {activeTab === 'qada' && (
             <QadaView navigateToTab={navigateToTab} user={user} />
-          )}
-
-          {activeTab === 'halal' && (
-            <HalalCheckerView navigateToTab={navigateToTab} />
           )}
 
           {activeTab === 'ramadan' && (

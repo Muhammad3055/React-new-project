@@ -46,13 +46,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
       action: () => { if (openSpotlight) openSpotlight(); setShowExtrasMenu(false); setMobileActive(false); }
     },
     {
-      id: 'halalChecker',
-      label: '🍽️ ' + (lang === 'ar' ? 'دليل الأغذية الحلال والأرقام E' : (lang === 'ur' || lang === 'br') ? 'حلال فوڈ و ای-کوڈز گائیڈ' : 'Halal Food & E-Codes Guide'),
-      icon: 'fas fa-shield-alt',
-      highlight: true,
-      action: () => { navigateToTab('halal'); setShowExtrasMenu(false); setMobileActive(false); }
-    },
-    {
       id: 'khatamRooms',
       label: '👥 ' + (lang === 'ar' ? 'ختمة القرآن العائلية (جماعي)' : (lang === 'ur' || lang === 'br') ? 'اجتماعی و خاندانی ختمِ قرآن رومز' : 'Family Khatam Quran Rooms'),
       icon: 'fas fa-users',

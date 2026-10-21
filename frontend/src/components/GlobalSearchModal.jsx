@@ -77,17 +77,6 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
       action: () => navigateToTab('qada')
     },
     {
-      id: 'halal',
-      category: 'tools',
-      titleEn: "Halal Food & E-Codes Checker",
-      titleUr: "حلال و حرام فوڈ اجزاء اور ای-کوڈز گائیڈ",
-      titleAr: "فاحص الأرقام الأوروبية ومكونات الغذاء الحلال",
-      descEn: "Search E-numbers (E100-E1500), Gelatin, Carmine, Emulsifiers with rulings",
-      icon: "fas fa-shield-alt",
-      color: "#10b981",
-      action: () => navigateToTab('halal')
-    },
-    {
       id: 'inheritance',
       category: 'tools',
       titleEn: "Mirath Inheritance & Wasiyyah Portal",
@@ -319,9 +308,9 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
             placeholder={
-              lang === 'ar' ? 'ابحث في القرآن، قضائے عمری، الحلال، المواريث، الأدعية (Ctrl+K)...'
-              : (lang === 'ur' || lang === 'br') ? 'قرآن سورت، قضائے عمری، حلال فوڈ، وراثت، دعائیں (Ctrl+K)...'
-              : 'Search Surahs, Qaza, Halal, Inheritance, Zakat, Duas (Ctrl+K)...'
+              lang === 'ar' ? 'ابحث في القرآن، قضائے عمری، المواريث، الأدعية (Ctrl+K)...'
+              : (lang === 'ur' || lang === 'br') ? 'قرآن سورت، قضائے عمری، وراثت، دعائیں (Ctrl+K)...'
+              : 'Search Surahs, Qaza, Inheritance, Zakat, Duas (Ctrl+K)...'
             }
             style={{
               width: '100%', border: 'none', background: 'transparent',

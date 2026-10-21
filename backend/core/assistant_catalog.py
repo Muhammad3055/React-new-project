@@ -32,7 +32,6 @@ PAGES = [
     ('Islamic Names', '/names', 'baby names name بچوں نام'),
     ('Inheritance Calculator', '/inheritance', 'inheritance wasiyyah will وراثت وصیت'),
     ('Qada Tracker', '/qada', 'qada missed قضا'),
-    ('Halal Checker', '/halal', 'halal حلال'),
     ('Ramadan', '/ramadan', 'ramadan ramazan fasting رمضان روزہ'),
     ('Islamic Cards', '/card-creator', 'card cards creator کارڈ'),
     ('Live Streams', '/live', 'live stream streaming براہ راست'),
