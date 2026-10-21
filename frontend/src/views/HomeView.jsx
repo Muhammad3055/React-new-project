@@ -1072,54 +1072,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         </section>
       )}
 
-      {/* Continue-reading card and daily reading plan */}
-      <section className="container home-reading-hub" style={{ marginTop: '1.25rem', marginBottom: '2.5rem' }}>
-        <div className="home-reading-cards">
-          <article className="home-reading-card home-continue-card">
-            <div className="home-reading-icon"><i className="fas fa-bookmark" aria-hidden="true" /></div>
-            <div className="home-reading-copy">
-              <span className="home-reading-eyebrow">{t('readQuran', 'Quran reader')}</span>
-              <h2>{lastRead ? `${t('surah', 'Surah')} ${lastRead.surahName} · ${t('ayah', 'Ayah')} ${lastRead.ayahNumber}` : t('startReading', 'Begin reading the Quran')}</h2>
-              <p>{lastRead ? t('savedPositionMsg', 'Continue from your saved reading position.') : t('quranHeroSubtitle', 'Read and listen to the Quran with translations.')}</p>
-            </div>
-            <button type="button" className="home-reading-action" onClick={() => handleNav('read')}>
-              {lastRead ? t('continueReading', 'Continue reading') : t('readQuran', 'Open Quran')} <i className="fas fa-arrow-right" aria-hidden="true" />
-            </button>
-          </article>
-
-          {lastBook && (
-            <article className="home-reading-card home-continue-card">
-              <div className="home-reading-icon"><i className="fas fa-book" aria-hidden="true" /></div>
-              <div className="home-reading-copy">
-                <span className="home-reading-eyebrow">{t('continueBook', 'Continue your book')}</span>
-                <h2>{lastBook.title}</h2>
-                <p>{t('page', 'Page')} {lastBook.page || 1} of {lastBook.pages_count || 1}{lastBook.author ? ` · ${lastBook.author}` : ''}</p>
-              </div>
-              <button type="button" className="home-reading-action" onClick={() => navigate('books', lastBook.title)}>
-                {t('continueReading', 'Continue reading')} <i className="fas fa-arrow-right" aria-hidden="true" />
-              </button>
-            </article>
-          )}
-
-          <article className="home-reading-card home-plan-card">
-            <div className="home-reading-copy">
-              <span className="home-reading-eyebrow">{t('dailyReadingPlan', 'Daily reading plan')}</span>
-              <h2>{dailyPlan.completed} of {dailyPlan.target} pages today</h2>
-              <div className="home-plan-progress" role="progressbar" aria-label="Daily Quran reading progress" aria-valuemin="0" aria-valuemax={dailyPlan.target} aria-valuenow={dailyPlan.completed}>
-                <span style={{ width: `${Math.min(100, (dailyPlan.completed / dailyPlan.target) * 100)}%` }} />
-              </div>
-              <div className="home-plan-controls">
-                <label htmlFor="daily-plan-target">{t('dailyGoal', 'Daily goal')}</label>
-                <select id="daily-plan-target" value={dailyPlan.target} onChange={event => setDailyPlan(current => ({ ...current, target: Number(event.target.value), completed: Math.min(current.completed, Number(event.target.value)) }))}>
-                  {[1, 3, 5, 10].map(target => <option key={target} value={target}>{target} {t('pages', 'pages')}</option>)}
-                </select>
-                <button type="button" className="home-reading-action" onClick={() => setDailyPlan(current => ({ ...current, completed: Math.min(current.target, current.completed + 1) }))} disabled={dailyPlan.completed >= dailyPlan.target}>
-                  {dailyPlan.completed >= dailyPlan.target ? t('goalComplete', 'Goal complete') : t('markPageRead', '+ Mark a page')}
-                </button>
-              </div>
-            </div>
-          </article>
-        </div>
+      <section id="home-prayer-times" className="container" style={{ marginTop: '1.25rem', marginBottom: '2.5rem', textAlign: 'center' }}>
+        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
       </section>
 
       {/* 1. FEATURED AUDIO RECITATIONS (EXACTLY 4 SURAHS - CENTERED) */}
@@ -1281,10 +1235,6 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             {t('exploreFullBooks')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
           </a>
         </div>
-      </section>
-
-      <section id="home-prayer-times" className="container" style={{ marginTop: '1.25rem', textAlign: 'center' }}>
-        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
       </section>
 
       {/* 3. FEATURED TAQREER AUDIOS / MUHAZIRAT (ONLY RENDERS IF LECTURES ARE UPLOADED) */}
