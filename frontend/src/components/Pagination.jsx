@@ -5,11 +5,12 @@ export default function Pagination({
   currentPage = 1,
   totalItems = 0,
   itemsPerPage = 9,
+  totalPagesOverride = null,
   onPageChange,
   scrollToTopId = null
 }) {
   const { t } = useLanguage();
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = totalPagesOverride ?? Math.ceil(totalItems / itemsPerPage);
 
   if (totalPages <= 1) return null;
 
@@ -77,8 +78,10 @@ export default function Pagination({
     >
       {/* Page summary info */}
       <div style={{ fontSize: '0.85rem', color: '#78716c', fontWeight: 600 }}>
-        {t('showingItems', 'Showing')} <strong style={{ color: 'var(--accent-gold)' }}>{startItem}–{endItem}</strong> {t('ofItems', 'of')}{' '}
-        <strong style={{ color: '#1c1917' }}>{totalItems}</strong> ({t('pageLabel', 'Page')} {currentPage} {t('ofItems', 'of')} {totalPages})
+        {totalPagesOverride != null ? <>{t('pageLabel', 'Page')} {currentPage} {t('ofItems', 'of')} {totalPages}</> : <>
+          {t('showingItems', 'Showing')} <strong style={{ color: 'var(--accent-gold)' }}>{startItem}–{endItem}</strong> {t('ofItems', 'of')}{' '}
+          <strong style={{ color: '#1c1917' }}>{totalItems}</strong> ({t('pageLabel', 'Page')} {currentPage} {t('ofItems', 'of')} {totalPages})
+        </>}
       </div>
 
       {/* Pagination control buttons */}

@@ -693,7 +693,7 @@ export default function BooksView({ openReportModal, user }) {
                           className="books-read-button"
                           onClick={() => handleOpenDocModal(bk)}
                         >
-                          <i className="fas fa-book-open" aria-hidden="true"></i> Read Book
+                          <i className="fas fa-book-open" aria-hidden="true"></i> {t('readBook', 'Read Book')}
                         </button>
 
                         <a
@@ -702,9 +702,9 @@ export default function BooksView({ openReportModal, user }) {
                           download
                           target="_blank"
                           rel="noreferrer"
-                          title="Download book"
+                          title={t('download', 'Download')}
                         >
-                          <i className="fas fa-download" aria-hidden="true"></i> Download
+                          <i className="fas fa-download" aria-hidden="true"></i> {t('download', 'Download')}
                         </a>
                         </>}
 
@@ -792,7 +792,7 @@ export default function BooksView({ openReportModal, user }) {
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-book-open" aria-hidden="true"></i> Read Book
+                          <i className="fas fa-book-open" aria-hidden="true"></i> {t('readBook', 'Read Book')}
                         </button>
                         <a
                           className="books-download"
@@ -800,11 +800,11 @@ export default function BooksView({ openReportModal, user }) {
                           download
                           target="_blank"
                           rel="noreferrer"
-                          title="Download book"
+                          title={t('download', 'Download')}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-download" aria-hidden="true"></i> Download
+                          <i className="fas fa-download" aria-hidden="true"></i> {t('download', 'Download')}
                         </a>
                         </>}
                       </div>

@@ -255,7 +255,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
       }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{
+      <div className="islamic-tool-dialog" role="dialog" aria-modal="true" aria-labelledby="islamic-calendar-title" style={{
         width: '100%', maxWidth: '700px', maxHeight: '93vh',
         background: 'linear-gradient(135deg, #022c22 0%, #0f172a 100%)',
         border: '2px solid var(--accent-gold, #f59e0b)',
@@ -281,7 +281,7 @@ export default function IslamicCalendarModal({ isOpen, onClose }) {
               <Moon size={22} style={{ color: '#f59e0b' }} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#f59e0b' }}>
+              <h3 id="islamic-calendar-title" style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#f59e0b' }}>
                 {t('islamicHijriCalendar', 'Islamic Hijri Calendar')}
               </h3>
               <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>

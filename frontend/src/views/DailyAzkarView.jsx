@@ -71,7 +71,7 @@ export default function DailyAzkarView() {
   ];
 
   return (
-    <div style={{ background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem' }}>
+    <div className="islamic-tool-page" style={{ background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         
         {/* Banner Header */}

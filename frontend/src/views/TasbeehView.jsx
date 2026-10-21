@@ -74,7 +74,7 @@ export default function TasbeehView() {
   };
 
   return (
-    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem', maxWidth: '750px' }}>
+    <div className="container islamic-tool-page" style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem', maxWidth: '750px' }}>
       {/* Header */}
       <div className="section-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title" style={{ justifyContent: 'center' }}>

@@ -2190,12 +2190,12 @@ body.has-audio-player footer {
 
 /* Prayer Times & Hijri Widget */
 .prayer-widget-card {
-  background: linear-gradient(135deg, #09090b 0%, #18181b 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-emerald) 100%);
   border-radius: 16px;
   padding: 1.5rem 2rem;
   color: #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid color-mix(in srgb, var(--primary-emerald) 60%, var(--accent-gold));
   margin-bottom: 2rem;
   min-height: 195px; /* Reserve height on desktop to prevent CLS layout shift */
 }
@@ -2220,7 +2220,7 @@ body.has-audio-player footer {
 .prayer-settings { position: relative; }
 .prayer-settings summary { list-style: none; }
 .prayer-settings summary::-webkit-details-marker { display: none; }
-.prayer-settings-fields { position: absolute; z-index: 5; top: calc(100% + 8px); right: 0; width: min(310px, calc(100vw - 36px)); padding: 14px; border: 1px solid #4b6653; border-radius: 13px; background: #17251c; box-shadow: 0 12px 28px #0008; display: grid; gap: 12px; }
+.prayer-settings-fields { position: absolute; z-index: 5; top: calc(100% + 8px); inset-inline-end: 0; width: min(310px, calc(100vw - 36px)); padding: 14px; border: 1px solid #4b6653; border-radius: 13px; background: var(--primary-dark); box-shadow: 0 12px 28px #0008; display: grid; gap: 12px; }
 .prayer-settings:not([open]) .prayer-settings-fields { display: none; }
 .prayer-settings-fields label { display: grid; gap: 5px; color: #e0eee3; font-size: .8rem; }
 .prayer-settings-fields select { width: 100%; min-width: 0; padding: 8px; border: 1px solid #597461; border-radius: 8px; background: #fff; color: #173422; font: inherit; }
@@ -4373,3 +4373,31 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .books-empty-state h3 { margin: .75rem 0 .35rem; color: var(--text-main); }
 .books-empty-state p { margin: 0; }
 @media (max-width: 640px) { .books-search-filter { padding: .8rem; } .books-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: .8rem; } .books-cover { height: 190px; } .books-card-actions { padding: .7rem; } }
+
+/* Hadith collection reader */
+.hadith-record-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1rem; }
+.hadith-record-card { min-width: 0; padding: clamp(1rem, 2.5vw, 1.5rem); border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card); color: var(--text-main); box-shadow: var(--shadow-sm); }
+.hadith-record-reference { padding: .35rem .7rem; border-radius: 999px; background: #edf5ef; color: var(--primary-dark); font-size: .82rem; font-weight: 750; }
+.hadith-grade-badge { padding: .3rem .65rem; border: 1px solid var(--border-color); border-radius: 999px; background: #f6f4ec; color: #72541e; font-size: .78rem; font-weight: 700; }
+.hadith-action-btn { width: 40px; height: 40px; border-radius: 10px; background: #fff; color: var(--primary-emerald); }
+.hadith-action-btn:hover { background: #edf5ef; }
+.hadith-field-label { margin: .8rem 0 .25rem; color: var(--text-muted); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.hadith-arabic-text { margin: .25rem 0 1rem; color: var(--primary-dark); font-size: clamp(1.45rem, 3vw, 1.8rem); line-height: 2; text-align: right; }
+.hadith-translation { margin: .25rem 0 .8rem; color: var(--text-main); font-size: 1rem; line-height: 1.8; }
+.hadith-source { margin: .8rem 0 0; padding-top: .65rem; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: .8rem; }
+.hadith-empty-state { margin: 1rem 0; padding: 3rem 1rem; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card); color: var(--text-muted); text-align: center; }
+.hadith-empty-state > i { color: var(--primary-emerald); font-size: 2rem; }
+.hadith-empty-state h3 { margin: .65rem 0 .25rem; color: var(--text-main); }
+.hadith-empty-state p { margin: 0; }
+@media (max-width: 640px) { .hadith-record-grid { grid-template-columns: minmax(0, 1fr); } .hadith-record-card > div:first-child { align-items: flex-start !important; } }
+
+.islamic-tool-page .card { border-color: var(--border-color) !important; border-radius: var(--radius-lg) !important; box-shadow: var(--shadow-sm); }
+.islamic-tool-dialog { border-color: var(--primary-emerald) !important; border-radius: var(--radius-lg) !important; box-shadow: var(--shadow-lg) !important; }
+.prayer-widget-card { min-width: 0; }
+.prayer-location-badge { font: inherit; }
+.prayer-times-unavailable { padding: 1rem; color: #f8fafc; text-align: center; }
+@media (max-width: 640px) {
+  .prayer-widget-card { padding: 1rem !important; }
+  .prayer-widget-header { align-items: flex-start; }
+  .prayer-times-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

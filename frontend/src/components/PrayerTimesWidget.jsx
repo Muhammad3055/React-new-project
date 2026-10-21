@@ -15,7 +15,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
   const [monthlyTimings, setMonthlyTimings] = useState([]);
   
   // User Location State
-  const [locationName, setLocationName] = useState('Detecting location…');
+  const [locationName, setLocationName] = useState(() => t('detectingLocation', 'Detecting your location automatically'));
   const [locationType, setLocationType] = useState('ip'); // 'gps' | 'ip' | 'custom'
   const [customCity, setCustomCity] = useState('');
   const [showCityInput, setShowCityInput] = useState(false);
@@ -164,13 +164,13 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
     await Promise.allSettled(tasks);
     if (id !== detectionRef.current || winner) return;
     if (preciseOnly) {
-      setError(location ? 'Precise GPS is unavailable. Showing your current location estimate.' : 'Precise GPS is unavailable. Retry automatic location.');
+      setError(t('preciseGpsUnavailable', 'Precise GPS is unavailable. Retry automatic location.'));
       return;
     }
     if (!location) {
       setLoading(false);
-      setLocationName('Location unavailable');
-      setError('Automatic location is temporarily unavailable.');
+      setLocationName(t('locationUnavailable', 'Location unavailable'));
+      setError(t('automaticLocationUnavailable', 'Automatic location is temporarily unavailable.'));
     }
   };
 
@@ -188,6 +188,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
     setLoading(true);
     setError('');
     setTimings(null);
+    setSchedule(null);
     setMonthlyTimings([]);
     setCountdownText('');
     setSehriCountdown('');
@@ -285,42 +286,43 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
 
   if (compact && !compactExpanded) {
     return (
-      <section className="home-prayer-summary" aria-label="Prayer times">
+      <section className="home-prayer-summary" aria-label={t('prayerTimesLabel', 'Prayer times')}>
         <div className="home-prayer-summary-top">
           <div>
-            <span className="home-eyebrow">Prayer times</span>
-            <button type="button" className="home-location-button" onClick={() => setShowCityInput(value => !value)}>
+            <span className="home-eyebrow">{t('prayerTimesLabel', 'Prayer times')}</span>
+            <button type="button" className="home-location-button" aria-label={`${t('changeLocation', 'Change location')}: ${locationName}`} onClick={() => setShowCityInput(value => !value)}>
               <i className="fas fa-location-dot" aria-hidden="true" /> {locationName} <i className="fas fa-pen" aria-hidden="true" />
             </button>
           </div>
-          {timings && nextPrayer.name && nextPrayer.time && <div className="home-next-prayer"><span>Next prayer</span><strong>{t(nextPrayer.name.toLowerCase(), nextPrayer.name)} · {nextPrayer.time}</strong></div>}
+          {timings && nextPrayer.name && nextPrayer.time && <div className="home-next-prayer"><span>{t('nextPrayer', 'Next Prayer')}</span><strong>{t(nextPrayer.name.toLowerCase(), nextPrayer.name)} · <bdi dir="ltr">{nextPrayer.time}</bdi></strong></div>}
         </div>
-        {loading && !timings ? <p role="status" className="home-prayer-state">Finding local prayer times…</p> : error && !timings ? <p role="alert" className="home-prayer-state">{error} <button type="button" onClick={() => location ? setRefresh(value => value + 1) : detectLocationAndFetch()}>Retry</button></p> : timings && mainPrayers.some(prayer => prayer.time) ? (
+        {loading && !timings ? <p role="status" className="home-prayer-state">{t('findingPrayerTimes', 'Finding local prayer times…')}</p> : error && !timings ? <p role="alert" className="home-prayer-state">{t('prayerLoadError', 'Prayer times could not be loaded. Please retry.')} <button type="button" onClick={() => location ? setRefresh(value => value + 1) : detectLocationAndFetch()}>{t('retry', 'Retry')}</button></p> : timings && mainPrayers.some(prayer => prayer.time) ? (
           <div className="home-prayer-times">
-            {mainPrayers.filter(prayer => prayer.time).map(prayer => <div key={prayer.key}><span>{prayer.name}</span><strong>{prayer.time.split(' ')[0]}</strong></div>)}
+            {mainPrayers.filter(prayer => prayer.time).map(prayer => <div key={prayer.key}><span>{prayer.name}</span><strong dir="ltr">{prayer.time.split(' ')[0]}</strong></div>)}
           </div>
-        ) : <p role="status" className="home-prayer-state">Prayer times are not available right now.</p>}
+        ) : <p role="status" className="home-prayer-state">{t('prayerTimesUnavailable', 'Prayer times are not available right now.')}</p>}
         {showCityInput && <form className="home-city-form" onSubmit={handleCustomCitySubmit}>
-          <input value={customCity} onChange={event => setCustomCity(event.target.value)} placeholder="City" required aria-label="City" />
-          <input value={customCountry} onChange={event => setCustomCountry(event.target.value)} placeholder="Country" required aria-label="Country" />
-          <button type="submit">Update location</button>
-          <button type="button" onClick={() => detectLocationAndFetch(true)}>Use GPS</button>
+          <input value={customCity} onChange={event => setCustomCity(event.target.value)} placeholder={t('city', 'City')} required aria-label={t('city', 'City')} />
+          <input value={customCountry} onChange={event => setCustomCountry(event.target.value)} placeholder={t('country', 'Country')} required aria-label={t('country', 'Country')} />
+          <button type="submit">{t('updateLocation', 'Update location')}</button>
+          <button type="button" onClick={() => detectLocationAndFetch(true)}>{t('autoGps', 'Auto GPS')}</button>
         </form>}
-        <button type="button" className="home-prayer-details" onClick={() => setCompactExpanded(true)}>Full schedule &amp; prayer settings <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+        <button type="button" className="home-prayer-details" onClick={() => setCompactExpanded(true)}>{t('fullScheduleSettings', 'Full schedule & prayer settings')} <i className="fas fa-arrow-right" aria-hidden="true" /></button>
       </section>
     );
   }
 
   return (
     <div className="prayer-widget-card">
-      {compact && <button type="button" className="home-prayer-details" onClick={() => setCompactExpanded(false)}>Back to prayer summary</button>}
+      {compact && <button type="button" className="home-prayer-details" onClick={() => setCompactExpanded(false)}>{t('backToPrayerSummary', 'Back to prayer summary')}</button>}
       <div className="prayer-widget-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span className="hijri-badge"><i className="fas fa-calendar-alt"></i> {timings ? hijriDate : '—'}</span>
           <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{timings ? gregorianDate : ''}</span>
           
           {/* Location Badge */}
-          <span 
+          <button type="button"
+            className="prayer-location-badge"
             onClick={() => setShowCityInput(!showCityInput)}
             style={{ 
               background: 'rgba(16, 185, 129, 0.15)', 
@@ -335,16 +337,17 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
               alignItems: 'center',
               gap: '4px'
             }}
-            title="Click to change location or city"
+            title={t('changeLocation', 'Change location')}
+            aria-label={`${t('changeLocation', 'Change location')}: ${locationName}`}
           >
             <i className="fas fa-map-marker-alt" style={{ color: 'var(--accent-gold)' }}></i>
             <span>📍 {locationName}</span>
             <i className="fas fa-edit" style={{ fontSize: '0.7rem', opacity: 0.7 }}></i>
-          </span>
+          </button>
 
           {/* Live Ticking Clock */}
           <span style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(245,158,11,0.4)', color: 'var(--accent-gold)', padding: '2px 10px', borderRadius: '14px', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.5px' }}>
-            <i className="fas fa-clock" style={{ marginRight: '4px' }}></i> {timings ? liveTime : '—'}
+            <i className="fas fa-clock" style={{ marginInlineEnd: '4px' }}></i> {timings && <bdi dir="ltr">{liveTime}</bdi>}
           </span>
         </div>
 
@@ -417,13 +420,13 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
       </div>
 
       <div className="prayer-location-controls">
-        <span><i className="fas fa-location-arrow" aria-hidden="true"></i> {loading && !timings ? 'Finding your local prayer times…' : location ? `Times for ${location.label}` : 'Detecting your location automatically'}</span>
-        <button type="button" onClick={() => detectLocationAndFetch(true)}><i className="fas fa-crosshairs" aria-hidden="true"></i> Use precise GPS</button>
+        <span><i className="fas fa-location-arrow" aria-hidden="true"></i> {loading && !timings ? t('findingPrayerTimes', 'Finding local prayer times…') : location ? `${t('timesForLocation', 'Times for')} ${location.label}` : t('detectingLocation', 'Detecting your location automatically')}</span>
+        <button type="button" onClick={() => detectLocationAndFetch(true)}><i className="fas fa-crosshairs" aria-hidden="true"></i> {t('autoGps', 'Auto GPS')}</button>
         <details className="prayer-settings">
-          <summary><i className="fas fa-sliders-h" aria-hidden="true"></i> Prayer settings</summary>
+          <summary><i className="fas fa-sliders-h" aria-hidden="true"></i> {t('prayerSettings', 'Prayer settings')}</summary>
           <div className="prayer-settings-fields">
-            <label>Calculation method <select aria-label="Prayer calculation method" value={calculation.method} onChange={e => setCalculation(prev => ({ ...prev, method: e.target.value }))}>
-              <option value="auto">Automatic regional method</option>
+            <label>{t('calculationMethod', 'Calculation method')} <select aria-label={t('calculationMethod', 'Calculation method')} value={calculation.method} onChange={e => setCalculation(prev => ({ ...prev, method: e.target.value }))}>
+              <option value="auto">{t('automaticRegionalMethod', 'Automatic regional method')}</option>
               <option value="1">Karachi</option><option value="2">ISNA</option><option value="3">Muslim World League</option>
               <option value="4">Umm Al-Qura, Makkah</option><option value="5">Egyptian Authority</option>
               <option value="8">Gulf Region</option><option value="9">Kuwait</option><option value="10">Qatar</option>
@@ -431,20 +434,20 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
               <option value="14">Russia</option><option value="15">Moonsighting Committee</option><option value="16">Dubai</option>
               <option value="17">Malaysia</option><option value="20">Indonesia</option><option value="21">Morocco</option>
             </select></label>
-            <label>Asr calculation <select aria-label="Asr calculation" value={calculation.school} onChange={e => setCalculation(prev => ({ ...prev, school: e.target.value }))}>
-              <option value="auto">Regional default</option><option value="0">Standard (Shafi, Maliki, Hanbali)</option><option value="1">Hanafi</option>
+            <label>{t('asrCalculation', 'Asr calculation')} <select aria-label={t('asrCalculation', 'Asr calculation')} value={calculation.school} onChange={e => setCalculation(prev => ({ ...prev, school: e.target.value }))}>
+              <option value="auto">{t('regionalDefault', 'Regional default')}</option><option value="0">{t('standardAsr', 'Standard (Shafi, Maliki, Hanbali)')}</option><option value="1">{t('hanafiAsr', 'Hanafi')}</option>
             </select></label>
-            <button type="button" onClick={() => setShowCityInput(value => !value)}>Choose a different city</button>
+            <button type="button" onClick={() => setShowCityInput(value => !value)}>{t('chooseDifferentCity', 'Choose a different city')}</button>
           </div>
         </details>
       </div>
       <p style={{ marginTop: '8px', fontSize: '.8rem' }}>
-        {schedule && !loading && `${schedule.timezone} · ${schedule.today.meta.method?.name || 'Regional calculation'} · ${schedule.school === '1' ? 'Hanafi Asr' : 'Standard Asr'}`}
-        {locationType === 'ip' && ' · Approximate location from your network; use GPS or choose your city for better accuracy.'}
+        {schedule && !loading && `${schedule.timezone} · ${schedule.today.meta.method?.name || t('regionalDefault', 'Regional calculation')} · ${schedule.school === '1' ? t('hanafiAsr', 'Hanafi Asr') : t('standardAsr', 'Standard Asr')}`}
+        {locationType === 'ip' && ` · ${t('approximateLocationInfo', 'Approximate location from your network; use GPS or choose your city for better accuracy.')}`}
       </p>
-      <p style={{ fontSize: '.78rem', opacity: .85 }}>Calculated prayer start times. Your mosque’s jamaat times may differ. Adhan alerts require this page to remain open.</p>
-      {loading && <p role="status">Loading your location and prayer times…</p>}
-      {error && <p role="alert" className="prayer-location-error">{error} <button type="button" onClick={() => location ? setRefresh(v => v + 1) : detectLocationAndFetch()}>Retry</button> {!location && <button type="button" onClick={() => setShowCityInput(true)}>Choose city</button>}</p>}
+      <p style={{ fontSize: '.78rem', opacity: .85 }}>{t('calculatedPrayerTimesNote', 'Calculated prayer start times. Your mosque’s jamaat times may differ. Adhan alerts require this page to remain open.')}</p>
+      {loading && <p role="status">{t('findingPrayerTimes', 'Finding local prayer times…')}</p>}
+      {error && <p role="alert" className="prayer-location-error">{t('prayerLoadError', 'Prayer times could not be loaded. Please retry.')} <button type="button" onClick={() => location ? setRefresh(v => v + 1) : detectLocationAndFetch()}>{t('retry', 'Retry')}</button> {!location && <button type="button" onClick={() => setShowCityInput(true)}>{t('chooseDifferentCity', 'Choose a different city')}</button>}</p>}
       {/* Change City Input Bar */}
       {showCityInput && (
         <form onSubmit={handleCustomCitySubmit} style={{ marginTop: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', background: 'rgba(0,0,0,0.4)', padding: '0.5rem', borderRadius: '12px', border: '1px solid var(--accent-gold)' }}>
@@ -457,7 +460,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
             placeholder={t('typeCityPlaceholder', 'Type city name (e.g., Karachi, London, Makkah)...')}
             style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff', outline: 'none', fontSize: '0.85rem', padding: '0 0.5rem' }}
           />
-          <input required aria-label="Country" value={customCountry} onChange={e => setCustomCountry(e.target.value)} placeholder="Country (e.g. Pakistan, United Kingdom)" style={{ flex: 1, minWidth: '160px', padding: '8px', borderRadius: '8px' }} />
+          <input required aria-label={t('country', 'Country')} value={customCountry} onChange={e => setCustomCountry(e.target.value)} placeholder={`${t('country', 'Country')} (e.g. Pakistan, United Kingdom)`} style={{ flex: 1, minWidth: '160px', padding: '8px', borderRadius: '8px' }} />
           <button type="submit" style={{ background: 'var(--accent-gold)', color: '#000', border: 'none', padding: '0.3rem 0.85rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>
             {t('updateLocation', 'Update Location')}
           </button>
@@ -670,33 +673,34 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
           {/* Live Countdown Cards Row */}
           <div style={{ marginBottom: '1.25rem' }}>
             {/* Next Prayer Countdown Card */}
-            <div style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%)', border: '1.5px solid var(--accent-gold)', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {nextPrayer.name && nextPrayer.time && <div style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%)', border: '1.5px solid var(--accent-gold)', borderRadius: '16px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#fcd34d', letterSpacing: '0.5px' }}>{t('nextNimazCountdown', 'Next Nimaz Countdown')}</span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#fcd34d', letterSpacing: '0.5px' }}>{t('nextPrayer', 'Next Prayer')}</span>
                 <h4 style={{ margin: '0.15rem 0 0 0', fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
-                  {t(nextPrayer.name.toLowerCase(), nextPrayer.name || 'Prayer')} ({nextPrayer.time || '--:--'})
+                  {t(nextPrayer.name.toLowerCase(), nextPrayer.name || 'Prayer')} {nextPrayer.time && <bdi dir="ltr">({nextPrayer.time})</bdi>}
                 </h4>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--accent-gold)', fontFamily: 'monospace' }}>
-                  ⏱️ {countdownText || '00m 00s'}
+                  ⏱️ {countdownText}
                 </span>
               </div>
-            </div>
+            </div>}
           </div>
 
           {/* Live Daily Nimaz View */}
-          <div className="prayer-times-grid">
-            {mainPrayers.map((p) => {
+          {timings && mainPrayers.some(prayer => prayer.time) && <div className="prayer-times-grid">
+            {mainPrayers.filter(prayer => prayer.time).map((p) => {
               const isNext = nextPrayer.name === p.key;
               return (
                 <div key={p.key} className={`prayer-time-box ${isNext ? 'active-prayer' : ''}`}>
                   <div className="prayer-name">{p.name}</div>
-                  <div className="prayer-val">{p.time || '--:--'}</div>
+                  <div className="prayer-val" dir="ltr">{p.time}</div>
                 </div>
               );
             })}
-          </div>
+          </div>}
+          {!loading && !error && !mainPrayers.some(prayer => prayer.time) && <p role="status" className="prayer-times-unavailable">{t('prayerTimesUnavailable', 'Prayer times are not available right now.')}</p>}
         </div>
       ) : (
         /* Full Month Daily Nimaz Timetable Calendar */
@@ -734,12 +738,12 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
                       <td style={{ padding: '0.5rem', fontWeight: 700, color: isToday ? 'var(--accent-gold)' : '#e2e8f0' }}>
                         {day.date?.readable} {isToday && <span style={{ fontSize: '0.7rem', background: 'var(--accent-gold)', color: '#000', padding: '1px 6px', borderRadius: '10px', marginLeft: '4px' }}>{t('todayBadge', 'Today')}</span>}
                       </td>
-                      <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Fajr?.split(' ')[0]}</td>
-                      <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Sunrise?.split(' ')[0]}</td>
-                      <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Dhuhr?.split(' ')[0]}</td>
-                      <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Asr?.split(' ')[0]}</td>
-                      <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Maghrib?.split(' ')[0]}</td>
-                      <td style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{day.timings?.Isha?.split(' ')[0]}</td>
+                      <td dir="ltr" style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{cleanPrayerTime(day.timings?.Fajr) || '—'}</td>
+                      <td dir="ltr" style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{cleanPrayerTime(day.timings?.Sunrise) || '—'}</td>
+                      <td dir="ltr" style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{cleanPrayerTime(day.timings?.Dhuhr) || '—'}</td>
+                      <td dir="ltr" style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{cleanPrayerTime(day.timings?.Asr) || '—'}</td>
+                      <td dir="ltr" style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{cleanPrayerTime(day.timings?.Maghrib) || '—'}</td>
+                      <td dir="ltr" style={{ padding: '0.5rem', color: isToday ? '#fff' : '#cbd5e1' }}>{cleanPrayerTime(day.timings?.Isha) || '—'}</td>
                     </tr>
                   );
                 })}

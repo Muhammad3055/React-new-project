@@ -175,7 +175,7 @@ export default function QiblaView() {
   const needleRotation = deviceHeading !== null ? qiblaBearing - deviceHeading : qiblaBearing;
 
   return (
-    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem', maxWidth: '850px', margin: 'auto' }}>
+    <div className="container islamic-tool-page" style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem', maxWidth: '850px', margin: 'auto' }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#1c1917', margin: '0 0 0.5rem 0' }}>
@@ -243,7 +243,7 @@ export default function QiblaView() {
             >
               {/* Gold Kaaba Pointer Arrow */}
               <div style={{ position: 'absolute', top: '22px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: '28px', height: '28px', background: '#1c1917', borderRadius: '6px', border: '2px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} title="Kaaba Makkah">
+                <div aria-hidden="true" style={{ width: '28px', height: '28px', background: '#1c1917', borderRadius: '6px', border: '2px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
                   <i className="fas fa-kaaba" style={{ color: 'var(--accent-gold)', fontSize: '0.9rem' }}></i>
                 </div>
                 <div style={{ width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '25px solid var(--accent-gold)', marginTop: '-4px' }}></div>

@@ -174,7 +174,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
   };
 
   return (
-    <div style={{ background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem', direction: isRtl ? 'rtl' : 'ltr' }}>
+    <div className="islamic-tool-page" style={{ background: 'var(--bg-main, #fdfbf7)', minHeight: '90vh', padding: '2rem 1rem', direction: isRtl ? 'rtl' : 'ltr' }}>
       <div style={{ maxWidth: '1150px', margin: '0 auto' }}>
 
         {/* ── Hero Banner ── */}
@@ -406,12 +406,12 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
                       fontSize: '0.85rem', cursor: 'pointer'
                     }}
                   >
-                    {lang === 'ar' ? 'تعديل النية والاسم' : (lang === 'ur' || lang === 'br') ? 'نام و نیت تبدیل کریں' : 'Edit Room'}
+                    {t('editRoom', 'Edit Room')}
                   </button>
 
                   <button
                     onClick={handleResetEntireGroupRoom}
-                    title="Reset Room"
+                    title={t('resetRoom', 'Reset Room')}
                     style={{
                       background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5',
                       padding: '10px', borderRadius: '12px', cursor: 'pointer'
@@ -529,14 +529,12 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
                             }}
                           >
                             <Check size={14} />
-                            {isCompleted 
-                              ? (lang === 'ar' ? 'تمت القراءة' : (lang === 'ur' || lang === 'br') ? 'مکمل ہے' : 'Done')
-                              : (lang === 'ar' ? 'تحديد كمكتمل' : (lang === 'ur' || lang === 'br') ? 'مکمل نشان لگائیں' : 'Mark Done')}
+                            {isCompleted ? t('done', 'Done') : t('markDone', 'Mark Done')}
                           </button>
 
                           <button
                             onClick={() => handleReleaseJuz(juz.id)}
-                            title="Release Juz"
+                            title={t('releaseJuz', 'Release Juz')}
                             style={{
                               padding: '8px 10px', borderRadius: '10px', border: '1px solid #cbd5e1',
                               background: '#fff', color: '#dc2626', cursor: 'pointer'

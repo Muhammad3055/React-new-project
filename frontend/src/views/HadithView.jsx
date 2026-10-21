@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../utils/apiCache';
 import { useLanguage } from '../context/LanguageContext';
-import { getAdminItems, deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
+import { deleteContentItem, filterOutDeleted } from '../utils/adminContentStore';
 import Pagination from '../components/Pagination';
 
 export default function HadithView({ openReportModal, user }) {
@@ -25,6 +25,7 @@ export default function HadithView({ openReportModal, user }) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -32,74 +33,49 @@ export default function HadithView({ openReportModal, user }) {
   }, [query]);
 
   useEffect(() => {
+    let active = true;
     setLoading(true);
+    setLoadError(false);
     fetch(getApiUrl(`/api/hadith/?q=${encodeURIComponent(debouncedQuery)}&book=${encodeURIComponent(selectedBook)}&grade=${encodeURIComponent(selectedGrade)}&page=${page}`))
-      .then(res => res.json())
+      .then(res => { if (!res.ok) throw new Error('Hadith request failed'); return res.json(); })
       .then(data => {
-        const apiHadiths = data.results || [];
-        const adminHadiths = getAdminItems('hadith').map(item => ({
-          id: item.id,
-          book_name: 'Admin Post',
-          hadith_number: 'Post',
-          grade: 'Authentic',
-          chapter: item.title || 'Admin Article',
-          arabic_text: item.description || '',
-          translation: item.description || item.title,
-          narrated_by: item.author || item.speaker || 'Admin',
-          addedByAdmin: true
-        }));
-        setHadiths(filterOutDeleted([...adminHadiths, ...apiHadiths]));
+        if (!active) return;
+        setHadiths(filterOutDeleted(data.results || []));
         setBooksList(data.books_list || []);
         setTotalPages(data.total_pages || 1);
         setLoading(false);
       })
       .catch(() => {
-        const adminHadiths = getAdminItems('hadith').map(item => ({
-          id: item.id,
-          book_name: 'Admin Post',
-          hadith_number: 'Post',
-          grade: 'Authentic',
-          chapter: item.title || 'Admin Article',
-          arabic_text: item.description || '',
-          translation: item.description || item.title,
-          narrated_by: item.author || item.speaker || 'Admin',
-          addedByAdmin: true
-        }));
-        setHadiths(filterOutDeleted(adminHadiths));
+        if (!active) return;
+        setHadiths([]);
+        setBooksList([]);
+        setTotalPages(1);
+        setLoadError(true);
         setLoading(false);
       });
+    return () => { active = false; };
   }, [debouncedQuery, selectedBook, selectedGrade, page]);
 
-  useEffect(() => {
-    const handleUpdate = () => {
-      const adminHadiths = getAdminItems('hadith').map(item => ({
-        id: item.id,
-        book_name: 'Admin Post',
-        hadith_number: 'Post',
-        grade: 'Authentic',
-        chapter: item.title || 'Admin Article',
-        arabic_text: item.description || '',
-        translation: item.description || item.title,
-        narrated_by: item.author || item.speaker || 'Admin',
-        addedByAdmin: true
-      }));
-      setHadiths(prev => [...adminHadiths, ...prev.filter(x => !x.addedByAdmin)]);
-    };
-    window.addEventListener('admin_content_updated', handleUpdate);
-    return () => window.removeEventListener('admin_content_updated', handleUpdate);
-  }, []);
+  const formatHadithForShare = (hadith) => [
+    hadith.arabic_text,
+    hadith.translation,
+    [hadith.collection_name || hadith.book_name || hadith.collection, hadith.book_title || hadith.book, hadith.hadith_number && `#${hadith.hadith_number}`].filter(Boolean).join(' · '),
+    hadith.grade && `Grade: ${hadith.grade}`,
+    hadith.reference || hadith.source
+  ].filter(Boolean).join('\n\n');
 
-  const copyHadith = (text, book, num, grade) => {
-    const fullText = `"${text}"\n[${book} #${num} - Grade: ${grade}]\nShared via Maktaba Tul Muslim (https://maktabatulmuslim.com)`;
+  const copyHadith = (hadith) => {
+    const fullText = `${formatHadithForShare(hadith)}\n\nShared via Maktaba Tul Muslim (https://maktabatulmuslim.com)`;
     navigator.clipboard.writeText(fullText);
     alert("Hadith copied to clipboard!");
   };
 
-  const shareHadith = (text, book, num, grade) => {
-    const fullText = `"${text}"\n[${book} #${num} - Grade: ${grade}]\nVia Maktaba Tul Muslim: https://maktabatulmuslim.com`;
+  const shareHadith = (hadith) => {
+    const fullText = `${formatHadithForShare(hadith)}\n\nVia Maktaba Tul Muslim: https://maktabatulmuslim.com`;
+    const collection = hadith.collection_name || hadith.book_name || hadith.collection || 'Hadith';
     if (navigator.share) {
       navigator.share({
-        title: `${book} Hadith #${num}`,
+        title: `${collection}${hadith.hadith_number ? ` #${hadith.hadith_number}` : ''}`,
         text: fullText,
         url: window.location.href
       }).catch(() => {});
@@ -110,26 +86,7 @@ export default function HadithView({ openReportModal, user }) {
   };
 
   const renderGradeBadge = (grade = '') => {
-    const g = (grade || '').toLowerCase();
-    if (g.includes('sahih') || g.includes('authentic')) {
-      return (
-        <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 700, background: '#dcfce7', border: '1px solid #86efac', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-          <i className="fas fa-check-circle"></i> Sahih (Authentic)
-        </span>
-      );
-    }
-    if (g.includes('hasan') || g.includes('good')) {
-      return (
-        <span style={{ fontSize: '0.78rem', color: '#0369a1', fontWeight: 700, background: '#e0f2fe', border: '1px solid #7dd3fc', padding: '3px 10px', borderRadius: '15px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-          <i className="fas fa-star"></i> Hasan (Good)
-        </span>
-      );
-    }
-    return (
-      <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: 700, background: 'rgba(245, 158, 11, 0.15)', padding: '3px 10px', borderRadius: '15px' }}>
-        {grade}
-      </span>
-    );
+    return <span className="hadith-grade-badge">{grade}</span>;
   };
 
   const gradesOptions = [
@@ -208,38 +165,41 @@ export default function HadithView({ openReportModal, user }) {
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
           <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>{t('loadingHadiths', 'Loading Hadiths...')}</p>
         </div>
+      ) : loadError ? (
+        <div className="hadith-empty-state" role="alert"><i className="fas fa-exclamation-circle" aria-hidden="true"></i><h3>Hadith collections could not be loaded</h3><p>Please check your connection and try again.</p></div>
+      ) : hadiths.length === 0 ? (
+        <div className="hadith-empty-state"><i className="fas fa-search" aria-hidden="true"></i><h3>{debouncedQuery || selectedBook || selectedGrade ? 'No search results' : t('hadithComingSoon', 'No Hadith records are available yet.')}</h3><p>{debouncedQuery || selectedBook || selectedGrade ? 'Try adjusting your search or filters.' : ''}</p></div>
       ) : (
-        <div className="grid-2">
-          {hadiths.map((h) => (
-            <div key={h.id} className="card" style={{ padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.12)', background: 'linear-gradient(145deg, rgba(3, 45, 35, 0.9), rgba(2, 30, 24, 0.95))' }}>
+        <div className="hadith-record-grid">
+          {hadiths.map((h) => {
+            const collection = h.collection_name || h.book_name || h.collection;
+            const bookTitle = h.book_title || h.book;
+            const reference = h.reference || h.source;
+            const recordLabel = [collection, bookTitle, h.hadith_number && `#${h.hadith_number}`].filter(Boolean).join(' · ');
+            return <article key={h.id} className="hadith-record-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#022c22', background: 'var(--accent-gold)', padding: '4px 12px', borderRadius: '15px' }}>
-                  {h.book_name} #{h.hadith_number}
-                </span>
+                {recordLabel && <span className="hadith-record-reference">{recordLabel}</span>}
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {renderGradeBadge(h.grade)}
+                  {h.grade && renderGradeBadge(h.grade)}
                   <button
-                    className="verse-btn"
-                    title="Copy Hadith"
-                    onClick={() => copyHadith(h.translation, h.book_name, h.hadith_number, h.grade)}
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                    title={t('copyHadith', 'Copy Hadith')}
+                    onClick={() => copyHadith(h)}
+                    className="verse-btn hadith-action-btn"
                   >
                     <i className="far fa-copy"></i>
                   </button>
                   <button
-                    className="verse-btn"
-                    title="Share Hadith"
-                    onClick={() => shareHadith(h.translation, h.book_name, h.hadith_number, h.grade)}
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                    title={t('shareHadith', 'Share Hadith')}
+                    onClick={() => shareHadith(h)}
+                    className="verse-btn hadith-action-btn"
                   >
                     <i className="fas fa-share-alt"></i>
                   </button>
                   <button
-                    className="verse-btn"
                     title="Report Issue"
-                    onClick={() => openReportModal('hadith', `${h.book_name} #${h.hadith_number}`)}
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}
+                    onClick={() => openReportModal('hadith', [collection, h.hadith_number && `#${h.hadith_number}`].filter(Boolean).join(' '))}
+                    className="verse-btn hadith-action-btn"
                   >
                     <i className="far fa-flag"></i>
                   </button>
@@ -262,7 +222,7 @@ export default function HadithView({ openReportModal, user }) {
                 </p>
               )}
 
-              <p className="arabic-font" style={{ fontSize: '1.4rem', color: '#6ee7b7', lineHeight: '1.9', marginBottom: '1rem', textAlign: 'right' }}>{h.arabic_text}</p>
+              {h.arabic_text && <><h3 className="hadith-field-label">Arabic</h3><p className="arabic-font hadith-arabic-text" lang="ar" dir="rtl">{h.arabic_text}</p></>}
               
               {h.narrated_by && (
                 <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.4rem' }}>
@@ -270,27 +230,20 @@ export default function HadithView({ openReportModal, user }) {
                 </p>
               )}
               
-              <p style={{ fontSize: '0.95rem', color: '#f8fafc', fontStyle: 'italic', lineHeight: '1.6' }}>"{h.translation}"</p>
-            </div>
-          ))}
-
-          {hadiths.length === 0 && (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem', background: '#ffffff', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
-              <i className="fas fa-info-circle fa-2x" style={{ color: 'var(--accent-gold)', marginBottom: '0.75rem' }}></i>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 600 }}>
-                {t('hadithComingSoon', 'Authentic Hadith text collections are currently being compiled and verified, and will be uploaded soon.')}
-              </p>
-            </div>
-          )}
+              {h.translation && <><h3 className="hadith-field-label">Translation</h3><p className="hadith-translation">{h.translation}</p></>}
+              {reference && <p className="hadith-source">Source: {reference}</p>}
+            </article>;
+          })}
         </div>
       )}
 
-      <Pagination
+      {!loading && !loadError && hadiths.length > 0 && <Pagination
         currentPage={page}
         totalItems={hadiths.length}
         itemsPerPage={9}
+        totalPagesOverride={totalPages}
         onPageChange={(p) => setPage(p)}
-      />
+      />}
     </div>
   );
 }
