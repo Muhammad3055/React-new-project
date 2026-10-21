@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 import DailyReminderBanner from '../components/DailyReminderBanner';
 import { fetchWithCache, getApiUrl } from '../utils/apiCache';
@@ -145,15 +146,21 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
   // ─── Document Viewer Modal State ───────────────────────────────────────────
   const [docViewer, setDocViewer] = useState(null); // { url, title, author }
+  const [viewerEngine, setViewerEngine] = useState('direct');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const getCleanDocumentUrl = (rawUrl) => {
+    if (!rawUrl) return '';
+    let url = String(rawUrl).trim();
+    url = url.replace(/^https?:\/\/(127\.0\.0\.1|localhost):(8000|3000)/, '');
+    if (url.startsWith('blob:') || url.startsWith('data:')) return url;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (!url.startsWith('/')) url = `/${url}`;
+    if (!url.startsWith('/media/')) url = `/media${url}`;
+    return getApiUrl(url);
+  };
   const getDocumentUrl = (book) => {
     const rawUrl = book?.document_url || book?.pdf_url || book?.pdf_file || book?.file_url || '';
-    if (!rawUrl) return '';
-
-    const url = String(rawUrl).trim();
-    if (/^(https?:\/\/|blob:|data:)/i.test(url)) return url;
-
-    const path = url.startsWith('/') ? url : `/${url}`;
-    return getApiUrl(path.startsWith('/media/') ? path : `/media${path}`);
+    return getCleanDocumentUrl(rawUrl);
   };
   const openDocViewer = (bk) => {
     const url = getDocumentUrl(bk);
@@ -161,12 +168,17 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       alert('This document is not available to view yet.');
       return;
     }
+    const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    setViewerEngine(isMobile ? 'google' : 'direct');
+    setIsFullscreen(false);
     setDocViewer({ url, title: bk.title, author: bk.author, fileType: bk.file_type });
   };
   const getViewerUrl = (doc) => {
+    if (viewerEngine === 'google') {
+      return `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
+    }
     const isPdf = ['pdf', 'book'].includes(doc.fileType) || /\.pdf(?:$|[?#])/i.test(doc.url);
-    if (!isPdf) return doc.url;
-    return `${doc.url.split('#')[0]}#view=FitH`;
+    return isPdf ? `${doc.url.split('#')[0]}#view=FitH` : doc.url;
   };
   const closeDocViewer = () => setDocViewer(null);
 
@@ -1336,115 +1348,98 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       </section>
 
       {/* ═══ DOCUMENT VIEWER MODAL ═══ */}
-      {docViewer && (
+      {docViewer && createPortal(
         <div
+          onClick={closeDocViewer}
           style={{
             position: 'fixed',
-            top: 0, left: 0,
-            width: '100vw', height: '100vh',
-            zIndex: 99999,
-            background: '#0d0d0d',
+            inset: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(15, 23, 42, 0.85)',
+            backdropFilter: 'blur(10px)',
+            zIndex: 100000,
             display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: isFullscreen ? 0 : '0.5rem'
           }}
         >
-          {/* Modal Header */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '0.6rem 1rem',
-            background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
-            borderBottom: '2px solid var(--accent-gold)',
-            flexShrink: 0,
-            flexWrap: 'wrap', gap: '0.5rem',
-            minHeight: '52px',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0, flex: 1 }}>
-              <span style={{
-                width: '34px', height: '34px', borderRadius: '9px',
-                background: 'rgba(245,158,11,0.2)', border: '1.5px solid rgba(245,158,11,0.5)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--accent-gold)', fontSize: '0.9rem', flexShrink: 0
-              }}>
-                <i className="fas fa-book-open"></i>
-              </span>
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: isFullscreen ? '100vw' : '100%',
+              maxWidth: isFullscreen ? '100vw' : '1150px',
+              height: isFullscreen ? '100vh' : '94vh',
+              background: '#ffffff',
+              borderRadius: isFullscreen ? 0 : '12px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{ padding: '0.5rem 0.85rem', background: 'var(--primary-dark)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
               <div style={{ minWidth: 0 }}>
-                <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {docViewer.title}
-                </h4>
-                {docViewer.author && (
-                  <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>
-                    By {docViewer.author}
-                  </p>
-                )}
+                <strong style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docViewer.title}</strong>
+                {docViewer.author && <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>By {docViewer.author}</span>}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+                <button
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                  style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)', color: '#ffffff', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+                  title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Reader'}
+                >
+                  <i className={isFullscreen ? 'fas fa-compress' : 'fas fa-expand'}></i>
+                </button>
+                <button
+                  onClick={closeDocViewer}
+                  style={{ background: 'transparent', border: 'none', color: '#ffffff', fontSize: '1.25rem', cursor: 'pointer', padding: '0.2rem 0.35rem' }}
+                  title="Close Viewer"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.45rem', flexShrink: 0 }}>
-              <a
-                href={docViewer.url}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
-                  padding: '0.4rem 0.85rem', borderRadius: '9px', fontSize: '0.78rem', fontWeight: 800,
-                  background: 'rgba(245,158,11,0.15)', border: '1.5px solid rgba(245,158,11,0.5)',
-                  color: '#fcd34d', textDecoration: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
-                }}
-              >
-                <i className="fas fa-external-link-alt"></i> Open in New Tab
-              </a>
-              <button
-                onClick={closeDocViewer}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
-                  padding: '0.4rem 0.85rem', borderRadius: '9px', fontSize: '0.78rem', fontWeight: 800,
-                  background: 'rgba(239,68,68,0.15)', border: '1.5px solid rgba(239,68,68,0.4)',
-                  color: '#fca5a5', cursor: 'pointer', whiteSpace: 'nowrap'
-                }}
-              >
-                <i className="fas fa-times"></i> Close
-              </button>
+
+            <div style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', padding: '0.35rem 0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Engine:</span>
+                <button
+                  onClick={() => setViewerEngine('google')}
+                  style={{ padding: '3px 8px', borderRadius: '10px', border: 'none', background: viewerEngine === 'google' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'google' ? '#fff' : '#475569', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Google
+                </button>
+                <button
+                  onClick={() => setViewerEngine('direct')}
+                  style={{ padding: '3px 8px', borderRadius: '10px', border: 'none', background: viewerEngine === 'direct' ? 'var(--primary-emerald)' : '#e2e8f0', color: viewerEngine === 'direct' ? '#fff' : '#475569', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Native
+                </button>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <a href={docViewer.url} download target="_blank" rel="noreferrer" style={{ color: '#059669', fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none' }}>
+                  <i className="fas fa-download"></i> Download
+                </a>
+                <a href={docViewer.url} target="_blank" rel="noreferrer" style={{ color: 'var(--primary-dark)', fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none' }}>
+                  New Tab <i className="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, minHeight: 0, background: '#f1f5f9', position: 'relative' }}>
+              <iframe
+                key={`${viewerEngine}_${docViewer.url}`}
+                src={getViewerUrl(docViewer)}
+                title={docViewer.title || 'Document Reader'}
+                style={{ border: 'none', width: '100%', height: '100%', background: '#ffffff' }}
+                allowFullScreen
+              />
             </div>
           </div>
-
-          {/* Full-size iframe */}
-          <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#1a1a1a' }}>
-            <iframe
-              key={docViewer.url}
-              src={getViewerUrl(docViewer)}
-              title={docViewer.title}
-              style={{
-                position: 'absolute',
-                top: 0, left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                display: 'block',
-              }}
-              allowFullScreen
-            />
-            {/* Fallback hint — sits behind iframe via z-index */}
-            <div style={{
-              position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              zIndex: -1, gap: '1rem', padding: '2rem', textAlign: 'center'
-            }}>
-              <i className="fas fa-file-pdf" style={{ fontSize: '3.5rem', color: '#f59e0b' }}></i>
-              <p style={{ fontSize: '1rem', fontWeight: 700, color: '#cbd5e1', margin: 0 }}>Loading document…</p>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
-                If the document doesn't load, click <strong style={{ color: '#fcd34d' }}>"Open in New Tab"</strong> above.
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom hint bar */}
-          <div style={{
-            padding: '0.3rem 1rem', background: '#0a0a0a',
-            textAlign: 'center', fontSize: '0.68rem', color: '#475569', flexShrink: 0,
-          }}>
-            Press&nbsp;<kbd style={{ background: '#1e293b', color: '#94a3b8', padding: '1px 5px', borderRadius: '3px', fontSize: '0.65rem' }}>Esc</kbd>&nbsp;to close
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
