@@ -305,7 +305,6 @@ export default function GlobalSearchModal({ isOpen, onClose, navigateToTab }) {
         }
       }));
 
-    const q = query.trim().toLowerCase();
     const matchedTopics = (activeCategory === 'all' || activeCategory === 'topics')
       ? topicsIndex.filter(topic => !q || `${topic.title} ${topic.description}`.toLowerCase().includes(q)).map(topic => ({
         id: `topic-${topic.id}`, resultType: 'topic', category: 'topics',
