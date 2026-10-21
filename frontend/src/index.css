@@ -4357,7 +4357,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .home-prayer-summary .home-prayer-details { min-height: 40px; }
 
 /* Homepage visual hierarchy */
-.home-page { background: #faf8f1 url('/home-background.png') center top / max(100%, 1100px) auto repeat-y; padding-bottom: 0; }
+.home-page { background: #f5f1e6 url('/library-background.png') center top / max(100%, 1100px) auto repeat-y; padding-bottom: 0; }
 .home-redesign { --home-gap: clamp(2rem, 4vw, 3.5rem); --home-sage: #edf4ec; --home-line: #dce8db; --home-shadow: 0 12px 32px rgba(18, 55, 43, .07); padding: .1rem 0 .75rem; }
 .home-redesign > .container { width: min(100% - 3rem, 1260px); max-width: 1260px; margin: var(--home-gap) auto; }
 .home-section { margin-top: var(--home-gap) !important; }
