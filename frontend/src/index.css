@@ -3944,10 +3944,19 @@ img {
 /* Keep the post-prayer reading card compact while allowing every line and control to wrap. */
 .prayer-dua-shell, .prayer-dua-card, .post-prayer-tasbeeh,
 .post-prayer-counter-grid, .post-prayer-counter-card { min-width: 0; }
+.prayer-dua-columns { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 12px; margin-bottom: 12px; }
+.prayer-dua-reading { min-width: 0; }
+.prayer-dua-reading > :last-child, .prayer-dua-columns > .post-prayer-tasbeeh { margin-bottom: 0 !important; }
 .prayer-dua-card p, .prayer-dua-card h3, .prayer-dua-card h4,
 .prayer-dua-card span { overflow-wrap: break-word; }
 .post-prayer-counter-actions { flex-wrap: wrap; }
 .post-prayer-counter-actions > button { min-width: 0; }
+@media (min-width: 960px) {
+  .prayer-dua-columns { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 18px; }
+  .prayer-dua-columns .post-prayer-counter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .prayer-dua-columns .post-prayer-counter-card:last-child { grid-column: 1 / -1; }
+  .prayer-dua-columns .post-prayer-counter-card > div:first-child { flex-wrap: wrap; gap: 4px; }
+}
 .zakat-settings-bar > div, .zakat-currency-options,
 .qada-batch-actions, .qada-target-pace, .world-clock-task-form { min-width: 0; }
 @media (max-width: 640px) {

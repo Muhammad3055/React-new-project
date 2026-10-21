@@ -435,6 +435,8 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
               {dua.titleUrdu}
             </h3>
 
+            <div className="prayer-dua-columns">
+              <div className="prayer-dua-reading">
             {/* 📜 Complete Arabic Dua Box */}
             <div style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1.5px solid #86efac', marginBottom: '0.7rem', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: 'clamp(1.35rem, 3vw, 1.8rem)', fontWeight: 800, fontFamily: "'Amiri', 'Traditional Arabic', serif", color: '#064e3b', direction: 'rtl', lineHeight: 1.75, letterSpacing: '0.5px' }}>
@@ -491,6 +493,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
                 {dua.fazeelatEn}
               </p>
             </div>
+              </div>
 
             {/* 📿 ۳۳ بار والی مسنون تسبیح (SubhanAllah 33x, SubhanAllahil Azeem / Alhamdulillah 33x, Allahu Akbar 33x + 100th Kalimah) */}
             <div
@@ -791,6 +794,7 @@ export default function DailyReminderBanner({ timings, navigateToTab }) {
                   📚 {COMPLETION_KALIMAH.hadithRef}
                 </span>
               </div>
+            </div>
             </div>
 
             {/* Bottom Actions */}

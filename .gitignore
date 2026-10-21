@@ -31,4 +31,6 @@ frontend/dist/
 data.txt
 scratch/
 .vps_config
+.audit-*/
+*-check.png
 
