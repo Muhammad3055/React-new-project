@@ -118,7 +118,7 @@ export default function IslamicNamesView() {
         </div>
 
         {/* ── Names Grid ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
           {filteredNames.map((item, idx) => {
             const isFav = favorites.includes(item.name);
             return (

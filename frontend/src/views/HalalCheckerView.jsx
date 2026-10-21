@@ -577,7 +577,7 @@ export default function HalalCheckerView({ navigateToTab }) {
         </div>
 
         {/* ── Results List ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))', gap: '1.25rem' }}>
           {filteredData.map((item) => (
             <div
               key={item.code}
@@ -682,7 +682,7 @@ export default function HalalCheckerView({ navigateToTab }) {
             </h3>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.88rem', color: '#334155', lineHeight: 1.6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem', fontSize: '0.88rem', color: '#334155', lineHeight: 1.6 }}>
             <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
               <h4 style={{ margin: '0 0 6px', color: '#0f172a', fontWeight: 800 }}>
                 1. {lang === 'ar' ? 'الأصل في الأشياء الإباحة' : (lang === 'ur' || lang === 'br') ? 'اشیاء میں اصل حلت ہے' : 'Original Status is Permissibility'}

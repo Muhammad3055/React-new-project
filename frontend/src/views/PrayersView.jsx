@@ -93,7 +93,7 @@ export default function PrayersView({ navigateToTab }) {
           <i className="fas fa-th-large" style={{ color: '#b45309', marginRight: '0.5rem' }}></i> {t('spiritualToolsHeader', 'Daily Islamic Spiritual Tools')}
         </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
           {tools.map((item, idx) => (
             <div
               key={idx}

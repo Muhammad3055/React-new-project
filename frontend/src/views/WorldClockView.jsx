@@ -292,7 +292,7 @@ export default function WorldClockView() {
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{t('savedWorldCities', 'My Saved World Cities')} ({savedCities.length})</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
             {savedCities.map(cityObj => {
               const key = `${cityObj.name}-${cityObj.country}`;
               const apiInfo = cityApiData[key];
@@ -364,7 +364,7 @@ export default function WorldClockView() {
               <p style={{ margin: '2px 0 0', fontSize: '0.88rem', color: '#64748b' }}>{t('dailyChecklistDesc', 'Track your daily prayers, Quran reading, and Sunnah deeds')}</p>
             </div>
 
-            <form onSubmit={addTodo} style={{ display: 'flex', gap: '0.5rem', flex: '1 1 300px', maxWidth: '450px' }}>
+            <form className="world-clock-task-form" onSubmit={addTodo} style={{ display: 'flex', gap: '0.5rem', flex: '1 1 300px', maxWidth: '450px' }}>
               <input
                 type="text"
                 placeholder={t('addCustomTaskPlaceholder', 'Add custom task (e.g. Recite Surah Mulk)...')}

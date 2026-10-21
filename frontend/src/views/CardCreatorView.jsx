@@ -72,7 +72,7 @@ export default function CardCreatorView() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2rem' }}>
 
           {/* Left Column: Form Controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

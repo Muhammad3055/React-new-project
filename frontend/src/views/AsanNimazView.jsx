@@ -392,7 +392,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
       </div>
 
       {/* 1.2: نماز کے فرائض (شرائط و ارکان) / Pre-requisites & Pillars */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.25rem' }}>
         
         {/* ۷ شرائط (خارجی فرائض) / 7 Conditions */}
         <div style={{ background: '#ffffff', border: '1.5px solid #fed7aa', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.03)' }}>
@@ -543,7 +543,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                 {isEn ? 'Ruku\' (Bowing) & Qawmah (Standing)' : isAr ? 'الركوع والاعتدال منه (القومـة)' : 'رکوع اور قومہ (سیدھا کھڑے ہونا)'}
               </h4>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.75rem' }}>
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
                 <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
                   {isEn ? 'Tasbeeh of Ruku\' (3 times):' : isAr ? 'تسبيح الركوع (٣ مرات):' : 'رکوع کی تسبیح (۳ بار):'}
@@ -584,7 +584,7 @@ function NimazTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir }) {
                 {isEn ? 'Sujood (Prostration) & Jalsah' : isAr ? 'السجود والجلوس بين السجدتين' : 'سجدہ اور جلسہ (دو سجدوں کے درمیان بیٹھنا)'}
               </h4>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.75rem' }}>
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '1rem', textAlign: 'center' }}>
                 <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.8rem' }}>
                   {isEn ? 'Tasbeeh of Sujood (3 times):' : isAr ? 'تسبيح السجود (٣ مرات):' : 'سجدے کی تسبیح (۳ بار):'}
@@ -819,7 +819,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
         </div>
 
         {/* 4 Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           {wuduFaraiz.map((item, idx) => (
             <div key={idx} style={{ background: '#f0f9ff', border: '1.5px solid #bae6fd', borderRadius: '16px', padding: '1.25rem', direction: dir, textAlign: isEn ? 'left' : 'right' }}>
               <span style={{ background: '#0284c7', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>
@@ -888,7 +888,7 @@ function WuduGhuslTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px', padding: '1.25rem', direction: dir, textAlign: isEn ? 'left' : 'right' }}>
             <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 900 }}>{isEn ? 'Fard 1' : isAr ? 'الفرض ١' : 'فرض ۱'}</span>
             <h4 style={{ margin: '0.5rem 0 0.35rem 0', color: '#064e3b', fontSize: '1.1rem' }}>{isEn ? 'Rinsing mouth with gargling' : isAr ? 'المضمضة مع المبالغة' : 'غرغرہ کے ساتھ کلی کرنا'}</h4>
@@ -962,7 +962,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.1rem', direction: dir, textAlign: isEn ? 'left' : 'right' }}>
             <span style={{ background: '#059669', color: '#ffffff', padding: '2px 9px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800 }}>{isEn ? '1st Takbeer' : isAr ? 'التكبيرة الأولى' : 'تکبیر ۱'}</span>
             <h4 style={{ margin: '0.4rem 0', color: '#065f46', fontSize: '1rem' }}>{isEn ? 'Thana & Fatiha' : isAr ? 'الثناء والفاتحة' : 'ثناء پڑھنا'}</h4>
@@ -1087,7 +1087,7 @@ function MayatJanazaTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, di
           {isEn ? 'Lowering into Grave, Burial Earth, and Visiting Graves' : isAr ? 'أدعية إنزال الميت، إهالة التراب، وزيارة المقابر' : 'میت کو قبر میں اتارنے، مٹی ڈالنے اور قبرستان کی دعائیں'}
         </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1rem' }}>
           
           {/* Lowering into grave */}
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.25rem', textAlign: 'center' }}>
@@ -1316,7 +1316,7 @@ function DailyDuasTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn, dir 
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1rem' }}>
         {duasList.map(item => {
           const title = isEn ? item.titleEn : isAr ? item.titleAr : item.titleUr;
           const meaning = isEn ? item.meaningEn : isAr ? item.meaningAr : item.meaningUr;
@@ -1647,7 +1647,7 @@ function SpecialPrayersTab({ copyToClipboard, copiedId, searchQuery, isAr, isEn,
         <p style={{ margin: '0 0 1rem 0', fontSize: '0.92rem', color: '#475569', direction: dir, lineHeight: 1.7 }}>
           {isEn ? 'Eid prayer consists of 2 rak\'ats with 6 extra obligatory Takbeerat:' : isAr ? 'صلاة العيد ركعتان بـ ٦ تكبيرات زوائد واجبة:' : 'عیدین کی نماز میں کل ۶ زائد تکبیریں ہوتی ہیں جو واجب ہیں:'}
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
           <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1.25rem', borderRadius: '14px', direction: dir }}>
             <h4 style={{ margin: '0 0 0.5rem 0', color: '#065f46' }}>
               {isEn ? 'First Rak\'ah (3 Extra Takbeerat):' : isAr ? 'في الركعة الأولى (٣ تكبيرات زوائد):' : 'پہلی رکعت میں ۳ زائد تکبیریں:'}

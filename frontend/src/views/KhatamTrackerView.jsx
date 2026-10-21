@@ -304,7 +304,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
             </div>
 
             {/* 30 Juz Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 250px), 1fr))', gap: '1rem' }}>
               {ALL_30_JUZ.map((juz) => {
                 const isDone = !!personalCompleted[juz.id];
                 return (
@@ -449,7 +449,7 @@ export default function KhatamTrackerView({ navigateToTab, user }) {
             </div>
 
             {/* 30 Juz Collective Board */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 270px), 1fr))', gap: '1.25rem' }}>
               {ALL_30_JUZ.map((juz) => {
                 const assignment = groupAssignments[juz.id];
                 const isClaimed = !!assignment;

@@ -195,7 +195,7 @@ export default function TajweedView() {
           <p style={{ color: '#cbd5e1', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
             {t('makhrajDesc', '*Makhraj* refers to the exact physical place in the speech apparatus from which an Arabic letter sound originates.')}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1rem' }}>
             {makharijList.map((m, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b', fontFamily: 'Amiri, serif', marginBottom: '4px' }}>

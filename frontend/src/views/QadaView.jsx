@@ -256,7 +256,7 @@ export default function QadaView({ navigateToTab }) {
         {activeTab === 'tracker' && (
           <div>
             {/* Top Stat Cards Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
               
               {/* Total Completed */}
               <div style={statCardStyle}>
@@ -318,7 +318,7 @@ export default function QadaView({ navigateToTab }) {
                 </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div className="qada-batch-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => logFullDayBatch(1)}
@@ -346,7 +346,7 @@ export default function QadaView({ navigateToTab }) {
                 </button>
 
                 {/* Daily Target Pace Dropdown */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', padding: '6px 12px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
+                <div className="qada-target-pace" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', padding: '6px 12px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
                   <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569' }}>{t('dailyMakeupPace', 'Target Pace')}:</span>
                   <select
                     value={dailyPace}
@@ -363,7 +363,7 @@ export default function QadaView({ navigateToTab }) {
             </div>
 
             {/* Individual Prayer Cards Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
               {prayersList.map(prayer => {
                 const item = qadaData[prayer.key] || { total: 0, completed: 0 };
                 const remaining = Math.max(0, item.total - item.completed);

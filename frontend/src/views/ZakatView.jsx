@@ -81,15 +81,15 @@ export default function ZakatView() {
         </div>
 
         {/* ── Settings Bar: Currency & Nisab Threshold Selector ── */}
-        <div style={{
+        <div className="zakat-settings-bar" style={{
           background: '#ffffff', borderRadius: '20px', padding: '1.5rem',
           border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
           marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', justifyContent: 'space-between', alignItems: 'center'
         }}>
           {/* Currency Choice */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="zakat-currency-control" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span style={{ fontWeight: 700, color: '#334155', fontSize: '0.92rem' }}>{t('selectCurrency', 'Select Currency:')}</span>
-            <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <div className="zakat-currency-options" style={{ display: 'flex', gap: '0.4rem' }}>
               {['PKR', 'USD', 'SAR', 'AED', 'INR'].map((cur) => (
                 <button
                   key={cur}
@@ -136,7 +136,7 @@ export default function ZakatView() {
         </div>
 
         {/* ── Main Inputs Grid & Live Results Panel ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2rem' }}>
 
           {/* Left Column: Assets & Liabilities Form */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

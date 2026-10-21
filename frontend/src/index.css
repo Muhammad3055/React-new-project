@@ -1169,19 +1169,19 @@ a {
 /* Grids */
 .grid-3 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 1.5rem;
 }
 
 .grid-4 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 1.5rem;
 }
 
 .grid-2 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 450px), 1fr));
   gap: 1.5rem;
 }
 
@@ -2219,10 +2219,14 @@ body.has-audio-player footer {
 .prayer-settings summary { list-style: none; }
 .prayer-settings summary::-webkit-details-marker { display: none; }
 .prayer-settings-fields { position: absolute; z-index: 5; top: calc(100% + 8px); right: 0; width: min(310px, calc(100vw - 36px)); padding: 14px; border: 1px solid #4b6653; border-radius: 13px; background: #17251c; box-shadow: 0 12px 28px #0008; display: grid; gap: 12px; }
+.prayer-settings:not([open]) .prayer-settings-fields { display: none; }
 .prayer-settings-fields label { display: grid; gap: 5px; color: #e0eee3; font-size: .8rem; }
 .prayer-settings-fields select { width: 100%; min-width: 0; padding: 8px; border: 1px solid #597461; border-radius: 8px; background: #fff; color: #173422; font: inherit; }
 .prayer-location-error { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #fde68a; }
-@media (max-width: 480px) { .prayer-location-controls > span { flex-basis: 100%; } .prayer-settings-fields { right: auto; left: 0; } }
+@media (max-width: 480px) {
+  .prayer-location-controls > span { flex-basis: 100%; }
+  .prayer-settings[open] .prayer-settings-fields { position: fixed; z-index: 150; top: 72px; left: 12px; right: 12px; width: auto; max-height: calc(100dvh - 84px); overflow-y: auto; }
+}
 
 .hijri-badge {
   background: rgba(245, 158, 11, 0.2);
@@ -3704,7 +3708,7 @@ img {
 .topics-admin-button { background: #086544 !important; color: #fff !important; border: 1px solid #086544 !important; }
 .topics-admin-button:hover { background: #075238 !important; }
 .topics-page button:disabled { opacity: .55; cursor: not-allowed; }
-.topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; }
 .topic-card { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; min-height: 250px; padding: 26px; border-radius: 17px; text-align: left; cursor: pointer; background: #fff !important; border: 1px solid #dfeae2 !important; color: #173e2d !important; box-shadow: 0 8px 26px rgba(16,55,38,.06) !important; }
 .topic-card:hover { border-color: #9fcdb3 !important; background: #fbfffc !important; transform: translateY(-2px); }
 .topic-card-icon, .topics-detail-symbol { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 15px; background: #e5f4e9; color: #08774e; font-size: 24px; }
@@ -3724,7 +3728,7 @@ img {
 .topics-resource-heading span { display: inline-flex; align-items: center; gap: 10px; color: #164632; font-size: 20px; font-weight: 800; }
 .topics-resource-heading i { color: #0a7950; }
 .topics-resource-heading small { color: #688075; font-size: 12px; }
-.topics-resource-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 16px; }
+.topics-resource-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 15px; margin-top: 16px; }
 .topic-resource { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dfeae2; border-radius: 14px; background: #fff; box-shadow: 0 3px 14px rgba(16,55,38,.04); }
 .topic-resource-cover { display: block; width: 100%; height: 150px !important; object-fit: cover; background: #e8f2e9; }
 .topic-resource-placeholder { display: grid; place-items: center; color: #409468; font-size: 35px; }
@@ -3936,3 +3940,29 @@ img {
   .library-filter-chip-icon { flex-basis: 27px; width: 27px; height: 27px; }
 }
 @media (max-width: 360px) { .library-filter-options { grid-template-columns: minmax(0, 1fr); } }
+
+/* Keep the post-prayer reading card compact while allowing every line and control to wrap. */
+.prayer-dua-shell, .prayer-dua-card, .post-prayer-tasbeeh,
+.post-prayer-counter-grid, .post-prayer-counter-card { min-width: 0; }
+.prayer-dua-card p, .prayer-dua-card h3, .prayer-dua-card h4,
+.prayer-dua-card span { overflow-wrap: break-word; }
+.post-prayer-counter-actions { flex-wrap: wrap; }
+.post-prayer-counter-actions > button { min-width: 0; }
+.zakat-settings-bar > div, .zakat-currency-options,
+.qada-batch-actions, .qada-target-pace, .world-clock-task-form { min-width: 0; }
+@media (max-width: 640px) {
+  .prayer-dua-shell { padding-inline: 8px !important; }
+  .prayer-dua-card { padding: 13px !important; }
+  .post-prayer-tasbeeh { padding: 12px !important; }
+  .post-prayer-counter-card { padding: 11px !important; }
+  .post-prayer-counter-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .zakat-settings-bar > div, .zakat-currency-control,
+  .zakat-currency-options { width: 100%; flex-wrap: wrap; }
+  .zakat-currency-options > button { flex: 1 1 55px; }
+  .qada-batch-actions { width: 100%; }
+  .qada-batch-actions > button { flex: 1 1 135px; justify-content: center; }
+  .qada-target-pace { width: 100%; flex-wrap: wrap; }
+  .qada-target-pace select { width: 100%; min-width: 0; font-size: 12px; }
+  .world-clock-task-form { width: 100%; flex-wrap: wrap; }
+  .world-clock-task-form input { flex: 1 1 150px; min-width: 0; }
+}

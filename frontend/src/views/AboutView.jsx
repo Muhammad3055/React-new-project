@@ -152,7 +152,7 @@ export default function AboutView({ navigateToTab }) {
 
         {/* Stats Grid */}
         <section style={{ marginBottom: '4rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.25rem' }}>
             <div className="card" style={{ padding: '1.75rem', textAlign: 'center', borderBottom: '4px solid var(--accent-gold)' }}>
               <h3 style={{ fontSize: '2.4rem', color: 'var(--primary-dark)', fontWeight: 800, margin: 0 }}>114</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, marginTop: '0.25rem' }}>{t('completeSurahs', 'Complete Surahs')}</p>

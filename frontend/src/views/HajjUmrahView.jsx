@@ -146,7 +146,7 @@ export default function HajjUmrahView() {
 
         {/* ── Counters Section: Tawaf & Sa'i Counter Widgets ── */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem'
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem'
         }}>
           {/* Tawaf Counter */}
           <div style={{ background: '#022c22', borderRadius: '20px', padding: '1.5rem', color: '#ffffff', border: '1px solid #f59e0b', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -172,7 +172,7 @@ export default function HajjUmrahView() {
         </div>
 
         {/* ── Main Step-by-Step Walkthrough Grid ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2rem' }}>
 
           {/* Left Column: Interactive Steps List */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

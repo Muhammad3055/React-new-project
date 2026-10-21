@@ -188,7 +188,7 @@ export default function QiblaView() {
       </div>
 
       {/* Main Grid: Compass Visual & Details */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.5rem', alignItems: 'center' }}>
         
         {/* Animated Interactive Compass Dial Card */}
         <div

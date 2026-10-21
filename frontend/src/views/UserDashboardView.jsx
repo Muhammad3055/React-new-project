@@ -763,7 +763,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               <i className="fas fa-play-circle"></i> Continue Learning
             </h3>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem' }}>
               
               {/* Quran Tracker */}
               <div style={{ background: '#18181b', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -906,7 +906,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </div>
 
             {/* Pace & Statistics Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
               <div style={{ background: '#18181b', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <span style={{ fontSize: '0.72rem', color: '#a1a1aa', display: 'block', fontWeight: 700 }}>TARGET DURATION</span>
                 <strong style={{ fontSize: '1.1rem', color: '#fff' }}>{prefs.khatm_target_days || 30} Days Plan</strong>
@@ -961,7 +961,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
           </div>
 
           {/* Daily 3-Grid: Verse, Hadith & Dua */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.25rem' }}>
             {/* Daily Quran Verse */}
             <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-dark)', borderRadius: '20px', border: '1px solid rgba(245,158,11,0.4)', color: '#fff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
@@ -1321,7 +1321,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </div>
           ) : (
             // LIST ALL COLLECTIONS
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
               {(dashboardData.personal_collections || []).length === 0 ? (
                 <div style={{ gridColumn: '1 / -1', padding: '3rem 1rem', textAlign: 'center', background: '#18181b', borderRadius: '16px' }}>
                   <i className="fas fa-folder fa-3x" style={{ color: 'var(--accent-gold)', opacity: 0.6, marginBottom: '1rem' }}></i>
@@ -1564,7 +1564,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       {/* 🕌 TAB: PRAYER TRACKER & FASTING */}
       {/* ========================================================================= */}
       {activeTab === 'namaz' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.5rem' }}>
           
           <div className="card" style={{ padding: '1.5rem', background: '#fff', borderRadius: '20px', border: '1.5px solid #e2e8f0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -1658,7 +1658,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               <i className="fas fa-hand-holding-heart" style={{ color: 'var(--accent-gold)' }}></i> Daily Tasbeeh & Dhikr Counter
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
               {[
                 { key: 'subhanAllah', name: 'سُبْحَانَ اللَّهِ', trans: 'SubhanAllah (Glory be to Allah)', count: adhkarState.subhanAllah, max: 33 },
                 { key: 'alhamdulillah', name: 'الْحَمْدُ لِلَّهِ', trans: 'Alhamdulillah (Praise be to Allah)', count: adhkarState.alhamdulillah, max: 33 },
@@ -1692,7 +1692,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
       {/* 📅 TAB: ISLAMIC EVENTS & COUNTDOWNS */}
       {/* ========================================================================= */}
       {activeTab === 'calendar' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
           
           <div className="card" style={{ padding: '1.5rem', background: 'var(--primary-emerald)', borderRadius: '20px', color: '#fff', border: '1.5px solid var(--accent-gold)' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>
@@ -1795,7 +1795,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>Full Name</label>
                 <input
@@ -1833,7 +1833,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem' }}>
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>Preferred Language</label>
                 <select
@@ -1930,7 +1930,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>New Password</label>
                   <input
@@ -2201,7 +2201,7 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
             </div>
 
             {/* Surahs Scrollable Grid */}
-            <div style={{ padding: '1.25rem 1.75rem', overflowY: 'auto', flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div style={{ padding: '1.25rem 1.75rem', overflowY: 'auto', flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: '0.75rem' }}>
               {ALL_114_SURAHS
                 .filter(s => {
                   if (!khatmSurahSearch.trim()) return true;

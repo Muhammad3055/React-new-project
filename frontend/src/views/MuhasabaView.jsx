@@ -230,7 +230,7 @@ export default function MuhasabaView() {
         </div>
 
         {/* ── Main Two Column Grid ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(330px, 1fr))', gap: '1.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 330px), 1fr))', gap: '1.75rem' }}>
           
           {/* Column 1: Today's Interactive Checklist */}
           <div style={{
