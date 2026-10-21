@@ -4265,3 +4265,67 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 @media (max-width: 1100px) { .nav-links.desktop-nav { display: none !important; } .mobile-toggle-btn { display: flex !important; } .desktop-lang-selector, .header-theme-selector, .desktop-auth-area, .search-wrapper.desktop-only { display: none !important; } .brand-text { font-size: .92rem; } }
 @media (max-width: 480px) { .brand-text { font-size: .82rem; } }
 
+
+/* Homepage digital library layout */
+.home-page { min-height: 100vh; padding-bottom: 3rem; background: var(--bg-cream); }
+.home-redesign { --home-gap: clamp(1.25rem, 3vw, 2rem); padding-bottom: 2rem; }
+.home-redesign > .container { width: min(100% - 2rem, 1180px); max-width: 1180px; margin: var(--home-gap) auto; padding: 0; }
+.home-hero { padding: clamp(2rem, 6vw, 4.5rem); border: 1px solid #d6e8df; border-radius: 26px; background: radial-gradient(ellipse at 92% 8%, rgba(16,185,129,.12), transparent 35%), linear-gradient(135deg, #fff 0%, #f0f8f3 100%); box-shadow: var(--shadow-md); }
+.home-eyebrow { display: block; color: var(--primary-emerald); font-size: .74rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.home-hero h1 { max-width: 790px; margin: .65rem 0 .75rem; color: var(--primary-dark); font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; letter-spacing: -.04em; }
+.home-hero > p { max-width: 680px; margin: 0; color: var(--text-muted); font-size: clamp(1rem, 1.5vw, 1.12rem); line-height: 1.7; }
+.home-hero-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+.home-btn-primary, .home-btn-secondary { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: .55rem; padding: .7rem 1.1rem; border: 1px solid var(--primary-emerald); border-radius: 11px; font: inherit; font-weight: 750; cursor: pointer; }
+.home-btn-primary { background: var(--primary-emerald); color: #fff; }
+.home-btn-primary:hover { background: var(--primary-dark); }
+.home-btn-secondary { background: #fff; color: var(--primary-emerald); }
+.home-btn-secondary:hover { background: #eff8f3; }
+.home-section { margin-top: calc(var(--home-gap) * 1.5) !important; }
+.home-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.home-section-heading h2, .home-ask-card h2 { margin: .25rem 0 0; color: var(--primary-dark); font-size: clamp(1.35rem, 2.6vw, 1.8rem); line-height: 1.2; }
+.home-prayer-summary { padding: 1.15rem 1.25rem; border: 1px solid #d7e7de; border-radius: 18px; background: #fff; box-shadow: var(--shadow-sm); text-align: left; }
+.home-prayer-summary-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.home-location-button { display: flex; align-items: center; gap: .5rem; margin-top: .3rem; padding: 0; border: 0; background: transparent; color: var(--text-main); font: inherit; font-weight: 700; cursor: pointer; }
+.home-next-prayer { display: grid; gap: .1rem; color: var(--text-muted); font-size: .8rem; }
+.home-next-prayer strong { color: var(--primary-emerald); font-size: 1rem; }
+.home-prayer-times { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .5rem; margin-top: 1rem; }
+.home-prayer-times > div { display: flex; justify-content: space-between; gap: .25rem; padding: .7rem .75rem; border-radius: 10px; background: #f4f8f5; color: var(--text-muted); font-size: .8rem; }
+.home-prayer-times strong { color: var(--primary-dark); white-space: nowrap; }
+.home-prayer-state { margin: .85rem 0 0; color: var(--text-muted); font-size: .9rem; }
+.home-prayer-state button, .home-city-form button, .home-prayer-details { min-height: 40px; padding: .5rem .8rem; border: 1px solid var(--primary-emerald); border-radius: 9px; background: #fff; color: var(--primary-emerald); font: inherit; font-weight: 700; cursor: pointer; }
+.home-city-form { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .8rem; }
+.home-city-form input { min-width: 130px; min-height: 40px; padding: .45rem .65rem; border: 1px solid var(--border-color); border-radius: 8px; font: inherit; }
+.home-prayer-details { margin-top: .9rem; border-color: transparent; padding-left: 0; }
+.home-journey-grid, .home-explore-grid, .home-feature-grid, .home-books-grid, .home-tools-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.home-journey-card, .home-explore-card, .home-tool-card { min-width: 0; display: flex; align-items: center; gap: .8rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 14px; background: #fff; color: var(--text-main); text-align: left; font: inherit; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.home-journey-card:hover, .home-explore-card:hover, .home-tool-card:hover, .home-feature-card:hover, .home-book-card:hover { transform: translateY(-2px); border-color: #a9cabb; box-shadow: var(--shadow-md); }
+.home-journey-card > i:first-child, .home-explore-card > i:first-child, .home-tool-card > i:first-child { color: var(--primary-emerald); font-size: 1.1rem; }
+.home-journey-card span { display: grid; min-width: 0; flex: 1; }
+.home-journey-card small { overflow: hidden; color: var(--text-muted); text-overflow: ellipsis; white-space: nowrap; }
+.home-explore-card span, .home-tool-card span { flex: 1; font-weight: 750; }
+.home-today { padding: 1.25rem; border: 1px solid #d7e7de; border-radius: 18px; background: #f4f9f5; }
+.home-today-tabs { display: flex; gap: .4rem; margin: .8rem 0; }
+.home-today-tabs button { min-width: 80px; min-height: 40px; padding: .45rem .8rem; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--text-muted); font: inherit; font-weight: 700; cursor: pointer; }
+.home-today-tabs button.active { border-color: #d7e7de; background: #fff; color: var(--primary-emerald); }
+.home-today-card { padding: clamp(1rem, 4vw, 1.8rem); border: 1px solid var(--border-color); border-radius: 14px; background: #fff; text-align: center; }
+.home-today-card .arabic-font { margin: .5rem auto; color: var(--primary-dark); font-size: clamp(1.7rem, 4vw, 2.3rem); line-height: 1.8; }
+.home-today-card > p:not(.arabic-font) { max-width: 760px; margin: .5rem auto; color: var(--text-muted); }
+.home-content-reference { color: var(--text-muted); font-size: .78rem; font-weight: 700; }
+.home-text-action { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem 0; border: 0; background: transparent; color: var(--primary-emerald); font: inherit; font-weight: 750; cursor: pointer; }
+.home-feature-card { display: flex; align-items: center; gap: .75rem; padding: .9rem; border: 1px solid var(--border-color); border-radius: 14px; background: #fff; transition: .18s ease; }
+.home-feature-icon { width: 36px; height: 36px; display: grid; flex: 0 0 36px; place-items: center; border-radius: 50%; background: #eaf5ee; color: var(--primary-emerald); }
+.home-feature-card > div { flex: 1; min-width: 0; }
+.home-feature-card h3, .home-book-card h3 { margin: 0; color: var(--primary-dark); font-size: .95rem; }
+.home-feature-card p, .home-book-card p { margin: .15rem 0 0; color: var(--text-muted); font-size: .8rem; }
+.home-feature-card > button { width: 38px; height: 38px; border: 0; border-radius: 10px; background: var(--primary-emerald); color: #fff; cursor: pointer; }
+.home-book-card { display: flex; min-width: 0; overflow: hidden; border: 1px solid var(--border-color); border-radius: 14px; background: #fff; transition: .18s ease; }
+.home-book-card img { width: 92px; min-height: 140px; object-fit: cover; background: #f1f5f3; }
+.home-book-card > div { display: flex; flex-direction: column; align-items: flex-start; gap: .55rem; padding: .8rem; }
+.home-book-card .home-btn-secondary { min-height: 36px; margin-top: auto; padding: .4rem .7rem; font-size: .82rem; }
+.home-ask-card { padding: clamp(1.3rem, 4vw, 2rem); border-radius: 18px; background: linear-gradient(120deg, #073c2d, #0c6046); color: #fff; }
+.home-ask-card h2 { color: #fff; }
+.home-ask-card p { max-width: 600px; margin: .5rem 0 1rem; color: #e4f1e9; }
+.home-ask-card .home-eyebrow { color: #a7e4c3; }
+@media (max-width: 760px) { .home-redesign > .container { width: min(100% - 1.5rem, 1180px); } .home-prayer-times { grid-template-columns: repeat(3, minmax(0, 1fr)); } .home-journey-grid, .home-explore-grid, .home-feature-grid, .home-books-grid, .home-tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .home-prayer-times { grid-template-columns: repeat(2, minmax(0, 1fr)); } .home-journey-grid, .home-explore-grid, .home-feature-grid, .home-books-grid, .home-tools-grid { grid-template-columns: minmax(0, 1fr); } .home-book-card img { width: 78px; min-height: 118px; } .home-section-heading { align-items: flex-start; } }
+.home-prayer-summary .home-prayer-details { min-height: 40px; }

@@ -3,7 +3,7 @@ import { cleanPrayerTime, countdown, dateKey, loadPrayerSchedule, nextPrayerEven
 import { detectDeviceLocation, detectNetworkLocation } from '../utils/prayerLocation';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
+export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = false }) {
   const { t } = useLanguage();
   const [timings, setTimings] = useState(null);
   const [hijriDate, setHijriDate] = useState('');
@@ -25,6 +25,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
   const [scheduleTimezone, setScheduleTimezone] = useState(null);
   const [now, setNow] = useState(Date.now());
   const [refresh, setRefresh] = useState(0);
+  const [compactExpanded, setCompactExpanded] = useState(false);
   const detectionRef = useRef(0);
   const lastDetectionRef = useRef(0);
   const callbackRef = useRef(onLocationOrDateUpdate);
@@ -282,8 +283,37 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate }) {
     { key: 'Isha', name: t('isha', 'Isha'), time: timings?.Isha }
   ];
 
+  if (compact && !compactExpanded) {
+    return (
+      <section className="home-prayer-summary" aria-label="Prayer times">
+        <div className="home-prayer-summary-top">
+          <div>
+            <span className="home-eyebrow">Prayer times</span>
+            <button type="button" className="home-location-button" onClick={() => setShowCityInput(value => !value)}>
+              <i className="fas fa-location-dot" aria-hidden="true" /> {locationName} <i className="fas fa-pen" aria-hidden="true" />
+            </button>
+          </div>
+          {timings && nextPrayer.name && nextPrayer.time && <div className="home-next-prayer"><span>Next prayer</span><strong>{t(nextPrayer.name.toLowerCase(), nextPrayer.name)} · {nextPrayer.time}</strong></div>}
+        </div>
+        {loading && !timings ? <p role="status" className="home-prayer-state">Finding local prayer times…</p> : error && !timings ? <p role="alert" className="home-prayer-state">{error} <button type="button" onClick={() => location ? setRefresh(value => value + 1) : detectLocationAndFetch()}>Retry</button></p> : timings && mainPrayers.some(prayer => prayer.time) ? (
+          <div className="home-prayer-times">
+            {mainPrayers.filter(prayer => prayer.time).map(prayer => <div key={prayer.key}><span>{prayer.name}</span><strong>{prayer.time.split(' ')[0]}</strong></div>)}
+          </div>
+        ) : <p role="status" className="home-prayer-state">Prayer times are not available right now.</p>}
+        {showCityInput && <form className="home-city-form" onSubmit={handleCustomCitySubmit}>
+          <input value={customCity} onChange={event => setCustomCity(event.target.value)} placeholder="City" required aria-label="City" />
+          <input value={customCountry} onChange={event => setCustomCountry(event.target.value)} placeholder="Country" required aria-label="Country" />
+          <button type="submit">Update location</button>
+          <button type="button" onClick={() => detectLocationAndFetch(true)}>Use GPS</button>
+        </form>}
+        <button type="button" className="home-prayer-details" onClick={() => setCompactExpanded(true)}>Full schedule &amp; prayer settings <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+      </section>
+    );
+  }
+
   return (
     <div className="prayer-widget-card">
+      {compact && <button type="button" className="home-prayer-details" onClick={() => setCompactExpanded(false)}>Back to prayer summary</button>}
       <div className="prayer-widget-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span className="hijri-badge"><i className="fas fa-calendar-alt"></i> {timings ? hijriDate : '—'}</span>

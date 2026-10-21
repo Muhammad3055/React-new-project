@@ -477,6 +477,8 @@ function MainAppContent() {
               user={user}
               openAuthModal={openAuthModal}
               openSpotlight={() => setIsSpotlightOpen(true)}
+              openAIChat={() => setIsAIChatOpen(true)}
+              openCalendar={() => setIsCalendarOpen(true)}
             />
           )}
 

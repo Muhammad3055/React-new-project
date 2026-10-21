@@ -26,6 +26,8 @@ const DEFAULT_HADITHS = [
   { id: 2, book_name: "Sahih Muslim", hadith_number: 223, grade: "Sahih", arabic_text: "الطَّهُورُ شَطْرُ الإِيمَانِ", translation: "Purity is half of faith." }
 ];
 
+const TODAY_DUA = { arabic: 'رَبِّ زِدْنِي عِلْمًا', translation: 'My Lord, increase me in knowledge.', reference: 'Ta-Ha 20:114' };
+
 const DAILY_VERSES_COLLECTION = [
   {
     surahName: "Ar-Ra'd (13:28)",
@@ -142,7 +144,7 @@ const getTodayPlanKey = () => {
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 };
 
-export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal, openSpotlight }) {
+export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal, openSpotlight, openAIChat, openCalendar }) {
   const { t, lang } = useLanguage();
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
@@ -240,6 +242,14 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   }, []);
 
   const [copiedHadith, setCopiedHadith] = useState(false);
+  const [todayTab, setTodayTab] = useState('ayah');
+  const [savedContentCount] = useState(() => {
+    try {
+      const duas = JSON.parse(localStorage.getItem('maktaba_dua_favorites') || '[]');
+      const ayahs = JSON.parse(localStorage.getItem('maktaba_local_ayah_bookmarks') || '[]');
+      return duas.length + ayahs.length;
+    } catch { return 0; }
+  });
   const getDailyHadith = () => {
     const today = new Date();
     const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
@@ -350,6 +360,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const rotated = [...arr.slice(offset), ...arr.slice(0, offset)];
     return rotated.slice(0, count);
   };
+  const featuredAudios = getDailyRotatedSlice(audios.filter(item => item.audio_url), 3);
+  const featuredBooks = books.filter(book => getDocumentUrl(book)).slice(0, 3);
 
   useEffect(() => {
     // Check local storage for last read position
@@ -497,839 +509,83 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
 
   return (
-    <div style={{ background: '#fdfbf7', minHeight: '100vh', paddingBottom: '3rem' }}>
+    <div className="home-page">
       
-      {/* Dynamic Daily Prayer Reminders Banner */}
-      <DailyReminderBanner 
-        timings={locationInfo?.timings} 
-        timezone={locationInfo?.timezone}
-        navigateToTab={navigateToTab} 
-      />
-
-      {/* Hero Carousel Banner Section */}
-      <section className="container" style={{ paddingTop: '1.5rem' }}>
-        <div
-          className="hero-carousel-container"
-          style={{
-            position: 'relative',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            background: 'linear-gradient(135deg, #1c1917 0%, #292524 50%, #44403c 100%)',
-            color: '#ffffff',
-            boxShadow: '0 16px 36px rgba(28, 25, 23, 0.2)',
-            border: '2px solid var(--accent-gold)'
-          }}
-        >
-          {/* Slide Content */}
-          <div className="hero-carousel-slide" style={{ padding: '3.5rem 2rem 3.5rem 2rem', textCenter: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.65rem', padding: '6px 18px', background: 'rgba(255, 255, 255, 0.12)', borderRadius: '30px', border: '1.5px solid var(--accent-gold)', marginBottom: '1.25rem', backdropFilter: 'blur(8px)' }}>
-              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" width="34" height="34" loading="lazy" decoding="async" style={{ width: '34px', height: '34px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(180, 83, 9, 0.5)', flexShrink: 0 }} />
-              <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--accent-gold)', letterSpacing: '0.5px' }}>
-                {t('maktabaTulMuslim', 'MAKTABA TUL MUSLIM')} &bull; {slide.badge}
-              </span>
-            </div>
-
-            <h2 className="arabic-font" style={{ fontSize: 'clamp(2rem, 4.5vw, 2.8rem)', color: 'var(--accent-gold)', marginBottom: '0.5rem', lineHeight: '1.4' }}>
-              {slide.arabic}
-            </h2>
-
-            <h1 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', fontWeight: 800, color: '#ffffff', marginBottom: '0.75rem', letterSpacing: '-0.5px' }}>
-              {slide.title}
-            </h1>
-
-            <p style={{ fontSize: '1.05rem', color: '#e7e5e4', maxWidth: '750px', margin: '0 auto 1.75rem auto', lineHeight: '1.7' }}>
-              {slide.subtitle}
-            </p>
-
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <button
-                className="btn-play"
-                style={{ padding: '0.8rem 2rem', fontSize: '1rem', borderRadius: '30px', background: '#ffffff', color: 'var(--accent-gold)', fontWeight: 800, border: '2px solid var(--accent-gold)', cursor: 'pointer', boxShadow: '0 6px 20px rgba(180, 83, 9, 0.25)' }}
-                onClick={() => handleNav(slide.tab)}
-              >
-                <i className={slide.btnIcon} style={{ marginRight: '0.4rem' }}></i> {slide.btnText}
-              </button>
-
-              <button
-                className="btn-play"
-                style={{
-                  padding: '0.8rem 1.8rem',
-                  fontSize: '1rem',
-                  borderRadius: '30px',
-                  background: 'rgba(255,255,255,0.12)',
-                  color: '#ffffff',
-                  border: '1.5px solid rgba(255,255,255,0.3)',
-                  cursor: 'pointer'
-                }}
-                onClick={() => handleNav('read')}
-              >
-                <i className="fas fa-book-reader" style={{ marginRight: '0.4rem' }}></i> {t('exploreLibrary')}
-              </button>
-            </div>
+      <main className="home-redesign">
+        <section className="home-hero container">
+          <span className="home-eyebrow">Maktaba Tul Muslim · Your Islamic digital library</span>
+          <h1>The Quran, Hadith &amp; Islamic Knowledge — in One Place</h1>
+          <p>Read the Quran with translations and Tafseer, listen to renowned Qaris, explore Hadith, and discover trusted Islamic books.</p>
+          <div className="home-hero-actions">
+            <button className="home-btn-primary" onClick={() => handleNav('read')}>Read Quran <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+            <button className="home-btn-secondary" onClick={() => handleNav('books')}>Explore Library <i className="fas fa-arrow-right" aria-hidden="true" /></button>
           </div>
+        </section>
 
-        </div>
+        <section id="home-prayer-times" className="container home-section home-prayer-section">
+          <PrayerTimesWidget compact onLocationOrDateUpdate={handleLocationOrDateUpdate} />
+          <DailyReminderBanner timings={locationInfo?.timings} timezone={locationInfo?.timezone} navigateToTab={navigateToTab} />
+        </section>
 
-        {/* ═══ FRIDAY JUMU'AH SECTION (only on Fridays) ═══ */}
-        {isFriday && (
-          <div style={{
-            marginTop: '1.75rem',
-            borderRadius: '22px',
-            background: 'linear-gradient(135deg, #0d1f14 0%, #0f172a 60%, #1a0a2e 100%)',
-            border: '2px solid rgba(245,158,11,0.5)',
-            padding: '1.5rem',
-            boxShadow: '0 8px 32px rgba(245,158,11,0.1)',
-            overflow: 'hidden',
-            position: 'relative',
-          }}>
-            {/* Glow effect */}
-            <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(245,158,11,0.08)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.1rem' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(245,158,11,0.3), rgba(5,150,105,0.3))', border: '1.5px solid rgba(245,158,11,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>☀️</div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>{t('jumuahMubarakTitle', "یوم الجمعہ — Jumu'ah Mubarak!")}</h3>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>{t('jumuahMubarakDesc', "Today is Friday · Recite Surah Al-Kahf & Al-Jumu'ah")}</p>
-              </div>
-              <span style={{ marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: '10px', background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)', color: '#fcd34d', whiteSpace: 'nowrap' }}>📅 {t('todayIsFriday', 'Today is Friday')}</span>
-            </div>
-
-            {/* Fazeelat banner */}
-            <div style={{ padding: '0.8rem 1rem', borderRadius: '14px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-              <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>✨</span>
-              <div>
-                <p style={{ margin: '0 0 0.25rem', fontSize: '0.88rem', color: '#fcd34d', fontWeight: 700, fontFamily: 'serif', direction: 'rtl', textAlign: 'right' }}>
-                  مَنْ قَرَأَ سُورَةَ الْكَهْفِ يَوْمَ الْجُمُعَةِ، أَضَاءَ لَهُ مِنَ النُّورِ مَا بَيْنَ الْجُمُعَتَيْنِ
-                </p>
-                <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
-                  {t('fridayKahfHadith', '"Whoever reads Surah Al-Kahf on Friday, light will shine for him until the next Friday." — Sunan Al-Bayhaqi')}
-                </p>
-              </div>
-            </div>
-
-            {/* Ayat cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.85rem' }}>
-              {FRIDAY_INLINE_AYAT.map((ayah, idx) => (
-                <div key={idx} style={{ padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.15)', padding: '2px 8px', borderRadius: '8px' }}>📖 {ayah.surah}</span>
-                    <button
-                      onClick={() => playTrack && playTrack(ayah.audio, ayah.surah, 'Mishary Alafasy')}
-                      style={{ background: 'rgba(5,150,105,0.2)', border: '1px solid rgba(5,150,105,0.4)', color: '#34d399', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}
-                      title="Play audio"
-                    >▶</button>
-                  </div>
-                  <p style={{ margin: '0 0 0.5rem', textAlign: 'right', direction: 'rtl', fontSize: '1.1rem', lineHeight: 2, color: '#fde68a', fontFamily: 'serif' }}>{ayah.arabic}</p>
-                  <p style={{ margin: '0 0 0.3rem', fontSize: '0.82rem', color: '#e2e8f0', direction: 'rtl', textAlign: 'right', lineHeight: 1.7 }}>{ayah.urdu}</p>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.5 }}>{ayah.english}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Salawat reminder */}
-            <p style={{ margin: '1rem 0 0', textAlign: 'center', fontSize: '0.8rem', color: '#fcd34d' }}>
-              {t('fridaySalawat', '🤲 Also send abundant Salawat on the Prophet ﷺ today · "The best day is Friday" — Sunan Abu Dawood')}
-            </p>
+        {(lastRead || lastBook || savedContentCount > 0) && <section className="container home-section">
+          <div className="home-section-heading"><div><span className="home-eyebrow">Pick up where you left off</span><h2>Continue your journey</h2></div></div>
+          <div className="home-journey-grid">
+            {lastRead && <button className="home-journey-card" onClick={() => handleNav('read')}><i className="fas fa-book-open" aria-hidden="true" /><span><strong>Continue Quran</strong><small>{lastRead.surahName || 'Saved reading'} · Ayah {lastRead.ayahNumber}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {lastBook && <button className="home-journey-card" onClick={() => navigate('books', lastBook.title)}><i className="fas fa-book" aria-hidden="true" /><span><strong>Continue your book</strong><small>{lastBook.title} · Page {lastBook.page || 1}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {savedContentCount > 0 && <button className="home-journey-card" onClick={() => handleNav('bookmarks')}><i className="fas fa-heart" aria-hidden="true" /><span><strong>Saved content</strong><small>{savedContentCount} saved items</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
           </div>
-        )}
+        </section>}
 
-        {/* ═══ ASAN NIMAZ FEATURED HERO BANNER ═══ */}
-        <div
-          onClick={() => handleNav('asanNimaz')}
-          style={{
-            marginTop: '1.75rem',
-            borderRadius: '24px',
-            background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
-            border: '2px solid #10b981',
-            padding: '1.5rem 2rem',
-            color: '#ffffff',
-            boxShadow: '0 12px 35px rgba(6, 78, 59, 0.22)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '1.25rem',
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease'
-          }}
-          onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ width: '56px', height: '56px', borderRadius: '18px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.85rem', color: '#fde68a', flexShrink: 0 }}>
-              <i className="fas fa-mosque"></i>
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '3px' }}>
-                <span style={{ background: '#f59e0b', color: '#78350f', padding: '2px 9px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 900 }}>نئی خصوصیت • Featured</span>
-                <span style={{ fontSize: '0.8rem', color: '#d1fae5', fontWeight: 700 }}>مکمل تصویری و فقہی گائیڈ</span>
-              </div>
-              <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, color: '#ffffff' }}>
-                آسان نماز اور مکمل مسنون احکام (Asan Nimaz Guide)
-              </h3>
-              <p style={{ margin: '3px 0 0', fontSize: '0.88rem', color: '#d1fae5', lineHeight: 1.5 }}>
-                نماز کا مرحلہ وار طریقہ، رکعتیں، فرائض، وضو، غسل، جنازہ، قبرستان کی دعائیں اور روزمرہ کے مسائل
-              </p>
-            </div>
-          </div>
+        <section className="container home-section">
+          <div className="home-section-heading"><div><span className="home-eyebrow">Browse the collection</span><h2>Explore</h2></div></div>
+          <div className="home-explore-grid">{[
+            ['read', 'Quran', 'fas fa-book-open'], ['hadith', 'Hadith', 'fas fa-quote-left'], ['tafseer', 'Tafseer', 'fas fa-bookmark'],
+            ['books', 'Books', 'fas fa-book'], ['quran', 'Audio', 'fas fa-headphones'], ['azkar', 'Azkar', 'fas fa-hands']
+          ].map(([tab, label, icon]) => <button key={tab} className="home-explore-card" onClick={() => handleNav(tab)}><i className={icon} aria-hidden="true" /><span>{label}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
+        </section>
 
-          <button
-            type="button"
-            style={{
-              background: '#ffffff',
-              color: '#064e3b',
-              border: 'none',
-              padding: '10px 22px',
-              borderRadius: '12px',
-              fontWeight: 800,
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.15)'
-            }}
-          >
-            <span>مکمل گائیڈ کھولیں</span>
-            <i className="fas fa-arrow-right"></i>
-          </button>
-        </div>
-
-        {/* ═══ HADITH OF THE DAY BANNER ═══ */}
-        <div style={{
-          marginTop: '1.75rem',
-          borderRadius: '24px',
-          background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
-          border: '2px solid var(--accent-gold)',
-          padding: '1.8rem 2rem',
-          color: '#ffffff',
-          boxShadow: '0 12px 35px rgba(2, 44, 34, 0.25)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          {/* Decorative gold graphic background */}
-          <div style={{ position: 'absolute', right: '-40px', bottom: '-40px', fontSize: '9rem', opacity: 0.05, pointerEvents: 'none', transform: 'rotate(-15deg)' }}>🕌</div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '1.2rem' }}>📜</span>
-              <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fcd34d', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                {t('hadithOfTheDay', 'Hadith of the Day')} &bull; {dailyHadith.book} #{dailyHadith.number}
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '3px 10px', borderRadius: '10px', background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0' }}>
-                ✓ {dailyHadith.grade}
-              </span>
-              <button
-                onClick={() => {
-                  const shareText = `📜 Hadith of the Day (${dailyHadith.book} #${dailyHadith.number}):\n\nArabic: ${dailyHadith.arabic}\n\nEnglish: ${dailyHadith.translation_en}\n\nUrdu: ${dailyHadith.translation_ur}\n\nRead more at Maktaba tul Muslim`;
-                  navigator.clipboard.writeText(shareText);
-                  setCopiedHadith(true);
-                  setTimeout(() => setCopiedHadith(false), 2000);
-                }}
-                style={{
-                  background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
-                  color: '#ffffff', padding: '4px 12px', borderRadius: '8px', fontSize: '0.75rem',
-                  fontWeight: 800, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s'
-                }}
-              >
-                {copiedHadith ? `✓ ${t('copied', 'Copied')}` : `📋 ${t('copyHadith', 'Copy Hadith')}`}
-              </button>
-            </div>
-          </div>
-
-          <p className="arabic-font" style={{ fontSize: '1.5rem', lineHeight: '2', color: '#fcd34d', textAlign: 'right', direction: 'rtl', marginBottom: '1.25rem', fontFamily: "'Amiri', serif" }}>
-            {dailyHadith.arabic}
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '1rem' }}>
-            <p style={{ margin: 0, fontSize: '0.98rem', color: '#cbd5e1', lineHeight: '1.6' }}>
-              <b>{t('english', 'English')}:</b> "{dailyHadith.translation_en}"
-            </p>
-            <p style={{ margin: 0, fontSize: '0.98rem', color: '#cbd5e1', lineHeight: '1.6', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', serif" }}>
-              <b>{t('urdu', 'Urdu')}:</b> "{dailyHadith.translation_ur}"
-            </p>
-          </div>
-        </div>
-
-        {/* Interactive Islamic Tools & Services Section */}
         {(() => {
-          const interactiveTools = [
-            {
-              id: 'asanNimaz',
-              icon: 'fas fa-mosque',
-              title: t('asanNimaz', 'Asan Nimaz'),
-              sub: (lang === 'ur' || lang === 'br') ? 'مکمل طریقہ و احکام' : lang === 'ar' ? 'طريقة الصلاة وأحكامها' : 'Step-by-Step Prayer',
-              accent: '#059669',
-              gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              glow: 'rgba(16, 185, 129, 0.35)',
-              badge: (lang === 'ur' || lang === 'br') ? 'اہم' : lang === 'ar' ? 'مهم' : 'Featured',
-              badgeBg: '#ecfdf5',
-              badgeColor: '#059669',
-              badgeBorder: '#a7f3d0'
-            },
-            {
-              id: 'read',
-              icon: 'fas fa-book-open',
-              title: t('readQuran', 'Read Quran'),
-              sub: (lang === 'ur' || lang === 'br') ? '114 سورتیں و تفسیر' : lang === 'ar' ? '١١٤ سورة وتفسير' : '114 Surahs & Tafseer',
-              accent: '#2563eb',
-              gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-              glow: 'rgba(37, 99, 235, 0.35)',
-            },
-            {
-              id: 'quran',
-              icon: 'fas fa-headphones',
-              title: t('mp3Audio', 'MP3 Recitations'),
-              sub: t('mp3RecitationsSub', '20 Qaris & Brahui MP3'),
-              accent: '#7c3aed',
-              gradient: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-              glow: 'rgba(124, 58, 237, 0.35)',
-            },
-            {
-              id: 'khatam',
-              icon: 'fas fa-chart-line',
-              title: t('khatam', 'Khatam Tracker'),
-              sub: t('khatamTrackerSub', '30-Day Quran Goal'),
-              accent: '#d97706',
-              gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-              glow: 'rgba(217, 119, 6, 0.35)',
-            },
-            {
-              id: 'tasbeeh',
-              icon: 'fas fa-fingerprint',
-              title: t('tasbeeh', 'Digital Tasbeeh'),
-              sub: t('digitalTasbeehSub', 'Zikr & Counter'),
-              accent: '#e11d48',
-              gradient: 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)',
-              glow: 'rgba(225, 29, 72, 0.35)',
-            },
-            {
-              id: 'qibla',
-              icon: 'fas fa-compass',
-              title: t('qibla', 'Qibla Direction'),
-              sub: t('qiblaCompassSub', 'Kaaba Direction'),
-              accent: '#0891b2',
-              gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-              glow: 'rgba(8, 145, 178, 0.35)',
-            },
-            {
-              id: 'books',
-              icon: 'fas fa-book-reader',
-              title: t('books', 'Islamic Books'),
-              sub: t('pdfBooksSub', 'Authentic Library'),
-              accent: '#92400e',
-              gradient: 'linear-gradient(135deg, #b45309 0%, #78350f 100%)',
-              glow: 'rgba(180, 83, 9, 0.35)',
-            },
-          ];
-
-          return (
-            <div style={{ marginTop: '1.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0 }}>
-                  <span style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', fontSize: '0.95rem' }}>
-                    <i className="fas fa-tools"></i>
-                  </span>
-                  <span>{t('interactiveServices')}</span>
-                </h3>
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>{t('interactiveSubtitle')}</span>
-              </div>
-
-              <div className="interactive-tools-grid">
-                {interactiveTools.map((tool) => (
-                  <div
-                    key={tool.id}
-                    onClick={() => handleNav(tool.id)}
-                    className="interactive-tool-card"
-                    style={{
-                      '--tool-accent': tool.accent,
-                      '--tool-gradient': tool.gradient,
-                      '--tool-glow': tool.glow,
-                    }}
-                  >
-                    {tool.badge && (
-                      <span
-                        className="interactive-tool-badge"
-                        style={{
-                          background: tool.badgeBg,
-                          color: tool.badgeColor,
-                          border: `1px solid ${tool.badgeBorder}`,
-                        }}
-                      >
-                        {tool.badge}
-                      </span>
-                    )}
-                    <div className="interactive-tool-icon-wrap">
-                      <i className={tool.icon}></i>
-                    </div>
-                    <h4 className="interactive-tool-title">{tool.title}</h4>
-                    <p className="interactive-tool-sub">{tool.sub}</p>
-                    {/* Clickable arrow hint */}
-                    <span className="interactive-tool-arrow" aria-hidden="true">→</span>
-                  </div>
-                ))}
-              </div>
+          const today = new Date();
+          const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+          const verse = DAILY_VERSES_COLLECTION[dayOfYear % DAILY_VERSES_COLLECTION.length];
+          return <section className="container home-section home-today">
+            <div className="home-section-heading"><div><span className="home-eyebrow">A little inspiration for today</span><h2>Today</h2></div></div>
+            <div className="home-today-tabs" role="tablist" aria-label="Today's content">
+              {[['ayah', 'Ayah'], ['hadith', 'Hadith'], ['dua', 'Dua']].map(([id, label]) => <button key={id} role="tab" aria-selected={todayTab === id} className={todayTab === id ? 'active' : ''} onClick={() => setTodayTab(id)}>{label}</button>)}
             </div>
-          );
+            <article className="home-today-card">
+              {todayTab === 'ayah' && <><span className="home-content-reference">{verse.surahName}</span><p className="arabic-font">{verse.arabic}</p><p>{verse.translation_en}</p><button className="home-text-action" onClick={() => playTrack(verse.audio_url, `Surah ${verse.surahName}`, 'Mishary Rashid Alafasy')}>Listen <i className="fas fa-play" aria-hidden="true" /></button></>}
+              {todayTab === 'hadith' && <><span className="home-content-reference">{dailyHadith.book} · #{dailyHadith.number} · {dailyHadith.grade}</span><p className="arabic-font">{dailyHadith.arabic}</p><p>{dailyHadith.translation_en}</p><button className="home-text-action" onClick={() => handleNav('hadith')}>View Hadith <i className="fas fa-arrow-right" aria-hidden="true" /></button></>}
+              {todayTab === 'dua' && <><span className="home-content-reference">Quran · {TODAY_DUA.reference}</span><p className="arabic-font">{TODAY_DUA.arabic}</p><p>{TODAY_DUA.translation}</p><button className="home-text-action" onClick={() => handleNav('duas')}>Explore Duas <i className="fas fa-arrow-right" aria-hidden="true" /></button></>}
+            </article>
+          </section>;
         })()}
 
-        {/* Live Portal Stats Grid (Option 4 Styled) */}
+        {featuredAudios.length > 0 && <section className="container home-section">
+          <div className="home-section-heading"><div><span className="home-eyebrow">Listen and reflect</span><h2>Featured recitations</h2></div><button className="home-text-action" onClick={() => handleNav('quran')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
+          <div className="home-feature-grid">{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-play" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playTrack?.(item.audio_url, item.surah_name_english || item.title, item.reciter)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
+        </section>}
 
-        <div style={{ margin: '1.5rem 0' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.25rem' }}>
-            <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
-              <i className="fas fa-headphones" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_audios}</h3>
-              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>{t('quranRecitationsStat')}</p>
-            </div>
-            <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
-              <i className="fas fa-book" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_books}</h3>
-              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>{t('pdfBooksStat')}</p>
-            </div>
-            <div className="card" style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '16px', border: '1.5px solid #e7e5e4', textAlign: 'center' }}>
-              <i className="fas fa-star" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem' }}></i>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1c1917', margin: 0 }}>{stats.total_hadiths}</h3>
-              <p style={{ fontSize: '0.88rem', color: '#78716c', fontWeight: 600, margin: 0 }}>{t('hadithStat')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        {featuredBooks.length > 0 && <section className="container home-section">
+          <div className="home-section-heading"><div><span className="home-eyebrow">Selected from the library</span><h2>Featured books</h2></div><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
+          <div className="home-books-grid">{featuredBooks.map((book, index) => <article className="home-book-card" key={book.id || index}>{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" />}<div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
+        </section>}
 
-      {/* DAILY VERSE & INSPIRATION SPOTLIGHT (DYNAMICALLY ROTATES EVERY DAY AT MIDNIGHT) */}
-      {(() => {
-        const today = new Date();
-        const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-        const todayVerse = DAILY_VERSES_COLLECTION[dayOfYear % DAILY_VERSES_COLLECTION.length];
-        return (
-          <section id="home-daily-verse" className="container" style={{ marginTop: '2rem' }}>
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
-                border: '2px solid var(--accent-gold)',
-                borderRadius: '20px',
-                padding: '2rem 1.75rem',
-                color: '#ffffff',
-                boxShadow: '0 12px 32px rgba(28, 25, 23, 0.25)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent-gold)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(245,158,11,0.15)', padding: '0.35rem 0.85rem', borderRadius: '20px' }}>
-                  <i className="fas fa-sun"></i> Daily Verse & Reflection of the Day
-                </span>
-                <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
-                  Surah {todayVerse.surahName}
-                </span>
-              </div>
-
-              <div style={{ textAlign: 'center', margin: '1rem 0 1.5rem 0' }}>
-                <p className="arabic-font home-daily-verse-arabic" style={{ fontSize: '1.8rem', color: '#ffffff', lineHeight: '2.2', marginBottom: '1rem', fontWeight: 700 }}>
-                  {todayVerse.arabic}
-                </p>
-                <p className="home-daily-verse-translation" style={{ fontSize: '1.05rem', color: '#fef3c7', fontStyle: 'italic', maxWidth: '850px', margin: '0 auto 0.75rem auto', lineHeight: '1.6' }}>
-                  "{todayVerse.translation_en}"
-                </p>
-                <p className="home-daily-verse-urdu" style={{ fontSize: '0.92rem', color: '#6ee7b7', margin: '0 auto', maxWidth: '800px', fontWeight: 600 }}>
-                  اردو ترجمہ: "{todayVerse.translation_ur}"
-                </p>
-              </div>
-
-              {/* Share & Interactive Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                <button
-                  className="btn-play"
-                  onClick={() => playTrack(todayVerse.audio_url, `Surah ${todayVerse.surahName}`, "Mishary Rashid Alafasy")}
-                  style={{ padding: '0.55rem 1.25rem', fontSize: '0.88rem' }}
-                >
-                  <i className="fas fa-play"></i> Listen Recitation
-                </button>
-
-                <a
-                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🌸 Daily Quranic Reflection 🌸\n\n${todayVerse.arabic}\n\n"${todayVerse.translation_en}"\n[Surah ${todayVerse.surahName}]\n\nRead more on Quran Portal!`)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-play"
-                  style={{ background: '#25D366', borderColor: '#25D366', color: '#ffffff', padding: '0.55rem 1.25rem', fontSize: '0.88rem', textDecoration: 'none' }}
-                >
-                  <i className="fab fa-whatsapp"></i> Share on WhatsApp
-                </a>
-
-                <button
-                  className="btn-play"
-                  onClick={() => {
-                    const text = `${todayVerse.arabic}\n\n"${todayVerse.translation_en}"\n[Surah ${todayVerse.surahName}]`;
-                    navigator.clipboard.writeText(text);
-                    alert("Daily verse copied to clipboard!");
-                  }}
-                  style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.3)', color: '#ffffff', padding: '0.55rem 1.25rem', fontSize: '0.88rem' }}
-                >
-                  <i className="fas fa-copy"></i> Copy Verse
-                </button>
-              </div>
-            </div>
-          </section>
-        );
-      })()}
-
-      {/* ═══ RAMADAN / RAMZAN COUNTDOWN CARD ═══ */}
-      {ramadanCountdown && (
-        <section className="container" style={{ marginTop: '2rem' }}>
-          <div style={{
-            borderRadius: '24px',
-            background: 'linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-dark) 100%)',
-            border: '2px solid var(--accent-gold, #f59e0b)',
-            padding: '1.75rem',
-            boxShadow: '0 12px 32px rgba(5,150,105,0.15)',
-            position: 'relative',
-            overflow: 'hidden',
-            color: '#ffffff'
-          }}>
-            {/* Background pattern/glow */}
-            <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(245,158,11,0.06)', filter: 'blur(50px)', pointerEvents: 'none' }} />
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(245,158,11,0.2)', paddingBottom: '0.75rem', flexWrap: 'wrap' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>🌙</div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
-                  Blessed Month of Ramzan {hijriYear || '1448'}
-                </h3>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1' }}>
-                  Islamic Calendar &amp; Fasting Countdown
-                </p>
-              </div>
-              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: '12px', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399', whiteSpace: 'nowrap' }}>
-                📍 {locationInfo?.city || 'Local Region'}
-              </span>
-            </div>
-
-            {ramadanCountdown.state === 'upcoming' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--accent-gold)', lineHeight: 1, fontFamily: 'monospace' }}>
-                    {ramadanCountdown.days}
-                  </span>
-                  <span style={{ fontSize: '1.25rem', color: '#fcd34d', fontWeight: 800 }}>{t('daysRemaining', 'Days Remaining')}</span>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.6 }}>
-                  until the sacred month of Ramzan begins. Prepare your mind and soul for {ramadanCountdown.total} days of spiritual growth and devotion.
-                </p>
-                <div style={{ marginTop: '0.5rem', height: '8px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%', borderRadius: '6px',
-                    background: 'linear-gradient(90deg, #f59e0b, #10b981)',
-                    width: `${Math.max(5, 100 - (ramadanCountdown.days / 365) * 100)}%`
-                  }} />
-                </div>
-              </div>
-            )}
-
-            {ramadanCountdown.state === 'active' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'baseline' }}>
-                  <div>
-                    <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#34d399', lineHeight: 1, fontFamily: 'monospace' }}>
-                      Day {ramadanCountdown.dayIn}
-                    </span>
-                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>of Ramzan</p>
-                  </div>
-                  <div>
-                    <span style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--accent-gold)', lineHeight: 1, fontFamily: 'monospace' }}>
-                      {ramadanCountdown.daysLeft}
-                    </span>
-                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>{t('daysLeft', 'Days Left')}</p>
-                  </div>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0', lineHeight: 1.6 }}>
-                  {t('ramadanActiveMsg', '🤲 You are currently in the blessed month of Ramzan. May Allah accept your fasts, prayers, and charity!')}
-                </p>
-                <div style={{ marginTop: '0.5rem', height: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%', borderRadius: '6px',
-                    background: 'linear-gradient(90deg, #f59e0b, #34d399)',
-                    width: `${(ramadanCountdown.dayIn / ramadanCountdown.total) * 100}%`,
-                    transition: 'width 1s ease'
-                  }} />
-                </div>
-              </div>
-            )}
-
-            {ramadanCountdown.state === 'passed' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <p style={{ margin: 0, fontSize: '1rem', color: '#cbd5e1', fontWeight: 600 }}>
-                  {t('ramadanPassedMsg', 'Ramadan has passed')} {ramadanCountdown.daysAgo} {t('daysAgoMsg', 'days ago. May Allah accept your fasts and deeds! 🤲')}
-                </p>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
-                  {t('nextRamadanCountdownMsg', 'Next Ramzan countdown will appear as the new Hijri year approaches. Stay connected to your daily prayers.')}
-                </p>
-              </div>
-            )}
-          </div>
+        <section className="container home-section">
+          <div className="home-section-heading"><div><span className="home-eyebrow">Useful every day</span><h2>Islamic tools</h2></div></div>
+          <div className="home-tools-grid">{[
+            ['qibla', 'Qibla', 'fas fa-compass'], ['tasbeeh', 'Tasbeeh', 'fas fa-fingerprint'], ['khatam', 'Khatam Tracker', 'fas fa-book-open'],
+            ['prayer', 'Prayer Times', 'fas fa-clock'], ['azkar', 'Azkar', 'fas fa-hands'], ['calendar', 'Islamic Calendar', 'fas fa-calendar-alt']
+          ].map(([id, label, icon]) => <button key={id} className="home-tool-card" onClick={() => id === 'prayer' ? document.getElementById('home-prayer-times')?.scrollIntoView({ behavior: 'smooth' }) : id === 'calendar' ? openCalendar?.() : handleNav(id)}><i className={icon} aria-hidden="true" /><span>{label}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
         </section>
-      )}
 
-      <section id="home-prayer-times" className="container" style={{ marginTop: '1.25rem', marginBottom: '2.5rem', textAlign: 'center' }}>
-        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
-      </section>
-
-      {/* 1. FEATURED AUDIO RECITATIONS (EXACTLY 4 SURAHS - CENTERED) */}
-      <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-volume-up" style={{ color: 'var(--accent-gold)' }}></i> {t('surahTilawat')}
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            {t('quranHeroSubtitle')}
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem' }}>
-          {getDailyRotatedSlice(audios, 4).map((item) => (
-            <div key={item.id} className="card" style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                  <span className="surah-number-badge">{item.surah_number}</span>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px' }}>
-                    {item.revelation_place}
-                  </span>
-                </div>
-                <h3 className="card-title" style={{ fontSize: '1.2rem', margin: '0.3rem 0' }}>{item.title || item.surah_name_english}</h3>
-                <p className="arabic-font card-arabic" style={{ fontSize: '1.4rem', margin: '0.2rem 0 0.5rem 0' }}>{item.surah_name_arabic}</p>
-                <p className="card-subtitle" style={{ fontSize: '0.85rem' }}><i className="fas fa-user-alt"></i> {item.reciter}</p>
-              </div>
-
-              <div style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}><i className="far fa-clock"></i> {item.duration}</span>
-                <button
-                  className="btn-play"
-                  onClick={() => playTrack(item.audio_url, item.title || item.surah_name_english, item.reciter)}
-                  style={{ width: '100%', justifyContent: 'center', padding: '0.6rem 1rem', background: '#ffffff', color: 'var(--accent-gold)', border: '2px solid var(--accent-gold)', fontWeight: 800 }}
-                >
-                  <i className="fas fa-play"></i> {t('playAudioBtn')}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
-          <a
-            href="/quran"
-            className="btn-play"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNav('quran');
-            }}
-            style={{
-              display: 'inline-flex',
-              padding: '0.7rem 2rem',
-              fontSize: '0.95rem',
-              background: '#ffffff',
-              color: 'var(--accent-gold)',
-              border: '2px solid var(--accent-gold)',
-              fontWeight: 800,
-              boxShadow: '0 4px 14px rgba(180,83,9,0.15)',
-              textDecoration: 'none'
-            }}
-          >
-            {t('mp3Audio')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
-          </a>
-        </div>
-      </section>
-
-      {/* 2. DEDICATED PDF BOOKS LIBRARY SECTION (CENTERED) */}
-      <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-book" style={{ color: 'var(--accent-gold)' }}></i> {t('featuredBooks')}
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            {t('booksSubtitle')}
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
-          {getDailyRotatedSlice(books, 4).map((bk) => (
-            <div key={bk.id} className="card" style={{ padding: '1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div
-                  className="media-cover-wrapper"
-                  style={{ width: '130px', height: '160px', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', cursor: 'pointer', position: 'relative' }}
-                  onClick={() => openDocViewer(bk)}
-                  title="Click to preview book"
-                >
-                  <img src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"} alt={bk.title} className="media-cover-img" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  {/* Hover overlay */}
-                  <div className="book-cover-preview-overlay">
-                    <i className="fas fa-eye" style={{ fontSize: '1.4rem', color: '#fff' }}></i>
-                    <span style={{ fontSize: '0.7rem', color: '#fff', fontWeight: 700, marginTop: '4px' }}>Preview</span>
-                  </div>
-                </div>
-                <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.2rem 0' }}>{bk.title}</h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0' }}>{t('byAuthor', 'By')} {bk.author}</p>
-                <span style={{ fontSize: '0.78rem', color: 'var(--primary-light)', background: 'var(--accent-gold-light)', padding: '2px 10px', borderRadius: '12px', marginTop: '0.4rem', fontWeight: 600 }}>
-                  {bk.pages_count} {t('pages', 'Pages')} &bull; {bk.language}
-                </span>
-              </div>
-
-              <div style={{ marginTop: '1.25rem', width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {/* View / Open button */}
-                <button
-                  onClick={() => openDocViewer(bk)}
-                  className="btn-play"
-                  style={{
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem',
-                    width: '100%', padding: '0.65rem 1rem', fontSize: '0.88rem', fontWeight: 800,
-                    background: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)',
-                    color: '#ffffff', border: '2px solid #1c1917',
-                    borderRadius: '20px', boxShadow: '0 3px 10px rgba(0,0,0,0.18)', cursor: 'pointer'
-                  }}
-                >
-                  <i className="fas fa-eye"></i> View / Open
-                </button>
-                {/* Download / External link */}
-                <a
-                  href={bk.document_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-play"
-                  style={{
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem',
-                    width: '100%', padding: '0.55rem 1rem', fontSize: '0.82rem', fontWeight: 700,
-                    background: '#ffffff', color: 'var(--accent-gold)',
-                    border: '2px solid var(--accent-gold)', borderRadius: '20px',
-                    boxShadow: '0 3px 10px rgba(180,83,9,0.12)', textDecoration: 'none'
-                  }}
-                >
-                  <i className="fas fa-external-link-alt"></i> {t('downloadPdf')}
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
-          <a
-            href="/books"
-            className="btn-play"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNav('books');
-            }}
-            style={{
-              display: 'inline-flex',
-              padding: '0.7rem 2rem',
-              fontSize: '0.95rem',
-              background: '#ffffff',
-              color: 'var(--accent-gold)',
-              border: '2px solid var(--accent-gold)',
-              fontWeight: 800,
-              boxShadow: '0 4px 14px rgba(180,83,9,0.15)',
-              textDecoration: 'none'
-            }}
-          >
-            {t('exploreFullBooks')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
-          </a>
-        </div>
-      </section>
-
-      {/* 3. FEATURED TAQREER AUDIOS / MUHAZIRAT (ONLY RENDERS IF LECTURES ARE UPLOADED) */}
-      {taqreers && taqreers.length > 0 && (
-        <section className="container" style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-              <i className="fas fa-bullhorn" style={{ color: 'var(--accent-gold)' }}></i> {t('taqreerSectionTitle')}
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-              {t('taqreerSectionDesc')}
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
-            {getDailyRotatedSlice(taqreers, 3).map((tq) => (
-              <div key={tq.id} className="card" style={{ padding: '1.25rem', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <span style={{ background: 'var(--accent-gold-light)', color: 'var(--primary-dark)', fontWeight: 700, fontSize: '0.78rem', padding: '3px 10px', borderRadius: '10px', textTransform: 'uppercase' }}>
-                      <i className="fas fa-volume-up"></i> {tq.language} MP3
-                    </span>
-                  </div>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0.4rem 0 0.2rem 0' }}>{tq.title}</h4>
-                  <p style={{ fontSize: '0.88rem', color: 'var(--primary-light)', margin: '0.2rem 0 0.6rem 0', fontWeight: 600 }}>
-                    <i className="fas fa-user-tie"></i> {tq.speaker}
-                  </p>
-                  {tq.description && (
-                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.8rem', lineHeight: '1.4' }}>{tq.description}</p>
-                  )}
-                </div>
-                <button
-                  className="btn-play"
-                  style={{ width: '100%', justifyContent: 'center', padding: '0.55rem 1rem' }}
-                  onClick={() => playTrack(tq.audio_url || tq.audio_file, tq.title, tq.speaker)}
-                >
-                  <i className="fas fa-play"></i> {t('playTaqreerBtn')}
-                </button>
-              </div>
-            ))}
-          </div>
+        <section className="container home-ask-card">
+          <span className="home-eyebrow">Your study companion</span><h2>Ask Maktaba</h2>
+          <p>Ask about the Quran, Hadith, Tafseer, and content in the Islamic library.</p>
+          <button className="home-btn-primary" onClick={() => openAIChat?.()}>Ask a question <i className="fas fa-arrow-right" aria-hidden="true" /></button>
         </section>
-      )}
+      </main>
 
-      {/* 4. HADITH SPOTLIGHT (CENTERED) */}
-      <section className="container" style={{ marginBottom: '4rem', textAlign: 'center' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 className="section-title" style={{ justifyContent: 'center', fontSize: '1.8rem' }}>
-            <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> {t('hadithSpotlightTitle')}
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.3rem' }}>
-            {t('hadithSpotlightDesc')}
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
-          {getDailyRotatedSlice(hadiths, 3).map((h) => (
-            <div key={h.id} className="card" style={{ padding: '1.75rem', textAlign: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-dark)', background: 'var(--accent-gold-light)', padding: '3px 12px', borderRadius: '12px' }}>
-                  {h.book_name} #{h.hadith_number}
-                </span>
-                <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 700, background: '#dcfce7', padding: '3px 12px', borderRadius: '12px' }}>
-                  {h.grade}
-                </span>
-              </div>
-              <p className="arabic-font" style={{ fontSize: '1.35rem', color: 'var(--primary-emerald)', lineHeight: '1.8', marginBottom: '1rem' }}>{h.arabic_text}</p>
-              <p style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontStyle: 'italic', lineHeight: '1.6' }}>"{h.translation}"</p>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
-          <a
-            href="/hadith"
-            className="btn-play"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNav('hadith');
-            }}
-            style={{
-              display: 'inline-flex',
-              padding: '0.7rem 2rem',
-              fontSize: '0.95rem',
-              background: 'var(--primary-dark)',
-              color: 'var(--accent-gold)',
-              textDecoration: 'none'
-            }}
-          >
-            {t('exploreHadithCollections')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
-          </a>
-        </div>
-      </section>
-
-      {/* ═══ DOCUMENT VIEWER MODAL ═══ */}
       {docViewer && createPortal(
         <div
           onClick={closeDocViewer}
