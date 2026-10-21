@@ -3952,9 +3952,9 @@ img {
 .prayer-dua-card span { overflow-wrap: break-word; }
 .post-prayer-counter-actions { flex-wrap: wrap; }
 .post-prayer-counter-actions > button { min-width: 0; }
-.prayer-dua-arabic { font-size: clamp(2rem, 4vw, 2.55rem) !important; line-height: 1.9 !important; }
-.prayer-dua-translation-urdu { font-size: 0.98rem !important; color: #475569 !important; }
-.prayer-dua-translation-english { font-size: 0.84rem !important; color: #64748b !important; }
+.prayer-dua-arabic { font-size: clamp(1.45rem, 2.8vw, 1.9rem) !important; line-height: 1.65 !important; }
+.prayer-dua-translation-urdu { font-size: 0.84rem !important; line-height: 1.55 !important; color: #475569 !important; }
+.prayer-dua-translation-english { font-size: 0.76rem !important; line-height: 1.45 !important; color: #64748b !important; }
 .home-daily-verse-arabic { font-size: clamp(2.15rem, 5vw, 3rem) !important; line-height: 2 !important; color: #fef3c7 !important; }
 .home-daily-verse-translation { font-size: 0.96rem !important; color: #dbeafe !important; }
 .home-daily-verse-urdu { font-size: 0.88rem !important; color: #a7f3d0 !important; }
@@ -3972,7 +3972,7 @@ img {
   .post-prayer-tasbeeh { padding: 12px !important; }
   .post-prayer-counter-card { padding: 11px !important; }
   .post-prayer-counter-grid { grid-template-columns: minmax(0, 1fr) !important; }
-  .prayer-dua-arabic { font-size: clamp(1.8rem, 8vw, 2.2rem) !important; }
+  .prayer-dua-arabic { font-size: clamp(1.35rem, 5.5vw, 1.7rem) !important; line-height: 1.55 !important; }
   .home-daily-verse-arabic { font-size: clamp(1.9rem, 8vw, 2.4rem) !important; }
   .zakat-settings-bar > div, .zakat-currency-control,
   .zakat-currency-options { width: 100%; flex-wrap: wrap; }
@@ -3986,12 +3986,12 @@ img {
 }
 
 .home-quick-access { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin: 0 0 18px; }
-.home-daily-dua { margin-top: 12px; padding: 20px 24px; border: 1px solid #bbf7d0; border-radius: 18px; background: linear-gradient(135deg, #f0fdf4 0%, #fff 80%); box-shadow: 0 8px 24px rgba(15, 23, 42, .045); text-align: center; }
+.home-daily-dua { margin-top: 12px; padding: 16px 20px; border: 1px solid #bbf7d0; border-radius: 18px; background: linear-gradient(135deg, #f0fdf4 0%, #fff 80%); box-shadow: 0 8px 24px rgba(15, 23, 42, .045); text-align: center; }
 .home-daily-dua-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; text-align: left; }
 .home-daily-dua-reference { color: #64748b; font-size: .78rem; font-weight: 700; }
-.home-daily-dua-arabic { margin: 8px auto 10px; color: #064e3b; font-family: 'Amiri', 'Traditional Arabic', serif; font-size: clamp(2rem, 5vw, 2.7rem); line-height: 1.9; }
-.home-daily-dua-urdu { margin: 0 auto 5px; color: #475569; font-family: 'Amiri', 'Jameel Noori Nastaleeq', serif; font-size: .98rem; line-height: 1.8; }
-.home-daily-dua-english { margin: 0 auto 12px; color: #64748b; font-size: .84rem; line-height: 1.6; }
+.home-daily-dua-arabic { margin: 6px auto 8px; color: #064e3b; font-family: 'Amiri', 'Traditional Arabic', serif; font-size: clamp(1.55rem, 3.2vw, 2rem); line-height: 1.6; }
+.home-daily-dua-urdu { margin: 0 auto 4px; color: #475569; font-family: 'Amiri', 'Jameel Noori Nastaleeq', serif; font-size: .84rem; line-height: 1.5; }
+.home-daily-dua-english { margin: 0 auto 8px; color: #64748b; font-size: .76rem; line-height: 1.45; }
 .home-daily-dua-link { border: 0; background: transparent; color: #047857; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; }
 .home-quick-access-button { min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 12px; border: 1px solid #dce8e2; border-radius: 12px; background: #fff; color: #14532d; font: inherit; font-weight: 700; cursor: pointer; transition: background .18s ease, border-color .18s ease, transform .18s ease; }
 .home-quick-access-button:hover { background: #f0fdf4; border-color: #86efac; transform: translateY(-1px); }
@@ -4016,9 +4016,9 @@ img {
   .home-reading-cards { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 520px) {
-  .home-daily-dua { padding: 16px; }
+  .home-daily-dua { padding: 12px 14px; }
   .home-daily-dua-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
-  .home-daily-dua-arabic { font-size: clamp(1.9rem, 8vw, 2.35rem); }
+  .home-daily-dua-arabic { font-size: clamp(1.4rem, 6vw, 1.7rem); }
   .home-quick-access { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .home-quick-access-button { justify-content: flex-start; min-height: 48px; padding: 9px; font-size: .86rem; }
   .home-reading-card { align-items: flex-start; flex-wrap: wrap; padding: 16px; }
