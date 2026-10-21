@@ -19,6 +19,7 @@ export default function BooksView({ openReportModal, user }) {
   const [itemsPerPage, setItemsPerPage] = useState(24);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [previewDoc, setPreviewDoc] = useState(null); // Document selected for modal viewing
   const [editingBook, setEditingBook] = useState(null);
   const [viewerEngine, setViewerEngine] = useState('direct'); // 'direct' | 'office' | 'google'
@@ -116,17 +117,18 @@ export default function BooksView({ openReportModal, user }) {
   // Fetch Books whenever filters change & merge client-side admin uploaded books
   useEffect(() => {
     setLoading(true);
+    setLoadError(false);
     const langStr = selectedLanguages.join(',');
     const fileTypeStr = selectedFileTypes.join(',');
 
     fetch(getApiUrl(`/api/books/?q=${encodeURIComponent(debouncedQuery)}&category=${encodeURIComponent(selectedCategory)}&file_type=${encodeURIComponent(fileTypeStr)}&language=${encodeURIComponent(langStr)}&page=${currentPage}`))
-      .then(res => res.json())
+      .then(res => { if (!res.ok) throw new Error('Book request failed'); return res.json(); })
       .then(data => {
         const apiBooks = data.results || [];
         const adminBooks = getAdminItems('books').map(item => ({
           id: item.id,
           title: item.title,
-          author: item.author || 'Admin Upload',
+          author: item.author || '',
           file_type: item.file_type || 'pdf',
           pdf_url: item.fileUrl || item.pdf_url || item.document_url,
           cover_url: item.cover_url || '',
@@ -157,10 +159,11 @@ export default function BooksView({ openReportModal, user }) {
         setLoading(false);
       })
       .catch(() => {
+        setLoadError(true);
         const adminBooks = getAdminItems('books').map(item => ({
           id: item.id,
           title: item.title,
-          author: item.author || 'Admin Upload',
+          author: item.author || '',
           file_type: item.file_type || 'pdf',
           pdf_url: item.fileUrl || item.pdf_url,
           cover_url: item.cover_url || '',
@@ -185,7 +188,7 @@ export default function BooksView({ openReportModal, user }) {
           const adminBooks = getAdminItems('books').map(item => ({
             id: item.id,
             title: item.title,
-            author: item.author || 'Admin Upload',
+            author: item.author || '',
             file_type: item.file_type || 'pdf',
             pdf_url: item.fileUrl || item.pdf_url || item.document_url,
             cover_url: item.cover_url || '',
@@ -199,7 +202,7 @@ export default function BooksView({ openReportModal, user }) {
           const adminBooks = getAdminItems('books').map(item => ({
             id: item.id,
             title: item.title,
-            author: item.author || 'Admin Upload',
+            author: item.author || '',
             file_type: item.file_type || 'pdf',
             pdf_url: item.fileUrl || item.pdf_url,
             cover_url: item.cover_url || '',
@@ -238,6 +241,18 @@ export default function BooksView({ openReportModal, user }) {
     if (!doc) return '';
     return doc.document_url || doc.pdf_file || doc.pdf_url || doc.fileUrl || doc.file_url || '';
   };
+
+  const cleanBookMeta = (value) => {
+    const text = typeof value === 'string' ? value.trim() : '';
+    return text && !['unknown', 'mix', 'mixed', 'combine', 'combined', 'n/a'].includes(text.toLowerCase()) ? text : '';
+  };
+  const getBookAuthor = (book) => cleanBookMeta(book.author) || 'Author information unavailable';
+  const getBookLanguage = (book) => {
+    const language = cleanBookMeta(book.language);
+    if (!language) return 'Language information unavailable';
+    return ({ en: 'English', ur: 'Urdu', ar: 'Arabic', br: 'Brahui' })[language.toLowerCase()] || language;
+  };
+  const getBookCategory = (book) => cleanBookMeta(book.category_name || book.category?.name || (typeof book.category === 'string' ? book.category : ''));
 
   const getCleanDocumentUrl = (url) => {
     if (!url) return '';
@@ -516,13 +531,13 @@ export default function BooksView({ openReportModal, user }) {
       )}
 
       {/* Search & Filter Bar + View Mode Switcher */}
-      <div className="filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="filter-bar books-search-filter" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
         <div className="books-filter-controls" style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', flex: 1, minWidth: '280px' }}>
-          <div className="filter-group" style={{ flex: 2, minWidth: '220px' }}>
+          <div className="filter-group books-search-group" style={{ flex: 2, minWidth: '220px' }}>
             <span className="filter-label"><i className="fas fa-search"></i> {t('searchLabel')}</span>
             <input
               type="text"
-              className="filter-input"
+              className="filter-input books-search-input"
               placeholder={t('searchBooksPlaceholder')}
               value={query}
               onChange={(e) => { setQuery(e.target.value); setCurrentPage(1); }}
@@ -611,12 +626,14 @@ export default function BooksView({ openReportModal, user }) {
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--accent-gold)' }}></i>
           <p style={{ marginTop: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Fetching Library Documents...</p>
         </div>
+      ) : books.length === 0 && loadError ? (
+        <div className="books-empty-state" role="alert"><i className="fas fa-exclamation-circle" aria-hidden="true"></i><h3>Library could not be loaded</h3><p>Please check your connection and try again.</p></div>
       ) : books.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem 1.5rem', margin: '2rem 0' }}>
+        <div className="books-empty-state">
           <i className="fas fa-folder-open fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
-          <h3 style={{ color: 'var(--primary-dark)' }}>No documents found</h3>
+          <h3>{debouncedQuery || selectedCategory || selectedLanguages.length || selectedFileTypes.length ? 'No search results' : 'No books available yet'}</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            Try adjusting your format filter or search criteria to view more resources.
+            {debouncedQuery || selectedCategory || selectedLanguages.length || selectedFileTypes.length ? 'Try changing your search or filters.' : 'Books will appear here when they are available.'}
           </p>
         </div>
       ) : (() => {
@@ -626,20 +643,15 @@ export default function BooksView({ openReportModal, user }) {
           <>
             {viewMode === 'grid' ? (
               /* GRID VIEW - 4 COLUMNS / 12 CARDS */
-              <div className="grid-4">
+              <div className="books-grid">
                 {paginatedBooks.map((bk) => {
                   const badge = getFormatBadge(bk.file_type);
+                  const documentUrl = getDocRawUrl(bk);
+                  const category = getBookCategory(bk);
                   return (
-                    <div key={bk.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 14px rgba(0,0,0,0.04)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
-                      <div className="media-cover-wrapper" style={{ height: '160px', position: 'relative', background: '#0f172a' }}>
-                        <img
-                          src={bk.cover_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80"}
-                          alt={bk.title}
-                          className="media-cover-img"
-                          loading="lazy"
-                          decoding="async"
-                          style={{ objectFit: 'cover', width: '100%', height: '100%', opacity: 0.9 }}
-                        />
+                    <article key={bk.id} className="books-card">
+                      <div className="books-cover">
+                        {bk.cover_url ? <img src={bk.cover_url} alt={bk.title || 'Book cover'} loading="lazy" decoding="async" /> : <span aria-hidden="true"><i className="fas fa-book-open"></i></span>}
                         {/* Format Badge Overlay */}
                         <span
                           style={{
@@ -663,41 +675,38 @@ export default function BooksView({ openReportModal, user }) {
                         </span>
                       </div>
 
-                      <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0.9rem' }}>
-                        <h3 className="card-title" style={{ fontSize: '0.95rem', marginBottom: '0.2rem', color: 'var(--primary-dark)', fontWeight: 800 }}>{bk.title}</h3>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.15rem 0 0.35rem 0' }}>
-                          <i className="fas fa-pen-nib" style={{ color: 'var(--accent-gold)' }}></i> {t('byAuthor', 'By')} {bk.author}
-                        </p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--primary-light)', fontWeight: 600, marginBottom: '0.4rem' }}>
-                          <i className={bk.file_type === 'ppt' ? 'fas fa-file-powerpoint' : 'fas fa-file-alt'} style={{ marginRight: '0.25rem' }}></i>
-                          {bk.file_type === 'ppt' ? `${bk.pages_count} ${t('slides', 'Slides')}` : `${bk.pages_count} ${t('pages', 'Pages')}`} &bull; {bk.language}
-                        </p>
+                      <div className="books-card-body">
+                        <h3>{bk.title || 'Untitled book'}</h3>
+                        <p className="books-author"><i className="fas fa-pen-nib" aria-hidden="true"></i> {getBookAuthor(bk)}</p>
+                        <div className="books-metadata">
+                          <span>{getBookLanguage(bk)}</span>
+                          {category && <span>{category}</span>}
+                          {(bk.pages_count || bk.pages) && <span>{bk.file_type === 'ppt' ? `${bk.pages_count || bk.pages} ${t('slides', 'Slides')}` : `${bk.pages_count || bk.pages} ${t('pages', 'Pages')}`}</span>}
+                        </div>
                         <p style={{ fontSize: '0.78rem', color: '#475569', lineHeight: '1.4', flex: 1, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{bk.description}</p>
                       </div>
 
                       {/* Action Footer */}
-                      <div className="card-footer" style={{ padding: '0.65rem 0.9rem', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div className="books-card-actions">
+                        {documentUrl && <>
                         <button
+                          className="books-read-button"
                           onClick={() => handleOpenDocModal(bk)}
-                          style={{ flex: 1, minWidth: '90px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '30px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
-                          onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
-                          onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> {t('readDoc', 'Read')}
+                          <i className="fas fa-book-open" aria-hidden="true"></i> Read Book
                         </button>
 
                         <a
-                          href={getCleanDocumentUrl(getDocRawUrl(bk))}
+                          className="books-download"
+                          href={getCleanDocumentUrl(documentUrl)}
                           download
                           target="_blank"
                           rel="noreferrer"
-                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
-                          title="Download File"
-                          onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
-                          onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                          title="Download book"
                         >
-                          <i className="fas fa-download"></i>
+                          <i className="fas fa-download" aria-hidden="true"></i> Download
                         </a>
+                        </>}
 
                         <button
                           title="Report Issue"
@@ -752,7 +761,7 @@ export default function BooksView({ openReportModal, user }) {
                           </>
                         )}
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -761,6 +770,8 @@ export default function BooksView({ openReportModal, user }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {paginatedBooks.map((bk) => {
                   const badge = getFormatBadge(bk.file_type);
+                  const documentUrl = getDocRawUrl(bk);
+                  const category = getBookCategory(bk);
                   return (
                     <div key={bk.id} className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', gap: '0.75rem', flexWrap: 'wrap', borderRadius: '12px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: '220px' }}>
@@ -768,32 +779,34 @@ export default function BooksView({ openReportModal, user }) {
                           <i className={badge.icon}></i>
                         </div>
                         <div>
-                          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{bk.title}</h4>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t('byAuthor', 'By')} {bk.author} • {bk.pages_count || 100} {t('pages', 'Pages')}</span>
+                          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{bk.title || 'Untitled book'}</h4>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{getBookAuthor(bk)} · {getBookLanguage(bk)}{category ? ` · ${category}` : ''}{bk.pages_count || bk.pages ? ` · ${bk.pages_count || bk.pages} ${t('pages', 'Pages')}` : ''}</span>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <button
+                        {documentUrl && <>
+                        <button className="books-read-button"
                           onClick={() => handleOpenDocModal(bk)}
                           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '30px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.68rem', color: 'var(--accent-gold)' }}></i> {t('readDoc', 'Read')}
+                          <i className="fas fa-book-open" aria-hidden="true"></i> Read Book
                         </button>
                         <a
-                          href={getCleanDocumentUrl(getDocRawUrl(bk))}
+                          className="books-download"
+                          href={getCleanDocumentUrl(documentUrl)}
                           download
                           target="_blank"
                           rel="noreferrer"
-                          style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#0f172a', border: '1.5px solid #e2e8f0', borderRadius: '50%', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s', textDecoration: 'none' }}
-                          title="Download File"
+                          title="Download book"
                           onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                         >
-                          <i className="fas fa-download"></i>
+                          <i className="fas fa-download" aria-hidden="true"></i> Download
                         </a>
+                        </>}
                       </div>
                     </div>
                   );
@@ -905,7 +918,7 @@ export default function BooksView({ openReportModal, user }) {
                       lineHeight: '1.1'
                     }}
                   >
-                    Author: {previewDoc.author || 'Islamic Scholar'} &bull; {previewDoc.file_type_display || previewDoc.file_type || 'PDF'} ({previewDoc.pages_count || previewDoc.pages || 1} Pages)
+                    {getBookAuthor(previewDoc)} &bull; {previewDoc.file_type_display || previewDoc.file_type || 'PDF'}{(previewDoc.pages_count || previewDoc.pages) ? ` (${previewDoc.pages_count || previewDoc.pages} Pages)` : ''}
 
                   </p>
                 </div>
