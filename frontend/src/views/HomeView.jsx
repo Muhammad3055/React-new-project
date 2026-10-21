@@ -78,12 +78,6 @@ const DAILY_VERSES_COLLECTION = [
   }
 ];
 
-const HOME_DAILY_DUAS = [
-  { arabic: 'رَبِّ زِدْنِي عِلْمًا', urdu: 'اے میرے رب! میرے علم میں اضافہ فرما۔', english: 'My Lord, increase me in knowledge.', reference: 'Surah Ta-Ha 20:114' },
-  { arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', urdu: 'اے ہمارے رب! ہمیں دنیا میں بھلائی عطا فرما، آخرت میں بھی بھلائی دے، اور ہمیں آگ کے عذاب سے بچا۔', english: 'Our Lord, grant us good in this world and the Hereafter, and protect us from the punishment of the Fire.', reference: 'Surah Al-Baqarah 2:201' },
-  { arabic: 'رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا', urdu: 'اے ہمارے رب! اگر ہم بھول جائیں یا خطا کریں تو ہماری گرفت نہ فرما۔', english: 'Our Lord, do not hold us accountable if we forget or make a mistake.', reference: 'Surah Al-Baqarah 2:286' }
-];
-
 const HADITH_OF_THE_DAY_COLLECTION = [
   {
     book: "Sahih Bukhari",
@@ -253,7 +247,6 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     return HADITH_OF_THE_DAY_COLLECTION[index];
   };
   const dailyHadith = getDailyHadith();
-  const dailyDua = HOME_DAILY_DUAS[Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24)) % HOME_DAILY_DUAS.length];
 
   const [locationInfo, setLocationInfo] = useState(null);
   const [ramadanCountdown, setRamadanCountdown] = useState(null);
@@ -512,37 +505,6 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         timezone={locationInfo?.timezone}
         navigateToTab={navigateToTab} 
       />
-
-      <section className="container home-daily-dua" aria-labelledby="home-daily-dua-title">
-        <div className="home-daily-dua-heading">
-          <span className="home-reading-eyebrow">Daily Quranic supplication</span>
-          <span className="home-daily-dua-reference">{dailyDua.reference}</span>
-        </div>
-        <h2 id="home-daily-dua-title" className="home-daily-dua-arabic" dir="rtl">{dailyDua.arabic}</h2>
-        <p className="home-daily-dua-urdu" dir="rtl">{dailyDua.urdu}</p>
-        <p className="home-daily-dua-english">{dailyDua.english}</p>
-        <button type="button" className="home-daily-dua-link" onClick={() => handleNav('duas')}>Explore all Duas <i className="fas fa-arrow-right" aria-hidden="true" /></button>
-      </section>
-
-      <section id="home-prayer-times" className="container" style={{ marginTop: '1.25rem', textAlign: 'center' }}>
-        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
-      </section>
-
-      <nav className="container home-quick-access" aria-label="Quick access" style={{ marginTop: '1rem' }}>
-        {[
-          { label: t('readQuran', 'Quran'), icon: 'fas fa-book-open', action: () => handleNav('read') },
-          { label: t('dailyDuas', 'Daily Duas'), icon: 'fas fa-hands', action: () => handleNav('duas') },
-          { label: t('dailyVerse', 'Daily verse'), icon: 'fas fa-sun', action: () => document.getElementById('home-daily-verse')?.scrollIntoView({ behavior: 'smooth' }) },
-          { label: t('prayerTimes', 'Prayer Times'), icon: 'fas fa-clock', action: () => document.getElementById('home-prayer-times')?.scrollIntoView({ behavior: 'smooth' }) },
-          { label: t('books', 'Books'), icon: 'fas fa-book', action: () => handleNav('books') },
-          { label: t('myBookmarks', 'Favorites'), icon: 'fas fa-heart', action: () => handleNav('bookmarks') },
-          { label: t('search', 'Search library'), icon: 'fas fa-search', action: () => openSpotlight?.() }
-        ].map(item => (
-          <button key={item.label} type="button" className="home-quick-access-button" onClick={item.action}>
-            <i className={item.icon} aria-hidden="true" /> <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
 
       {/* Hero Carousel Banner Section */}
       <section className="container" style={{ paddingTop: '1.5rem' }}>
@@ -1319,6 +1281,10 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
             {t('exploreFullBooks')} <i className="fas fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
           </a>
         </div>
+      </section>
+
+      <section id="home-prayer-times" className="container" style={{ marginTop: '1.25rem', textAlign: 'center' }}>
+        <PrayerTimesWidget onLocationOrDateUpdate={handleLocationOrDateUpdate} />
       </section>
 
       {/* 3. FEATURED TAQREER AUDIOS / MUHAZIRAT (ONLY RENDERS IF LECTURES ARE UPLOADED) */}
