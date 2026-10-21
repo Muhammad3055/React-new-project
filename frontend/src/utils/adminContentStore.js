@@ -16,6 +16,7 @@ const DELETED_ITEMS_KEY = 'quran_portal_deleted_items';
 export const defaultFolders = [
   { id: 'quran_arabic', name: 'Arabic Tilawat (تلاوت قرآن)', icon: 'fas fa-quran', color: '#10b981' },
   { id: 'quran_brahui', name: 'Brahui Tarjuma MP3 (براہوئی قرآن)', icon: 'fas fa-volume-up', color: '#f59e0b' },
+  { id: 'quran_brahui_asbab', name: 'Brahui Tarjuma + Asbab al-Nuzul MP3', icon: 'fas fa-book-open', color: '#047857' },
   { id: 'quran_urdu', name: 'Urdu Tarjuma MP3 (اردو قرآن)', icon: 'fas fa-headphones', color: '#3b82f6' },
   { id: 'taqreer_arabic', name: 'Arabic Taqreers (تقارير عربية)', icon: 'fas fa-microphone-alt', color: '#8b5cf6' },
   { id: 'taqreer_brahui', name: 'Brahui Taqreers (تقارير براہوئی)', icon: 'fas fa-bullhorn', color: '#ec4899' },

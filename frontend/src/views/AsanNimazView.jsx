@@ -83,11 +83,11 @@ export default function AsanNimazView({ navigateToTab }) {
   ];
 
   return (
-    <div style={{ minHeight: '85vh', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', padding: '2rem 1rem', direction: dir }}>
+    <div className="asan-nimaz-page" style={{ minHeight: '85vh', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', padding: '2rem 1rem', direction: dir }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Page Hero Header */}
-        <div style={{
+        <div className="asan-nimaz-hero" style={{
           background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)',
           borderRadius: '24px',
           padding: '2.5rem 2rem',
@@ -101,7 +101,7 @@ export default function AsanNimazView({ navigateToTab }) {
           <div style={{ position: 'absolute', bottom: '-50px', left: '-20px', width: '220px', height: '220px', borderRadius: '50%', background: 'rgba(245,158,11,0.08)', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
-            <div style={{ flex: '1', minWidth: '300px' }}>
+            <div className="asan-nimaz-hero-main" style={{ flex: '1', minWidth: '300px' }}>
               
               {/* Language Switcher Bar: English, Urdu & Arabic */}
               <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,255,255,0.18)', padding: '4px', borderRadius: '16px', gap: '4px', marginBottom: '1rem', border: '1px solid rgba(255,255,255,0.25)', flexWrap: 'wrap' }}>
@@ -189,7 +189,7 @@ export default function AsanNimazView({ navigateToTab }) {
             </div>
 
             {/* In-Page Quick Search */}
-            <div style={{ minWidth: '280px', flex: '1', maxWidth: '380px' }}>
+            <div className="asan-nimaz-hero-search" style={{ minWidth: '280px', flex: '1', maxWidth: '380px' }}>
               <div style={{ position: 'relative' }}>
                 <i className="fas fa-search" style={{ position: 'absolute', [isEn ? 'left' : 'right']: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input

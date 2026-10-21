@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://maktabatulmuslim.com/sitemap.xml

@@ -48,6 +48,7 @@ class QuranAudio(models.Model):
 
     FOLDER_CHOICES = [
         ('quran_brahui', 'Brahui Quran Tarjuma MP3 (براہوئی قرآن)'),
+        ('quran_brahui_asbab', 'Brahui Tarjuma with Asbab al-Nuzul MP3'),
         ('quran_urdu', 'Urdu Quran Tarjuma MP3 (اردو قرآن)'),
         ('quran_arabic', 'Arabic Surah Tilawat MP3 (عربي تلاوة)'),
         ('taqreer_brahui', 'Brahui Taqreer Lectures (تقارير براہوئی)'),

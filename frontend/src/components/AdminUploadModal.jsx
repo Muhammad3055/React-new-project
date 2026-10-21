@@ -4,13 +4,13 @@ import { getApiUrl } from '../utils/apiCache';
 import { ALL_114_SURAHS } from '../data/quran_data';
 import { postMediaForm } from '../utils/chunkUploader';
 
-export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu' }) {
+export default function AdminUploadModal({ onClose, onSuccess, editItem = null, defaultContentType = 'book', defaultLanguage = 'urdu', defaultDestination = '' }) {
   const existingFileUrl = editItem?.audio_url || editItem?.document_url || editItem?.pdf_url || editItem?.video_url || editItem?.image_url || editItem?.fileUrl || '';
   const [folders, setFolders] = useState(() => getAdminCustomFolders());
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(editItem?.category_id || '');
   const [contentType, setContentType] = useState(editItem ? (editItem.contentType || editItem.content_type || defaultContentType) : defaultContentType); // 'book' | 'audio' | 'quran' | 'hadith' | 'tafseer' | 'post' | 'button'
-  const [destination, setDestination] = useState(editItem?.destination || 'books'); // folder id
+  const [destination, setDestination] = useState(editItem?.destination || defaultDestination || 'books'); // folder id
   const [newFolderName, setNewFolderName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -26,7 +26,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
   const [arabicTitle, setArabicTitle] = useState(initialArabicTitle);
   const [authorSpeaker, setAuthorSpeaker] = useState(editItem?.speaker || editItem?.author || editItem?.reciter || '');
   const [tarjumaQari, setTarjumaQari] = useState(editItem?.tarjuma_qari || '');
-  const [language, setLanguage] = useState(editItem?.language || defaultLanguage);
+  const [language, setLanguage] = useState(editItem?.language || (defaultDestination.includes('brahui') ? 'brahui' : defaultLanguage));
   const [surahNumber, setSurahNumber] = useState(editItem?.surah_number || 1);
   const [description, setDescription] = useState(editItem?.description || '');
   const [fileUrl, setFileUrl] = useState(/^https?:\/\//i.test(existingFileUrl) ? existingFileUrl : '');
@@ -258,7 +258,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
 
   return (
     <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div className="card" style={{ maxWidth: '720px', width: '100%', maxHeight: '92vh', overflowY: 'auto', background: '#022c22', border: '1.5px solid var(--accent-gold)', borderRadius: '20px', color: '#fff', padding: '2rem' }}>
+      <div className="card admin-upload-dialog" style={{ maxWidth: '720px', width: '100%', maxHeight: '92vh', overflowY: 'auto', background: '#022c22', border: '1.5px solid var(--accent-gold)', borderRadius: '20px', color: '#fff', padding: '2rem' }}>
         
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(245,158,11,0.3)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
@@ -292,7 +292,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                 <select
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  style={{ flex: 1, padding: '0.75rem 1rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '0.95rem', outline: 'none' }}
+                  style={{ flex: '1 1 220px', minWidth: 0, padding: '0.75rem 1rem', background: '#064e3b', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '0.95rem', outline: 'none' }}
                 >
                   {folders.map((f) => (
                     <option key={f.id} value={f.id}>
@@ -303,7 +303,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
               </div>
 
               {/* Create Custom Folder Box */}
-              <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+              <div className="admin-upload-folder-row" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
                 <input
                   type="text"
                   placeholder="+ Create new Custom Folder Name..."
@@ -335,7 +335,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
               <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>
                 2. Select Content Type to Add
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(85px, 1fr))', gap: '0.4rem' }}>
+              <div className="admin-upload-type-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(85px, 1fr))', gap: '0.4rem' }}>
                 <button type="button" onClick={() => setContentType('video')} className="btn-play" style={{ padding: '0.65rem', border: contentType === 'video' ? '2px solid var(--accent-gold)' : undefined }}>
                   <i className="fas fa-video"></i> Video
                 </button>
@@ -481,7 +481,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                   </select>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="admin-upload-audio-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem' }}>Speaker / Reciter / Qari</label>
                     <input
@@ -506,12 +506,14 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.3rem', color: '#60a5fa' }}>Audio Language</label>
                     <select
                       value={language}
+                      disabled={destination === 'quran_brahui_asbab'}
                       onChange={(e) => setLanguage(e.target.value)}
                       style={{ width: '100%', padding: '0.6rem', background: '#064e3b', border: '1px solid #60a5fa', borderRadius: '8px', color: '#fff' }}
                     >
                       <option value="brahui">Brahui (براہوئی)</option>
                       <option value="urdu">Urdu (اردو)</option>
                       <option value="arabic">Arabic (عربي)</option>
+                      <option value="mixed">Mixed languages</option>
                     </select>
                   </div>
                   <div>

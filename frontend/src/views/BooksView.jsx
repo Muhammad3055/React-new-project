@@ -515,7 +515,7 @@ export default function BooksView({ openReportModal, user }) {
 
       {/* Search & Filter Bar + View Mode Switcher */}
       <div className="filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', flex: 1, minWidth: '280px' }}>
+        <div className="books-filter-controls" style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', flex: 1, minWidth: '280px' }}>
           <div className="filter-group" style={{ flex: 2, minWidth: '220px' }}>
             <span className="filter-label"><i className="fas fa-search"></i> {t('searchLabel')}</span>
             <input

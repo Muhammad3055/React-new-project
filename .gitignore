@@ -24,6 +24,7 @@ backend/upload_tmp/
 node_modules/
 frontend/node_modules/
 /dist/
+frontend/dist/
 .DS_Store
 .vscode/
 .idea/

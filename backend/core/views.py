@@ -343,6 +343,8 @@ def api_admin_topic_options(request):
 @chunked_files({'assembled_filename': 'audio_file'})
 def api_quran_list(request):
     if request.method == 'POST':
+        if not request.user.is_authenticated or not request.user.is_staff:
+            return JsonResponse({'error': 'Staff login required.'}, status=403)
         try:
             # Support both multipart/form-data (file uploads) and application/json
             has_files = bool(request.FILES)
@@ -459,10 +461,12 @@ def api_quran_list(request):
     if reciter_filter:
         audios = audios.filter(reciter__icontains=reciter_filter)
     if destination_filter and language_filter:
-        audios = audios.filter(
-            Q(destination_folder=destination_filter) | 
-            Q(language=language_filter)
-        )
+        # Older uploads have no folder; keep them in their language's main
+        # section without mixing them into a specialized collection.
+        folder_match = Q(destination_folder=destination_filter)
+        if destination_filter == f'quran_{language_filter}':
+            folder_match |= Q(destination_folder='', language=language_filter)
+        audios = audios.filter(folder_match)
     elif destination_filter:
         audios = audios.filter(
             Q(destination_folder=destination_filter) |

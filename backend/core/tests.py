@@ -3,8 +3,9 @@ from types import SimpleNamespace
 
 from django.apps import apps
 from django.test import TestCase
+from django.contrib.auth.models import User
 
-from .models import BookMedia, Topic
+from .models import BookMedia, Topic, QuranAudio
 
 
 class TopicLibraryTests(TestCase):
@@ -38,3 +39,28 @@ class TopicLibraryTests(TestCase):
         response = self.client.post('/api/ai-assistant/', data={'prompt': ''}, content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', response.json())
+
+
+class QuranAsbabAudioTests(TestCase):
+    def test_asbab_section_is_separate_from_regular_brahui_translation(self):
+        staff = User.objects.create_user('audio_admin', password='password', is_staff=True)
+        self.client.force_login(staff)
+        response = self.client.post('/api/quran/', {
+            'surah_number': '1', 'language': 'brahui',
+            'destination': 'quran_brahui_asbab',
+            'reciter': 'Test Qari', 'audio_url': 'https://example.com/asbab.mp3',
+        })
+        self.assertEqual(response.status_code, 200)
+        audio = QuranAudio.objects.get(pk=response.json()['id'])
+        self.assertEqual(audio.destination_folder, 'quran_brahui_asbab')
+        asbab = self.client.get('/api/quran/?destination=quran_brahui_asbab&language=brahui').json()['results']
+        regular = self.client.get('/api/quran/?destination=quran_brahui&language=brahui').json()['results']
+        self.assertEqual([item['id'] for item in asbab], [audio.id])
+        self.assertEqual(regular, [])
+
+    def test_public_cannot_upload_quran_audio(self):
+        response = self.client.post('/api/quran/', {
+            'surah_number': '1', 'destination': 'quran_brahui_asbab',
+            'language': 'brahui',
+        })
+        self.assertEqual(response.status_code, 403)

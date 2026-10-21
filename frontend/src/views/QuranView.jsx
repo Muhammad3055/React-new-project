@@ -126,10 +126,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [adminDefaultContentType, setAdminDefaultContentType] = useState('quran');
+  const [adminDestination, setAdminDestination] = useState(initialSubCategory);
+  const [adminLanguage, setAdminLanguage] = useState('arabic');
 
-  const openUploadModal = (item = null, contentType = 'quran') => {
+  const openUploadModal = (item = null, contentType = 'quran', language = '') => {
     setEditItem(item);
     setAdminDefaultContentType(contentType);
+    const destination = item?.destination || subCategory;
+    setAdminDestination(destination);
+    setAdminLanguage(item?.language || language || (destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : destination.includes('arabic') ? 'arabic' : 'mixed'));
     setShowAdminUploadModal(true);
   };
 
@@ -235,8 +240,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   // Load Brahui, Urdu or Arabic Quran MP3s from database
   const loadTranslationAudios = () => {
-    if (subCategory === 'quran_brahui' || subCategory === 'quran_urdu' || subCategory === 'quran_arabic') {
-      const lang = subCategory === 'quran_brahui' ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
+    if (['quran_brahui', 'quran_brahui_asbab', 'quran_urdu', 'quran_arabic'].includes(subCategory)) {
+      const lang = subCategory.includes('brahui') ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
       setLoadingTranslationAudios(true);
       const adminAudios = getAdminItems(subCategory);
       fetch(getApiUrl(`/api/quran/?destination=${subCategory}&language=${lang}`))
@@ -247,16 +252,11 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           // Deduplicate apiResults and adminAudios
           const merged = [];
           const seenIds = new Set();
-          const seenSurahNums = new Set();
-          const seenTitles = new Set();
 
           // 1. First add all apiResults from backend database (single source of truth)
           for (const item of apiResults) {
             if (!item) continue;
             if (item.id) seenIds.add(String(item.id));
-            if (item.surah_number) seenSurahNums.add(Number(item.surah_number));
-            const t = (item.title || item.surah_name_english || '').trim().toLowerCase();
-            if (t) seenTitles.add(t);
             merged.push(item);
           }
 
@@ -264,16 +264,9 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           for (const item of adminAudios) {
             if (!item) continue;
             const strId = String(item.id || '');
-            const num = Number(item.surah_number);
-            const t = (item.title || item.surah_name_english || '').trim().toLowerCase();
-
             if (strId && seenIds.has(strId)) continue;
-            if (num && seenSurahNums.has(num)) continue;
-            if (t && seenTitles.has(t)) continue;
 
             if (strId) seenIds.add(strId);
-            if (num) seenSurahNums.add(num);
-            if (t) seenTitles.add(t);
             merged.push(item);
           }
 
@@ -383,6 +376,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
   const baseSubCategoryOptions = [
     { id: 'quran_arabic', label: t('arabicTilawat', 'Arabic Tilawat'), sub: 'تلاوت قرآن', icon: 'fas fa-quran' },
     { id: 'quran_brahui', label: t('brahuiTarjuma', 'Brahui Quran Tarjuma'), sub: 'براہوئی قرآن ترجمہ', icon: 'fas fa-headphones' },
+    { id: 'quran_brahui_asbab', label: 'Brahui Tarjuma + Asbab al-Nuzul', sub: 'براہوئی ترجمہ و اسبابِ نزول', icon: 'fas fa-book-open' },
     { id: 'quran_urdu', label: t('urduTarjuma', 'Urdu Tarjuma'), sub: 'اردو قرآن ترجمہ', icon: 'fas fa-headphones' },
     { id: 'taqreer_arabic', label: t('arabicTaqreer', 'Arabic Taqreers'), sub: 'تقارير عربية', icon: 'fas fa-microphone-alt' },
     { id: 'taqreer_brahui', label: t('brahuiTaqreer', 'Brahui Taqreers'), sub: 'تقارير براہوئی', icon: 'fas fa-podcast' },
@@ -609,40 +603,22 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         )}
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
-        gap: '0.45rem',
-        marginBottom: '1.25rem'
-      }}>
+      <div className="quran-audio-categories">
         {subCategoryOptions.map(opt => {
           const isActive = subCategory === opt.id;
           return (
             <button
               key={opt.id}
+              type="button"
+              className={`quran-audio-category${isActive ? ' is-active' : ''}`}
+              aria-pressed={isActive}
               onClick={() => { setSubCategory(opt.id); setQuranPage(1); }}
-              style={{
-                padding: '0.4rem 0.65rem',
-                borderRadius: '20px',
-                border: isActive ? '2px solid #b45309' : '1px solid #e7e5e4',
-                background: isActive ? '#fef3c7' : '#ffffff',
-                color: '#000000',
-                boxShadow: isActive ? '0 3px 10px rgba(180, 83, 9, 0.2)' : '0 1px 4px rgba(0, 0, 0, 0.04)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                justifyContent: 'center',
-                outline: 'none',
-                minHeight: '38px'
-              }}
             >
-              <i className={opt.icon} style={{ fontSize: '0.85rem', color: isActive ? '#b45309' : '#d97706' }}></i>
-              <div style={{ textAlign: 'left', lineHeight: '1.15' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.75rem', color: '#000000', whiteSpace: 'nowrap' }}>{opt.label}</div>
-                <div style={{ fontSize: '0.65rem', color: isActive ? '#78350f' : '#78716c', fontWeight: 600, whiteSpace: 'nowrap' }}>{opt.sub}</div>
-              </div>
+              <i className={opt.icon} aria-hidden="true"></i>
+              <span className="quran-audio-category-copy">
+                <strong>{opt.label}</strong>
+                <small>{opt.sub}</small>
+              </span>
             </button>
           );
         })}
@@ -827,7 +803,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       )}
 
       {/* SECTIONS 2 & 3: Brahui & Urdu Quran Translation MP3 Audio */}
-      {(subCategory === 'quran_brahui' || subCategory === 'quran_urdu') && (
+      {(['quran_brahui', 'quran_brahui_asbab', 'quran_urdu'].includes(subCategory)) && (
         <div>
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
@@ -845,7 +821,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {(user?.is_staff || user?.is_superuser) && (
                 <button
-                  onClick={() => setShowAdminUploadModal(true)}
+                  onClick={() => openUploadModal(null, 'quran')}
                   style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
                 >
                   <i className="fas fa-plus-circle"></i> + Add Tarjuma MP3
@@ -853,7 +829,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
               )}
               <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: '#ffffff', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                 <i className="fas fa-volume-up" style={{ color: '#b45309' }}></i>
-                {subCategory === 'quran_brahui' ? 'Brahui Quran Audio (براہوئی قرآن ترجمہ MP3)' : 'Urdu Quran Audio (اردو قرآن ترجمہ MP3)'}
+                {subCategory === 'quran_brahui_asbab' ? 'Brahui Tarjuma with Asbab al-Nuzul MP3' : subCategory === 'quran_brahui' ? 'Brahui Quran Audio (براہوئی قرآن ترجمہ MP3)' : 'Urdu Quran Audio (اردو قرآن ترجمہ MP3)'}
               </div>
             </div>
           </div>
@@ -871,17 +847,17 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
             <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: '#ffffff', color: '#1c1917', borderRadius: '18px', border: '1.5px solid #e7e5e4', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
               <i className="fas fa-headphones-alt fa-4x" style={{ color: '#b45309', marginBottom: '1rem' }}></i>
               <h3 style={{ color: '#1c1917', fontWeight: 800, fontSize: '1.3rem' }}>
-                No {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} Quran Translation Audio Uploaded Yet
+                No {subCategory === 'quran_brahui_asbab' ? 'Brahui Tarjuma with Asbab al-Nuzul' : subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} Quran Audio Uploaded Yet
               </h3>
               <p style={{ color: '#78716c', fontSize: '0.9rem', maxWidth: '500px', margin: '0.5rem auto 1.25rem auto', lineHeight: '1.6' }}>
-                This section is currently empty. Admins can upload {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} translation MP3 files using the Admin Studio button!
+                Admins can upload {subCategory === 'quran_brahui_asbab' ? 'Brahui translation with revelation context' : subCategory === 'quran_brahui' ? 'Brahui translation' : 'Urdu translation'} MP3 files here.
               </p>
               {(user?.is_staff || user?.is_superuser) && (
                 <button
-                  onClick={() => openUploadModal(null, 'quran', subCategory === 'quran_brahui' ? 'brahui' : 'urdu')}
+                  onClick={() => openUploadModal(null, 'quran')}
                   style={{ background: '#b45309', color: '#ffffff', border: 'none', borderRadius: '20px', padding: '0.55rem 1.25rem', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 4px 14px rgba(180, 83, 9, 0.25)' }}
                 >
-                  <i className="fas fa-upload"></i> + Upload {subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} Tarjuma MP3
+                  <i className="fas fa-upload"></i> Upload {subCategory === 'quran_brahui_asbab' ? 'Brahui Tarjuma + Asbab' : subCategory === 'quran_brahui' ? 'Brahui' : 'Urdu'} MP3
                 </button>
               )}
             </div>
@@ -908,7 +884,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         <div className="card-header-badge" style={{ marginBottom: '0.45rem', background: 'transparent', borderBottom: '1.5px solid #f0edf6', paddingBottom: '0.35rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span className="surah-number-badge" style={{ background: '#ffffff', color: 'var(--accent-gold)', border: '1.5px solid var(--accent-gold)', fontWeight: 800, width: '28px', height: '28px', fontSize: '0.75rem' }}>MP3</span>
                           <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '2px 8px', borderRadius: '12px', border: '1px solid #fcd34d' }}>
-                            {audio.language ? (audio.language.charAt(0).toUpperCase() + audio.language.slice(1) + ' Tarjuma') : (subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma')}
+                            {subCategory === 'quran_brahui_asbab' ? 'Tarjuma + Asbab al-Nuzul' : audio.language ? (audio.language.charAt(0).toUpperCase() + audio.language.slice(1) + ' Tarjuma') : (subCategory === 'quran_brahui' ? 'Brahui Tarjuma' : 'Urdu Tarjuma')}
                           </span>
                         </div>
                         <div className="card-body" style={{ padding: 0 }}>
@@ -1274,6 +1250,9 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           onClose={() => setShowAdminUploadModal(false)} 
           editItem={editItem} 
           defaultContentType={adminDefaultContentType} 
+          defaultDestination={adminDestination}
+          defaultLanguage={adminLanguage}
+          onSuccess={() => { loadTranslationAudios(); loadTaqreers(); }}
         />
       )}
 

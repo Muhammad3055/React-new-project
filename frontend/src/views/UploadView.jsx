@@ -69,7 +69,7 @@ export default function UploadView({ user }) {
   const [linkData, setLinkData] = useState({ title: '', link_url: '', button_label: 'Open Link', icon: 'fas fa-external-link-alt', description: '' });
 
   // Audio Recitation Form State
-  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '' });
+  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', destination: 'quran_arabic', audio_url: '' });
   const [audioFile, setAudioFile] = useState(null);
   const [taqreerUploading, setTaqreerUploading] = useState(false);
   const [taqreerProgress, setTaqreerProgress] = useState(0);
@@ -263,6 +263,7 @@ export default function UploadView({ user }) {
     formData.append('arabic_title', audioData.surah_name_arabic);
     formData.append('reciter', audioData.reciter);
     formData.append('language', audioData.language);
+    formData.append('destination', audioData.destination);
     if (audioFile) formData.append('audio_file', audioFile);
     else formData.append('audio_url', audioData.audio_url || '');
     if (audioData.duration) formData.append('duration', audioData.duration);
@@ -272,7 +273,7 @@ export default function UploadView({ user }) {
         setAudioProgress(pct); setAudioStats(stats);
       });
       setSubmittedMessage(data.message || 'Quran audio saved successfully.');
-      setAudioData({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', audio_url: '', duration: '' });
+      setAudioData({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', destination: 'quran_arabic', audio_url: '', duration: '' });
       setAudioFile(null);
       window.dispatchEvent(new CustomEvent('admin_content_updated'));
     } catch (error) { alert('Upload failed: ' + error.message); }
@@ -687,7 +688,7 @@ export default function UploadView({ user }) {
         {/* --- TAB 6: QURAN AUDIO --- */}
         {activeTab === 'audio' && (
           <form onSubmit={handleAudioSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3><i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Add Quran Audio Recitation</h3>
+            <h3><i className="fas fa-headphones" style={{ color: 'var(--accent-gold)' }}></i> Add Quran Audio</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div>
                 <label className="form-label">Surah Number (1 - 114) *</label>
@@ -719,8 +720,20 @@ export default function UploadView({ user }) {
                 <input type="text" className="form-input arabic-font" dir="auto" value={audioData.surah_name_arabic} onChange={e => setAudioData({ ...audioData, surah_name_arabic: e.target.value })} placeholder="e.g. سُورَةُ الفَاتِحَةِ" />
               </div>
               <div>
+                <label className="form-label">MP3 Section *</label>
+                <select className="form-select" value={audioData.destination} onChange={e => {
+                  const destination = e.target.value;
+                  setAudioData({ ...audioData, destination, language: destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : 'arabic' });
+                }}>
+                  <option value="quran_arabic">Arabic Tilawat</option>
+                  <option value="quran_brahui">Brahui Tarjuma</option>
+                  <option value="quran_brahui_asbab">Brahui Tarjuma + Asbab al-Nuzul</option>
+                  <option value="quran_urdu">Urdu Tarjuma</option>
+                </select>
+              </div>
+              <div>
                 <label className="form-label">Audio Type / Language *</label>
-                <select className="form-select" value={audioData.language} onChange={e => setAudioData({ ...audioData, language: e.target.value })}>
+                <select className="form-select" value={audioData.language} disabled>
                   <option value="arabic">Arabic Recitation (تلاوت)</option>
                   <option value="brahui">Brahui Translation MP3 (براہوئی ترجمہ)</option>
                   <option value="urdu">Urdu Translation MP3 (اردو ترجمہ)</option>

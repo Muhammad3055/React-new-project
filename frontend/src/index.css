@@ -3806,6 +3806,42 @@ img {
 .chat-page-links a:focus-visible { outline: 2px solid #176141; outline-offset: 2px; }
 .chat-voice-status { padding: 10px 16px; background: #eef7f0; color: #175338; font-size: 12px; line-height: 1.6; flex-shrink: 0; }
 .chat-voice-error { background: #fff1f0; color: #a32424; }
+.quran-audio-categories { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 20px; }
+.quran-audio-category { min-width: 0; min-height: 62px; width: 100%; display: flex; align-items: center; gap: 11px; padding: 10px 13px; text-align: start; border: 1px solid #dce5dd; border-radius: 14px; background: #fff; color: #183d30; box-shadow: 0 2px 9px #1438260b; cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .2s; }
+.quran-audio-category:hover { border-color: #b89246; box-shadow: 0 5px 16px #14382618; transform: translateY(-2px); }
+.quran-audio-category.is-active { border: 2px solid #b89246; background: #fff8e8; box-shadow: 0 5px 16px #b8924626; }
+.quran-audio-category > i { color: #a9731c; font-size: 16px; flex: 0 0 22px; text-align: center; }
+.quran-audio-category-copy { display: block; min-width: 0; line-height: 1.25; }
+.quran-audio-category-copy strong, .quran-audio-category-copy small { display: block; white-space: normal; overflow-wrap: anywhere; }
+.quran-audio-category-copy strong { font-size: 13px; font-weight: 800; }
+.quran-audio-category-copy small { margin-top: 3px; font-size: 11px; color: #687b70; }
+.quran-audio-category:focus-visible { outline: 3px solid #b99246; outline-offset: 3px; }
+.filter-group { min-width: 0 !important; }
+.filter-group > input, .filter-group > select { min-width: 0; max-width: 100%; }
+.admin-upload-dialog input, .admin-upload-dialog select, .admin-upload-dialog textarea { max-width: 100%; min-width: 0; }
+@media (max-width: 900px) { .quran-audio-categories { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .quran-audio-categories { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .quran-audio-category { min-height: 72px; padding: 9px; gap: 7px; }
+  .quran-audio-category-copy strong { font-size: 12px; }
+  .admin-upload-dialog { padding: 18px !important; border-radius: 15px !important; }
+  .admin-upload-type-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .admin-upload-audio-fields { grid-template-columns: minmax(0, 1fr) !important; }
+  .admin-upload-audio-fields > div { grid-column: auto !important; min-width: 0; }
+  .admin-upload-folder-row { flex-wrap: wrap; }
+  .admin-upload-folder-row > input { min-width: 0; flex: 1 1 150px; }
+}
+@media (max-width: 360px) { .quran-audio-categories { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 950px) {
+  .nav-links.desktop-nav, .navbar-center-group { display: none !important; }
+}
+@media (max-width: 640px) {
+  .books-filter-controls { min-width: 0 !important; width: 100%; }
+  .asan-nimaz-hero-main, .asan-nimaz-hero-search { min-width: 0 !important; width: 100%; }
+  .asan-nimaz-hero-search { max-width: none !important; }
+  .asan-nimaz-page { padding-inline: 10px !important; }
+  .asan-nimaz-hero { padding: 24px 16px !important; }
+}
 .video-library-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; text-align: start; }
 .video-library-card { border: 1px solid #dce7df; border-radius: 18px; background: white; padding: 20px; }
 .video-library-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; }
