@@ -10,6 +10,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [showExtrasMenu, setShowExtrasMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [toast, setToast] = useState(null);
@@ -121,10 +122,20 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
-    { id: 'asanNimaz', label: t('asanNimaz', 'آسان نماز'), icon: 'fas fa-mosque' },
-    { id: 'read', label: t('readQuran'), icon: 'fas fa-book-open' },
-    { id: 'quran', label: t('mp3Audio'), icon: 'fas fa-headphones', desktopOnly: true },
-    { id: 'books', label: t('books', 'Books'), icon: 'fa-solid fa-book' },
+    { id: 'read', label: t('readQuran', 'Quran'), icon: 'fas fa-book-open' },
+    { id: 'hadith', label: t('hadith', 'Hadith'), icon: 'fas fa-quote-left' },
+    { id: 'books', label: t('books', 'Library'), icon: 'fa-solid fa-book' },
+    { id: 'quran', label: t('mp3Audio', 'Audio'), icon: 'fas fa-headphones' },
+    { id: 'about', label: t('aboutUs', 'About'), icon: 'fas fa-info-circle' },
+  ];
+
+  const toolMenuItems = [
+    { label: t('prayerTimes', 'Prayer Times'), action: () => { navigateToTab('home'); setTimeout(() => document.getElementById('home-prayer-times')?.scrollIntoView({ behavior: 'smooth' }), 0); } },
+    { label: t('qibla', 'Qibla'), tab: 'qibla' },
+    { label: t('tasbeeh', 'Tasbeeh'), tab: 'tasbeeh' },
+    { label: t('khatam', 'Khatam Tracker'), tab: 'khatam' },
+    { label: t('dailyRemindersAzkar', 'Azkar'), tab: 'azkar' },
+    { label: t('islamicCalendar', 'Islamic Calendar'), action: () => openCalendar?.() },
   ];
 
 
@@ -174,6 +185,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
       if (e.key === 'Escape') {
         setMobileActive(false);
         setShowExtrasMenu(false);
+        setShowToolsMenu(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -243,6 +255,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           <div className="navbar-left-group" style={{ display: 'flex', flexShrink: 0 }}>
             <div className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }} title="Home">
               <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '38px', height: '38px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
+              <span className="brand-text">Maktaba Tul Muslim</span>
             </div>
           </div>
 
@@ -250,15 +263,22 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           <div className="navbar-center-group" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>            <ul className="nav-links desktop-nav">
               {navItems.map((item) => (
                 <li key={item.id} className={item.desktopOnly ? 'desktop-only' : ''}>
-                  <span
+                  <button type="button"
                     className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
+                    aria-current={activeTab === item.id ? 'page' : undefined}
                     onClick={() => navigateToTab(item.id)}
                   >
-                    <i className={item.icon}></i>
+                    <i className={item.icon} aria-hidden="true"></i>
                     <span className="nav-link-text">{item.label}</span>
-                  </span>
+                  </button>
                 </li>
               ))}
+              <li className="tools-nav-item desktop-only" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setShowToolsMenu(false); }}>
+                <button type="button" className="nav-link tools-nav-trigger" aria-expanded={showToolsMenu} onClick={() => setShowToolsMenu(open => !open)}>
+                  Tools <i className="fas fa-chevron-down" aria-hidden="true" />
+                </button>
+                {showToolsMenu && <div className="tools-nav-menu">{toolMenuItems.map(item => <button key={item.label} type="button" onClick={() => { item.action ? item.action() : navigateToTab(item.tab); setShowToolsMenu(false); }}>{item.label}</button>)}</div>}
+              </li>
             </ul>
           </div>
 
@@ -299,6 +319,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 </optgroup>
               </select>
             </div>
+            <select className="header-theme-selector desktop-only" value={globalTheme} onChange={(e) => setGlobalTheme(e.target.value)} aria-label={t('theme', 'Website theme')}>
+              <option value="light">Light</option><option value="sepia">Sepia</option><option value="black">Dark</option><option value="auto">Auto</option>
+            </select>
 
             {/* Search (Desktop) & Spotlight Trigger */}
             <div 

@@ -1,7 +1,7 @@
 :root {
-  --primary-dark: #1c1917;
-  --primary-emerald: #292524;
-  --primary-light: #44403c;
+  --primary-dark: #12372b;
+  --primary-emerald: #047857;
+  --primary-light: #059669;
   --accent-gold: #b45309;
   --accent-gold-dark: #92400e;
   --accent-gold-light: #fef3c7;
@@ -16,6 +16,8 @@
   --radius-lg: 18px;
   --radius-md: 12px;
   --radius-sm: 8px;
+  --space-section: 2rem;
+  --focus-ring: 0 0 0 3px rgba(4, 120, 87, 0.28);
 }
 
 /* Auth Modal Animation Classes */
@@ -42,9 +44,9 @@
 /* GLOBAL WEBSITE THEME MODES (Light, Sepia, Black, Auto) */
 [data-site-theme="auto"],
 [data-site-theme="light"] {
-  --primary-dark: #1c1917;
-  --primary-emerald: #292524;
-  --primary-light: #44403c;
+  --primary-dark: #12372b;
+  --primary-emerald: #047857;
+  --primary-light: #059669;
   --accent-gold: #b45309;
   --accent-gold-dark: #92400e;
   --accent-gold-light: #fef3c7;
@@ -70,9 +72,9 @@
 }
 
 [data-site-theme="black"] {
-  --primary-dark: #09090b;
-  --primary-emerald: #121215;
-  --primary-light: #18181b;
+  --primary-dark: #052e24;
+  --primary-emerald: #047857;
+  --primary-light: #059669;
   --accent-gold: #f59e0b;
   --accent-gold-dark: #d97706;
   --accent-gold-light: #fef3c7;
@@ -91,7 +93,7 @@
 
 html {
   height: 100%;
-  background-color: #fdfbf7;
+  background-color: var(--bg-cream);
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
@@ -4241,4 +4243,25 @@ img {
   border: none;
   display: block;
 }
+
+/* Shared header, button, and keyboard-focus styling */
+.navbar { background: color-mix(in srgb, var(--bg-cream) 94%, transparent); border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+.nav-container { max-width: 1500px; gap: 1rem; }
+.nav-links.desktop-nav { gap: .15rem; }
+.nav-link { min-height: 42px; border: 0; background: transparent; color: var(--text-main); font: inherit; border-radius: var(--radius-sm); }
+.nav-link:hover, .nav-link.active { color: var(--primary-emerald); background: var(--bg-card); box-shadow: none; }
+.nav-link.active::after { background: var(--primary-emerald); box-shadow: none; }
+.brand-text { color: var(--primary-dark); font-size: 1rem; font-weight: 800; letter-spacing: -.02em; }
+.header-theme-selector, .desktop-lang-selector select { min-height: 38px; padding: 0 9px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-main); font: inherit; font-size: .8rem; cursor: pointer; }
+.tools-nav-item { position: relative; }
+.tools-nav-trigger { border: 0; background: transparent; font: inherit; cursor: pointer; }
+.tools-nav-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 1200; min-width: 210px; padding: 6px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-card); box-shadow: var(--shadow-lg); }
+.tools-nav-menu button { display: block; width: 100%; min-height: 42px; padding: 8px 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text-main); text-align: left; font: inherit; cursor: pointer; }
+.tools-nav-menu button:hover { background: color-mix(in srgb, var(--primary-emerald) 9%, var(--bg-card)); color: var(--primary-emerald); }
+.btn-play, .auth-btn.signup-btn, .home-reading-action { background: var(--primary-emerald); color: #fff; border-color: var(--primary-emerald); box-shadow: var(--shadow-sm); }
+.btn-play:hover, .auth-btn.signup-btn:hover, .home-reading-action:hover { background: var(--primary-dark); color: #fff; }
+.auth-btn.login-btn { background: transparent; color: var(--primary-emerald); border: 1px solid var(--primary-emerald); }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: none; box-shadow: var(--focus-ring); outline-offset: 2px; }
+@media (max-width: 1100px) { .nav-links.desktop-nav { display: none !important; } .mobile-toggle-btn { display: flex !important; } .desktop-lang-selector, .header-theme-selector, .desktop-auth-area, .search-wrapper.desktop-only { display: none !important; } .brand-text { font-size: .92rem; } }
+@media (max-width: 480px) { .brand-text { font-size: .82rem; } }
 
