@@ -104,9 +104,9 @@ const POST_PRAYER_TASBEEH = [
     countTarget: 33,
     meaningUrdu: 'اللہ پاک ہے (ہر عیب و کمزوری سے پاک ہے)',
     meaningEn: 'Glory be to Allah',
-    badgeColor: '#059669',
-    bgLight: '#ecfdf5',
-    borderLight: '#a7f3d0'
+    badgeColor: 'var(--primary-emerald)',
+    bgLight: 'var(--home-sage, #edf4ec)',
+    borderLight: 'var(--home-line, #dce8db)'
   },
   {
     id: 'subhanAllahAzeem',
@@ -116,9 +116,9 @@ const POST_PRAYER_TASBEEH = [
     countTarget: 33,
     meaningUrdu: 'عظمت والا اللہ پاک ہے • تمام تعریفیں اللہ کے لیے ہیں',
     meaningEn: 'Glory be to Allah the Magnificent • All praise is due to Allah',
-    badgeColor: '#0284c7',
-    bgLight: '#f0f9ff',
-    borderLight: '#bae6fd'
+    badgeColor: 'var(--primary-emerald)',
+    bgLight: 'var(--home-sage, #edf4ec)',
+    borderLight: 'var(--home-line, #dce8db)'
   },
   {
     id: 'allahuAkbar',
@@ -127,9 +127,9 @@ const POST_PRAYER_TASBEEH = [
     countTarget: 33,
     meaningUrdu: 'اللہ سب سے بڑا اور برتر ہے',
     meaningEn: 'Allah is the Greatest',
-    badgeColor: '#d97706',
-    bgLight: '#fffbeb',
-    borderLight: '#fde68a'
+    badgeColor: 'var(--primary-emerald)',
+    bgLight: 'var(--home-sage, #edf4ec)',
+    borderLight: 'var(--home-line, #dce8db)'
   }
 ];
 
@@ -403,7 +403,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
             }}
           >
             {/* Top decorative accent */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '6px', background: 'linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #059669 100%)' }} />
+            <div className="dua-accent" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '6px', background: 'var(--primary-emerald)' }} />
 
             {/* Header: Prayer Badge + Active Window Tag */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.7rem' }}>
@@ -460,14 +460,14 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
             <div className="prayer-dua-columns">
               <div className="prayer-dua-reading">
             {/* 📜 Complete Arabic Dua Box */}
-            <div style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1.5px solid #86efac', marginBottom: '0.7rem', textAlign: 'center' }}>
+            <div className="dua-arabic-panel" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', padding: '0.85rem 1rem', borderRadius: '14px', border: '1.5px solid #86efac', marginBottom: '0.7rem', textAlign: 'center' }}>
               <p className="prayer-dua-arabic" style={{ margin: 0, fontSize: 'clamp(1.35rem, 3vw, 1.8rem)', fontWeight: 800, fontFamily: "'Amiri', 'Traditional Arabic', serif", color: '#064e3b', direction: 'rtl', lineHeight: 1.75, letterSpacing: '0.5px' }}>
                 {dua.arabic}
               </p>
             </div>
 
             {/* 📖 Urdu Translation Box */}
-            <div style={{ background: '#f8fafc', padding: '0.7rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.6rem', borderRight: '4px solid #059669' }}>
+            <div className="dua-translation" style={{ background: '#f8fafc', padding: '0.7rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.6rem', borderRight: '4px solid #059669' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#059669', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 اردو با محاورہ ترجمہ:
               </span>
@@ -477,7 +477,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
             </div>
 
             {/* 🇬🇧 English Translation Box */}
-            <div style={{ background: '#f8fafc', padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.7rem', borderLeft: '4px solid #f59e0b' }}>
+            <div className="dua-translation" style={{ background: '#f8fafc', padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.7rem', borderLeft: '4px solid #f59e0b' }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 English Meaning:
               </span>
@@ -487,7 +487,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
             </div>
 
             {/* 🌟 FAZEELAT & SIGNIFICANCE BOX (فضیلت اور مسنون وجہ - Why to Recite) */}
-            <div style={{ background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', border: '1.5px solid #f59e0b', borderRadius: '14px', padding: '0.85rem 1rem', marginBottom: '0.7rem', boxShadow: '0 4px 12px rgba(245,158,11,0.08)' }}>
+            <div className="dua-reference" style={{ background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', border: '1.5px solid #f59e0b', borderRadius: '14px', padding: '0.85rem 1rem', marginBottom: '0.7rem', boxShadow: '0 4px 12px rgba(245,158,11,0.08)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
                 <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400e', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                   <i className="fas fa-star" style={{ color: '#d97706' }}></i> فضیلت اور مسنون وجہ (Why to Recite & Hadith Reference)
@@ -504,7 +504,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
               </p>
 
               {/* Why to Recite (کیوں پڑھیں) */}
-              <div style={{ background: 'rgba(255,255,255,0.7)', padding: '0.5rem 0.7rem', borderRadius: '10px', border: '1px solid #fde68a', margin: '0.4rem 0' }}>
+              <div className="dua-reference-note" style={{ background: 'rgba(255,255,255,0.7)', padding: '0.5rem 0.7rem', borderRadius: '10px', border: '1px solid #fde68a', margin: '0.4rem 0' }}>
                 <p style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700, color: '#78350f', direction: 'rtl', textAlign: 'right', fontFamily: "'Amiri', serif", lineHeight: 1.7 }}>
                   💡 {dua.whyReciteUrdu}
                 </p>
@@ -594,7 +594,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
               </div>
 
               {/* Overall Progress Meter */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.5rem 0.75rem', marginBottom: '0.65rem' }}>
+              <div className="tasbeeh-progress" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.5rem 0.75rem', marginBottom: '0.65rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.82rem', fontWeight: 800 }}>
                   <span style={{ color: isTasbeehComplete ? '#059669' : '#334155' }}>
                     {isTasbeehComplete ? '🎉 ماشاء اللہ! ۹۹ مرتبہ تسبیح مکمل ہو گئی' : 'مجموعی تسبیح کاؤنٹر:'}
@@ -631,7 +631,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                   return (
                     <div
                       key={item.id}
-                      className="post-prayer-counter-card"
+                      className={`post-prayer-counter-card${isItemDone ? ' is-complete' : ''}`}
                       style={{
                         background: isItemDone ? item.bgLight : '#ffffff',
                         border: `2px solid ${isItemDone ? item.badgeColor : item.borderLight}`,
@@ -668,7 +668,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
                           {item.titleUrdu}
                         </p>
                         {item.altTitleUrdu && (
-                          <span style={{ fontSize: '0.85rem', color: '#0284c7', fontWeight: 700, direction: 'rtl', display: 'block', marginTop: '2px' }}>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--primary-emerald)', fontWeight: 700, direction: 'rtl', display: 'block', marginTop: '2px' }}>
                             (یا: {item.altTitleUrdu})
                           </span>
                         )}
@@ -754,6 +754,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
 
               {/* 🌟 100th Completion Kalimah (سوواں کلمہ) */}
               <div
+                className={`tasbeeh-completion${isTasbeehComplete ? ' is-complete' : ''}`}
                 style={{
                   background: isTasbeehComplete ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : '#ffffff',
                   border: `2px dashed ${isTasbeehComplete ? '#d97706' : '#94a3b8'}`,
@@ -792,6 +793,7 @@ export default function DailyReminderBanner({ timings, timezone, navigateToTab }
 
               {/* 📖 Hadith Fazeelat Banner */}
               <div
+                className="tasbeeh-reference"
                 style={{
                   background: 'rgba(255,255,255,0.85)',
                   border: '1px solid #a7f3d0',

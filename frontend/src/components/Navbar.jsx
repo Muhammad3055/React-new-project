@@ -430,22 +430,6 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
       </header>
 
-      {/* Professional Site Header separated from Navbar (Below Navbar) */}
-      {activeTab === 'home' && (
-        <div className="professional-site-header" style={{
-          padding: '0.8rem 1rem',
-          textAlign: 'center',
-          background: 'transparent',
-          color: 'var(--primary-dark)',
-          position: 'relative',
-          zIndex: 99
-        }}>
-          <h1 className="maktaba-title" style={{ margin: 0, fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--accent-gold)', textShadow: '1px 1px 2px rgba(0,0,0,0.05)', fontFamily: '"Outfit", sans-serif' }}>
-             Maktaba Tul Muslim
-          </h1>
-        </div>
-      )}
-
       {/* Right-side navigation drawer */}
       {mobileActive && <div className="site-menu-backdrop" onClick={() => setMobileActive(false)} aria-hidden="true" />}
       <div id="site-menu" className={`mobile-menu-overlay site-menu ${mobileActive ? 'mobile-menu-open' : ''}`}>

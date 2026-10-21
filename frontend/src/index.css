@@ -4351,8 +4351,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .home-prayer-summary .home-prayer-details { min-height: 40px; }
 
 /* Homepage visual hierarchy */
-.home-page { background: #faf8f1; }
-.home-redesign { --home-gap: clamp(2rem, 4vw, 3.5rem); --home-sage: #edf4ec; --home-line: #dce8db; --home-shadow: 0 12px 32px rgba(18, 55, 43, .07); padding: .1rem 0 3rem; }
+.home-page { background: #faf8f1; padding-bottom: 0; }
+.home-redesign { --home-gap: clamp(2rem, 4vw, 3.5rem); --home-sage: #edf4ec; --home-line: #dce8db; --home-shadow: 0 12px 32px rgba(18, 55, 43, .07); padding: .1rem 0 .75rem; }
 .home-redesign > .container { width: min(100% - 3rem, 1260px); max-width: 1260px; margin: var(--home-gap) auto; }
 .home-section { margin-top: var(--home-gap) !important; }
 .home-eyebrow { font-size: .8rem; letter-spacing: .12em; }
@@ -4377,7 +4377,33 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .home-prayer-details { margin-top: 1.1rem; }
 .home-prayer-section .prayer-dua-shell { padding-inline: 0 !important; margin-top: 1rem !important; }
 .home-prayer-section .prayer-dua-shell > div { max-width: 100% !important; }
-.home-prayer-section .prayer-dua-card { border: 1px solid var(--home-line) !important; box-shadow: var(--home-shadow) !important; }
+.home-prayer-section .prayer-dua-card { padding: clamp(1.25rem, 2.5vw, 2rem) !important; border: 1px solid var(--home-line) !important; box-shadow: var(--home-shadow) !important; }
+.home-prayer-section .dua-accent { height: 3px !important; }
+.home-prayer-section .prayer-dua-columns { margin-top: 1.5rem; gap: 2rem; }
+.home-prayer-section .prayer-dua-reading { gap: 1.5rem; }
+.home-prayer-section .dua-arabic-panel { padding: 1.5rem !important; border: 0 !important; background: var(--home-sage) !important; }
+.home-prayer-section .prayer-dua-arabic { line-height: 1.95 !important; }
+.home-prayer-section .dua-translation { padding: .25rem !important; border: 0 !important; background: transparent !important; }
+.home-prayer-section .dua-translation > span { color: var(--primary-emerald) !important; }
+.home-prayer-section .prayer-dua-translation-urdu { font-size: 1rem !important; line-height: 1.9 !important; }
+.home-prayer-section .prayer-dua-translation-english { font-size: .94rem !important; line-height: 1.7 !important; }
+.home-prayer-section .dua-reference { border: 0 !important; padding: 1.25rem !important; background: #f8f5eb !important; box-shadow: none !important; }
+.home-prayer-section .dua-reference :is(p, span) { color: var(--primary-dark) !important; line-height: 1.8 !important; }
+.home-prayer-section .dua-reference span { border: 0 !important; background: transparent !important; }
+.home-prayer-section .dua-reference-note { border: 0 !important; background: transparent !important; padding: .6rem 0 !important; }
+.home-prayer-section .post-prayer-tasbeeh { padding: clamp(1rem, 2vw, 1.5rem) !important; border: 0 !important; background: var(--home-sage) !important; box-shadow: none !important; }
+.home-prayer-section .post-prayer-tasbeeh h4 { line-height: 1.6 !important; }
+.home-prayer-section .tasbeeh-progress { padding: .85rem !important; margin-block: 1rem !important; border: 0 !important; }
+.home-prayer-section .post-prayer-counter-card { padding: 1.15rem !important; gap: .5rem; border: 1px solid var(--home-line) !important; background: #fff !important; box-shadow: none !important; }
+.home-prayer-section .post-prayer-counter-card.is-complete { border-color: #b8d3c0 !important; background: #f5faf4 !important; }
+.home-prayer-section .post-prayer-counter-card > div:first-child > span:first-child { border: 0 !important; background: transparent !important; padding-inline: 0 !important; }
+.home-prayer-section .prayer-dua-card button { min-height: 44px; }
+.home-prayer-section .post-prayer-counter-actions > button { box-shadow: none !important; }
+.home-prayer-section .tasbeeh-completion { margin-top: 1rem; padding: 1.25rem !important; border: 0 !important; background: #fffdf6 !important; }
+.home-prayer-section .tasbeeh-completion.is-complete { background: #f7f0dd !important; }
+.home-prayer-section .tasbeeh-completion > div:first-child { border: 0 !important; background: transparent !important; }
+.home-prayer-section .tasbeeh-reference { margin-top: 1rem; padding: .5rem 0 !important; border: 0 !important; background: transparent !important; }
+.home-prayer-section .tasbeeh-reference > span { border: 0 !important; background: transparent !important; }
 .home-journey-grid, .home-explore-grid, .home-feature-grid, .home-books-grid, .home-tools-grid { gap: 1rem; }
 .home-explore-section, .home-books-section { padding: clamp(1.4rem, 3vw, 2.25rem) !important; border: 1px solid var(--home-line); border-radius: 20px; background: #f0f5ec; }
 .home-books-section { background: #f5f1e6; border-color: #e8e0cc; }
@@ -4414,6 +4440,20 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .home-redesign button:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
 body:has(.home-page) .navbar { overflow: visible !important; padding-block: .7rem; }
 body:has(.home-page) .nav-container { max-width: 1260px !important; }
+body:has(.home-page) .nav-link:not(.tools-nav-trigger) > i { display: none; }
+body:has(.home-page) .navbar-right-group { gap: .4rem !important; }
+body:has(.home-page) .desktop-lang-selector select { max-width: 115px; padding-inline: .5rem !important; border: 1px solid var(--border-color) !important; border-radius: 9px !important; background: var(--bg-card) !important; color: var(--primary-dark) !important; box-shadow: none !important; }
+.home-redesign .home-journey-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.home-journey-card small { white-space: normal; overflow-wrap: anywhere; }
+.home-feature-card { border-top-width: 1px; }
+.home-feature-card h3 { font-size: 1.12rem; font-weight: 800; overflow-wrap: anywhere; }
+.home-feature-card p { font-size: .85rem; line-height: 1.6; }
+.home-book-cover { position: relative; display: grid; place-items: center; flex: 0 0 120px; width: 120px; height: 180px; aspect-ratio: 2 / 3; margin: 1rem 0; align-self: flex-start; overflow: hidden; background: var(--home-sage); color: var(--primary-emerald); }
+.home-book-cover > i { font-size: 2rem; }
+.home-book-card .home-book-cover img { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.home-book-card > div { min-width: 0; }
+.home-book-card h3 { overflow-wrap: anywhere; }
+.home-redesign > .home-ask-card { margin-bottom: 1.5rem; }
 @media (max-width: 900px) {
   .home-redesign > .container { width: min(100% - 2rem, 1260px); }
   .home-prayer-times { grid-template-columns: repeat(3, minmax(0, 1fr)); }
