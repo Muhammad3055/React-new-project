@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { translations } from '../utils/i18n';
 
 // Supported Custom / World Languages alongside native (en, ur, ar, br)
@@ -24,17 +24,27 @@ export const SUPPORTED_LANGUAGES = [
 ];
 
 const RTL_LANGS = new Set(['ur', 'ar', 'br', 'fa', 'ps', 'sd', 'he', 'ug']);
+const ARABIC_COUNTRIES = new Set(['AE', 'SA', 'QA', 'KW', 'OM', 'BH', 'EG', 'JO', 'LB', 'SY', 'IQ', 'YE', 'PS', 'SD', 'MA', 'DZ', 'TN', 'LY']);
+export const languageForCountry = (code) => code?.toUpperCase() === 'PK' ? 'ur' : ARABIC_COUNTRIES.has(code?.toUpperCase()) ? 'ar' : null;
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
+  const translationObserverRef = useRef(null);
   const [lang, setLangState] = useState(() => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const urlLang = urlParams.get('lang');
       if (urlLang) return urlLang;
       const saved = localStorage.getItem('quran_portal_lang');
-      if (saved) return saved;
+      if (saved) {
+        if (!localStorage.getItem('quran_portal_lang_auto')) localStorage.setItem('quran_portal_lang_manual', '1');
+        return saved;
+      }
+      const countryLanguage = languageForCountry(localStorage.getItem('user_country_code'));
+      if (countryLanguage) { localStorage.setItem('quran_portal_lang_auto', '1'); return countryLanguage; }
+      const browserLanguage = navigator.language?.split('-')[0];
+      if (SUPPORTED_LANGUAGES.some(item => item.code === browserLanguage)) { localStorage.setItem('quran_portal_lang_auto', '1'); return browserLanguage; }
     } catch (e) {}
     return 'en';
   });
@@ -45,12 +55,15 @@ export function LanguageProvider({ children }) {
   // Apply Google Translate cookies and triggers for custom non-native languages
   const applyCustomTranslation = useCallback((targetLang) => {
     if (typeof window === 'undefined') return;
+    translationObserverRef.current?.disconnect();
 
     if (translations[targetLang]) {
       // Native language in translations dictionary (en, ur, ar, br)
       // Clear google translate cookies to ensure authentic dictionary displays cleanly
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+      const select = document.querySelector('.goog-te-combo');
+      if (select && select.value !== 'en') { select.value = 'en'; select.dispatchEvent(new Event('change', { bubbles: true })); }
       return;
     }
 
@@ -58,6 +71,19 @@ export function LanguageProvider({ children }) {
     const cookieVal = `/en/${targetLang}`;
     document.cookie = `googtrans=${cookieVal}; path=/;`;
     document.cookie = `googtrans=${cookieVal}; path=/; domain=${window.location.hostname};`;
+
+    const selectLanguage = () => {
+      const select = document.querySelector('.goog-te-combo');
+      if (!select || !Array.from(select.options).some(option => option.value === targetLang)) return false;
+      if (select.value !== targetLang) { select.value = targetLang; select.dispatchEvent(new Event('change', { bubbles: true })); }
+      return true;
+    };
+    if (!selectLanguage()) {
+      const observer = new MutationObserver(() => { if (selectLanguage()) observer.disconnect(); });
+      translationObserverRef.current = observer;
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => observer.disconnect(), 15000);
+    }
 
     // Load Google Translate script dynamically if not present
     if (!window.googleTranslateElementInit) {
@@ -100,8 +126,19 @@ export function LanguageProvider({ children }) {
     } catch (e) {}
   }, [lang, dir, applyCustomTranslation]);
 
-  const setLang = (newLang) => {
+  useEffect(() => {
+    const protectArabic = () => document.querySelectorAll('.arabic-font, .arabic-text-render, .mushaf-page-container, .prayer-dua-arabic')
+      .forEach(node => { node.classList.add('notranslate'); node.setAttribute('translate', 'no'); });
+    protectArabic();
+    const observer = new MutationObserver(protectArabic);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
+  const setLang = (newLang, manual = true) => {
     if (!newLang) return;
+    if (manual) { localStorage.setItem('quran_portal_lang_manual', '1'); localStorage.removeItem('quran_portal_lang_auto'); }
+    else localStorage.setItem('quran_portal_lang_auto', '1');
     setLangState(newLang);
   };
 

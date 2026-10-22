@@ -36,10 +36,10 @@ const LANGUAGES = [
 ];
 
 const QUICK_PROMPTS = [
-  { icon: '📚', label: 'Find books', prompt: 'Where can I find Tafsir books on this website?' },
-  { icon: '🕌', label: 'Salah Guide', prompt: 'How do I perform Fajr prayer step-by-step?' },
-  { icon: '📖', label: 'Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?' },
-  { icon: '🕋', label: 'Hajj & Umrah', prompt: 'Explain the step by step guide to perform Hajj and Umrah' },
+  { icon: '📚', label: 'Find books', prompt: 'Where can I find Tafsir books on this website?', answer: 'Browse the library for books and the Tafseer section for Quran commentary.', actions: [{ label: 'Islamic Books', url: '/books' }, { label: 'Tafseer', url: '/tafseer' }] },
+  { icon: '🕌', label: 'Salah Guide', prompt: 'How do I perform Fajr prayer step-by-step?', answer: 'Open the Salah guide for prayer steps and the prayer section for related information.', actions: [{ label: 'Salah Guide', url: '/asan-nimaz' }, { label: 'Prayer', url: '/prayers' }] },
+  { icon: '📖', label: 'Al-Fatiha Tafsir', prompt: 'What is the Tafsir and meaning of Surah Al-Fatiha?', answer: 'Read Surah Al-Fatiha in the Quran reader, then explore the available Tafseer.', actions: [{ label: 'Read Quran', url: '/read' }, { label: 'Tafseer', url: '/tafseer' }] },
+  { icon: '🕋', label: 'Hajj & Umrah', prompt: 'Explain the step by step guide to perform Hajj and Umrah', answer: 'The Hajj and Umrah guide is available in the library.', actions: [{ label: 'Hajj & Umrah Guide', url: '/hajj-umrah' }] },
 ];
 
 const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
@@ -179,7 +179,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             file_type: fileToSend.type,
           })
         });
-        if (!response.ok) throw new Error('AI file request failed');
+        if (!response.ok) throw new Error(`Assistant service returned HTTP ${response.status}.`);
         data = await response.json();
       } else {
         const apiUrl = getApiUrl('/api/ai-assistant/');
@@ -190,7 +190,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
           body: JSON.stringify({ prompt: query, language: selectedLang === 'auto' ? '' : selectedLang,
             history: messages.filter(msg => !msg.isError && typeof msg.text === 'string').slice(-10).map(msg => ({ role: msg.sender === 'user' ? 'user' : 'assistant', content: msg.text.slice(0, 3000) })) })
         });
-        if (!response.ok) throw new Error('AI request failed');
+        if (!response.ok) throw new Error(`Assistant service returned HTTP ${response.status}.`);
         data = await response.json();
       }
 
@@ -213,13 +213,22 @@ export default function AIChatbotModal({ isOpen, onClose }) {
       setMessages((prev) => [...prev, aiMsg]);
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'Unable to get an answer. Please check your connection and try again.', isError: true }]);
+      const actions = /muhammad|prophet|seerah/i.test(query) ? [{ label: 'Seerah Timeline', url: '/seerah' }, { label: 'Hadith', url: '/hadith' }] : /tafsir|tafseer|quran|surah/i.test(query) ? [{ label: 'Read Quran', url: '/read' }, { label: 'Tafseer', url: '/tafseer' }] : [{ label: 'Browse the library', url: '/books' }];
+      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: error instanceof TypeError ? 'AI service is unreachable. Please try again later.' : error.message, isError: true, actions }]);
     } finally {
       requestInFlight.current = false;
       setIsLoading(false);
       setAgentStep('');
       setTimeout(scrollToBottom, 100);
     }
+  };
+
+  const handleQuickPrompt = (item) => {
+    const now = Date.now();
+    setMessages(prev => [...prev,
+      { id: now, sender: 'user', text: item.prompt },
+      { id: now + 1, sender: 'ai', text: item.answer, actions: item.actions }
+    ]);
   };
 
 
@@ -290,7 +299,7 @@ export default function AIChatbotModal({ isOpen, onClose }) {
               {QUICK_PROMPTS.map((q, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSend(q.prompt)}
+                  onClick={() => handleQuickPrompt(q)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 16px', background: 'var(--surface-paper)', border: '1px solid #e2e8f0',
@@ -496,15 +505,17 @@ export default function AIChatbotModal({ isOpen, onClose }) {
             onChange={(e) => setInputPrompt(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSend(); }}
             placeholder={attachedFile ? "Ask about this file..." : "Type your message..."}
-            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', color: '#334155' }}
+            style={{ flex: '1 1 0', minWidth: 0, border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', color: '#334155' }}
             disabled={isLoading}
           />
           <button
+            type="button"
+            aria-label="Send message"
             onClick={() => handleSend()}
             disabled={(!inputPrompt.trim() && !attachedFile) || isLoading}
             style={{
               background: (inputPrompt.trim() || attachedFile) ? '#176141' : '#e2e8f0', color: '#fff',
-              border: 'none', borderRadius: '50%', width: '32px', height: '32px',
+              border: 'none', borderRadius: '50%', width: '36px', height: '36px', minWidth: '36px', flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (inputPrompt.trim() || attachedFile) ? 'pointer' : 'default',
               transition: 'background 0.2s'
             }}

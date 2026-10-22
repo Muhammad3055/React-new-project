@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 import DailyReminderBanner from '../components/DailyReminderBanner';
 import { fetchWithCache, getApiUrl } from '../utils/apiCache';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage, languageForCountry } from '../context/LanguageContext';
 import { getPrayerMethodAndAdjustment } from '../utils/hijriDate';
 
 const DEFAULT_AUDIOS = [
@@ -145,7 +145,7 @@ const getTodayPlanKey = () => {
 };
 
 export default function HomeView({ navigateToTab, setActiveTab, playTrack, user, openAuthModal, openSpotlight, openAIChat, openCalendar }) {
-  const { t, lang } = useLanguage();
+  const { t, lang, setLang } = useLanguage();
   const handleNav = (tab) => {
     if (typeof navigateToTab === 'function') navigateToTab(tab);
     else if (typeof setActiveTab === 'function') setActiveTab(tab);
@@ -259,6 +259,11 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const dailyHadith = getDailyHadith();
 
   const [locationInfo, setLocationInfo] = useState(null);
+  useEffect(() => {
+    if (localStorage.getItem('quran_portal_lang_manual') || new URLSearchParams(window.location.search).has('lang')) return;
+    const countryLanguage = languageForCountry(locationInfo?.countryCode);
+    if (countryLanguage && countryLanguage !== lang) setLang(countryLanguage, false);
+  }, [locationInfo?.countryCode, lang, setLang]);
   const [ramadanCountdown, setRamadanCountdown] = useState(null);
   const [hijriYear, setHijriYear] = useState('1448');
 

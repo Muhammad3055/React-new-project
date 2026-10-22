@@ -139,6 +139,7 @@ function MainAppContent() {
   const [reportData, setReportData] = useState(null);
   const [authModalMode, setAuthModalMode] = useState(null);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [isSidebarChatOpen, setIsSidebarChatOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHifzOpen, setIsHifzOpen] = useState(false);
   const [isTajweedOpen, setIsTajweedOpen] = useState(false);
@@ -695,7 +696,7 @@ function MainAppContent() {
       </Suspense>
 
       {/* Prominent Sticky Floating AI Islamic Assistant Chatbot Launcher Button */}
-      {!isAIChatOpen && (
+      {!isAIChatOpen && !isSidebarChatOpen && (
         <div 
           style={{
             position: 'fixed',
@@ -735,7 +736,7 @@ function MainAppContent() {
       <AdminFloatingBar user={user} navigateToTab={navigateToTab} />
 
       {/* Always-visible Left Sidebar AI Chatbot (slides in from left edge) */}
-      <ChatbotSidebar />
+      <ChatbotSidebar onOpenChange={setIsSidebarChatOpen} />
 
       {socialCardModalOpen && (
         <SocialCardModal
