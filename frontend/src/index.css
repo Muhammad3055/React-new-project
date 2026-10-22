@@ -171,14 +171,13 @@ a {
 .site-fixed-header {
   position: fixed;
   top: 0;
-  left: 12px;
-  right: 12px;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  border-radius: 0 0 14px 14px;
+  border-radius: 0;
   box-shadow: 0 6px 24px rgba(18, 55, 43, .12);
 }
-.site-fixed-header .navbar { position: relative !important; width: 100% !important; border-radius: 0 0 14px 14px; }
-@media (max-width: 600px) { .site-fixed-header { left: 6px; right: 6px; } }
+.site-fixed-header .navbar { position: relative !important; width: 100% !important; border-radius: 0; }
 .navbar {
   position: sticky;
   top: 0;
@@ -2969,6 +2968,29 @@ body.has-audio-player footer {
     width: 100% !important;
     max-width: 100% !important;
   }
+}
+
+.main-content {
+  box-sizing: border-box;
+  padding-inline: clamp(12px, 2vw, 32px);
+}
+
+.main-content .grid-2,
+.main-content .grid-3,
+.main-content .grid-4,
+.home-explore-grid,
+.home-journey-grid,
+.home-feature-grid,
+.home-books-grid,
+.home-tools-grid {
+  gap: clamp(1rem, 1.5vw, 1.4rem);
+}
+
+.home-tool-card > span,
+.desktop-extras-card p,
+.desktop-extras-card span,
+.tools-nav-menu button {
+  color: #000000 !important;
 }
 
 /* ==========================================================================

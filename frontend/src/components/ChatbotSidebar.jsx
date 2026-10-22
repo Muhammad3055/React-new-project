@@ -314,7 +314,7 @@ export default function ChatbotSidebar({ onOpenChange }) {
                 <RefreshCw size={13} />
               </button>
             )}
-            <button onClick={() => setIsOpen(false)} title="Close" style={{ background: '#f1f5f9', border: 'none', color: '#64748b', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button onClick={() => setIsOpen(false)} title="Close" aria-label="Close AI assistant panel" style={{ background: 'linear-gradient(180deg, #0066FF 0%, #1e40af 100%)', border: 'none', color: '#ffffff', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 3px 10px rgba(0, 102, 255, 0.3)' }}>
               <X size={14} />
             </button>
           </div>

@@ -911,20 +911,24 @@ SOURCE MATERIAL:
         if isinstance(groq_models, str):
             groq_models = [m.strip() for m in groq_models.split(',') if m.strip()]
 
-        client = Groq(api_key=groq_api_key)
-        for model_name in groq_models:
-            try:
-                completion = client.chat.completions.create(
-                    model=model_name,
-                    temperature=0.1,
-                    max_tokens=1500,
-                    response_format={"type": "json_object"},
-                    messages=conversation,
-                )
-                response_text = completion.choices[0].message.content
-                return json.loads(response_text)
-            except Exception as e:
-                print(f"Groq Error ({model_name}), falling back: {e}")
+        try:
+            client = Groq(api_key=groq_api_key)
+        except Exception as e:
+            print(f"Groq client initialization failed, falling back: {e}")
+        else:
+            for model_name in groq_models:
+                try:
+                    completion = client.chat.completions.create(
+                        model=model_name,
+                        temperature=0.1,
+                        max_tokens=1500,
+                        response_format={"type": "json_object"},
+                        messages=conversation,
+                    )
+                    response_text = completion.choices[0].message.content
+                    return json.loads(response_text)
+                except Exception as e:
+                    print(f"Groq Error ({model_name}), falling back: {e}")
 
     # 2. TRY DEEPSEEK (deepseek-chat)
     deepseek_api_key = getattr(settings, 'DEEPSEEK_API_KEY', '')
