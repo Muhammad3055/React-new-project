@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from .uploads import chunked_files
 
 from .models import (
-    Category, QuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
+    Category, QuranAudio, MixedQuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker,
     UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory,
     ImageMedia, Topic
@@ -46,6 +46,19 @@ class QuranAudioAdmin(LargeUploadAdmin):
     ordering = ('surah_number', 'id')
     list_filter = ('destination_folder', 'language', 'category', 'revelation_place', 'reciter')
     search_fields = ('surah_number', 'surah_name_english', 'surah_name_arabic', 'reciter', 'tarjuma_qari', 'destination_folder')
+
+
+@admin.register(MixedQuranAudio)
+class MixedQuranAudioAdmin(QuranAudioAdmin):
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(destination_folder='quran_mixed')
+
+    def get_changeform_initial_data(self, request):
+        return {**super().get_changeform_initial_data(request), 'destination_folder': 'quran_mixed', 'language': 'mixed'}
+
+    def save_model(self, request, obj, form, change):
+        obj.destination_folder = 'quran_mixed'
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(TaqreerAudio)

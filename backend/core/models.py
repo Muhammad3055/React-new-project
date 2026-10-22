@@ -128,6 +128,13 @@ class QuranAudio(models.Model):
                 pass
 
 
+class MixedQuranAudio(QuranAudio):
+    class Meta:
+        proxy = True
+        verbose_name = 'Mixed Quran Audio'
+        verbose_name_plural = 'Mixed Quran Audios'
+
+
 class TaqreerAudio(models.Model):
     LANGUAGE_CHOICES = [
         ('arabic', 'Arabic (عربي)'),

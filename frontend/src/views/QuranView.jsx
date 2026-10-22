@@ -1230,14 +1230,12 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       {subCategory === 'quran_mixed' && (
         <div>
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            {(user?.is_staff || user?.is_superuser) && (
-              <button
-                onClick={() => openUploadModal(null, 'quran', 'mixed')}
+            <a
+                href={getApiUrl('/api/').replace(/\/api\/$/, '/admin/core/mixedquranaudio/add/')}
                 style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
               >
-                <i className="fas fa-plus-circle"></i> + Add Mixed Audio / Upload
-              </button>
-            )}
+                <i className="fas fa-plus-circle"></i> Add Mixed Quran Audio
+              </a>
 
             <div style={{ marginLeft: 'auto', fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: 'var(--surface-paper)', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <i className="fas fa-compact-disc" style={{ color: '#b45309' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ MP3)
