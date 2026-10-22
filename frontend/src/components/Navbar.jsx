@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
@@ -7,6 +7,14 @@ import UserProfileModal from './UserProfileModal';
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection, openDailySurahs, openSpotlight }) {
   const { lang, setLang, t, supportedLanguages = [] } = useLanguage();
   const [mobileActive, setMobileActive] = useState(false);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(100);
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const observer = new ResizeObserver(([entry]) => setHeaderHeight(entry.borderBoxSize?.[0]?.blockSize ?? entry.target.offsetHeight));
+    observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, []);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -225,6 +233,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
         </div>
       )}
 
+      <div className="site-fixed-header" ref={headerRef}>
       {/* Top Header Announcement: Under Development */}
       <div className="under-dev-header-banner" style={{
         background: 'linear-gradient(90deg, #b45309 0%, #d97706 50%, #b45309 100%)',
@@ -401,6 +410,8 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           </div>
         </div>
       </header>
+      </div>
+      <div aria-hidden="true" style={{ height: headerHeight, flexShrink: 0 }} />
 
       {/* Right-side navigation drawer */}
       {mobileActive && <div className="site-menu-backdrop" onClick={() => setMobileActive(false)} aria-hidden="true" />}
