@@ -260,7 +260,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           {/* CENTER: Navigation Links */}
           <div className="navbar-center-group" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>            <ul className="nav-links desktop-nav">
               {navItems.map((item) => (
-                <li key={item.id} className={item.desktopOnly ? 'desktop-only' : ''}>
+                <li key={item.id} className={`header-route header-route-${item.id}`}>
                   <button type="button"
                     className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
                     aria-current={activeTab === item.id ? 'page' : undefined}
@@ -271,6 +271,12 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                   </button>
                 </li>
               ))}
+              <li className="tools-nav-item" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setShowToolsMenu(false); }}>
+                <button type="button" className="nav-link tools-nav-trigger" aria-expanded={showToolsMenu} aria-controls="desktop-tools-menu" onClick={() => setShowToolsMenu(open => !open)}>
+                  {t('tools', 'Tools')} <i className="fas fa-chevron-down" aria-hidden="true" />
+                </button>
+                {showToolsMenu && <div id="desktop-tools-menu" className="tools-nav-menu">{toolMenuItems.map(item => <button key={item.label} type="button" onClick={() => { item.action ? item.action() : navigateToTab(item.tab); setShowToolsMenu(false); }}>{item.label}</button>)}</div>}
+              </li>
             </ul>
           </div>
 

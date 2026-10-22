@@ -6,7 +6,7 @@
   --accent-gold-dark: #92400e;
   --accent-gold-light: #fef3c7;
   --bg-cream: #fdfbf7;
-  --surface-paper: #f6efdf;
+  --surface-paper: #edf5ec;
   --bg-card: var(--surface-paper);
   --bg-control: #ece3cf;
   --bg-control-hover: #e4edde;
@@ -71,7 +71,7 @@
   --accent-gold-dark: #92400e;
   --accent-gold-light: #fef3c7;
   --bg-cream: #fbf0d9;
-  --surface-paper: #f5e8cf;
+  --surface-paper: #e7eedc;
   --bg-card: var(--surface-paper);
   --bg-control: #eadebf;
   --bg-control-hover: #e7d6b4;
@@ -4376,6 +4376,47 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 }
 
 
+.navbar .nav-container { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+.navbar .navbar-center-group { display: flex !important; min-width: 0; }
+.navbar .nav-links.desktop-nav { display: flex !important; flex-wrap: wrap; width: auto; margin: 0; padding: 0; }
+.navbar .navbar-right-group { flex-wrap: wrap; min-width: 0; }
+.navbar .desktop-auth-area, .navbar .desktop-lang-selector { display: flex !important; }
+.navbar .header-theme-selector { display: inline-flex !important; color: var(--text-main); width: auto; max-width: 112px; }
+.navbar .desktop-lang-selector select { color: var(--text-main); width: auto; max-width: 112px; }
+.navbar .mobile-toggle-btn { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; min-width: 44px; padding: 10px; border: 1px solid var(--border-color); border-radius: 11px; background: var(--bg-card); }
+.site-menu .mobile-only { display: block !important; }
+.site-menu nav.mobile-only { display: grid !important; }
+.site-menu .mobile-section-title.mobile-only { display: flex !important; }
+@media (min-width: 761px) and (max-width: 1200px) {
+  .navbar .nav-container { grid-template-columns: minmax(0, 1fr) auto; row-gap: .6rem !important; }
+  .navbar .navbar-center-group { grid-row: 2; grid-column: 1 / -1; }
+  .navbar .navbar-right-group { grid-row: 1; grid-column: 2; }
+  .navbar .brand-text { font-size: .85rem; }
+  .navbar :is(.desktop-lang-selector select, .header-theme-selector, .nav-search-button) { font-size: .75rem; padding-inline: .4rem; }
+  .navbar .auth-btn { padding-inline: .5rem !important; font-size: .72rem !important; }
+  .navbar .nav-search-button > :is(span, kbd) { display: none; }
+}
+@media (max-width: 760px) {
+  .navbar { padding: .45rem .35rem !important; }
+  .navbar .nav-container { grid-template-columns: 36px minmax(0, 1fr) 40px; gap: .25rem !important; padding: 0 !important; }
+  .navbar .navbar-left-group { min-width: 0; margin: 0; }
+  .navbar .brand-text { display: none; }
+  .navbar .brand-logo { min-height: 40px; }
+  .navbar .brand-logo img { width: 34px !important; height: 34px !important; }
+  .navbar .navbar-center-group { justify-content: center !important; }
+  .navbar .nav-links.desktop-nav { flex-wrap: nowrap; gap: .15rem !important; }
+  .navbar .nav-link { min-height: 44px; font-size: clamp(.6rem, 2.3vw, .85rem); padding: .4rem .35rem; white-space: normal; line-height: 1.25; }
+  .navbar .header-route { min-width: 0; }
+  .navbar .header-route-books, .navbar .tools-nav-item { display: none !important; }
+  .navbar .navbar-right-group { gap: 0 !important; }
+  .navbar .navbar-right-group > :not(.mobile-toggle-btn) { display: none !important; }
+  .navbar .mobile-toggle-btn { min-width: 40px; width: 40px; }
+}
+
+@media (min-width: 901px) {
+  .site-shell .main-content .container { max-width: none; }
+}
+
 /* Homepage digital library layout */
 .home-page { min-height: 100vh; padding-bottom: 3rem; background: var(--bg-cream); }
 .home-redesign { --home-gap: clamp(1.25rem, 3vw, 2rem); padding-bottom: 2rem; }
@@ -4443,7 +4484,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 /* Homepage visual hierarchy */
 .home-page { background: transparent; padding-bottom: 0; }
 .home-redesign { --home-gap: clamp(2rem, 4vw, 3.5rem); --home-sage: #edf4ec; --home-line: #dce8db; --home-shadow: 0 12px 32px rgba(18, 55, 43, .07); padding: .1rem 0 .75rem; }
-.home-redesign > .container { width: min(100% - 3rem, 1260px); max-width: 1260px; margin: var(--home-gap) auto; }
+.home-redesign > .container { width: calc(100% - 3rem); max-width: none; margin: var(--home-gap) auto; }
 .home-section { margin-top: var(--home-gap) !important; }
 .home-eyebrow { font-size: .8rem; letter-spacing: .12em; }
 .home-section-heading { margin-bottom: 1.35rem; }
