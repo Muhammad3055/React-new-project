@@ -122,11 +122,9 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
   const navItems = [
     { id: 'home', label: t('home'), icon: 'fas fa-home' },
-    { id: 'read', label: t('readQuran', 'Quran'), icon: 'fas fa-book-open' },
-    { id: 'hadith', label: t('hadith', 'Hadith'), icon: 'fas fa-quote-left' },
-    { id: 'books', label: t('books', 'Library'), icon: 'fa-solid fa-book' },
-    { id: 'quran', label: t('mp3Audio', 'Audio'), icon: 'fas fa-headphones' },
-    { id: 'about', label: t('aboutUs', 'About'), icon: 'fas fa-info-circle' },
+    { id: 'read', label: t('readQuran', 'Read Quran'), icon: 'fas fa-book-open' },
+    { id: 'books', label: t('books', 'Books'), icon: 'fa-solid fa-book' },
+    { id: 'quran', label: t('mp3Audio', 'MP3 Recitations'), icon: 'fas fa-headphones' },
   ];
 
   const toolMenuItems = [
@@ -285,7 +283,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           {/* RIGHT: Controls group */}
           <div className="navbar-right-group" style={{ display: 'flex', flexShrink: 0, justifyContent: 'flex-end', gap: '0.6rem', alignItems: 'center' }}>
             {/* Desktop Language Switcher Selector */}
-            <div className="desktop-lang-selector desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="desktop-lang-selector" style={{ display: 'flex', alignItems: 'center' }}>
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
@@ -306,7 +304,7 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
                 </optgroup>
               </select>
             </div>
-            <select className="header-theme-selector desktop-only" value={globalTheme} onChange={(e) => setGlobalTheme(e.target.value)} aria-label={t('theme', 'Website theme')}>
+            <select className="header-theme-selector" value={globalTheme} onChange={(e) => setGlobalTheme(e.target.value)} aria-label={t('theme', 'Website theme')}>
               <option value="light">Light</option><option value="sepia">Sepia</option><option value="black">Dark</option><option value="auto">Auto</option>
             </select>
 
