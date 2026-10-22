@@ -775,7 +775,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         style={{ flex: 1, justifyContent: 'center', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '14px', background: 'var(--surface-paper)', color: 'var(--accent-gold)', fontWeight: 800, border: '1.5px solid var(--accent-gold)', boxShadow: '0 2px 6px rgba(180,83,9,0.1)' }}
                         onClick={() => playSurahByNumber(surah.number)}
                       >
-                        <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> {t('playTilawat', 'Play Tilawat')}
+                        <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> Play
                       </button>
 
                       <button
@@ -931,7 +931,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           style={{ flex: 1, justifyContent: 'center', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '14px', background: 'var(--surface-paper)', color: 'var(--accent-gold)', fontWeight: 800, border: '1.5px solid var(--accent-gold)', boxShadow: '0 2px 6px rgba(180,83,9,0.1)' }}
                           onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter)}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> Play Tarjuma MP3
+                          <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> Play
                         </button>
 
                         <button
@@ -1071,7 +1071,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
                           onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> {t('playTaqreer', 'Play Taqreer')}
+                          <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play
                         </button>
 
                         <button
@@ -1188,7 +1188,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
                       onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker)}
                     >
-                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play Audio
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play
                     </button>
 
                     <button

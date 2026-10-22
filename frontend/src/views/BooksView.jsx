@@ -688,7 +688,7 @@ export default function BooksView({ openReportModal, user }) {
 
                       {/* Action Footer */}
                       <div className="books-card-actions">
-                        {documentUrl && <>
+                        {documentUrl && <div className="books-primary-actions">
                         <button
                           className="books-read-button"
                           onClick={() => handleOpenDocModal(bk)}
@@ -706,7 +706,7 @@ export default function BooksView({ openReportModal, user }) {
                         >
                           <i className="fas fa-download" aria-hidden="true"></i> {t('download', 'Download')}
                         </a>
-                        </>}
+                        </div>}
 
                         <button
                           title="Report Issue"
@@ -784,7 +784,7 @@ export default function BooksView({ openReportModal, user }) {
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'stretch' }}>
                         {documentUrl && <>
                         <button className="books-read-button"
                           onClick={() => handleOpenDocModal(bk)}

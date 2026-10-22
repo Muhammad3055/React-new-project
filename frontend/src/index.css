@@ -4658,6 +4658,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .books-metadata { display: flex; flex-wrap: wrap; gap: .35rem; }
 .books-metadata span { padding: .22rem .5rem; border-radius: 999px; background: #f0f5f1; color: #42584b; font-size: .72rem; font-weight: 650; }
 .books-card-actions { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; padding: .8rem 1rem; border-top: 1px solid var(--border-color); }
+.books-primary-actions { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: .45rem; }
+.books-primary-actions > :is(button, a) { width: 100%; flex: none; }
 .books-read-button, .books-download { display: inline-flex; min-height: 42px; flex: 1; align-items: center; justify-content: center; gap: .4rem; padding: .5rem .7rem; border: 1px solid var(--primary-emerald); border-radius: 10px; background: var(--primary-emerald); color: #fff; font: inherit; font-size: .8rem; font-weight: 750; text-decoration: none; cursor: pointer; }
 .books-download { background: transparent; color: var(--primary-emerald); }
 .books-read-button:hover { background: var(--primary-dark); }
