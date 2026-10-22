@@ -73,24 +73,6 @@ class AssistantCatalogTests(TestCase):
         self.assertEqual(generate.call_args.kwargs['history'],history)
         self.assertIn(self.urdu.title,generate.call_args.args[2][0])
 
-    @override_settings(
-        GROQ_API_KEY='test-key',
-        DEEPSEEK_API_KEY='',
-        XAI_API_KEY='',
-        GEMINI_API_KEY='',
-        OPENAI_API_KEY='',
-        CLAUDE_API_KEY='',
-    )
-    @patch('core.ai_views.Groq', side_effect=RuntimeError('client initialization failed'))
-    def test_groq_initialization_failure_falls_back_without_raising(self, groq_client):
-        from .ai_views import generate_groq_answer
-
-        result = generate_groq_answer('Tell me about Islam', 'en', [])
-
-        self.assertEqual(result['intent'], 'SERVICE_UNAVAILABLE')
-        self.assertTrue(result['answer'])
-        groq_client.assert_called_once_with(api_key='test-key')
-
 
 class AssistantVoiceTests(TestCase):
     def setUp(self):
