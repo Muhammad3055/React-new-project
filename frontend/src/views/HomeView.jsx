@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import PrayerTimesWidget from '../components/PrayerTimesWidget';
 import DailyReminderBanner from '../components/DailyReminderBanner';
@@ -178,7 +178,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     setLastBook(saved);
     try { localStorage.setItem('maktaba_last_read_book', JSON.stringify(saved)); } catch {}
   };
-  const openDocViewer = (bk) => {
+  const openDocViewer = (bk, page = 1) => {
     const url = getDocumentUrl(bk);
     if (!url) {
       alert('This document is not available to view yet.');
@@ -187,15 +187,15 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     setViewerEngine(isMobile ? 'google' : 'direct');
     setIsFullscreen(false);
-    rememberBookReading(bk);
-    setDocViewer({ url, title: bk.title, author: bk.author, fileType: bk.file_type });
+    rememberBookReading(bk, page);
+    setDocViewer({ url, title: bk.title, author: bk.author, fileType: bk.file_type, page });
   };
   const getViewerUrl = (doc) => {
     if (viewerEngine === 'google') {
       return `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
     }
     const isPdf = ['pdf', 'book'].includes(doc.fileType) || /\.pdf(?:$|[?#])/i.test(doc.url);
-    return isPdf ? `${doc.url.split('#')[0]}#view=FitH` : doc.url;
+    return isPdf ? `${doc.url.split('#')[0]}#page=${doc.page || 1}&view=FitH` : doc.url;
   };
   const closeDocViewer = () => setDocViewer(null);
 
@@ -210,6 +210,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const [audios, setAudios] = useState(DEFAULT_AUDIOS);
   const [taqreers, setTaqreers] = useState([]);
   const [books, setBooks] = useState(DEFAULT_BOOKS);
+  const recitationCarousel = useRef(null);
+  const booksCarousel = useRef(null);
   const [hadiths, setHadiths] = useState(DEFAULT_HADITHS);
   const [lastRead, setLastRead] = useState(null);
   const [lastBook, setLastBook] = useState(() => {
@@ -365,8 +367,21 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
     const rotated = [...arr.slice(offset), ...arr.slice(0, offset)];
     return rotated.slice(0, count);
   };
-  const featuredAudios = getDailyRotatedSlice(audios.filter(item => item.audio_url), 3);
-  const featuredBooks = books.filter(book => getDocumentUrl(book)).slice(0, 3);
+  const featuredAudios = getDailyRotatedSlice(audios.filter(item => item.audio_url), 6);
+  const availableBooks = books.filter(book => getDocumentUrl(book));
+  const recentBooks = availableBooks.length > 3 ? availableBooks.filter(book => book.created_at).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)).slice(0, 3) : [];
+  const featuredBooks = availableBooks.filter(book => !recentBooks.some(recent => recent.id === book.id)).slice(0, 6);
+  const scrollCarousel = (ref, direction) => ref.current?.scrollBy({ left: direction * (ref.current.firstElementChild?.getBoundingClientRect().width || 300), behavior: 'smooth' });
+  const resumeQuran = () => {
+    if (!lastRead?.surahNumber) return handleNav('read');
+    navigate('read', lastRead.surahNumber);
+    if (lastRead.ayahNumber) window.history.replaceState({}, '', `/read?q=${lastRead.surahNumber}&ayah=${lastRead.ayahNumber}`);
+  };
+  const resumeBook = () => {
+    const book = books.find(item => String(item.id) === String(lastBook?.id)) || books.find(item => item.title === lastBook?.title);
+    if (book && getDocumentUrl(book)) openDocViewer(book, lastBook.page || 1);
+    else navigate('books', lastBook.title);
+  };
 
   useEffect(() => {
     // Check local storage for last read position
@@ -535,8 +550,8 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         {(lastRead || lastBook || savedContentCount > 0) && <section className="container home-section home-journey-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">Pick up where you left off</span><h2>Continue your journey</h2></div></div>
           <div className="home-journey-grid">
-            {lastRead && <button className="home-journey-card" onClick={() => handleNav('read')}><i className="fas fa-book-open" aria-hidden="true" /><span><strong>Continue Quran</strong><small>{lastRead.surahName || 'Saved reading'} · Ayah {lastRead.ayahNumber}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
-            {lastBook && <button className="home-journey-card" onClick={() => navigate('books', lastBook.title)}><i className="fas fa-book" aria-hidden="true" /><span><strong>Continue your book</strong><small>{lastBook.title} · Page {lastBook.page || 1}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {lastRead && <button className="home-journey-card" onClick={resumeQuran}><i className="fas fa-book-open" aria-hidden="true" /><span><strong>Continue Quran</strong><small>{lastRead.surahName || 'Saved reading'} · Ayah {lastRead.ayahNumber}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {lastBook && <button className="home-journey-card" onClick={resumeBook}><i className="fas fa-book" aria-hidden="true" /><span><strong>Continue your book</strong><small>{lastBook.title} · Page {lastBook.page || 1}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
             {savedContentCount > 0 && <button className="home-journey-card" onClick={() => handleNav('bookmarks')}><i className="fas fa-heart" aria-hidden="true" /><span><strong>Saved content</strong><small>{savedContentCount} saved items</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
           </div>
         </section>}
@@ -567,13 +582,18 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         })()}
 
         {featuredAudios.length > 0 && <section className="container home-section home-recitation-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Listen and reflect</span><h2>Featured recitations</h2></div><button className="home-text-action" onClick={() => handleNav('quran')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
-          <div className="home-feature-grid">{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-headphones" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playTrack?.(item.audio_url, item.surah_name_english || item.title, item.reciter)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">Listen and reflect</span><h2>Featured recitations</h2></div><div className="home-carousel-actions"><button aria-label="Previous recitations" onClick={() => scrollCarousel(recitationCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label="Next recitations" onClick={() => scrollCarousel(recitationCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('quran')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
+          <div className="home-feature-grid home-card-carousel" ref={recitationCarousel}>{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-headphones" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playTrack?.(item.audio_url, item.surah_name_english || item.title, item.reciter)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
         </section>}
 
         {featuredBooks.length > 0 && <section className="container home-section home-books-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Selected from the library</span><h2>Featured books</h2></div><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
-          <div className="home-books-grid">{featuredBooks.map((book, index) => <article className="home-book-card" key={book.id || index}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">Selected from the library</span><h2>Featured books</h2></div><div className="home-carousel-actions"><button aria-label="Previous books" onClick={() => scrollCarousel(booksCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label="Next books" onClick={() => scrollCarousel(booksCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
+          <div className="home-books-grid home-card-carousel" ref={booksCarousel}>{featuredBooks.map((book, index) => <article className="home-book-card" key={book.id || index}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
+        </section>}
+
+        {recentBooks.length > 0 && <section className="container home-section home-recent-books-section">
+          <div className="home-section-heading"><div><span className="home-eyebrow">Fresh from the library</span><h2>Recently added books</h2></div><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
+          <div className="home-books-grid">{recentBooks.map(book => <article className="home-book-card" key={book.id}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
         </section>}
 
         <section className="container home-section home-tools-section">

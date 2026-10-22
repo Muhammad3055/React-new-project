@@ -266,6 +266,15 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
       });
   }, [selectedSurah]);
 
+  useEffect(() => {
+    if (loading || !surahData?.ayahs?.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const ayah = Number(params.get('ayah'));
+    if (Number(params.get('q')) !== selectedSurah || !Number.isInteger(ayah) || ayah < 1) return;
+    const frame = requestAnimationFrame(() => document.getElementById(`reader-ayah-${selectedSurah}-${ayah}`)?.scrollIntoView({ block: 'center' }));
+    return () => cancelAnimationFrame(frame);
+  }, [loading, selectedSurah, surahData]);
+
   // Fetch English & Urdu Translations dynamically for selectedSurah with Caching
   useEffect(() => {
     setTranslationData({});
@@ -938,7 +947,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
                     const brTranslationText = getBrahuiTranslationText(index, ayah.text);
 
                     return (
-                      <div key={ayah.numberInSurah} className="verse-block" style={{ borderBottom: theme === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0' }}>
+                      <div key={ayah.numberInSurah} id={`reader-ayah-${selectedSurah}-${ayah.numberInSurah}`} className="verse-block" style={{ borderBottom: theme === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0' }}>
                         <div className="verse-top-bar">
                           <span className="verse-number">{selectedSurah}:{ayah.numberInSurah}</span>
                           {isLastRead && (
