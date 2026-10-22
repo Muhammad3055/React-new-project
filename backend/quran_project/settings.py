@@ -286,15 +286,15 @@ GROQ_API_KEY = env('GROQ_API_KEY', default='')
 TAVILY_API_KEY = env('TAVILY_API_KEY', default='')
 
 GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
-OPENAI_API_KEY = env('OPEN_AI_API', default='')  # Matches .env variable OPEN_AI_API
+OPENAI_API_KEY = env('OPENAI_API_KEY', default=env('OPEN_AI_API', default=''))
 CLAUDE_API_KEY = env('CLAUDE_API_KEY', default='')
 DEEPSEEK_API_KEY = env('DEEPSEEK_API_KEY', default='')
 XAI_API_KEY = env('XAI_API_KEY', default='')
 GROQ_CHAT_MODELS = env.list(
     'GROQ_CHAT_MODELS',
-    default=['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'qwen/qwen3.6-27b', 'groq/compound']
+    default=['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'qwen/qwen3.8-27b']
 )
 XAI_CHAT_MODEL = env('XAI_CHAT_MODEL', default='grok-4-latest')
-GEMINI_CHAT_MODEL = env('GEMINI_CHAT_MODEL', default='gemini-1.5-flash')
+GEMINI_CHAT_MODEL = env('GEMINI_CHAT_MODEL', default='gemini-2.5-flash')
 OPENAI_CHAT_MODEL = env('OPENAI_CHAT_MODEL', default='gpt-4o-mini')
 CLAUDE_CHAT_MODEL = env('CLAUDE_CHAT_MODEL', default='claude-3-5-sonnet-20241022')

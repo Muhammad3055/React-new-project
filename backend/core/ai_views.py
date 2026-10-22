@@ -535,7 +535,11 @@ def find_requested_surah_numbers(query):
         if 1 <= number <= 114 and number not in found:
             found.append(number)
 
+    quran_context = bool(re.search(r'\b(?:surah|sura|chapter|quran|ayah|ayat|verse|tafsir|tafseer)\b', normalized))
+    ambiguous_names = {'muhammad', 'ibrahim', 'yunus', 'yusuf', 'hud', 'nuh', 'fajr', 'asr', 'nasr', 'jinn'}
     for name, number in sorted(SURAH_LOOKUP.items(), key=lambda item: len(item[0]), reverse=True):
+        if name in ambiguous_names and not quran_context:
+            continue
         pattern = r'\b(?:surah|sura|chapter)?\s*' + re.escape(name) + r'\b'
         if re.search(pattern, normalized) and number not in found:
             found.append(number)
@@ -855,7 +859,7 @@ The user's requested language is:
 IMPORTANT RULES:
 
 
-1. CLASSIFY THE USER QUERY: You can ONLY answer queries related to Islam, Quran, Hadith, Islamic rulings, Prophets, Islamic books, Islamic history, and religious/spiritual topics.
+1. CLASSIFY THE USER QUERY: You can answer questions about Islam, Quran, Hadith, Islamic rulings, Prophets, Sahaba, Islamic books and history, prayer (farz, sunnah, nafl, janazah), Tajweed (including ghunnah), and other religions or respectful religious comparisons.
    - Also allow queries about this website ("Maktaba Tul Muslim") itself, its database, its catalog of content (books, videos, Hadiths, Quran, Qaris), and questions about what this AI Assistant can do (e.g. "what is in this website", "what type of data do you have", "what can you do").
    - Be extremely lenient and forgiving of poor grammar, typos, spelling mistakes, and phonetic/transliterated input (e.g., Roman Urdu/Arabic like "namaz ka tarika" or "quran ki fazilat"). Do NOT classify a query as OUT_OF_SCOPE due to typos or grammatical mistakes. Infer the user's intent to the best of your ability and treat them as IN-SCOPE if they relate to Islamic or website topics.
    - If the query is clearly OUTSIDE this scope (e.g. asking about computer programming, cooking recipes, general pop culture, sports, etc.), you MUST set the "intent" to "OUT_OF_SCOPE" and return the following statement in "answer" (translated to the requested language if needed):
@@ -906,7 +910,7 @@ SOURCE MATERIAL:
         groq_models = getattr(
             settings,
             'GROQ_CHAT_MODELS',
-            ['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'qwen/qwen3.6-27b', 'groq/compound']
+            ['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'qwen/qwen3.8-27b']
         )
         if isinstance(groq_models, str):
             groq_models = [m.strip() for m in groq_models.split(',') if m.strip()]
@@ -969,7 +973,7 @@ SOURCE MATERIAL:
     gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
     if gemini_api_key and genai:
         try:
-            gemini_model = getattr(settings, 'GEMINI_CHAT_MODEL', 'gemini-1.5-flash')
+            gemini_model = getattr(settings, 'GEMINI_CHAT_MODEL', 'gemini-2.5-flash')
             genai.configure(api_key=gemini_api_key)
             generation_config = {
                 "temperature": 0.1,
@@ -1102,9 +1106,13 @@ def ai_assistant_api(request):
         return JsonResponse({'error': 'Please keep your message under 4,000 characters.'}, status=400)
 
     retrieval_query = contextual_query(user_prompt, history)
-    catalog = get_catalog(retrieval_query)
+    try:
+        catalog = get_catalog(retrieval_query)
+    except Exception as exc:
+        print(f"Assistant catalog lookup failed: {exc}")
+        catalog = {'count_question': False, 'pages': [], 'resources': [], 'overview': [], 'counts': {}}
     directory = catalog_context(catalog)
-    if website_question(retrieval_query):
+    if website_question(retrieval_query) and catalog['pages']:
         answer = generate_groq_answer(user_prompt, detected_lang, [directory], history=history,
                                       website_context=directory)
         if not isinstance(answer, dict) or answer.get('intent') in ('SERVICE_UNAVAILABLE', 'OUT_OF_SCOPE') or not answer.get('answer'):
@@ -1124,10 +1132,11 @@ def ai_assistant_api(request):
     # LEVEL 1
     # --------------------------------------------------------
 
-    local_result = search_level_1_local_db(
-        retrieval_query,
-        user=request.user
-    )
+    try:
+        local_result = search_level_1_local_db(retrieval_query, user=request.user)
+    except Exception as exc:
+        print(f"Assistant source lookup failed: {exc}")
+        local_result = {'found': False, 'items': [], 'citations': [], 'raw_data': {}}
 
     source_items = []
     references = []
