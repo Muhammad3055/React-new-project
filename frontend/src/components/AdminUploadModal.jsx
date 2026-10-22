@@ -91,6 +91,7 @@ export default function AdminUploadModal({ onClose, onSuccess, editItem = null, 
       if (destination.includes('brahui')) setLanguage('brahui');
       else if (destination.includes('urdu')) setLanguage('urdu');
       else if (destination.includes('arabic')) setLanguage('arabic');
+      else if (destination === 'quran_mixed') setLanguage('mixed');
     }
   }, [destination]);
 

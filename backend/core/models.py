@@ -51,6 +51,7 @@ class QuranAudio(models.Model):
         ('quran_brahui_asbab', 'Brahui Tarjuma with Asbab al-Nuzul MP3'),
         ('quran_urdu', 'Urdu Quran Tarjuma MP3 (اردو قرآن)'),
         ('quran_arabic', 'Arabic Surah Tilawat MP3 (عربي تلاوة)'),
+        ('quran_mixed', 'Mixed Quran Audio MP3 (مکسڈ قرآن آڈیو)'),
         ('taqreer_brahui', 'Brahui Taqreer Lectures (تقارير براہوئی)'),
         ('taqreer_urdu', 'Urdu Taqreer Lectures (تقارير اردو)'),
         ('taqreer_arabic', 'Arabic Taqreer Lectures (تقارير عربية)'),

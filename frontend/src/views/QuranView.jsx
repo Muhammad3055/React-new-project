@@ -164,6 +164,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   // Translation Audio MP3 List (Brahui & Urdu uploads from DB)
   const [translationAudios, setTranslationAudios] = useState([]);
+  const [mixedAudios, setMixedAudios] = useState([]);
   const [arabicTilawatAudios, setArabicTilawatAudios] = useState([]);
   const [loadingTranslationAudios, setLoadingTranslationAudios] = useState(false);
 
@@ -242,6 +243,13 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
 
   // Load Brahui, Urdu or Arabic Quran MP3s from database
   const loadTranslationAudios = () => {
+    if (subCategory === 'quran_mixed') {
+      fetch(getApiUrl('/api/quran/?destination=quran_mixed'))
+        .then(res => { if (!res.ok) throw new Error('Mixed audio unavailable'); return res.json(); })
+        .then(data => setMixedAudios(filterOutDeleted(data.results || [])))
+        .catch(() => setMixedAudios([]));
+      return;
+    }
     if (['quran_brahui', 'quran_brahui_asbab', 'quran_urdu', 'quran_arabic'].includes(subCategory)) {
       const lang = subCategory.includes('brahui') ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
       setLoadingTranslationAudios(true);
@@ -1237,13 +1245,21 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           </div>
 
 
-          <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: 'var(--surface-paper)', color: '#1c1917', borderRadius: '18px', border: '1.5px solid #e7e5e4', boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}>
-            <i className="fas fa-compact-disc fa-4x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
-            <h3 style={{ color: '#1c1917', fontWeight: 800, fontSize: '1.3rem' }}>Mixed MP3 Audio Collection</h3>
-            <p style={{ color: '#44403c', fontSize: '0.9rem', maxWidth: '520px', margin: '0.5rem auto 1.25rem auto', lineHeight: '1.6' }}>
-              This section is reserved for mixed Tilawat, translations, and multi-lingual audio lectures. You can add mixed MP3s anytime using the Admin Studio!
-            </p>
-          </div>
+          {mixedAudios.length ? (
+            <div className="grid-4">
+              {mixedAudios.map(audio => (
+                <div key={audio.id} className="card" style={{ padding: '1rem', borderRadius: '16px' }}>
+                  <h3>{audio.surah_name_english || 'Quran Audio'}</h3>
+                  {audio.surah_name_arabic && <p className="arabic-font" dir="rtl">{audio.surah_name_arabic}</p>}
+                  <p>{audio.reciter}{audio.tarjuma_qari ? ` · ${audio.tarjuma_qari}` : ''}</p>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button type="button" onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english, audio.reciter)} disabled={!audio.audio_url}><i className="fas fa-play" /> Play</button>
+                    {audio.audio_url && <button type="button" onClick={() => handleDownloadMp3(`Audio_${audio.id}`, audio.audio_url)}><i className="fas fa-download" /> Download</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : <p>No mixed Quran audio uploaded yet.</p>}
         </div>
       )}
 

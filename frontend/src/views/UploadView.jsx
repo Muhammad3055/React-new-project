@@ -723,12 +723,13 @@ export default function UploadView({ user }) {
                 <label className="form-label">MP3 Section *</label>
                 <select className="form-select" value={audioData.destination} onChange={e => {
                   const destination = e.target.value;
-                  setAudioData({ ...audioData, destination, language: destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : 'arabic' });
+                  setAudioData({ ...audioData, destination, language: destination === 'quran_mixed' ? 'mixed' : destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : 'arabic' });
                 }}>
                   <option value="quran_arabic">Arabic Tilawat</option>
                   <option value="quran_brahui">Brahui Tarjuma</option>
                   <option value="quran_brahui_asbab">Brahui Tarjuma + Asbab al-Nuzul</option>
                   <option value="quran_urdu">Urdu Tarjuma</option>
+                  <option value="quran_mixed">Mixed Quran Audio</option>
                 </select>
               </div>
               <div>
@@ -737,6 +738,7 @@ export default function UploadView({ user }) {
                   <option value="arabic">Arabic Recitation (تلاوت)</option>
                   <option value="brahui">Brahui Translation MP3 (براہوئی ترجمہ)</option>
                   <option value="urdu">Urdu Translation MP3 (اردو ترجمہ)</option>
+                  <option value="mixed">Mixed Quran Audio MP3</option>
                 </select>
               </div>
               <div>
