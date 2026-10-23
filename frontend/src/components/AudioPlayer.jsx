@@ -17,6 +17,8 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
         const rawAudioUrl = typeof currentTrack === 'string' ? currentTrack : (currentTrack.url || currentTrack.audio_url);
         const audioUrl = getApiUrl(rawAudioUrl);
         audioRef.current.src = audioUrl;
+        setCurrentTime(0);
+        setDuration(0);
         audioRef.current.playbackRate = playbackRate;
         if (isPlaying) {
           audioRef.current.play().catch(err => console.error("Playback error:", err));
@@ -85,16 +87,12 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
   const handlePrev = () => {
     if (currentTrack && typeof currentTrack.onPrev === 'function') {
       currentTrack.onPrev();
-    } else {
-      skipTime(-10);
     }
   };
 
   const handleNext = () => {
     if (currentTrack && typeof currentTrack.onNext === 'function') {
       currentTrack.onNext();
-    } else {
-      skipTime(10);
     }
   };
 
@@ -208,6 +206,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Previous Track Button */}
             <button
               onClick={handlePrev}
+              disabled={typeof currentTrack?.onPrev !== 'function'}
               title={t('prevTrack', 'Previous Track')}
               className="player-skip-btn"
             >
@@ -246,6 +245,7 @@ export default function AudioPlayer({ currentTrack, isPlaying, setIsPlaying, set
             {/* Next Track Button */}
             <button
               onClick={handleNext}
+              disabled={typeof currentTrack?.onNext !== 'function'}
               title={t('nextTrack', 'Next Track')}
               className="player-skip-btn"
             >
