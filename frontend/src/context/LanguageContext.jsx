@@ -31,6 +31,9 @@ const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
   const translationObserverRef = useRef(null);
+  const uiTranslationObserverRef = useRef(null);
+  const originalUiTextRef = useRef(new WeakMap());
+  const originalUiAttributeRef = useRef(new WeakMap());
   const [lang, setLangState] = useState(() => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
@@ -125,6 +128,66 @@ export function LanguageProvider({ children }) {
       applyCustomTranslation(lang);
     } catch (e) {}
   }, [lang, dir, applyCustomTranslation]);
+
+  // Translate legacy hardcoded UI labels when an in-app dictionary is used.
+  // Exact phrase matching keeps API/religious content untouched.
+  useEffect(() => {
+    uiTranslationObserverRef.current?.disconnect();
+    if (!translations[lang]) return undefined;
+
+    const englishEntries = Object.entries(translations.en || {});
+    const phraseKeys = new Map(englishEntries
+      .filter(([, value]) => typeof value === 'string' && value.trim())
+      .map(([key, value]) => [value.trim(), key]));
+    let updating = false;
+
+    const isProtected = (element) => element?.closest?.(
+      '.notranslate, [translate="no"], .arabic-font, .arabic-text-render, .mushaf-page-container, .prayer-dua-arabic'
+    );
+    const translateRoot = (root = document.body) => {
+      if (updating || !root) return;
+      updating = true;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (!node.parentElement || isProtected(node.parentElement)) continue;
+        const original = originalUiTextRef.current.get(node) ?? node.nodeValue;
+        const trimmed = original.trim();
+        const key = phraseKeys.get(trimmed);
+        if (!key) continue;
+        originalUiTextRef.current.set(node, original);
+        const translated = lang === 'en' ? trimmed : (translations[lang][key] || trimmed);
+        const nextValue = original.replace(trimmed, translated);
+        if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
+      }
+      const elements = root.querySelectorAll?.('[placeholder], [aria-label], [title]') || [];
+      elements.forEach((element) => {
+        if (isProtected(element)) return;
+        let originals = originalUiAttributeRef.current.get(element);
+        if (!originals) { originals = {}; originalUiAttributeRef.current.set(element, originals); }
+        ['placeholder', 'aria-label', 'title'].forEach((attribute) => {
+          if (!element.hasAttribute(attribute)) return;
+          const original = originals[attribute] ?? element.getAttribute(attribute);
+          originals[attribute] = original;
+          const key = phraseKeys.get(original.trim());
+          if (key) element.setAttribute(attribute, lang === 'en' ? original : (translations[lang][key] || original));
+        });
+      });
+      updating = false;
+    };
+
+    translateRoot();
+    const observer = new MutationObserver((mutations) => {
+      if (updating) return;
+      mutations.forEach(({ target, addedNodes }) => {
+        translateRoot(target.nodeType === Node.ELEMENT_NODE ? target : target.parentElement);
+        addedNodes.forEach((node) => translateRoot(node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement));
+      });
+    });
+    uiTranslationObserverRef.current = observer;
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
+  }, [lang]);
 
   useEffect(() => {
     const protectArabic = () => document.querySelectorAll('.arabic-font, .arabic-text-render, .mushaf-page-container, .prayer-dua-arabic')
