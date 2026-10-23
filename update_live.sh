@@ -47,7 +47,7 @@ fi
 # 5. Restart & Reload Services
 echo "🔄 [5/5] Restarting Gunicorn & Reloading Nginx..."
 sudo systemctl daemon-reload || true
-sudo systemctl restart gunicorn_quran || sudo systemctl restart gunicorn || true
+sudo systemctl restart gunicorn_quran || sudo systemctl restart gunicorn
 sudo nginx -t && sudo systemctl reload nginx
 
 # 5. Done

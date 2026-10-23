@@ -43,7 +43,6 @@ jobs:
     steps:
       - name: 🚀 Remote SSH Deployment
         uses: appleboy/ssh-action@v1.0.3
-        continue-on-error: true
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME || 'root' }}
