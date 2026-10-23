@@ -832,6 +832,13 @@ URL:
 # GROQ ANSWER GENERATOR
 # ============================================================
 
+def parse_assistant_answer(response_text):
+    answer = json.loads(response_text)
+    if not isinstance(answer, dict) or not isinstance(answer.get('answer'), str) or not answer['answer'].strip():
+        raise ValueError('AI provider returned an answer in an unexpected format')
+    return answer
+
+
 def generate_groq_answer(
     query,
     language,
@@ -930,7 +937,7 @@ SOURCE MATERIAL:
                         messages=conversation,
                     )
                     response_text = completion.choices[0].message.content
-                    return json.loads(response_text)
+                    return parse_assistant_answer(response_text)
                 except Exception as e:
                     print(f"Groq Error ({model_name}), falling back: {e}")
 
@@ -947,7 +954,7 @@ SOURCE MATERIAL:
                 messages=conversation,
             )
             response_text = completion.choices[0].message.content
-            return json.loads(response_text)
+            return parse_assistant_answer(response_text)
         except Exception as e:
             print(f"DeepSeek Error, falling back: {e}")
 
@@ -965,7 +972,7 @@ SOURCE MATERIAL:
                 messages=conversation,
             )
             response_text = completion.choices[0].message.content
-            return json.loads(response_text)
+            return parse_assistant_answer(response_text)
         except Exception as e:
             print(f"xAI Error, falling back: {e}")
 
@@ -987,7 +994,7 @@ SOURCE MATERIAL:
                 system_instruction=system_prompt
             )
             response = model.generate_content([*({'role': 'user' if turn['role'] == 'user' else 'model', 'parts': [turn['content']]} for turn in provider_history), {'role':'user','parts':[query]}])
-            return json.loads(response.text)
+            return parse_assistant_answer(response.text)
         except Exception as e:
             print(f"Gemini Error, falling back: {e}")
 
@@ -1005,7 +1012,7 @@ SOURCE MATERIAL:
                 messages=conversation,
             )
             response_text = completion.choices[0].message.content
-            return json.loads(response_text)
+            return parse_assistant_answer(response_text)
         except Exception as e:
             print(f"OpenAI Error, falling back: {e}")
 
@@ -1027,7 +1034,7 @@ SOURCE MATERIAL:
             end_idx = text_resp.rfind('}') + 1
             if start_idx != -1 and end_idx != -1:
                 text_resp = text_resp[start_idx:end_idx]
-            return json.loads(text_resp)
+            return parse_assistant_answer(text_resp)
         except Exception as e:
             print(f"Claude Error: {e}")
 

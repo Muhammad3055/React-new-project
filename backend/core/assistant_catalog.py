@@ -149,7 +149,7 @@ def get_catalog(query):
         (BookMedia, 'books', '/books', ['title','author','description','category__name'], book_request),
         (TaqreerAudio, 'lectures', '/quran', ['title','arabic_title','speaker','description','category__name'], lecture_request),
         (VideoMedia, 'videos', '/videos', ['title','speaker','description','category__name'], video_request),
-        (ImageMedia, 'images', '/images', ['title','description','category__name'], image_request),
+        (ImageMedia, 'images', '/images', ['title','description','category'], image_request),
         (QuranAudio, 'quran', '/quran', ['surah_name_english','surah_name_arabic','reciter'], False),
     ]
     for model, kind, path, fields, explicit in kinds:
