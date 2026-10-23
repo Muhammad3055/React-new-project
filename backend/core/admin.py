@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from .uploads import chunked_files
 
 from .models import (
-    Category, QuranAudio, MixedQuranAudio, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
+    Category, QuranAudio, MixedQuranAudio, MixedQuranTilawat, TaqreerAudio, VideoMedia, BookMedia, Tafseer, Hadith,
     Bookmark, ContentReport, ContactMessage, AudioPlaylist, HifzTracker,
     UserProfilePreferences, DailyPrayerTracker, AyahReflectionNote, ZakatHistory,
     ImageMedia, Topic
@@ -58,6 +58,20 @@ class MixedQuranAudioAdmin(QuranAudioAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.destination_folder = 'quran_mixed'
+        super().save_model(request, obj, form, change)
+
+
+@admin.register(MixedQuranTilawat)
+class MixedQuranTilawatAdmin(QuranAudioAdmin):
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(destination_folder='quran_mixed_tilawat')
+
+    def get_changeform_initial_data(self, request):
+        return {**super().get_changeform_initial_data(request), 'destination_folder': 'quran_mixed_tilawat', 'language': 'mixed'}
+
+    def save_model(self, request, obj, form, change):
+        obj.destination_folder = 'quran_mixed_tilawat'
+        obj.language = 'mixed'
         super().save_model(request, obj, form, change)
 
 

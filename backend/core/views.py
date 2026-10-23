@@ -355,6 +355,8 @@ def api_quran_list(request):
 
             dest = body.get('destination', '').strip()
             lang = body.get('language', 'arabic').strip()
+            if dest == 'quran_mixed_tilawat':
+                lang = 'mixed'
             if not dest or dest == 'books':
                 dest = f"quran_{lang}"
 

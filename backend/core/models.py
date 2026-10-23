@@ -135,6 +135,13 @@ class MixedQuranAudio(QuranAudio):
         verbose_name_plural = 'Mixed Quran Audios'
 
 
+class MixedQuranTilawat(QuranAudio):
+    class Meta:
+        proxy = True
+        verbose_name = 'Mixed Quran Tilawat'
+        verbose_name_plural = 'Mixed Quran Tilawat'
+
+
 class TaqreerAudio(models.Model):
     LANGUAGE_CHOICES = [
         ('arabic', 'Arabic (عربي)'),

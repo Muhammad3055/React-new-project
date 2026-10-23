@@ -250,6 +250,10 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         .catch(() => setMixedAudios([]));
       return;
     }
+    if (subCategory === 'quran_mixed_tilawat') {
+      fetch(getApiUrl('/api/quran/?destination=quran_mixed_tilawat'))
+        .then(res => res.json()).then(data => setMixedAudios(data.results || [])).catch(() => setMixedAudios([]));
+    }
     if (['quran_brahui', 'quran_brahui_asbab', 'quran_urdu', 'quran_arabic'].includes(subCategory)) {
       const lang = subCategory.includes('brahui') ? 'brahui' : (subCategory === 'quran_urdu' ? 'urdu' : 'arabic');
       setLoadingTranslationAudios(true);
@@ -392,6 +396,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
     { id: 'taqreer_brahui', label: t('brahuiTaqreer', 'Brahui Taqreers'), sub: 'تقارير براہوئی', icon: 'fas fa-podcast' },
     { id: 'taqreer_urdu', label: t('urduTaqreer', 'Urdu Taqreers'), sub: 'تقارير اردو', icon: 'fas fa-podcast' },
     { id: 'quran_mixed', label: t('mixedAudio', 'Mixed Audio MP3'), sub: 'مکسڈ آڈیو مجموعہ', icon: 'fas fa-compact-disc' },
+    { id: 'quran_mixed_tilawat', label: t('mixedQuranTilawat', 'Mixed Quran Tilawat'), sub: 'متنوع قرآنی تلاوت', icon: 'fas fa-quran' },
   ];
 
   const subCategoryOptions = [
@@ -1244,15 +1249,16 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
       )}
 
       {/* SECTION 7: Mixed Audio MP3 Collections */}
-      {subCategory === 'quran_mixed' && (
+      {(subCategory === 'quran_mixed' || subCategory === 'quran_mixed_tilawat') && (
         <div>
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <a
-                href={getApiUrl('/api/').replace(/\/api\/$/, '/admin/core/mixedquranaudio/add/')}
+            <button
+                type="button"
+                onClick={() => { window.history.pushState({}, '', `/upload?destination=${subCategory}`); window.dispatchEvent(new PopStateEvent('popstate')); }}
                 style={{ background: 'var(--accent-gold)', color: '#022c22', border: 'none', borderRadius: '20px', padding: '0.4rem 0.9rem', fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
               >
-                <i className="fas fa-plus-circle"></i> Add Mixed Quran Audio
-              </a>
+                <i className="fas fa-plus-circle"></i> {subCategory === 'quran_mixed_tilawat' ? 'Add Mixed Quran Tilawat' : 'Add Mixed Quran Audio'}
+              </button>
 
             <div style={{ marginLeft: 'auto', fontSize: '0.85rem', color: '#b45309', fontWeight: 800, background: 'var(--surface-paper)', padding: '0.45rem 1rem', borderRadius: '25px', border: '2px solid #b45309', boxShadow: '0 3px 10px rgba(180, 83, 9, 0.12)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <i className="fas fa-compact-disc" style={{ color: '#b45309' }}></i> Mixed Audio Collections (مکسڈ آڈیو مجموعہ MP3)

@@ -69,7 +69,8 @@ export default function UploadView({ user }) {
   const [linkData, setLinkData] = useState({ title: '', link_url: '', button_label: 'Open Link', icon: 'fas fa-external-link-alt', description: '' });
 
   // Audio Recitation Form State
-  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: 'arabic', destination: 'quran_arabic', audio_url: '' });
+  const initialDestination = new URLSearchParams(window.location.search).get('destination');
+  const [audioData, setAudioData] = useState({ surah_number: 1, surah_name_english: 'Al-Fatihah', surah_name_arabic: 'سُورَةُ الفَاتِحَةِ', reciter: 'Mishary Rashid Alafasy', language: initialDestination?.startsWith('quran_mixed') ? 'mixed' : 'arabic', destination: initialDestination?.startsWith('quran_mixed') ? initialDestination : 'quran_arabic', audio_url: '' });
   const [audioFile, setAudioFile] = useState(null);
   const [taqreerUploading, setTaqreerUploading] = useState(false);
   const [taqreerProgress, setTaqreerProgress] = useState(0);
@@ -723,13 +724,14 @@ export default function UploadView({ user }) {
                 <label className="form-label">MP3 Section *</label>
                 <select className="form-select" value={audioData.destination} onChange={e => {
                   const destination = e.target.value;
-                  setAudioData({ ...audioData, destination, language: destination === 'quran_mixed' ? 'mixed' : destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : 'arabic' });
+                  setAudioData({ ...audioData, destination, language: destination.startsWith('quran_mixed') ? 'mixed' : destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : 'arabic' });
                 }}>
                   <option value="quran_arabic">Arabic Tilawat</option>
                   <option value="quran_brahui">Brahui Tarjuma</option>
                   <option value="quran_brahui_asbab">Brahui Tarjuma + Asbab al-Nuzul</option>
                   <option value="quran_urdu">Urdu Tarjuma</option>
                   <option value="quran_mixed">Mixed Quran Audio</option>
+                  <option value="quran_mixed_tilawat">Mixed Quran Tilawat</option>
                 </select>
               </div>
               <div>

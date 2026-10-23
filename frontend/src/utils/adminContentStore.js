@@ -22,6 +22,7 @@ export const defaultFolders = [
   { id: 'taqreer_brahui', name: 'Brahui Taqreers (تقارير براہوئی)', icon: 'fas fa-bullhorn', color: '#ec4899' },
   { id: 'taqreer_urdu', name: 'Urdu Taqreers (تقارير اردو)', icon: 'fas fa-podcast', color: '#eab308' },
   { id: 'quran_mixed', name: 'Mixed Audio MP3 (مکسڈ آڈیو)', icon: 'fas fa-compact-disc', color: '#14b8a6' },
+  { id: 'quran_mixed_tilawat', name: 'Mixed Quran Tilawat', icon: 'fas fa-quran', color: '#059669' },
   { id: 'books', name: 'Books & PDF Library', icon: 'fas fa-book', color: '#f59e0b' },
   { id: 'hadith', name: 'Hadith Collections', icon: 'fas fa-scroll', color: '#6366f1' },
   { id: 'tafseer', name: 'Tafseer Quran', icon: 'fas fa-bookmark', color: '#ec4899' },
