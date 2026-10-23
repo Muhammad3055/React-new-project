@@ -218,6 +218,7 @@ export default function PrayerTimesWidget({ onLocationOrDateUpdate, compact = fa
         localStorage.setItem('user_country_code', location.countryCode || '');
         localStorage.setItem('user_prayer_timings', JSON.stringify(times));
         localStorage.setItem('user_prayer_timezone', result.timezone || '');
+        window.dispatchEvent(new CustomEvent('maktaba-prayer-times-updated', { detail: times }));
       } catch { /* Prayer times also work when browser storage is disabled. */ }
       callbackRef.current?.({ hijri: h, lat: today.meta.latitude, lng: today.meta.longitude,
         countryCode: location.countryCode || '', city: location.label, timings: times, timezone: result.timezone || '' });

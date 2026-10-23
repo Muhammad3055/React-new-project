@@ -5,9 +5,24 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function UserDashboardView({ user, openAuthModal, navigateToTab, playTrack }) {
   const { t, lang } = useLanguage();
+  const readPrayerTimes = () => {
+    try { return JSON.parse(localStorage.getItem('user_prayer_timings') || 'null'); }
+    catch { return null; }
+  };
   const [dashboardData, setDashboardData] = useState(null);
+  const [prayerTimes, setPrayerTimes] = useState(readPrayerTimes);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'reflections' | 'saved' | 'collections' | 'history' | 'namaz' | 'duas' | 'achievements' | 'calendar' | 'notifications' | 'preferences'
+
+  useEffect(() => {
+    const syncPrayerTimes = event => setPrayerTimes(event.detail || readPrayerTimes());
+    window.addEventListener('maktaba-prayer-times-updated', syncPrayerTimes);
+    window.addEventListener('storage', syncPrayerTimes);
+    return () => {
+      window.removeEventListener('maktaba-prayer-times-updated', syncPrayerTimes);
+      window.removeEventListener('storage', syncPrayerTimes);
+    };
+  }, []);
   
   // Search & Filtering for Saved Content
   const [savedSearch, setSavedSearch] = useState('');
@@ -1035,17 +1050,19 @@ export default function UserDashboardView({ user, openAuthModal, navigateToTab, 
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', textAlign: 'center' }}>
               {[
-                { name: 'Fajr', time: '4:15 AM', active: false },
-                { name: 'Dhuhr', time: '12:30 PM', active: false },
-                { name: 'Asr', time: '4:45 PM', active: true },
-                { name: 'Maghrib', time: '7:15 PM', active: false },
-                { name: 'Isha', time: '8:45 PM', active: false },
-              ].map(p => (
+                { name: 'Fajr', time: prayerTimes?.Fajr },
+                { name: 'Sunrise', time: prayerTimes?.Sunrise },
+                { name: 'Dhuhr', time: prayerTimes?.Dhuhr },
+                { name: 'Asr', time: prayerTimes?.Asr },
+                { name: 'Maghrib', time: prayerTimes?.Maghrib },
+                { name: 'Isha', time: prayerTimes?.Isha },
+              ].filter(p => p.time).map(p => (
                 <div key={p.name} style={{ padding: '0.85rem 0.5rem', borderRadius: '14px', background: p.active ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.05)', border: p.active ? '2px solid var(--accent-gold)' : '1px solid rgba(255,255,255,0.1)' }}>
                   <span style={{ fontSize: '0.8rem', color: p.active ? 'var(--accent-gold)' : '#a1a1aa', fontWeight: 700, display: 'block' }}>{p.name}</span>
                   <strong style={{ fontSize: '1rem', color: '#fff', marginTop: '0.2rem', display: 'block' }}>{p.time}</strong>
                 </div>
               ))}
+              {!prayerTimes && <p style={{ gridColumn: '1 / -1', color: '#cbd5e1', margin: 0 }}>Open the homepage once to load your local prayer schedule.</p>}
             </div>
           </div>
 
