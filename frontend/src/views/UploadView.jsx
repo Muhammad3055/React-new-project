@@ -27,6 +27,9 @@ export default function UploadView({ user }) {
   }
 
   const [activeTab, setActiveTab] = useState('taqreer'); // 'taqreer' | 'book' | 'hadith' | 'tafseer' | 'link' | 'audio'
+  const [showAlternateUpload, setShowAlternateUpload] = useState(new URLSearchParams(window.location.search).get('uploadMode') === 'guided');
+  const [guidedType, setGuidedType] = useState('audio');
+  const [guidedDestination, setGuidedDestination] = useState('quran_arabic');
   const [submittedMessage, setSubmittedMessage] = useState('');
   const [dbTaqreers, setDbTaqreers] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
@@ -297,6 +300,23 @@ export default function UploadView({ user }) {
           <i className="fas fa-check-circle"></i> {submittedMessage}
         </div>
       )}
+
+      <button type="button" onClick={() => setShowAlternateUpload(value => !value)} style={{ margin: '0 0 1rem', padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid var(--primary-emerald)', color: 'var(--primary-dark)', background: 'var(--surface-paper)', fontWeight: 800, cursor: 'pointer' }}>
+        <i className="fas fa-wand-magic-sparkles" /> {showAlternateUpload ? 'Use classic upload' : 'Use guided upload'}
+      </button>
+      {showAlternateUpload && <section className="card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
+        <h2 style={{ marginTop: 0 }}>Guided content upload</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+          <label className="form-label">Content type<select className="form-select" value={guidedType} onChange={event => setGuidedType(event.target.value)}><option value="audio">MP3 / Quran audio</option><option value="book">Books / documents</option><option value="hadith">Hadith text</option><option value="tafseer">Tafseer</option><option value="video">Video / web link</option><option value="lecture">Lecture MP3</option></select></label>
+          <label className="form-label">Destination<select className="form-select" value={guidedDestination} onChange={event => {
+            const destination = event.target.value; setGuidedDestination(destination);
+            if (destination.startsWith('quran_')) { setActiveTab('audio'); setAudioData(prev => ({ ...prev, destination, language: destination.startsWith('quran_mixed') ? 'mixed' : destination.includes('brahui') ? 'brahui' : destination.includes('urdu') ? 'urdu' : 'arabic' })); }
+            else setActiveTab(({ books: 'book', hadith: 'hadith', tafseer: 'tafseer', videos: 'link', taqreer_urdu: 'taqreer', taqreer_arabic: 'taqreer', taqreer_brahui: 'taqreer' })[destination] || 'taqreer');
+          }}>
+            {guidedType === 'audio' ? <><option value="quran_arabic">Arabic Tilawat</option><option value="quran_brahui">Brahui Tarjuma</option><option value="quran_brahui_asbab">Brahui Tarjuma + Asbab</option><option value="quran_urdu">Urdu Tarjuma</option><option value="quran_mixed">Mixed Quran Audio</option><option value="quran_mixed_tilawat">Mixed Quran Tilawat</option></> : guidedType === 'book' ? <option value="books">Books / Documents</option> : guidedType === 'hadith' ? <option value="hadith">Hadith</option> : guidedType === 'tafseer' ? <option value="tafseer">Tafseer</option> : guidedType === 'video' ? <option value="videos">Videos / Links</option> : <><option value="taqreer_urdu">Urdu Lectures</option><option value="taqreer_arabic">Arabic Lectures</option><option value="taqreer_brahui">Brahui Lectures</option></>}
+          </select></label>
+        </div><p style={{ color: 'var(--text-muted)', marginBottom: 0 }}>Use the matching form below to submit and save content in the library.</p>
+      </section>}
 
       {/* Tabs Header */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
