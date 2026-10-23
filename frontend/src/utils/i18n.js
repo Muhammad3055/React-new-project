@@ -3165,3 +3165,53 @@ export const translations = {
     releaseJuz: "إتاحة الجزء"
   }
 };
+
+const homeUiTranslations = {
+  en: {
+    homeHeroEyebrow: 'Maktaba Tul Muslim · Your Islamic digital library',
+    homeHeroTitle: 'The Quran, Hadith & Islamic Knowledge — in One Place',
+    homeHeroDescription: 'Read the Quran with translations and Tafseer, listen to renowned Qaris, explore Hadith, and discover trusted Islamic books.',
+    resumeEyebrow: 'Pick up where you left off', continueJourney: 'Continue your journey', continueQuran: 'Continue Quran',
+    savedReading: 'Saved reading', continueBook: 'Continue your book', savedContent: 'Saved content', savedItems: 'saved items',
+    browseCollection: 'Browse the collection', explore: 'Explore', audio: 'Audio', azkar: 'Azkar',
+    todayInspiration: 'A little inspiration for today', today: 'Today', ayah: 'Ayah', dua: 'Dua', listen: 'Listen',
+    viewHadith: 'View Hadith', exploreDuas: 'Explore Duas', listenReflect: 'Listen and reflect',
+    featuredRecitations: 'Featured recitations', previousRecitations: 'Previous recitations', nextRecitations: 'Next recitations',
+    selectedLibrary: 'Selected from the library', featuredBooks: 'Featured books', previousBooks: 'Previous books', nextBooks: 'Next books',
+    freshLibrary: 'Fresh from the library', recentlyAddedBooks: 'Recently added books', usefulEveryDay: 'Useful every day',
+    islamicTools: 'Islamic tools', studyCompanion: 'Your study companion', askMaktaba: 'Ask Maktaba',
+    askMaktabaDescription: 'Ask about the Quran, Hadith, Tafseer, and content in the Islamic library.', askQuestion: 'Ask a question'
+  },
+  ur: {
+    homeHeroEyebrow: 'مکتبۃ المسلم · آپ کی اسلامی ڈیجیٹل لائبریری',
+    homeHeroTitle: 'قرآن، حدیث اور اسلامی علم — سب ایک جگہ',
+    homeHeroDescription: 'ترجمہ اور تفسیر کے ساتھ قرآن پڑھیں، معروف قراء کی تلاوت سنیں، احادیث اور معتبر اسلامی کتابیں دریافت کریں۔',
+    resumeEyebrow: 'جہاں چھوڑا تھا وہیں سے شروع کریں', continueJourney: 'اپنا مطالعہ جاری رکھیں', continueQuran: 'قرآن پڑھنا جاری رکھیں',
+    savedReading: 'محفوظ مطالعہ', continueBook: 'کتاب پڑھنا جاری رکھیں', savedContent: 'محفوظ مواد', savedItems: 'محفوظ اشیاء',
+    browseCollection: 'مجموعہ دیکھیں', explore: 'دریافت کریں', audio: 'آڈیو', azkar: 'اذکار',
+    todayInspiration: 'آج کے لیے مختصر رہنمائی', today: 'آج', ayah: 'آیت', dua: 'دعا', listen: 'سنیں',
+    viewHadith: 'حدیث دیکھیں', exploreDuas: 'دعائیں دیکھیں', listenReflect: 'سنیں اور غور کریں',
+    featuredRecitations: 'منتخب تلاوتیں', previousRecitations: 'پچھلی تلاوتیں', nextRecitations: 'اگلی تلاوتیں',
+    selectedLibrary: 'لائبریری سے منتخب', featuredBooks: 'منتخب کتابیں', previousBooks: 'پچھلی کتابیں', nextBooks: 'اگلی کتابیں',
+    freshLibrary: 'لائبریری میں نیا', recentlyAddedBooks: 'حال ہی میں شامل کتابیں', usefulEveryDay: 'روزمرہ کے مفید وسائل',
+    islamicTools: 'اسلامی سہولیات', studyCompanion: 'آپ کا مطالعاتی معاون', askMaktaba: 'مکتبہ سے پوچھیں',
+    askMaktabaDescription: 'قرآن، حدیث، تفسیر اور اسلامی لائبریری کے مواد کے بارے میں پوچھیں۔', askQuestion: 'سوال پوچھیں'
+  },
+  ar: {
+    homeHeroEyebrow: 'مكتبة المسلم · مكتبتك الإسلامية الرقمية',
+    homeHeroTitle: 'القرآن والحديث والمعرفة الإسلامية — في مكان واحد',
+    homeHeroDescription: 'اقرأ القرآن مع الترجمات والتفسير، واستمع إلى أشهر القراء، وتصفح الحديث والكتب الإسلامية الموثوقة.',
+    resumeEyebrow: 'تابع من حيث توقفت', continueJourney: 'واصل رحلتك', continueQuran: 'متابعة قراءة القرآن',
+    savedReading: 'قراءة محفوظة', continueBook: 'متابعة قراءة الكتاب', savedContent: 'المحتوى المحفوظ', savedItems: 'عناصر محفوظة',
+    browseCollection: 'تصفح المجموعة', explore: 'استكشف', audio: 'الصوتيات', azkar: 'الأذكار',
+    todayInspiration: 'نفحة إيمانية لهذا اليوم', today: 'اليوم', ayah: 'آية', dua: 'دعاء', listen: 'استمع',
+    viewHadith: 'عرض الحديث', exploreDuas: 'تصفح الأدعية', listenReflect: 'استمع وتدبر',
+    featuredRecitations: 'تلاوات مختارة', previousRecitations: 'التلاوات السابقة', nextRecitations: 'التلاوات التالية',
+    selectedLibrary: 'مختارات من المكتبة', featuredBooks: 'كتب مختارة', previousBooks: 'الكتب السابقة', nextBooks: 'الكتب التالية',
+    freshLibrary: 'جديد المكتبة', recentlyAddedBooks: 'كتب أضيفت حديثاً', usefulEveryDay: 'أدوات مفيدة كل يوم',
+    islamicTools: 'الأدوات الإسلامية', studyCompanion: 'رفيقك في طلب العلم', askMaktaba: 'اسأل المكتبة',
+    askMaktabaDescription: 'اسأل عن القرآن والحديث والتفسير ومحتوى المكتبة الإسلامية.', askQuestion: 'اطرح سؤالاً'
+  }
+};
+
+Object.entries(homeUiTranslations).forEach(([language, values]) => Object.assign(translations[language], values));

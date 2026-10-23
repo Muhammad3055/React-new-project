@@ -533,12 +533,12 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
       
       <main className="home-redesign">
         <section className="home-hero container">
-          <span className="home-eyebrow">Maktaba Tul Muslim · Your Islamic digital library</span>
-          <h1>The Quran, Hadith &amp; Islamic Knowledge — in One Place</h1>
-          <p>Read the Quran with translations and Tafseer, listen to renowned Qaris, explore Hadith, and discover trusted Islamic books.</p>
+          <span className="home-eyebrow">{t('homeHeroEyebrow')}</span>
+          <h1>{t('homeHeroTitle')}</h1>
+          <p>{t('homeHeroDescription')}</p>
           <div className="home-hero-actions">
-            <button className="home-btn-primary" onClick={() => handleNav('read')}>Read Quran <i className="fas fa-arrow-right" aria-hidden="true" /></button>
-            <button className="home-btn-secondary" onClick={() => handleNav('books')}>Explore Library <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+            <button className="home-btn-primary" onClick={() => handleNav('read')}>{t('readQuran')} <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+            <button className="home-btn-secondary" onClick={() => handleNav('books')}>{t('exploreLibrary')} <i className="fas fa-arrow-right" aria-hidden="true" /></button>
           </div>
         </section>
 
@@ -548,20 +548,20 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
         </section>
 
         {(lastRead || lastBook || savedContentCount > 0) && <section className="container home-section home-journey-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Pick up where you left off</span><h2>Continue your journey</h2></div></div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">{t('resumeEyebrow')}</span><h2>{t('continueJourney')}</h2></div></div>
           <div className="home-journey-grid">
-            {lastRead && <button className="home-journey-card" onClick={resumeQuran}><i className="fas fa-book-open" aria-hidden="true" /><span><strong>Continue Quran</strong><small>{lastRead.surahName || 'Saved reading'} · Ayah {lastRead.ayahNumber}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
-            {lastBook && <button className="home-journey-card" onClick={resumeBook}><i className="fas fa-book" aria-hidden="true" /><span><strong>Continue your book</strong><small>{lastBook.title} · Page {lastBook.page || 1}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
-            {savedContentCount > 0 && <button className="home-journey-card" onClick={() => handleNav('bookmarks')}><i className="fas fa-heart" aria-hidden="true" /><span><strong>Saved content</strong><small>{savedContentCount} saved items</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {lastRead && <button className="home-journey-card" onClick={resumeQuran}><i className="fas fa-book-open" aria-hidden="true" /><span><strong>{t('continueQuran')}</strong><small>{lastRead.surahName || t('savedReading')} · {t('ayah')} {lastRead.ayahNumber}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {lastBook && <button className="home-journey-card" onClick={resumeBook}><i className="fas fa-book" aria-hidden="true" /><span><strong>{t('continueBook')}</strong><small>{lastBook.title} · {t('page')} {lastBook.page || 1}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
+            {savedContentCount > 0 && <button className="home-journey-card" onClick={() => handleNav('bookmarks')}><i className="fas fa-heart" aria-hidden="true" /><span><strong>{t('savedContent')}</strong><small>{savedContentCount} {t('savedItems')}</small></span><i className="fas fa-arrow-right" aria-hidden="true" /></button>}
           </div>
         </section>}
 
         <section className="container home-section home-explore-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Browse the collection</span><h2>Explore</h2></div></div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">{t('browseCollection')}</span><h2>{t('explore')}</h2></div></div>
           <div className="home-explore-grid">{[
-            ['read', 'Quran', 'fas fa-book-open'], ['hadith', 'Hadith', 'fas fa-quote-left'], ['tafseer', 'Tafseer', 'fas fa-bookmark'],
-            ['books', 'Books', 'fas fa-book'], ['quran', 'Audio', 'fas fa-headphones'], ['azkar', 'Azkar', 'fas fa-hands']
-          ].map(([tab, label, icon]) => <button key={tab} className={`home-explore-card${['books', 'tafseer'].includes(tab) ? ' home-library-card' : ''}`} onClick={() => handleNav(tab)}><i className={icon} aria-hidden="true" /><span>{label}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
+            ['read', 'quran', 'fas fa-book-open'], ['hadith', 'hadith', 'fas fa-quote-left'], ['tafseer', 'tafseer', 'fas fa-bookmark'],
+            ['books', 'books', 'fas fa-book'], ['quran', 'audio', 'fas fa-headphones'], ['azkar', 'azkar', 'fas fa-hands']
+          ].map(([tab, labelKey, icon]) => <button key={tab} className={`home-explore-card${['books', 'tafseer'].includes(tab) ? ' home-library-card' : ''}`} onClick={() => handleNav(tab)}><i className={icon} aria-hidden="true" /><span>{t(labelKey)}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
         </section>
 
         {(() => {
@@ -569,45 +569,45 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
           const verse = DAILY_VERSES_COLLECTION[dayOfYear % DAILY_VERSES_COLLECTION.length];
           return <section className="container home-section home-today">
-            <div className="home-section-heading"><div><span className="home-eyebrow">A little inspiration for today</span><h2>Today</h2></div></div>
+            <div className="home-section-heading"><div><span className="home-eyebrow">{t('todayInspiration')}</span><h2>{t('today')}</h2></div></div>
             <div className="home-today-tabs" role="tablist" aria-label="Today's content">
-              {[['ayah', 'Ayah'], ['hadith', 'Hadith'], ['dua', 'Dua']].map(([id, label]) => <button key={id} role="tab" aria-selected={todayTab === id} className={todayTab === id ? 'active' : ''} onClick={() => setTodayTab(id)}>{label}</button>)}
+              {[['ayah', 'ayah'], ['hadith', 'hadith'], ['dua', 'dua']].map(([id, key]) => <button key={id} role="tab" aria-selected={todayTab === id} className={todayTab === id ? 'active' : ''} onClick={() => setTodayTab(id)}>{t(key)}</button>)}
             </div>
             <article className="home-today-card">
-              {todayTab === 'ayah' && <><span className="home-content-reference">{verse.surahName}</span><p className="arabic-font">{verse.arabic}</p><p>{verse.translation_en}</p><button className="home-text-action" onClick={() => playTrack(verse.audio_url, `Surah ${verse.surahName}`, 'Mishary Rashid Alafasy')}>Listen <i className="fas fa-play" aria-hidden="true" /></button></>}
-              {todayTab === 'hadith' && <><span className="home-content-reference">{dailyHadith.book} · #{dailyHadith.number} · {dailyHadith.grade}</span><p className="arabic-font">{dailyHadith.arabic}</p><p>{dailyHadith.translation_en}</p><button className="home-text-action" onClick={() => handleNav('hadith')}>View Hadith <i className="fas fa-arrow-right" aria-hidden="true" /></button></>}
-              {todayTab === 'dua' && <><span className="home-content-reference">Quran · {TODAY_DUA.reference}</span><p className="arabic-font">{TODAY_DUA.arabic}</p><p>{TODAY_DUA.translation}</p><button className="home-text-action" onClick={() => handleNav('duas')}>Explore Duas <i className="fas fa-arrow-right" aria-hidden="true" /></button></>}
+              {todayTab === 'ayah' && <><span className="home-content-reference">{verse.surahName}</span><p className="arabic-font">{verse.arabic}</p><p>{lang === 'ur' ? verse.translation_ur : verse.translation_en}</p><button className="home-text-action" onClick={() => playTrack(verse.audio_url, `Surah ${verse.surahName}`, 'Mishary Rashid Alafasy')}>{t('listen')} <i className="fas fa-play" aria-hidden="true" /></button></>}
+              {todayTab === 'hadith' && <><span className="home-content-reference">{dailyHadith.book} · #{dailyHadith.number} · {dailyHadith.grade}</span><p className="arabic-font">{dailyHadith.arabic}</p><p>{dailyHadith.translation_en}</p><button className="home-text-action" onClick={() => handleNav('hadith')}>{t('viewHadith')} <i className="fas fa-arrow-right" aria-hidden="true" /></button></>}
+              {todayTab === 'dua' && <><span className="home-content-reference">Quran · {TODAY_DUA.reference}</span><p className="arabic-font">{TODAY_DUA.arabic}</p><p>{TODAY_DUA.translation}</p><button className="home-text-action" onClick={() => handleNav('duas')}>{t('exploreDuas')} <i className="fas fa-arrow-right" aria-hidden="true" /></button></>}
             </article>
           </section>;
         })()}
 
         {featuredAudios.length > 0 && <section className="container home-section home-recitation-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Listen and reflect</span><h2>Featured recitations</h2></div><div className="home-carousel-actions"><button aria-label="Previous recitations" onClick={() => scrollCarousel(recitationCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label="Next recitations" onClick={() => scrollCarousel(recitationCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('quran')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">{t('listenReflect')}</span><h2>{t('featuredRecitations')}</h2></div><div className="home-carousel-actions"><button aria-label={t('previousRecitations')} onClick={() => scrollCarousel(recitationCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label={t('nextRecitations')} onClick={() => scrollCarousel(recitationCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('quran')}>{t('viewAll')} <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
           <div className="home-feature-grid home-card-carousel" ref={recitationCarousel}>{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-headphones" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playTrack?.(item.audio_url, item.surah_name_english || item.title, item.reciter)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
         </section>}
 
         {featuredBooks.length > 0 && <section className="container home-section home-books-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Selected from the library</span><h2>Featured books</h2></div><div className="home-carousel-actions"><button aria-label="Previous books" onClick={() => scrollCarousel(booksCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label="Next books" onClick={() => scrollCarousel(booksCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
-          <div className="home-books-grid home-card-carousel" ref={booksCarousel}>{featuredBooks.map((book, index) => <article className="home-book-card" key={book.id || index}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">{t('selectedLibrary')}</span><h2>{t('featuredBooks')}</h2></div><div className="home-carousel-actions"><button aria-label={t('previousBooks')} onClick={() => scrollCarousel(booksCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label={t('nextBooks')} onClick={() => scrollCarousel(booksCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('books')}>{t('viewAll')} <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
+          <div className="home-books-grid home-card-carousel" ref={booksCarousel}>{featuredBooks.map((book, index) => <article className="home-book-card" key={book.id || index}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>{t('readBook')}</button></div></article>)}</div>
         </section>}
 
         {recentBooks.length > 0 && <section className="container home-section home-recent-books-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Fresh from the library</span><h2>Recently added books</h2></div><button className="home-text-action" onClick={() => handleNav('books')}>View All <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
-          <div className="home-books-grid">{recentBooks.map(book => <article className="home-book-card" key={book.id}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>Read Book</button></div></article>)}</div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">{t('freshLibrary')}</span><h2>{t('recentlyAddedBooks')}</h2></div><button className="home-text-action" onClick={() => handleNav('books')}>{t('viewAll')} <i className="fas fa-arrow-right" aria-hidden="true" /></button></div>
+          <div className="home-books-grid">{recentBooks.map(book => <article className="home-book-card" key={book.id}><span className="home-book-cover" aria-hidden="true"><i className="fas fa-book-open" />{book.cover_url && <img src={book.cover_url} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</span><div><h3>{book.title}</h3><p>{book.author}</p><button className="home-btn-secondary" onClick={() => openDocViewer(book)}>{t('readBook')}</button></div></article>)}</div>
         </section>}
 
         <section className="container home-section home-tools-section">
-          <div className="home-section-heading"><div><span className="home-eyebrow">Useful every day</span><h2>Islamic tools</h2></div></div>
+          <div className="home-section-heading"><div><span className="home-eyebrow">{t('usefulEveryDay')}</span><h2>{t('islamicTools')}</h2></div></div>
           <div className="home-tools-grid">{[
-            ['qibla', 'Qibla', 'fas fa-compass'], ['tasbeeh', 'Tasbeeh', 'fas fa-fingerprint'], ['khatam', 'Khatam Tracker', 'fas fa-book-open'],
-            ['prayer', 'Prayer Times', 'fas fa-clock'], ['azkar', 'Azkar', 'fas fa-hands'], ['calendar', 'Islamic Calendar', 'fas fa-calendar-alt']
-          ].map(([id, label, icon]) => <button key={id} className="home-tool-card" onClick={() => id === 'prayer' ? document.getElementById('home-prayer-times')?.scrollIntoView({ behavior: 'smooth' }) : id === 'calendar' ? openCalendar?.() : handleNav(id)}><i className={icon} aria-hidden="true" /><span>{label}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
+            ['qibla', 'qibla', 'fas fa-compass'], ['tasbeeh', 'tasbeeh', 'fas fa-fingerprint'], ['khatam', 'khatam', 'fas fa-book-open'],
+            ['prayer', 'prayerTimes', 'fas fa-clock'], ['azkar', 'azkar', 'fas fa-hands'], ['calendar', 'islamicCalendar', 'fas fa-calendar-alt']
+          ].map(([id, labelKey, icon]) => <button key={id} className="home-tool-card" onClick={() => id === 'prayer' ? document.getElementById('home-prayer-times')?.scrollIntoView({ behavior: 'smooth' }) : id === 'calendar' ? openCalendar?.() : handleNav(id)}><i className={icon} aria-hidden="true" /><span>{t(labelKey)}</span><i className="fas fa-arrow-right" aria-hidden="true" /></button>)}</div>
         </section>
 
         <section className="container home-ask-card">
-          <span className="home-eyebrow">Your study companion</span><h2>Ask Maktaba</h2>
-          <p>Ask about the Quran, Hadith, Tafseer, and content in the Islamic library.</p>
-          <button className="home-btn-primary" onClick={() => openAIChat?.()}>Ask a question <i className="fas fa-arrow-right" aria-hidden="true" /></button>
+          <span className="home-eyebrow">{t('studyCompanion')}</span><h2>{t('askMaktaba')}</h2>
+          <p>{t('askMaktabaDescription')}</p>
+          <button className="home-btn-primary" onClick={() => openAIChat?.()}>{t('askQuestion')} <i className="fas fa-arrow-right" aria-hidden="true" /></button>
         </section>
       </main>
 
