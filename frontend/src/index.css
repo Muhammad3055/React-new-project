@@ -4433,20 +4433,25 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   .navbar .nav-search-button > :is(span, kbd) { display: none; }
 }
 @media (max-width: 760px) {
+  .site-fixed-header { inset-inline: 0; width: 100%; }
   .navbar { padding: .45rem .35rem !important; }
-  .navbar .nav-container { grid-template-columns: 36px minmax(0, 1fr) 40px; gap: .25rem !important; padding: 0 !important; }
+  .navbar .nav-container { width: 100%; grid-template-columns: 36px minmax(0, 1fr) 40px; gap: .25rem !important; padding: 0 !important; }
   .navbar .navbar-left-group { min-width: 0; margin: 0; }
   .navbar .brand-text { display: none; }
   .navbar .brand-logo { min-height: 40px; }
   .navbar .brand-logo img { width: 34px !important; height: 34px !important; }
   .navbar .navbar-center-group { justify-content: center !important; }
-  .navbar .nav-links.desktop-nav { flex-wrap: nowrap; gap: .15rem !important; }
-  .navbar .nav-link { min-height: 44px; font-size: clamp(.6rem, 2.3vw, .85rem); padding: .4rem .35rem; white-space: normal; line-height: 1.25; }
+  .navbar .nav-links.desktop-nav { flex: 1; flex-wrap: nowrap; justify-content: space-around; gap: .1rem !important; }
+  .navbar .nav-links.desktop-nav > li { min-width: 0; flex: 1 1 0; }
+  .navbar .nav-link { width: 100%; min-width: 0; min-height: 44px; font-size: clamp(.56rem, 2.7vw, .75rem); padding: .3rem .12rem; white-space: normal; line-height: 1.2; }
   .navbar .header-route { min-width: 0; }
   .navbar .header-route-books, .navbar .tools-nav-item { display: none !important; }
   .navbar .navbar-right-group { gap: 0 !important; }
   .navbar .navbar-right-group > :not(.mobile-toggle-btn) { display: none !important; }
   .navbar .mobile-toggle-btn { min-width: 40px; width: 40px; }
+  .main-content { width: 100%; min-width: 0; padding-inline: 8px; }
+  .main-content > * { min-width: 0; max-width: 100%; }
+  .under-dev-header-banner { flex-wrap: wrap; gap: .2rem .4rem !important; padding-inline: 6px !important; font-size: clamp(.58rem, 2.5vw, .7rem) !important; line-height: 1.25; }
 }
 
 @media (min-width: 901px) {
