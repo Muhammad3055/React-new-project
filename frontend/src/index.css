@@ -1542,6 +1542,36 @@ a {
   align-items: flex-start;
 }
 
+.footer-brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.footer-logo {
+  width: clamp(300px, 24vw, 320px);
+  max-width: 100%;
+  height: auto;
+  max-height: 160px;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
+}
+
+@media (max-width: 1024px) {
+  .footer-logo { width: clamp(250px, 35vw, 280px); }
+}
+
+@media (max-width: 768px) {
+  .footer { padding-block: 1.5rem; }
+  .footer-logo { width: min(220px, 85vw); max-width: min(100%, 85vw); max-height: 125px; margin-inline: auto; }
+}
+
 .brand-col .footer-desc {
   font-size: 0.875rem;
   color: #c8d9cc;

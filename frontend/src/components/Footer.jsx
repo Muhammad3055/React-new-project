@@ -10,8 +10,8 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
         <div className="footer-grid">
           {/* Col 1: Brand & Mission */}
           <div className="footer-col brand-col">
-            <div className="footer-brand-logo" style={{ marginBottom: '0.75rem', cursor: 'pointer', maxWidth: '100%' }} onClick={() => navigateToTab('home')}>
-              <img src="/footer-brand.jpg?v=20261027-2" alt={t('brandName')} width="512" height="312" loading="lazy" decoding="async" style={{ width: 'clamp(170px, 50vw, 220px)', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '12px' }} />
+            <div className="footer-brand-logo" onClick={() => navigateToTab('home')}>
+              <img className="footer-logo" src="/footer-brand.jpg?v=20261027-2" alt={t('brandName')} width="512" height="312" loading="lazy" decoding="async" />
 
             </div>
 
