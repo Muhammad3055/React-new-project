@@ -25,7 +25,7 @@ export const SUPPORTED_LANGUAGES = [
 
 const RTL_LANGS = new Set(['ur', 'ar', 'br', 'fa', 'ps', 'sd', 'he', 'ug']);
 const ARABIC_COUNTRIES = new Set(['AE', 'SA', 'QA', 'KW', 'OM', 'BH', 'EG', 'JO', 'LB', 'SY', 'IQ', 'YE', 'PS', 'SD', 'MA', 'DZ', 'TN', 'LY']);
-export const languageForCountry = (code) => code?.toUpperCase() === 'PK' ? 'ur' : ARABIC_COUNTRIES.has(code?.toUpperCase()) ? 'ar' : null;
+export const languageForCountry = (code) => code?.toUpperCase() === 'PK' ? 'en' : ARABIC_COUNTRIES.has(code?.toUpperCase()) ? 'ar' : null;
 
 const LanguageContext = createContext();
 
@@ -41,10 +41,14 @@ export function LanguageProvider({ children }) {
       if (urlLang) return urlLang;
       const saved = localStorage.getItem('quran_portal_lang');
       if (saved) {
+        if (localStorage.getItem('quran_portal_lang_auto') && !localStorage.getItem('quran_portal_lang_manual')) {
+          const countryLanguage = languageForCountry(localStorage.getItem('user_country_code'));
+          if (countryLanguage) return countryLanguage;
+        }
         if (!localStorage.getItem('quran_portal_lang_auto')) localStorage.setItem('quran_portal_lang_manual', '1');
         return saved;
       }
-      const countryLanguage = languageForCountry(localStorage.getItem('user_country_code'));
+      const countryLanguage = languageForCountry(localStorage.getItem('user_country_code') || navigator.language?.split('-')[1]);
       if (countryLanguage) { localStorage.setItem('quran_portal_lang_auto', '1'); return countryLanguage; }
       const browserLanguage = navigator.language?.split('-')[0];
       if (SUPPORTED_LANGUAGES.some(item => item.code === browserLanguage)) { localStorage.setItem('quran_portal_lang_auto', '1'); return browserLanguage; }
