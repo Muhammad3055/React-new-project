@@ -10,9 +10,8 @@ export default function Footer({ navigateToTab, user, openAuthModal }) {
         <div className="footer-grid">
           {/* Col 1: Brand & Mission */}
           <div className="footer-col brand-col">
-            <div className="brand-logo" style={{ marginBottom: '0.75rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }} onClick={() => navigateToTab('home')}>
-              <img src="/favicon.svg" alt="Maktaba tul Muslim Logo" style={{ width: '36px', height: '36px', borderRadius: '10px', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)', flexShrink: 0 }} />
-              <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.25rem' }}>{t('brandName')}</span>
+            <div className="footer-brand-logo" style={{ marginBottom: '0.75rem', cursor: 'pointer', maxWidth: '100%' }} onClick={() => navigateToTab('home')}>
+              <img src="/footer-brand.jpg?v=20261027" alt={t('brandName')} width="640" height="427" loading="lazy" decoding="async" style={{ width: '300px', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '12px' }} />
 
             </div>
 
