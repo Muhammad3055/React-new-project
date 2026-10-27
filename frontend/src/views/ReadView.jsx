@@ -112,7 +112,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
     } catch (e) {}
     return 1;
   });
-  const [surahData, setSurahData] = useState(FALLBACK_FATIHAH);
+  const [surahData, setSurahData] = useState(selectedSurah === 1 ? FALLBACK_FATIHAH : null);
 
   useEffect(() => {
     const syncRequestedSurah = () => {
@@ -153,7 +153,7 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
 
   const [translationData, setTranslationData] = useState({ en: FALLBACK_ENGLISH_FATIHAH });
   const [fontSize, setFontSize] = useState(28);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(selectedSurah !== 1);
   const [surahError, setSurahError] = useState(false);
   const [bookmarks, setBookmarks] = useState({});
   const [surahFilter, setSurahFilter] = useState('');
@@ -247,12 +247,14 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
 
   // Fetch Surah Arabic Text with Caching
   useEffect(() => {
-    setLoading(true);
+    let active = true;
+    setLoading(selectedSurah !== 1);
     setSurahError(false);
-    setSurahData(null);
+    setSurahData(selectedSurah === 1 ? FALLBACK_FATIHAH : null);
 
     fetchWithCache(`https://api.alquran.cloud/v1/surah/${selectedSurah}`)
       .then(data => {
+        if (!active) return;
         if (data && data.data && data.data.ayahs && data.data.ayahs.length > 0) {
           setSurahData(data.data);
         } else {
@@ -261,9 +263,11 @@ export default function ReadView({ user, playTrack, openReportModal, openSocialC
         setLoading(false);
       })
       .catch(() => {
+        if (!active) return;
         setSurahError(true);
         setLoading(false);
       });
+    return () => { active = false; };
   }, [selectedSurah]);
 
   useEffect(() => {

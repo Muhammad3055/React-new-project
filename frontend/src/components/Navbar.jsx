@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
@@ -9,9 +9,15 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
   const [mobileActive, setMobileActive] = useState(false);
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(100);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!headerRef.current) return;
-    const observer = new ResizeObserver(([entry]) => setHeaderHeight(entry.borderBoxSize?.[0]?.blockSize ?? entry.target.offsetHeight));
+    const measureHeader = () => {
+      const height = headerRef.current.getBoundingClientRect().height;
+      setHeaderHeight(height);
+      document.documentElement.style.setProperty('--site-header-height', `${height}px`);
+    };
+    measureHeader();
+    const observer = new ResizeObserver(measureHeader);
     observer.observe(headerRef.current);
     return () => observer.disconnect();
   }, []);

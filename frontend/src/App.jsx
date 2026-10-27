@@ -465,9 +465,9 @@ function MainAppContent() {
         openSpotlight={() => setIsSpotlightOpen(true)}
       />
 
-      <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
+      <main key={activeTab} className="main-content fade-in" style={{ flex: '1 0 auto', minHeight: 'calc(100svh - var(--site-header-height, 100px))', display: 'flex', flexDirection: 'column' }}>
         <Suspense fallback={
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'inherit', flex: 1 }}>
             <div className="loading-spinner"></div>
           </div>
         }>
