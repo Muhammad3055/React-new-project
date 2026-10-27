@@ -267,8 +267,10 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
           {/* LEFT: Logo only */}
           <div className="navbar-left-group" style={{ display: 'flex', flexShrink: 0 }}>
             <button type="button" className="brand-logo" onClick={() => { navigateToTab('home'); setMobileActive(false); }} aria-label={`Maktaba Tul Muslim — ${t('home')}`}>
-              <img src="/favicon.svg" alt="" />
-              <span className="brand-text">Maktaba Tul Muslim</span>
+              <picture>
+                <source media="(max-width: 760px)" srcSet="/favicon.png?v=20261027" width="96" height="96" />
+                <img className="navbar-brand-image" src="/header-navbar.png?v=20261027" alt="Maktaba Tul Muslim" width="660" height="127" />
+              </picture>
             </button>
           </div>
 

@@ -4341,6 +4341,9 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .navbar .navbar-center-group { min-width: 0; flex: 1 1 auto !important; }
 .navbar .brand-logo { display: flex; align-items: center; gap: .8rem; min-height: 48px; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .navbar .brand-logo img { width: 42px !important; height: 42px !important; flex-shrink: 0; border: 1px solid var(--border-color); border-radius: 13px; box-shadow: var(--shadow-sm); }
+.navbar .brand-logo picture { display: flex; align-items: center; flex-shrink: 0; }
+.navbar .brand-logo .navbar-brand-image { width: clamp(160px, 14vw, 220px) !important; height: auto !important; object-fit: contain; border: 0; border-radius: 0; box-shadow: none; }
+[data-site-theme="black"] .navbar .brand-logo picture { background: #fffdf7; border-radius: 8px; }
 .navbar .brand-text { color: var(--text-main); font-size: 1rem; font-weight: 800; white-space: nowrap; letter-spacing: -.02em; }
 .navbar .nav-links.desktop-nav { gap: .35rem !important; }
 .navbar .nav-link { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 46px; padding: .6rem clamp(.65rem, .9vw, .9rem); border-radius: 11px; font-size: .86rem; font-weight: 650; white-space: nowrap; }
@@ -4440,6 +4443,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   .navbar .brand-text { display: none; }
   .navbar .brand-logo { min-height: 40px; }
   .navbar .brand-logo img { width: 34px !important; height: 34px !important; }
+  .navbar .brand-logo .navbar-brand-image { width: 34px !important; height: 34px !important; }
   .navbar .navbar-center-group { justify-content: center !important; }
   .navbar .nav-links.desktop-nav { flex: 1; flex-wrap: nowrap; justify-content: space-around; gap: .1rem !important; }
   .navbar .nav-links.desktop-nav > li { min-width: 0; flex: 1 1 0; }
