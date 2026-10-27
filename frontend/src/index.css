@@ -1545,8 +1545,8 @@ a {
 .footer-brand-logo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  justify-content: flex-start;
+  width: auto;
   max-width: 100%;
   margin-bottom: 0.5rem;
   padding: 0;
@@ -1554,22 +1554,22 @@ a {
 }
 
 .footer-logo {
-  width: clamp(180px, 18vw, 220px);
+  width: clamp(130px, 14vw, 160px);
   max-width: 100%;
   height: auto;
-  max-height: 120px;
+  max-height: 100px;
   object-fit: contain;
   display: block;
   border-radius: 12px;
 }
 
 @media (max-width: 1024px) {
-  .footer-logo { width: clamp(170px, 25vw, 200px); }
+  .footer-logo { width: clamp(120px, 20vw, 145px); }
 }
 
 @media (max-width: 768px) {
   .footer { padding-block: 1.5rem; }
-  .footer-logo { width: min(160px, 85vw); max-width: min(100%, 85vw); max-height: 100px; margin-inline: auto; }
+  .footer-logo { width: min(120px, 85vw); max-width: min(100%, 85vw); max-height: 80px; }
 }
 
 .brand-col .footer-desc {
@@ -1589,9 +1589,9 @@ a {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(236, 216, 163, 0.28);
-  color: var(--accent-gold);
+  background: #f1f4e9;
+  border: 1px solid #f1f4e9;
+  color: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1601,7 +1601,7 @@ a {
 
 .social-btn:hover {
   background: var(--accent-gold);
-  color: var(--primary-dark);
+  color: #000000;
   transform: translateY(-3px);
 }
 
