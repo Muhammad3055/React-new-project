@@ -2,8 +2,8 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AudioPlayer from './components/AudioPlayer';
-import ReportModal from './components/ReportModal';
-import AuthModal from './components/AuthModal';
+const ReportModal = lazy(() => import('./components/ReportModal'));
+const AuthModal = lazy(() => import('./components/AuthModal'));
 import AdminFloatingBar from './components/AdminFloatingBar';
 // Lazy load interactive feature modals to keep initial page load lightweight
 const AIChatbotModal = lazy(() => import('./components/AIChatbotModal'));
@@ -60,7 +60,7 @@ const BrahuiHeritageView = lazy(() => import('./views/BrahuiHeritageView'));
 const QuranWordsView = lazy(() => import('./views/QuranWordsView'));
 const QadaView = lazy(() => import('./views/QadaView'));
 const GlobalSearchModal = lazy(() => import('./components/GlobalSearchModal'));
-import SocialCardModal from './components/SocialCardModal';
+const SocialCardModal = lazy(() => import('./components/SocialCardModal'));
 
 import { getApiUrl } from './utils/apiCache';
 import { LanguageProvider } from './context/LanguageContext';
@@ -668,6 +668,7 @@ function MainAppContent() {
         setCurrentTrack={setCurrentTrack}
       />
 
+      <Suspense fallback={null}>
       {reportData && (
         <ReportModal
           reportData={reportData}
@@ -684,7 +685,6 @@ function MainAppContent() {
       )}
 
       {/* Interactive Feature Modals (Loaded lazily on demand) */}
-      <Suspense fallback={null}>
         {isAIChatOpen && <AIChatbotModal isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />}
         {isCalendarOpen && <IslamicCalendarModal isOpen={isCalendarOpen} onClose={() => setIsCalendarOpen(false)} />}
         {isHifzOpen && <MemorizationTrackerModal isOpen={isHifzOpen} onClose={() => setIsHifzOpen(false)} />}
@@ -738,6 +738,7 @@ function MainAppContent() {
       {/* Always-visible Left Sidebar AI Chatbot (slides in from left edge) */}
       <ChatbotSidebar onOpenChange={setIsSidebarChatOpen} />
 
+      <Suspense fallback={null}>
       {socialCardModalOpen && (
         <SocialCardModal
           isOpen={socialCardModalOpen}
@@ -745,6 +746,7 @@ function MainAppContent() {
           initialData={socialCardData}
         />
       )}
+      </Suspense>
     </div>
 
 

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getApiUrl } from '../utils/apiCache';
 import { getFormattedHijriDate } from '../utils/hijriDate';
-import UserProfileModal from './UserProfileModal';
+const UserProfileModal = lazy(() => import('./UserProfileModal'));
 
 export default function Navbar({ activeTab, navigateToTab, user, setUser, openAuthModal, openCalendar, openHifz, openTajweed, openAIChat, openFriday, openProtection, openDailySurahs, openSpotlight }) {
   const { lang, setLang, t, supportedLanguages = [] } = useLanguage();
@@ -695,12 +695,14 @@ export default function Navbar({ activeTab, navigateToTab, user, setUser, openAu
 
       {/* User Profile Settings Modal */}
       {showProfileModal && user && (
+        <Suspense fallback={null}>
         <UserProfileModal
           user={user}
           onClose={() => setShowProfileModal(false)}
           onUpdateUser={(updated) => setUser(updated)}
           navigateToTab={navigateToTab}
         />
+        </Suspense>
       )}
 
       {/* Sidebar Extras Panel rendered outside of header/navbar to prevent overflow clipping */}

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import AdminUploadModal from './AdminUploadModal';
+import React, { useState, lazy, Suspense } from 'react';
+const AdminUploadModal = lazy(() => import('./AdminUploadModal'));
 
 export default function AdminFloatingBar({ user, navigateToTab }) {
   const [showModal, setShowModal] = useState(false);
@@ -86,12 +86,14 @@ export default function AdminFloatingBar({ user, navigateToTab }) {
       </div>
 
       {showModal && (
+        <Suspense fallback={null}>
         <AdminUploadModal
           onClose={() => setShowModal(false)}
           onSuccess={() => {
             setShowModal(false);
           }}
         />
+        </Suspense>
       )}
     </>
   );
