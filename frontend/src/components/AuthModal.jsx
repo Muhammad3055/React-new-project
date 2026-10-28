@@ -5,6 +5,14 @@ import { logActivity } from './UserProfileModal';
 
 export default function AuthModal({ initialMode, onClose, setUser }) {
   const { lang, setLang, t } = useLanguage();
+  const localizeMessage = (message) => {
+    const translated = t(message, message);
+    if (translated !== message) return translated;
+    for (const prefix of ['A new 6-digit OTP code has been dispatched to', 'Google Sign-In initialization failed:']) {
+      if (message.startsWith(prefix)) return t(prefix, prefix) + message.slice(prefix.length);
+    }
+    return message;
+  };
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [mode, setMode] = useState(initialMode || 'login'); // 'login' | 'signup' | 'forgot_password'
@@ -507,7 +515,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
     >
       <div
         className={`modal-card auth-modal-card auth-redesign ${isDarkMode ? 'auth-dark' : ''}`}
-        role="dialog" aria-modal="true" aria-label={mode === 'signup' ? 'Create account' : 'Sign in'}
+        role="dialog" aria-modal="true" aria-label={mode === 'signup' ? t('createAccountBtn', 'Create Account') : t('signInBtn', 'Sign In')}
         onClick={(e) => e.stopPropagation()}
         style={{
           maxWidth: '490px',
@@ -568,7 +576,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   justifyContent: 'center',
                   fontSize: '0.9rem'
                 }}
-                title="Toggle Dark Mode"
+                title={t('authToggleDarkMode', 'Toggle Dark Mode')}
               >
                 <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`}></i>
               </button>
@@ -588,7 +596,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                title="Close"
+                title={t('authClose', 'Close')}
               >
                 &times;
               </button>
@@ -653,7 +661,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
         {/* Modal Body */}
         <div className="auth-form-body" style={{ padding: '1.4rem 1.5rem', background: 'var(--surface-paper)', color: '#1c1917' }}>
-          {step === 'input' && <div className="auth-welcome"><span>YOUR PERSONAL ISLAMIC LIBRARY</span><h2>{mode === 'signup' ? t('createAccountBtn', 'Create Account') : mode === 'forgot_password' ? t('resetPassword', 'Reset your password') : t('welcomeBack', 'Welcome back')}</h2><p>{mode === 'signup' ? 'Save what inspires you. Continue learning every day.' : 'Continue your journey of reading, listening, and learning.'}</p></div>}
+          {step === 'input' && <div className="auth-welcome"><span>{t('authPersonalLibrary', 'YOUR PERSONAL ISLAMIC LIBRARY')}</span><h2>{mode === 'signup' ? t('createAccountBtn', 'Create Account') : mode === 'forgot_password' ? t('resetPassword', 'Reset your password') : t('welcomeBack', 'Welcome back')}</h2><p>{mode === 'signup' ? t('authSignupDescription', 'Save what inspires you. Continue learning every day.') : t('authLoginDescription', 'Continue your journey of reading, listening, and learning.')}</p></div>}
 
           {/* ===== OTP VERIFICATION SCREEN ===== */}
           {step === 'otp' ? (
@@ -745,13 +753,13 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
                   {resendSuccess && (
                     <div style={{ padding: '0.65rem 0.85rem', marginBottom: '0.85rem', borderRadius: '10px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.82rem' }}>
-                      <i className="fas fa-check-circle" style={{ marginRight: '0.3rem' }}></i> {resendSuccess}
+                      <i className="fas fa-check-circle" style={{ marginRight: '0.3rem' }}></i> {localizeMessage(resendSuccess)}
                     </div>
                   )}
 
                   {error && (
                     <div style={{ padding: '0.65rem 0.85rem', marginBottom: '0.85rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.82rem' }}>
-                      <i className="fas fa-exclamation-circle" style={{ marginRight: '0.3rem' }}></i> {error}
+                      <i className="fas fa-exclamation-circle" style={{ marginRight: '0.3rem' }}></i> {localizeMessage(error)}
                     </div>
                   )}
 
@@ -792,7 +800,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
                       disabled={countdown > 0 || submitting}
                       style={{ background: 'transparent', border: 'none', color: countdown > 0 ? '#94a3b8' : 'var(--accent-gold)', cursor: countdown > 0 ? 'default' : 'pointer', fontWeight: 700 }}
                     >
-                      {countdown > 0 ? `${t('resendIn', 'Resend in')} ${countdown}s` : t('resendCode', 'Resend Code')}
+                      {countdown > 0 ? `${t('resendIn', 'Resend in')} ${countdown} ${t('secondsShort', 's')}` : t('resendCode', 'Resend Code')}
                     </button>
                   </div>
                 </form>
@@ -1020,7 +1028,7 @@ export default function AuthModal({ initialMode, onClose, setUser }) {
 
               {error && (
                 <div style={{ padding: '0.75rem 0.85rem', marginBottom: '1rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.82rem', lineHeight: '1.4' }}>
-                  <i className="fas fa-exclamation-circle" style={{ marginRight: '0.3rem' }}></i> {error}
+                  <i className="fas fa-exclamation-circle" style={{ marginRight: '0.3rem' }}></i> {localizeMessage(error)}
                 </div>
               )}
 

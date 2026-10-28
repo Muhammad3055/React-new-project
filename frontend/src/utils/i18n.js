@@ -3215,3 +3215,79 @@ const homeUiTranslations = {
 };
 
 Object.entries(homeUiTranslations).forEach(([language, values]) => Object.assign(translations[language], values));
+
+const authUiTranslations = [
+  ['maktabaTulMuslim', 'Maktaba Tul Muslim', 'مکتبہ المسلم', 'مكتبة المسلم'],
+  ['welcomePortal', 'Welcome to your authentic Islamic portal', 'آپ کے مستند اسلامی علمی مرکز میں خوش آمدید', 'مرحباً بك في بوابتك الإسلامية الموثوقة'],
+  ['signInBtn', 'Sign In', 'سائن ان کریں', 'تسجيل الدخول'],
+  ['createAccountBtn', 'Create Account', 'اکاؤنٹ بنائیں', 'إنشاء حساب'],
+  ['welcomeBack', 'Welcome back', 'دوبارہ خوش آمدید', 'مرحباً بعودتك'],
+  ['authPersonalLibrary', 'YOUR PERSONAL ISLAMIC LIBRARY', 'آپ کی ذاتی اسلامی لائبریری', 'مكتبتك الإسلامية الشخصية'],
+  ['authSignupDescription', 'Save what inspires you. Continue learning every day.', 'اپنی پسندیدہ چیزیں محفوظ کریں۔ ہر روز سیکھنے کا سفر جاری رکھیں۔', 'احفظ ما يلهمك وواصل التعلم كل يوم.'],
+  ['authLoginDescription', 'Continue your journey of reading, listening, and learning.', 'پڑھنے، سننے اور سیکھنے کا سفر جاری رکھیں۔', 'واصل رحلتك في القراءة والاستماع والتعلم.'],
+  ['welcomeRedirecting', 'Welcome to Maktaba tul Muslim! Redirecting...', 'مکتبہ المسلم میں خوش آمدید! آپ کو آگے لے جایا جا رہا ہے...', 'مرحباً بك في مكتبة المسلم! جارٍ تحويلك...'],
+  ['enterCode', 'Enter Verification Code', 'تصدیقی کوڈ درج کریں', 'أدخل رمز التحقق'],
+  ['codeSentTo', 'We sent a 6-digit verification code to', 'ہم نے چھ ہندسوں کا تصدیقی کوڈ اس پتے پر بھیجا ہے', 'أرسلنا رمز تحقق من ستة أرقام إلى'],
+  ['newPasswordPlaceholder', 'New password...', 'نیا پاس ورڈ درج کریں...', 'أدخل كلمة المرور الجديدة...'],
+  ['confirmNewPasswordPlaceholder', 'Confirm new password...', 'نیا پاس ورڈ دوبارہ درج کریں...', 'أعد إدخال كلمة المرور الجديدة...'],
+  ['verifyReset', 'Verify & Reset Password', 'تصدیق کریں اور پاس ورڈ تبدیل کریں', 'تحقق وأعد تعيين كلمة المرور'],
+  ['backBtn', 'Back', 'واپس', 'رجوع'],
+  ['resendCode', 'Resend Code', 'کوڈ دوبارہ بھیجیں', 'إعادة إرسال الرمز'],
+  ['secondsShort', 's', 'سیکنڈ', 'ث'],
+  ['fullNamePlaceholder', 'e.g. Muhammad Ali', 'مثلاً محمد علی', 'مثال: محمد علي'],
+  ['usernamePlaceholder', 'Choose a username...', 'یوزر نیم منتخب کریں...', 'اختر اسم مستخدم...'],
+  ['emailAddress', 'Email Address *', 'ای میل پتہ *', 'البريد الإلكتروني *'],
+  ['emailPlaceholder', 'name@example.com', 'name@example.com', 'name@example.com'],
+  ['gender', 'Gender *', 'جنس *', 'الجنس *'],
+  ['male', 'Male', 'مرد', 'ذكر'],
+  ['female', 'Female', 'عورت', 'أنثى'],
+  ['passwordLabel', 'Password *', 'پاس ورڈ *', 'كلمة المرور *'],
+  ['createPassword', 'Create a password...', 'پاس ورڈ بنائیں...', 'أنشئ كلمة مرور...'],
+  ['passwordStrength', 'Password Strength', 'پاس ورڈ کی مضبوطی', 'قوة كلمة المرور'],
+  ['confirmPasswordLabel', 'Confirm Password *', 'پاس ورڈ کی تصدیق کریں *', 'تأكيد كلمة المرور *'],
+  ['confirmPasswordPlaceholder', 'Confirm password...', 'پاس ورڈ دوبارہ درج کریں...', 'أعد إدخال كلمة المرور...'],
+  ['agreeToTerms', 'I agree to the Terms of Service & Privacy Policy', 'میں شرائطِ استعمال اور رازداری کی پالیسی سے اتفاق کرتا ہوں', 'أوافق على شروط الخدمة وسياسة الخصوصية'],
+  ['emailAddressLabel', 'Email Address *', 'ای میل پتہ *', 'البريد الإلكتروني *'],
+  ['usernameOrEmail', 'Username or Email Address *', 'یوزر نیم یا ای میل پتہ *', 'اسم المستخدم أو البريد الإلكتروني *'],
+  ['emailUsernamePlaceholder', 'e.g. name@example.com or username', 'مثلاً name@example.com یا یوزر نیم', 'مثال: name@example.com أو اسم المستخدم'],
+  ['forgotPasswordBtn', 'Forgot Password?', 'پاس ورڈ بھول گئے؟', 'هل نسيت كلمة المرور؟'],
+  ['passwordPlaceholder', 'Password...', 'پاس ورڈ درج کریں...', 'أدخل كلمة المرور...'],
+  ['sendOtp', 'Send OTP', 'تصدیقی کوڈ بھیجیں', 'إرسال رمز التحقق'],
+  ['authToggleDarkMode', 'Toggle Dark Mode', 'تاریک یا روشن موڈ منتخب کریں', 'تبديل الوضع الداكن'],
+  ['authClose', 'Close', 'بند کریں', 'إغلاق'],
+];
+
+const authValidationTranslations = [
+  ['Please enter your Username/Email and Password.', 'یوزر نیم یا ای میل اور پاس ورڈ درج کریں۔', 'أدخل اسم المستخدم أو البريد الإلكتروني وكلمة المرور.'],
+  ['Invalid credentials. Please check your username/email and password.', 'معلومات درست نہیں۔ یوزر نیم یا ای میل اور پاس ورڈ چیک کریں۔', 'بيانات الدخول غير صحيحة. تحقق من اسم المستخدم أو البريد الإلكتروني وكلمة المرور.'],
+  ['No account found with these credentials.', 'ان معلومات کے ساتھ کوئی اکاؤنٹ نہیں ملا۔', 'لم يتم العثور على حساب بهذه البيانات.'],
+  ['Please enter your registered Email or Username.', 'اپنا رجسٹرڈ ای میل یا یوزر نیم درج کریں۔', 'أدخل بريدك الإلكتروني المسجل أو اسم المستخدم.'],
+  ['Account not found. Please create a new account.', 'اکاؤنٹ نہیں ملا۔ نیا اکاؤنٹ بنائیں۔', 'لم يتم العثور على الحساب. أنشئ حساباً جديداً.'],
+  ['Failed to dispatch email. Please check your internet connection.', 'ای میل نہیں بھیجی جا سکی۔ انٹرنیٹ کنکشن چیک کریں۔', 'تعذر إرسال البريد الإلكتروني. تحقق من اتصالك بالإنترنت.'],
+  ['Please fill in Full Name, Username, and Email.', 'مکمل نام، یوزر نیم اور ای میل درج کریں۔', 'أدخل الاسم الكامل واسم المستخدم والبريد الإلكتروني.'],
+  ['Please enter a valid email address.', 'درست ای میل پتہ درج کریں۔', 'أدخل بريداً إلكترونياً صحيحاً.'],
+  ['Please enter and confirm your password.', 'پاس ورڈ درج کریں اور اس کی تصدیق کریں۔', 'أدخل كلمة المرور وأكدها.'],
+  ['Passwords do not match. Please ensure both fields are identical.', 'پاس ورڈ ایک جیسے نہیں ہیں۔ دونوں خانوں میں ایک ہی پاس ورڈ درج کریں۔', 'كلمتا المرور غير متطابقتين. تأكد من تطابق الحقلين.'],
+  ['You must agree to the Terms & Privacy Policy to create an account.', 'اکاؤنٹ بنانے کے لیے شرائط اور رازداری کی پالیسی سے اتفاق کریں۔', 'يجب الموافقة على الشروط وسياسة الخصوصية لإنشاء حساب.'],
+  ['Registration failed. Please check your details.', 'رجسٹریشن ناکام رہی۔ اپنی معلومات چیک کریں۔', 'تعذر التسجيل. تحقق من بياناتك.'],
+  ['Failed to send verification code. Please try again.', 'تصدیقی کوڈ نہیں بھیجا جا سکا۔ دوبارہ کوشش کریں۔', 'تعذر إرسال رمز التحقق. حاول مرة أخرى.'],
+  ['Failed to resend code.', 'کوڈ دوبارہ نہیں بھیجا جا سکا۔', 'تعذر إعادة إرسال الرمز.'],
+  ['Failed to resend verification code.', 'تصدیقی کوڈ دوبارہ نہیں بھیجا جا سکا۔', 'تعذر إعادة إرسال رمز التحقق.'],
+  ['Please enter the complete 6-digit verification code.', 'چھ ہندسوں کا مکمل تصدیقی کوڈ درج کریں۔', 'أدخل رمز التحقق المكون من ستة أرقام كاملاً.'],
+  ['Please enter and confirm your new password.', 'نیا پاس ورڈ درج کریں اور اس کی تصدیق کریں۔', 'أدخل كلمة المرور الجديدة وأكدها.'],
+  ['New passwords do not match.', 'نئے پاس ورڈ ایک جیسے نہیں ہیں۔', 'كلمتا المرور الجديدتان غير متطابقتين.'],
+  ['Invalid verification code.', 'تصدیقی کوڈ درست نہیں ہے۔', 'رمز التحقق غير صحيح.'],
+  ['Google Sign-In was cancelled.', 'گوگل کے ذریعے سائن ان منسوخ کر دیا گیا۔', 'تم إلغاء تسجيل الدخول باستخدام Google.'],
+  ['Google Sign-In client library is loading or blocked by your browser. Please try again in a moment or disable ad-blockers.', 'گوگل سائن ان لوڈ ہو رہا ہے یا براؤزر نے اسے روک دیا ہے۔ کچھ دیر بعد کوشش کریں یا اشتہارات روکنے والی توسیع بند کریں۔', 'جارٍ تحميل تسجيل الدخول باستخدام Google أو أن متصفحك يحظره. حاول بعد قليل أو عطّل مانع الإعلانات.'],
+  ['Microsoft authentication failed.', 'مائیکروسافٹ کے ذریعے تصدیق ناکام رہی۔', 'تعذر التحقق باستخدام Microsoft.'],
+  ['Microsoft Sign-In was cancelled.', 'مائیکروسافٹ کے ذریعے سائن ان منسوخ کر دیا گیا۔', 'تم إلغاء تسجيل الدخول باستخدام Microsoft.'],
+  ['A new 6-digit OTP code has been dispatched to', 'چھ ہندسوں کا نیا تصدیقی کوڈ اس پتے پر بھیج دیا گیا ہے', 'تم إرسال رمز تحقق جديد من ستة أرقام إلى'],
+  ['Google Sign-In initialization failed:', 'گوگل سائن ان شروع نہیں ہو سکا:', 'تعذر بدء تسجيل الدخول باستخدام Google:'],
+];
+
+[...authUiTranslations, ...authValidationTranslations.map(([text, ur, ar]) => [text, text, ur, ar])]
+  .forEach(([key, en, ur, ar]) => {
+    for (const [language, value] of Object.entries({ en, ur, ar })) {
+      translations[language][key] ??= value;
+    }
+  });
