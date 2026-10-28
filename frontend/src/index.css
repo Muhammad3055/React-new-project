@@ -1554,22 +1554,22 @@ a {
 }
 
 .footer-logo {
-  width: clamp(130px, 14vw, 160px);
+  width: clamp(120px, 12vw, 140px);
   max-width: 100%;
   height: auto;
-  max-height: 100px;
+  max-height: 90px;
   object-fit: contain;
   display: block;
   border-radius: 12px;
 }
 
 @media (max-width: 1024px) {
-  .footer-logo { width: clamp(120px, 20vw, 145px); }
+  .footer-logo { width: clamp(110px, 18vw, 130px); }
 }
 
 @media (max-width: 768px) {
   .footer { padding-block: 1.5rem; }
-  .footer-logo { width: min(120px, 85vw); max-width: min(100%, 85vw); max-height: 80px; }
+  .footer-logo { width: min(110px, 85vw); max-width: min(100%, 85vw); max-height: 70px; }
 }
 
 .brand-col .footer-desc {
