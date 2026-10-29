@@ -303,7 +303,7 @@ export default function QiblaView() {
             </div>
 
             <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: 700, color: '#1c1917' }}>
-              {location.name}
+              {t(location.name, location.name).replace(/^GPS Location/, t('gpsLocation', 'GPS Location')).replace(/^Custom/, t('customLocation', 'Custom'))}
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', fontSize: '0.82rem', color: '#78716c', fontWeight: 600 }}>
@@ -314,7 +314,7 @@ export default function QiblaView() {
 
             {locError && (
               <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', fontSize: '0.8rem' }}>
-                <i className="fas fa-exclamation-circle"></i> {locError}
+                <i className="fas fa-exclamation-circle"></i> {t(locError, locError)}
               </div>
             )}
           </div>
@@ -332,7 +332,7 @@ export default function QiblaView() {
             >
               <option value="">{t('choosePresetCity', '-- Choose Preset City --')}</option>
               {PRESET_CITIES.map((c) => (
-                <option key={c.name} value={c.name}>{c.name}</option>
+                <option key={t(c.name, c.name)} value={t(c.name, c.name)}>{t(c.name, c.name)}</option>
               ))}
             </select>
           </div>

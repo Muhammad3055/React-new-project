@@ -3,7 +3,7 @@ import { getApiUrl } from '../utils/apiCache';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function QarisView({ playTrack }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [qaris, setQaris] = useState([]);
   const [query, setQuery] = useState('');
 
@@ -50,13 +50,13 @@ export default function QarisView({ playTrack }) {
             <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-emerald))', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '1rem', border: '2px solid var(--accent-gold)' }}>
               <i className="fas fa-user-alt"></i>
             </div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{qari.name}</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-dark)' }}>{lang === 'ar' ? qari.arabic_name || t(qari.name, qari.name) : t(qari.name, qari.name)}</h3>
             <p className="arabic-font" style={{ fontSize: '1.3rem', color: 'var(--primary-light)', margin: '0.4rem 0' }}>{qari.arabic_name}</p>
             <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '1.25rem', flex: 1 }}>{qari.bio}</p>
             <button
               className="btn-play"
               style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
-              onClick={() => playTrack(`https://server8.mp3quran.net/${qari.slug}/001.mp3`, `Surah Al-Fatiha`, qari.name)}
+              onClick={() => playTrack(`https://server8.mp3quran.net/${qari.slug}/001.mp3`, t('surahAlFatiha', 'Surah Al-Fatiha'), lang === 'ar' ? qari.arabic_name || t(qari.name, qari.name) : t(qari.name, qari.name))}
             >
               <i className="fas fa-play"></i> {t('playSample', 'Play Sample')}
             </button>

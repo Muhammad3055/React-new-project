@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function NamesOfAllahView() {
-  const { lang, t } = useLanguage();
+  const { lang, t, dir } = useLanguage();
   const [search, setSearch] = useState('');
   const [copiedName, setCopiedName] = useState(null);
   const [visibleCount, setVisibleCount] = useState(18);
@@ -115,14 +115,18 @@ export default function NamesOfAllahView() {
     if (!q) return true;
     const trans = (n.transliteration || '').toLowerCase();
     const mean = (n.meaning || '').toLowerCase();
+    const meanAr = t(`asmaMeaning${n.number}`, '').toLowerCase();
     const meanUr = (n.meaning_ur || '').toLowerCase();
     const arab = (n.arabic || '').toLowerCase();
     const num = (n.number || '').toString();
-    return trans.includes(q) || mean.includes(q) || meanUr.includes(q) || arab.includes(q) || num === q || num.includes(q);
+    return meanAr.includes(q) || trans.includes(q) || mean.includes(q) || meanUr.includes(q) || arab.includes(q) || num === q || num.includes(q);
   });
 
+  const meaningFor = (item) => lang === 'ar' ? t(`asmaMeaning${item.number}`, item.meaning) : lang === 'ur' ? item.meaning_ur : lang === 'br' ? t('translationUnavailable', 'Translation in this language is not available yet.') : item.meaning;
+  const benefitFor = (item) => item[`benefit_${lang}`] || (lang === 'en' || !['ar', 'ur', 'br'].includes(lang) ? item.benefit : t('translationUnavailable', 'Translation in this language is not available yet.'));
+
   const handleCopy = (item) => {
-    const textToCopy = `${item.number}. ${item.arabic} (${item.transliteration})\nEnglish Meaning: ${item.meaning}\nاردو معنی: ${item.meaning_ur}\nEnglish Virtue: ${item.benefit}\nاردو فضیلت: ${item.benefit_ur}`;
+    const textToCopy = `${item.number}. ${item.arabic}\n${t('meaning', 'Meaning')}: ${meaningFor(item)}\n${t('virtueBenefit', 'Virtue / Benefit')}: ${benefitFor(item)}`;
     navigator.clipboard.writeText(textToCopy);
     setCopiedName(item.number);
     setTimeout(() => setCopiedName(null), 2000);
@@ -165,7 +169,7 @@ export default function NamesOfAllahView() {
                 <button
                   onClick={() => handleCopy(name)}
                   style={{ background: 'transparent', border: 'none', color: copiedName === name.number ? '#15803d' : '#64748b', cursor: 'pointer', fontSize: '0.9rem' }}
-                  title="Copy Name, Meanings & Virtues"
+                  title={t('copyNameDetails', 'Copy Name, Meanings & Virtues')}
                 >
                   <i className={`fas ${copiedName === name.number ? 'fa-check-circle' : 'fa-copy'}`}></i>
                 </button>
@@ -178,22 +182,22 @@ export default function NamesOfAllahView() {
                 </h2>
 
                 {/* Transliteration */}
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-gold-dark)', margin: '0 0 0.5rem 0' }}>
+                {lang !== 'ar' && <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-gold-dark)', margin: '0 0 0.5rem 0' }}>
                   {name.transliteration}
-                </h3>
+                </h3>}
                 
                 {/* English Meaning */}
                 {/* Dynamic Primary Language Meaning */}
-                <p style={{ fontSize: lang === 'en' ? '0.92rem' : '1.08rem', fontWeight: 700, color: 'var(--primary-dark)', margin: '0.4rem 0 0.6rem 0', direction: lang === 'en' ? 'ltr' : 'rtl' }}>
-                  {lang === 'en' ? name.meaning : name.meaning_ur}
+                <p style={{ fontSize: lang === 'en' ? '0.92rem' : '1.08rem', fontWeight: 700, color: 'var(--primary-dark)', margin: '0.4rem 0 0.6rem 0', direction: dir }}>
+                  {meaningFor(name)}
                 </p>
               </div>
             </div>
 
             {/* Virtues Section (Dynamic Language) */}
             <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-gold)', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <p style={{ fontSize: lang === 'en' ? '0.82rem' : '0.95rem', color: '#064e3b', margin: 0, lineHeight: '1.5', direction: lang === 'en' ? 'ltr' : 'rtl' }}>
-                <strong style={{ color: '#047857' }}><i className="fas fa-gem" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {t('fazail', 'Fazail')}:</strong> {lang === 'en' ? name.benefit : name.benefit_ur}
+              <p style={{ fontSize: lang === 'en' ? '0.82rem' : '0.95rem', color: '#064e3b', margin: 0, lineHeight: '1.5', direction: dir }}>
+                <strong style={{ color: '#047857' }}><i className="fas fa-gem" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {t('virtueBenefit', 'Virtue / Benefit')}:</strong> {benefitFor(name)}
               </p>
             </div>
           </div>

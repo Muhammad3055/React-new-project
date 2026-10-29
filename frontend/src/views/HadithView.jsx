@@ -5,7 +5,7 @@ import { deleteContentItem, filterOutDeleted } from '../utils/adminContentStore'
 import Pagination from '../components/Pagination';
 
 export default function HadithView({ openReportModal, user }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [hadiths, setHadiths] = useState([]);
   const [booksList, setBooksList] = useState([]);
   const [query, setQuery] = useState('');
@@ -101,7 +101,7 @@ export default function HadithView({ openReportModal, user }) {
         <h1 className="section-title">
           <i className="fas fa-scroll" style={{ color: 'var(--accent-gold)' }}></i> {t('hadithCollectionsTitle', 'Hadith Collections & Authenticity Grades')}
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem', maxWidth: '650px', marginInline: 'auto' }} dangerouslySetInnerHTML={{ __html: t('exploreHadithsPart1', 'Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings:') + ` <strong>Sahih</strong> (${t('authentic', 'Authentic')}) ${t('and', 'and')} <strong>Hasan</strong> (${t('good', 'Good')}).` }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem', maxWidth: '650px', marginInline: 'auto' }} dangerouslySetInnerHTML={{ __html: t('exploreHadithsPart1', 'Explore sayings and traditions of Prophet Muhammad (ﷺ), verified with scholars’ authenticity ratings:') + ` <strong>${t('sahih', 'Sahih')}</strong> (${t('authentic', 'Authentic')}) ${t('and', 'and')} <strong>${t('hasan', 'Hasan')}</strong> (${t('good', 'Good')}).` }}>
         </p>
       </div>
 
@@ -154,7 +154,7 @@ export default function HadithView({ openReportModal, user }) {
           >
             <option value="">{t('allCollections', 'All Collections')}</option>
             {booksList.map((b, idx) => (
-              <option key={idx} value={b}>{b}</option>
+              <option key={idx} value={b}>{t(b, b)}</option>
             ))}
           </select>
         </div>
@@ -166,16 +166,17 @@ export default function HadithView({ openReportModal, user }) {
           <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>{t('loadingHadiths', 'Loading Hadiths...')}</p>
         </div>
       ) : loadError ? (
-        <div className="hadith-empty-state" role="alert"><i className="fas fa-exclamation-circle" aria-hidden="true"></i><h3>Hadith collections could not be loaded</h3><p>Please check your connection and try again.</p></div>
+        <div className="hadith-empty-state" role="alert"><i className="fas fa-exclamation-circle" aria-hidden="true"></i><h3>{t('hadithLoadError', 'Hadith collections could not be loaded')}</h3><p>{t('checkConnectionRetry', 'Please check your connection and try again.')}</p></div>
       ) : hadiths.length === 0 ? (
-        <div className="hadith-empty-state"><i className="fas fa-search" aria-hidden="true"></i><h3>{debouncedQuery || selectedBook || selectedGrade ? 'No search results' : t('hadithComingSoon', 'No Hadith records are available yet.')}</h3><p>{debouncedQuery || selectedBook || selectedGrade ? 'Try adjusting your search or filters.' : ''}</p></div>
+        <div className="hadith-empty-state"><i className="fas fa-search" aria-hidden="true"></i><h3>{debouncedQuery || selectedBook || selectedGrade ? t('noSearchResults', 'No search results') : t('hadithComingSoon', 'No Hadith records are available yet.')}</h3><p>{debouncedQuery || selectedBook || selectedGrade ? t('adjustSearchFilters', 'Try adjusting your search or filters.') : ''}</p></div>
       ) : (
         <div className="hadith-record-grid">
           {hadiths.map((h) => {
-            const collection = h.collection_name || h.book_name || h.collection;
-            const bookTitle = h.book_title || h.book;
+            const collection = h[`collection_name_${lang}`] || h.collection_name || h.book_name || h.collection;
+            const bookTitle = h[`book_title_${lang}`] || h.book_title || h.book;
+            const translation = h[`translation_${lang}`] || (lang === 'ar' ? null : h.translation);
             const reference = h.reference || h.source;
-            const recordLabel = [collection, bookTitle, h.hadith_number && `#${h.hadith_number}`].filter(Boolean).join(' · ');
+            const recordLabel = [t(collection, collection), t(bookTitle, bookTitle), h.hadith_number && `#${h.hadith_number}`].filter(Boolean).join(' · ');
             return <article key={h.id} className="hadith-record-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {recordLabel && <span className="hadith-record-reference">{recordLabel}</span>}
@@ -197,7 +198,7 @@ export default function HadithView({ openReportModal, user }) {
                     <i className="fas fa-share-alt"></i>
                   </button>
                   <button
-                    title="Report Issue"
+                    title={t('reportIssue', 'Report Issue')}
                     onClick={() => openReportModal('hadith', [collection, h.hadith_number && `#${h.hadith_number}`].filter(Boolean).join(' '))}
                     className="verse-btn hadith-action-btn"
                   >
@@ -208,9 +209,9 @@ export default function HadithView({ openReportModal, user }) {
                     <button
                       onClick={() => deleteContentItem(h.id, 'hadith')}
                       style={{ background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '6px 10px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                      title="Delete Hadith as Admin"
+                      title={t('adminDeleteHadith', 'Delete Hadith as Admin')}
                     >
-                      <i className="fas fa-trash"></i> Delete
+                      <i className="fas fa-trash"></i> {t('Delete', 'Delete')}
                     </button>
                   )}
                 </div>
@@ -222,7 +223,7 @@ export default function HadithView({ openReportModal, user }) {
                 </p>
               )}
 
-              {h.arabic_text && <><h3 className="hadith-field-label">Arabic</h3><p className="arabic-font hadith-arabic-text" lang="ar" dir="rtl">{h.arabic_text}</p></>}
+              {h.arabic_text && <><h3 className="hadith-field-label">{t('arabic', 'Arabic')}</h3><p className="arabic-font hadith-arabic-text" lang="ar" dir="rtl">{h.arabic_text}</p></>}
               
               {h.narrated_by && (
                 <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.4rem' }}>
@@ -230,8 +231,8 @@ export default function HadithView({ openReportModal, user }) {
                 </p>
               )}
               
-              {h.translation && <><h3 className="hadith-field-label">Translation</h3><p className="hadith-translation">{h.translation}</p></>}
-              {reference && <p className="hadith-source">Source: {reference}</p>}
+              {translation && <><h3 className="hadith-field-label">{t('translation', 'Translation')}</h3><p className="hadith-translation notranslate" translate="no">{translation}</p></>}
+              {reference && <p className="hadith-source">{t('source', 'Source')}: <span translate="no">{reference}</span></p>}
             </article>;
           })}
         </div>

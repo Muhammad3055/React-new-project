@@ -352,7 +352,7 @@ export default function InheritanceView() {
                   {sonsCount > 0 && (
                     <div style={resultRowStyle}>
                       <div>
-                        <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('sons', 'Sons')} ({sonsCount} total)</div>
+                        <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('sons', 'Sons')} ({sonsCount} {t('total', 'total')})</div>
                         <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachSonVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} {lang === 'ar' ? 'لكل ابن' : lang === 'ur' ? 'فی بیٹا' : 'per son'}</div>
                       </div>
                       <div style={{ fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>Rs. {totalSonsVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
@@ -362,7 +362,7 @@ export default function InheritanceView() {
                   {daughtersCount > 0 && (
                     <div style={resultRowStyle}>
                       <div>
-                        <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('daughters', 'Daughters')} ({daughtersCount} total)</div>
+                        <div style={{ fontWeight: 800, color: '#ffffff' }}>{t('daughters', 'Daughters')} ({daughtersCount} {t('total', 'total')})</div>
                         <div style={{ fontSize: '0.78rem', color: '#a7f3d0' }}>Rs. {eachDaughterVal.toLocaleString('en-US', { maximumFractionDigits: 0 })} {lang === 'ar' ? 'لكل بنت' : lang === 'ur' ? 'فی بیٹی' : 'per daughter'}</div>
                       </div>
                       <div style={{ fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>Rs. {totalDaughtersVal.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>

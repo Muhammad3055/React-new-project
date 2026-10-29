@@ -140,9 +140,13 @@ export function LanguageProvider({ children }) {
     if (!translations[lang]) return undefined;
 
     const englishEntries = Object.entries(translations.en || {});
-    const phraseKeys = new Map(englishEntries
-      .filter(([, value]) => typeof value === 'string' && value.trim())
-      .map(([key, value]) => [value.trim(), key]));
+    const phraseKeys = new Map();
+    englishEntries.forEach(([key, english]) => {
+      if (!translations[lang][key] && lang !== 'en') return;
+      for (const value of [english, translations.ur?.[key], translations.ar?.[key]]) {
+        if (typeof value === 'string' && value.trim()) phraseKeys.set(value.trim(), key);
+      }
+    });
     let updating = false;
 
     const isProtected = (element) => element?.closest?.(
@@ -155,13 +159,14 @@ export function LanguageProvider({ children }) {
       let node;
       while ((node = walker.nextNode())) {
         if (!node.parentElement || isProtected(node.parentElement)) continue;
-        const original = originalUiTextRef.current.get(node) ?? node.nodeValue;
+        const saved = originalUiTextRef.current.get(node);
+        const original = saved && node.nodeValue === saved.rendered ? saved.original : node.nodeValue;
         const trimmed = original.trim();
         const key = phraseKeys.get(trimmed);
         if (!key) continue;
-        originalUiTextRef.current.set(node, original);
-        const translated = lang === 'en' ? trimmed : (translations[lang][key] || trimmed);
+        const translated = translations[lang][key] || trimmed;
         const nextValue = original.replace(trimmed, translated);
+        originalUiTextRef.current.set(node, { original, rendered: nextValue });
         if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
       }
       const elements = root.querySelectorAll?.('[placeholder], [aria-label], [title]') || [];
@@ -171,10 +176,15 @@ export function LanguageProvider({ children }) {
         if (!originals) { originals = {}; originalUiAttributeRef.current.set(element, originals); }
         ['placeholder', 'aria-label', 'title'].forEach((attribute) => {
           if (!element.hasAttribute(attribute)) return;
-          const original = originals[attribute] ?? element.getAttribute(attribute);
-          originals[attribute] = original;
+          const current = element.getAttribute(attribute);
+          const saved = originals[attribute];
+          const original = saved && current === saved.rendered ? saved.original : current;
           const key = phraseKeys.get(original.trim());
-          if (key) element.setAttribute(attribute, lang === 'en' ? original : (translations[lang][key] || original));
+          if (key) {
+            const rendered = lang === 'en' ? translations.en[key] || original : translations[lang][key] || original;
+            originals[attribute] = { original, rendered };
+            if (current !== rendered) element.setAttribute(attribute, rendered);
+          }
         });
       });
       updating = false;
@@ -189,7 +199,7 @@ export function LanguageProvider({ children }) {
       });
     });
     uiTranslationObserverRef.current = observer;
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'aria-label', 'title'] });
     return () => observer.disconnect();
   }, [lang]);
 

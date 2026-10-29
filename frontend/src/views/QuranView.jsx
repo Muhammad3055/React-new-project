@@ -661,7 +661,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         <div>
           <div className="filter-bar" style={{ flexWrap: 'wrap', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
             <div className="filter-group" style={{ flex: 1, minWidth: '220px' }}>
-              <span className="filter-label"><i className="fas fa-user-alt"></i> Qari Voice:</span>
+              <span className="filter-label"><i className="fas fa-user-alt"></i> {t('qariVoice', 'Qari Voice:')}</span>
               <select
                 className="filter-select"
                 value={selectedQari}
@@ -669,13 +669,13 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               >
                 {QARIS.map(q => (
-                  <option key={q.id} value={q.id}>{q.name}</option>
+                  <option key={q.id} value={q.id}>{t(q.name, q.name)}</option>
                 ))}
               </select>
             </div>
 
             <div className="filter-group" style={{ flex: 2, minWidth: '240px' }}>
-              <span className="filter-label"><i className="fas fa-search"></i> Search Surah:</span>
+              <span className="filter-label"><i className="fas fa-search"></i> {t('searchSurah', 'Search Surah:')}</span>
               <input
                 type="text"
                 className="filter-input"
@@ -730,7 +730,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <p className="card-subtitle" style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
                           <i className="fas fa-bullhorn" style={{ marginRight: '0.25rem', color: 'var(--accent-gold)' }}></i>
-                          {audio.reciter || 'Qari / Scholar'}
+                          {t(audio.reciter, audio.reciter) || t('qariScholar', 'Qari / Scholar')}
                         </p>
                         {audio.duration && (
                           <span style={{ fontSize: '0.72rem', color: '#78716c', fontWeight: 600 }}>
@@ -748,7 +748,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       style={{ flex: 1, justifyContent: 'center', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '14px', background: 'var(--surface-paper)', color: 'var(--accent-gold)', fontWeight: 800, border: '1.5px solid var(--accent-gold)', boxShadow: '0 2px 6px rgba(180,83,9,0.1)' }}
                       onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter, arabicTilawatAudios, audio)}
                     >
-                      <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> Play
+                      <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> {t('play', 'Play')}
                     </button>
 
                     {(user?.is_staff || user?.is_superuser) && (
@@ -786,7 +786,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       <div className="card-body" style={{ padding: 0 }}>
                         <h3 className="card-title" style={{ fontSize: '0.95rem', marginBottom: '0.15rem', color: '#1c1917', fontWeight: 800 }}>Surah {surah.name || surah.englishName}</h3>
                         <p className="arabic-font card-arabic" style={{ fontSize: '1.25rem', margin: '0.2rem 0', color: 'var(--accent-gold)', fontWeight: 700, textAlign: 'right' }}>{surah.arabic ? (surah.arabic.startsWith('سورة') || surah.arabic.startsWith('سُورَةُ') ? surah.arabic : `سُورَةُ ${surah.arabic}`) : surah.name}</p>
-                        <p className="card-subtitle" style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600 }}><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {activeQariObj.name}</p>
+                        <p className="card-subtitle" style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600 }}><i className="fas fa-microphone" style={{ color: 'var(--accent-gold)', marginRight: '0.25rem' }}></i> {t(activeQariObj.name, activeQariObj.name)}</p>
                       </div>
                     </div>
 
@@ -797,7 +797,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                         style={{ flex: 1, justifyContent: 'center', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '14px', background: 'var(--surface-paper)', color: 'var(--accent-gold)', fontWeight: 800, border: '1.5px solid var(--accent-gold)', boxShadow: '0 2px 6px rgba(180,83,9,0.1)' }}
                         onClick={() => playSurahByNumber(surah.number)}
                       >
-                        <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> Play
+                        <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> {t('play', 'Play')}
                       </button>
 
                       <button
@@ -839,7 +839,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         <div>
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
-              <span className="filter-label"><i className="fas fa-search"></i> Search Translation MP3:</span>
+              <span className="filter-label"><i className="fas fa-search"></i> {t('searchTranslationMp3', 'Search Translation MP3:')}</span>
               <input
                 type="text"
                 className="filter-input"
@@ -929,7 +929,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.2rem', flexWrap: 'wrap' }}>
                             <p className="card-subtitle" style={{ fontSize: '0.75rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
                               <i className="fas fa-bullhorn" style={{ marginRight: '0.25rem', color: 'var(--accent-gold)' }}></i>
-                              {audio.reciter || 'Qari / Scholar'}
+                              {t(audio.reciter, audio.reciter) || t('qariScholar', 'Qari / Scholar')}
                             </p>
                             {audio.tarjuma_qari && (
                               <p className="card-subtitle" style={{ fontSize: '0.72rem', color: '#78716c', fontWeight: 600, margin: 0 }}>
@@ -953,7 +953,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           style={{ flex: 1, justifyContent: 'center', padding: '0.35rem 0.5rem', fontSize: '0.78rem', borderRadius: '14px', background: 'var(--surface-paper)', color: 'var(--accent-gold)', fontWeight: 800, border: '1.5px solid var(--accent-gold)', boxShadow: '0 2px 6px rgba(180,83,9,0.1)' }}
                           onClick={() => safePlayTrack(audio.audio_url, audio.title || audio.surah_name_english, audio.reciter, filtered, audio)}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> Play
+                          <i className="fas fa-play" style={{ fontSize: '0.65rem', color: 'var(--accent-gold)' }}></i> {t('play', 'Play')}
                         </button>
 
                         <button
@@ -1007,7 +1007,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
         <div>
           <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
-              <span className="filter-label"><i className="fas fa-search"></i> Search Taqreer MP3:</span>
+              <span className="filter-label"><i className="fas fa-search"></i> {t('searchLectureMp3', 'Search Taqreer MP3:')}</span>
               <input
                 type="text"
                 className="filter-input"
@@ -1048,8 +1048,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           ) : activeTaqreers.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--surface-paper)', color: '#1c1917', borderRadius: '18px', border: '1.5px solid #e7e5e4' }}>
               <i className="fas fa-microphone-slash fa-3x" style={{ color: 'var(--accent-gold)', marginBottom: '1rem' }}></i>
-              <h3 style={{ color: 'var(--accent-gold)' }}>No MP3 Taqreer audio found</h3>
-              <p style={{ color: '#44403c' }}>Use the Admin Upload section to add Taqreers in this language category!</p>
+              <h3 style={{ color: 'var(--accent-gold)' }}>{t('noLectureAudio', 'No MP3 Taqreer audio found')}</h3>
+              <p style={{ color: '#44403c' }}>{t('addLectureHint', 'Use the Admin Upload section to add Taqreers in this language category!')}</p>
             </div>
           ) : (() => {
             const itemsPerPage = 8;
@@ -1093,7 +1093,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                           style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
                           onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker, activeTaqreers, tq)}
                         >
-                          <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play
+                          <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> {t('play', 'Play')}
                         </button>
 
                         <button
@@ -1176,8 +1176,8 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
           ) : categoryAudios.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem 1rem', background: 'var(--surface-paper)', borderRadius: '16px', border: '1px solid #e7e5e4' }}>
               <i className="fas fa-folder-open fa-3x" style={{ color: '#d1d5db', marginBottom: '1rem' }}></i>
-              <h3 style={{ color: 'var(--accent-gold)' }}>No MP3s found in this category</h3>
-              <p style={{ color: '#44403c' }}>Use the Admin Upload section to add MP3s here!</p>
+              <h3 style={{ color: 'var(--accent-gold)' }}>{t('noCategoryMp3', 'No MP3s found in this category')}</h3>
+              <p style={{ color: '#44403c' }}>{t('addMp3Hint', 'Use the Admin Upload section to add MP3s here!')}</p>
             </div>
           ) : (
             <div className="grid-2">
@@ -1210,7 +1210,7 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                       style={{ flex: 1, justifyContent: 'center', padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: '20px', background: 'linear-gradient(135deg, var(--accent-gold), #d97706)', color: '#022c22', fontWeight: 800, border: 'none' }}
                       onClick={() => safePlayTrack(tq.audio_url, tq.title, tq.speaker, categoryAudios, tq)}
                     >
-                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> Play
+                      <i className="fas fa-play" style={{ fontSize: '0.75rem' }}></i> {t('play', 'Play')}
                     </button>
 
                     <button
@@ -1272,15 +1272,15 @@ export default function QuranView({ playTrack, user, navigateToTab, initialSubCa
                 <div key={audio.id} className="card" style={{ padding: '1rem', borderRadius: '16px' }}>
                   <h3>{audio.surah_name_english || 'Quran Audio'}</h3>
                   {audio.surah_name_arabic && <p className="arabic-font" dir="rtl">{audio.surah_name_arabic}</p>}
-                  <p>{audio.reciter}{audio.tarjuma_qari ? ` · ${audio.tarjuma_qari}` : ''}</p>
+                  <p>{t(audio.reciter, audio.reciter)}{audio.tarjuma_qari ? ` · ${audio.tarjuma_qari}` : ''}</p>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <button type="button" onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english, audio.reciter, mixedAudios, audio)} disabled={!audio.audio_url}><i className="fas fa-play" /> Play</button>
+                    <button type="button" onClick={() => safePlayTrack(audio.audio_url, audio.surah_name_english, audio.reciter, mixedAudios, audio)} disabled={!audio.audio_url}><i className="fas fa-play" /> {t('play', 'Play')}</button>
                     {audio.audio_url && <button type="button" onClick={() => handleDownloadMp3(`Audio_${audio.id}`, audio.audio_url)}><i className="fas fa-download" /> Download</button>}
                   </div>
                 </div>
               ))}
             </div>
-          ) : <p>No mixed Quran audio uploaded yet.</p>}
+          ) : <p>{t('noMixedAudio', 'No mixed Quran audio uploaded yet.')}</p>}
         </div>
       )}
 

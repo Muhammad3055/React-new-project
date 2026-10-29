@@ -4,7 +4,7 @@ import { Search, Heart, Sparkles, BookOpen, User, Filter, Check } from 'lucide-r
 import { namesData } from '../data/islamicNames';
 
 export default function IslamicNamesView() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [query, setQuery] = useState('');
   const [genderFilter, setGenderFilter] = useState('all'); // 'all', 'boy', 'girl'
   const [startingLetter, setStartingLetter] = useState('');
@@ -137,7 +137,7 @@ export default function IslamicNamesView() {
                       background: item.gender === 'boy' ? '#dbeafe' : '#fce7f3',
                       color: item.gender === 'boy' ? '#1d4ed8' : '#be185d'
                     }}>
-                      {item.gender === 'boy' ? '👦 Boy' : '👧 Girl'} • {item.origin}
+                      {item.gender === 'boy' ? `👦 ${t('boy', 'Boy')}` : `👧 ${t('girl', 'Girl')}`} • {t(item.origin, item.origin)}
                     </span>
                     <button
                       onClick={() => toggleFavorite(item.name)}
@@ -148,13 +148,13 @@ export default function IslamicNamesView() {
                   </div>
 
                   <h3 style={{ margin: '0 0 4px', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
-                    {item.name}
+                    {lang === 'ar' ? item.arabic : item.name}
                   </h3>
                   <div style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'Amiri, serif', color: '#059669', marginBottom: '0.75rem' }}>
                     {item.arabic}
                   </div>
                   <p style={{ margin: 0, fontSize: '0.88rem', color: '#475569', lineHeight: 1.5 }}>
-                    {item.meaning}
+                    {item[`meaning_${lang}`] || (lang === 'en' || !['ar', 'ur', 'br'].includes(lang) ? item.meaning : t('translationUnavailable', 'Translation in this language is not available yet.'))}
                   </p>
                 </div>
               </div>
