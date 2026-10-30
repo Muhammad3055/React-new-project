@@ -371,6 +371,16 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
   const availableBooks = books.filter(book => getDocumentUrl(book));
   const recentBooks = availableBooks.length > 3 ? availableBooks.filter(book => book.created_at).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)).slice(0, 3) : [];
   const featuredBooks = availableBooks.filter(book => !recentBooks.some(recent => recent.id === book.id)).slice(0, 6);
+  const playFeaturedAudio = (index) => {
+    const playAt = (trackIndex) => {
+      const item = featuredAudios[trackIndex];
+      if (!item?.audio_url) return;
+      const next = trackIndex < featuredAudios.length - 1 ? () => playAt(trackIndex + 1) : null;
+      const previous = trackIndex > 0 ? () => playAt(trackIndex - 1) : null;
+      playTrack?.({ url: item.audio_url, title: item.surah_name_english || item.title, reciter: item.reciter, onNext: next, onPrev: previous, onEnded: next });
+    };
+    playAt(index);
+  };
   const scrollCarousel = (ref, direction) => ref.current?.scrollBy({ left: direction * (ref.current.firstElementChild?.getBoundingClientRect().width || 300), behavior: 'smooth' });
   const resumeQuran = () => {
     if (!lastRead?.surahNumber) return handleNav('read');
@@ -570,6 +580,15 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
           const verse = DAILY_VERSES_COLLECTION[dayOfYear % DAILY_VERSES_COLLECTION.length];
           return <section className="container home-section home-today">
             <div className="home-section-heading"><div><span className="home-eyebrow">{t('todayInspiration')}</span><h2>{t('today')}</h2></div></div>
+          <div className="home-reading-plan" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', padding: '1rem 1.25rem', marginBottom: '1rem', borderRadius: '16px', background: 'var(--surface-paper)', border: '1px solid rgba(5, 150, 105, 0.2)' }}>
+            <div style={{ flex: '1 1 180px' }}>
+              <strong>{t('dailyReadingGoal', 'Daily reading goal')}</strong>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{dailyPlan.completed} / {dailyPlan.target} {t('pagesToday', 'pages today')}</div>
+              <div role="progressbar" aria-label={t('dailyReadingProgress', 'Daily reading progress')} aria-valuenow={dailyPlan.completed} aria-valuemin={0} aria-valuemax={dailyPlan.target} style={{ height: 6, background: 'var(--surface-sage, #e8f3ea)', borderRadius: 8, marginTop: 8, overflow: 'hidden' }}><span style={{ display: 'block', height: '100%', width: `${Math.min(100, dailyPlan.completed / dailyPlan.target * 100)}%`, background: 'var(--primary-emerald, #047857)' }} /></div>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>{t('dailyGoal', 'Goal')}<select value={dailyPlan.target} onChange={event => setDailyPlan(current => ({ ...current, target: Number(event.target.value), completed: Math.min(current.completed, Number(event.target.value)) }))} aria-label={t('dailyReadingGoal', 'Daily reading goal')}><option value={1}>1</option><option value={3}>3</option><option value={5}>5</option><option value={10}>10</option></select></label>
+            <button type="button" className="home-btn-secondary" disabled={dailyPlan.completed >= dailyPlan.target} onClick={() => setDailyPlan(current => ({ ...current, completed: Math.min(current.target, current.completed + 1) }))}>{t('markPageComplete', 'Mark a page complete')}</button>
+          </div>
             <div className="home-today-tabs" role="tablist" aria-label="Today's content">
               {[['ayah', 'ayah'], ['hadith', 'hadith'], ['dua', 'dua']].map(([id, key]) => <button key={id} role="tab" aria-selected={todayTab === id} className={todayTab === id ? 'active' : ''} onClick={() => setTodayTab(id)}>{t(key)}</button>)}
             </div>
@@ -583,7 +602,7 @@ export default function HomeView({ navigateToTab, setActiveTab, playTrack, user,
 
         {featuredAudios.length > 0 && <section className="container home-section home-recitation-section">
           <div className="home-section-heading"><div><span className="home-eyebrow">{t('listenReflect')}</span><h2>{t('featuredRecitations')}</h2></div><div className="home-carousel-actions"><button aria-label={t('previousRecitations')} onClick={() => scrollCarousel(recitationCarousel, -1)}><i className="fas fa-chevron-left" /></button><button aria-label={t('nextRecitations')} onClick={() => scrollCarousel(recitationCarousel, 1)}><i className="fas fa-chevron-right" /></button><button className="home-text-action" onClick={() => handleNav('quran')}>{t('viewAll')} <i className="fas fa-arrow-right" aria-hidden="true" /></button></div></div>
-          <div className="home-feature-grid home-card-carousel" ref={recitationCarousel}>{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-headphones" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playTrack?.(item.audio_url, item.surah_name_english || item.title, item.reciter)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
+          <div className="home-feature-grid home-card-carousel" ref={recitationCarousel}>{featuredAudios.map((item, index) => <article className="home-feature-card" key={item.id || index}><span className="home-feature-icon"><i className="fas fa-headphones" aria-hidden="true" /></span><div><h3>{item.surah_name_english || item.title || `Surah ${item.surah_number || ''}`}</h3><p>{item.reciter || item.subtitle || 'Quran recitation'}</p></div><button aria-label={`Listen to ${item.surah_name_english || item.title || 'recitation'}`} onClick={() => playFeaturedAudio(index)}><i className="fas fa-play" aria-hidden="true" /></button></article>)}</div>
         </section>}
 
         {featuredBooks.length > 0 && <section className="container home-section home-books-section">

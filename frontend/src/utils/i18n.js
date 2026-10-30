@@ -3293,6 +3293,11 @@ const authValidationTranslations = [
   });
 
 const pageUiTranslations = [
+  ["dailyReadingGoal","Daily reading goal","روزانہ پڑھنے کا ہدف","هدف القراءة اليومي"],
+  ["pagesToday","pages today","آج کے صفحات","صفحات اليوم"],
+  ["dailyReadingProgress","Daily reading progress","روزانہ مطالعے کی پیش رفت","تقدم القراءة اليومي"],
+  ["dailyGoal","Goal","ہدف","الهدف"],
+  ["markPageComplete","Mark a page complete","ایک صفحہ مکمل کریں","تحديد الصفحة كمكتملة"],
   ["Skip to main content","Skip to main content","مرکزی مواد پر جائیں","الانتقال إلى المحتوى الرئيسي"],
   ["featureQuranTitle","114 Surahs Quran Reader","قرآن مجید کی 114 سورتوں کا مطالعہ","قارئ القرآن الكريم: 114 سورة"],
   ["featureQuranDesc","Read the complete Holy Quran with verse-by-verse audio playback, bookmarking, and clear translations.","مکمل قرآن مجید آیت بہ آیت آڈیو، نشان محفوظ کرنے اور واضح تراجم کے ساتھ پڑھیں۔","اقرأ القرآن الكريم كاملاً مع الاستماع لكل آية وحفظ العلامات والترجمات الواضحة."],
